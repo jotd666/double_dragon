@@ -1,0 +1,5 @@
+- log writes to 3808 bank switching
+- finalize jump tables
+- when called bogus jump table??
+- improve 6309 converter
+- convert subcpu???

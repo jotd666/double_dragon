@@ -1,0 +1,13 @@
+*.o
+*.zip
+*.pyc
+c
+s
+snapshot
+src/datetime
+*.slave
+*.bak
+sounds.68k
+sound_entries.68k
+build.bat
+.whd*
