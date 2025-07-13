@@ -14,18 +14,20 @@
 
 
 	.global	cpu_init
-	.global	m6809_direct_page_pointer
+	.global	m6309_direct_page_pointer
 
 	.macro	ERROR	arg
 	.error	"\arg"     | comment out to disable errors
 	.endm
 
 	.macro	VIDEO_BYTE_DIRTY
-	| called when a byte write was done in a0
+	| called when a write to video memory was done in a0
+	jbsr	osd_video_byte_dirty
 	.endm
 
 	.macro	VIDEO_WORD_DIRTY
-	| called when a word write was done in a0
+	| called when a word write to video memory was done in a0
+	jbsr	osd_video_word_dirty
 	.endm
 
 	.macro	GET_ADDRESS_FUNC
@@ -246,7 +248,7 @@
 	move.l    d0,a0
 	GET_ADDRESS_FUNC
 	move.l	a0,a5
-	move.l	a5,m6809_direct_page_pointer
+	move.l	a5,m6309_direct_page_pointer
 	lsr.w    #8,d0
 	.endm
 
@@ -270,16 +272,17 @@
 	.endm
 
 
-	.macro GET_REG_INDIRECT_ADDRESS	offset,reg
-	GET_REG_ADDRESS	\offset,\reg
-	READ_BE_WORD	a0
-	GET_ADDRESS_FUNC
-	.endm
 
 	.macro    GET_REG_REG_INDIRECT_ADDRESS reg1,reg2
 	GET_INDIRECT_ADDRESS_REGS	\reg1,\reg2,d6
 	and.l	#0xFFFF,d6
 	move.l	d6,a0
+	GET_ADDRESS_FUNC
+	.endm
+	
+	.macro GET_REG_INDIRECT_ADDRESS	offset,reg
+	GET_REG_ADDRESS		\offset,\reg
+	READ_BE_WORD	a0
 	GET_ADDRESS_FUNC
 	.endm
 
@@ -311,17 +314,17 @@
 
 
 	.macro GET_REG_INDIRECT_UNCHECKED_ADDRESS	offset,reg
-	GET_REG_ADDRESS	\offset,\reg
+	.ifeq	\offset
+	move.l	\reg,a0
+	.else
+	lea	\offset,a0
+	add.l	\reg,a0
+	.endif
+	GET_ADDRESS_FUNC
 	READ_BE_WORD	a0
 	GET_UNCHECKED_ADDRESS_FUNC
 	.endm
 
-	.macro    GET_REG_REG_UNCHECKED_INDIRECT_ADDRESS reg1,reg2
-	GET_INDIRECT_ADDRESS_REGS	\reg1,\reg2,d6
-	and.l	#0xFFFF,d6
-	move.l	d6,a0
-	GET_UNCHECKED_ADDRESS_FUNC
-	.endm
 
 	.macro GET_REG_UNCHECKED_ADDRESS_FROM_REG	reg,reg2
 	move.l	\reg,a0
@@ -355,7 +358,7 @@ get_address:
 	rts
 
 | direct page pointer needs to be reloaded in case of irq
-m6809_direct_page_pointer:
+m6309_direct_page_pointer:
 	.long	0xA5A5A5A5
 
 
@@ -367,3 +370,22 @@ multiply_ab:
 	move.b	d1,d0
 	ror.w	#8,d1
 	rts
+	.ifndef	RELEASE
+	* to trace at some virtual PCs, insert this macro
+	.macro	LOG_REGS	the_pc
+	move.w	sr,-(a7)
+	move.w	#0x\the_pc,-(a7)
+	move.w	#0,-(a7)
+	jbsr	osd_log_cpu
+	addq.w	#4,a7
+	move.w	(a7)+,sr
+	.endm
+	.macro	ENABLE_LOG_REGS
+	moveq	#1,d6		| enable
+	jbsr	osd_cpu_logging_control	
+	.endm
+	.macro	DISABLE_LOG_REGS
+	moveq	#0,d6		| disable
+	jbsr	osd_cpu_logging_control	
+	.endm	
+	.endif
