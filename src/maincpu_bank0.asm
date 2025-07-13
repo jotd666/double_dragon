@@ -1716,8 +1716,9 @@
 4DE6: 8E 4D EF       LDX    #$4DEF
 4DE9: 96 36          LDA    $36
 4DEB: 48             ASLA
-4DEC: AD 96          JSR    [A,X]
+4DEC: AD 96          JSR    [A,X]	; [jump_table]
 4DEE: 39             RTS
+
 4DEF: 4D             TSTA
 4DF0: F7 4E 04       STB    $4E04
 4DF3: 4E             FCB    $4E

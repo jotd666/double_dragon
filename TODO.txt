@@ -5,6 +5,9 @@
   for proper bank
 - at first try to link without bank ROMs
 - FD06 discover entry
+
+- assemble banked roms alone bank 1
+- bank 0: resolve jump tables
 - play with palette write wpoint
 - palette writes can be useful to detect 
   level changes & load new tilesets

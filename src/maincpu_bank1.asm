@@ -1,3 +1,4 @@
+; write $20 in $3808 to get that bank
 4000: 7E 41 00    JMP    $4100
 4003: 7E 41 1E    JMP    $411E
 4006: 7E 5C 88    JMP    $5C88
@@ -75,18 +76,7 @@
 40DE: 7E 75 EC    JMP    $75EC
 40E1: 7E 76 B2    JMP    $76B2
 40E4: 7E 76 FE    JMP    $76FE
-40E7: 00 00       NEG    $00
-40E9: 00 00       NEG    $00
-40EB: 00 00       NEG    $00
-40ED: 00 00       NEG    $00
-40EF: 00 00       NEG    $00
-40F1: 00 00       NEG    $00
-40F3: 00 00       NEG    $00
-40F5: 00 00       NEG    $00
-40F7: 00 00       NEG    $00
-40F9: 00 00       NEG    $00
-40FB: 00 00       NEG    $00
-40FD: 00 00       NEG    $00
+
 40FF: 00 34       NEG    $34
 4101: 26 10       BNE    $4113
 4103: 8E 03 81    LDX    #$0381
@@ -288,14 +278,7 @@
 42C7: 20 02       BRA    $42CB
 42C9: 1C FE       ANDCC  #$FE
 42CB: 35 B0       PULS   X,Y,PC
-42CD: 63 64       COM    $4,S
-42CF: 65 65 34    EIM    #$65;-$C,Y
-42D2: 76 10 8E    ROR    $108E
-42D5: 43          COMA
-42D6: 0F A6       CLR    $A6
-42D8: 88 1B       EORA   #$1B
-42DA: 2B 0E       BMI    $42EA
-42DC: BD FE 64    JSR    $FE64
+
 42DF: A6 A0       LDA    ,Y+
 42E1: AA 03       ORA    $3,X
 42E3: A7 02       STA    $2,X
@@ -318,9 +301,9 @@
 4308: 86 00       LDA    #$00
 430A: A7 88 1B    STA    $1B,X
 430D: 35 F6       PULS   D,X,Y,U,PC
+
 430F: 39          RTS
-4310: 03 38       COM    $38
-4312: 03 A6       COM    $A6
+
 4314: 88 4B       EORA   #$4B
 4316: 27 01       BEQ    $4319
 4318: 39          RTS
@@ -386,27 +369,11 @@
 43A3: A6 88 38    LDA    $38,X
 43A6: 84 0F       ANDA   #$0F
 43A8: 48          ASLA
-43A9: 10 8E 43 B0 LDY    #$43B0
-43AD: AD B6       JSR    [A,Y]
+43A9: 10 8E 43 B0 LDY    #table_43B0
+43AD: AD B6       JSR    [A,Y]		; [jump_table]
 43AF: 39          RTS
-43B0: 43          COMA
-43B1: F4 45 02    ANDB   $4502
-43B4: 45          FCB    $45
-43B5: 96 46       LDA    $46
-43B7: 21 46       BRN    $43FF
-43B9: 9F 46       STX    $46
-43BB: C9 46       ADCB   #$46
-43BD: D2 48       SBCB   $48
-43BF: 5B          FCB    $5B
-43C0: 48          ASLA
-43C1: 9B 48       ADDA   $48
-43C3: B6 48 B6    LDA    $48B6
-43C6: 48          ASLA
-43C7: BA 48 E8    ORA    $48E8
-43CA: 4A          DECA
-43CB: 0E 4A       JMP    $4A
-43CD: 0E 4A       JMP    $4A
-43CF: 7A 00 06    DEC    >$0006
+
+
 43D2: 07 07       ASR    $07
 43D4: 07 08       ASR    $08
 43D6: A6 88 39    LDA    $39,X
@@ -768,15 +735,11 @@
 46F8: 86 10       LDA    #$10
 46FA: A7 0E       STA    $E,X
 46FC: A6 88 50    LDA    $50,X
-46FF: 10 8E 47 08 LDY    #$4708
+46FF: 10 8E 47 08 LDY    #table_4708
 4703: 84 0F       ANDA   #$0F
 4705: 48          ASLA
-4706: 6E B6       JMP    [A,Y]
-4708: 47          ASRA
-4709: 10 47       ASRD
-470B: 77 47 CF    ASR    $47CF
-470E: 48          ASLA
-470F: 13          SYNC
+4706: 6E B6       JMP    [A,Y]		; [jump_table]
+
 4710: A6 88 50    LDA    $50,X
 4713: 2B 0E       BMI    $4723
 4715: 8A 80       ORA    #$80
@@ -1077,9 +1040,7 @@
 49BD: BD FC 1E    JSR    $FC1E
 49C0: 32 63       LEAS   $3,S
 49C2: 39          RTS
-49C3: 01 20 01    OIM    #$20;$01
-49C6: 03 00       COM    $00
-49C8: F0 34 66    SUBB   $3466
+
 49CB: A6 88 21    LDA    $21,X
 49CE: 27 2B       BEQ    $49FB
 49D0: 81 07       CMPA   #$07
@@ -1099,14 +1060,7 @@
 49F5: ED 88 41    STD    $41,X
 49F8: A7 88 21    STA    $21,X
 49FB: 35 E6       PULS   D,Y,U,PC
-49FD: FF 00 FF    STU    >$00FF
-4A00: 04 06       LSR    $06
-4A02: 02 08 0E    AIM    #$08;$0E
-4A05: 37 0E       PULU   D,DP
-4A07: 38          FCB    $38
-4A08: 0E 39       JMP    $39
-4A0A: 0E 3A       JMP    $3A
-4A0C: 0E 3B       JMP    $3B
+
 4A0E: A6 88 38    LDA    $38,X
 4A11: 2B 33       BMI    $4A46
 4A13: 8A 80       ORA    #$80
@@ -1151,10 +1105,7 @@
 4A6F: BD FB A8    JSR    $FBA8
 4A72: BD FB 9E    JSR    $FB9E
 4A75: 39          RTS
-4A76: 18          FCB    $18
-4A77: 10 08       FCB    $10,$08
-4A79: 02          FCB    $02
-4A7A: 32 7E       SUBR   V,E
+
 4A7C: 86 40       LDA    #$40
 4A7E: 97 00       STA    $00
 4A80: EC 04       LDD    $4,X
@@ -1299,43 +1250,7 @@
 4BC2: 10 B3 03 AA CMPD   $03AA
 4BC6: 26 E7       BNE    $4BAF
 4BC8: 20 E1       BRA    $4BAB
-4BCA: 4B          FCB    $4B
-4BCB: D2 4B       SBCB   $4B
-4BCD: DA 4B       ORB    $4B
-4BCF: EA 4C       ORB    $C,U
-4BD1: 06 67       ROR    $67
-4BD3: 01 88 03    OIM    #$88;$03
-4BD6: 67 03       ASR    $3,X
-4BD8: 80 03       SUBA   #$03
-4BDA: 67 05       ASR    $5,X
-4BDC: 70 03 67    NEG    $0367
-4BDF: 05 78 03    EIM    #$78;$03
-4BE2: 67 07       ASR    $7,X
-4BE4: 00 03       NEG    $03
-4BE6: 67 07       ASR    $7,X
-4BE8: 80 03       SUBA   #$03
-4BEA: 67 0B       ASR    $B,X
-4BEC: 00 03       NEG    $03
-4BEE: 67 0B       ASR    $B,X
-4BF0: 60 03       NEG    $3,X
-4BF2: 67 0B       ASR    $B,X
-4BF4: 68 03       ASL    $3,X
-4BF6: 07 0B       ASR    $0B
-4BF8: B0 03 67    SUBA   $0367
-4BFB: 0D F0       TST    $F0
-4BFD: 03 07       COM    $07
-4BFF: 0D F8       TST    $F8
-4C01: 03 07       COM    $07
-4C03: 13          SYNC
-4C04: 40          NEGA
-4C05: 03 07       COM    $07
-4C07: 1B          FCB    $1B
-4C08: 40          NEGA
-4C09: 03 07       COM    $07
-4C0B: 1B          FCB    $1B
-4C0C: 48          ASLA
-4C0D: 03 34       COM    $34
-4C0F: 7E 10 8E    JMP    $108E
+
 4C12: 4D          TSTA
 4C13: 1D          SEX
 4C14: A6 88 4E    LDA    $4E,X
@@ -1471,48 +1386,8 @@
 4D2E: 35 4D       PULS   CC,B,DP,U
 4D30: 35 4D       PULS   CC,B,DP,U
 4D32: 37 4D       PULU   CC,B,DP,S
-4D34: 3F          SWI
-4D35: 03 02       COM    $02
-4D37: 06 06       ROR    $06
-4D39: 02 02 02    AIM    #$02;$02
-4D3C: 02 06 06    AIM    #$06;$06
-4D3F: 4D          TSTA
-4D40: 47          ASRA
-4D41: 4D          TSTA
-4D42: 49          ROLA
-4D43: 4D          TSTA
-4D44: 4D          TSTA
-4D45: 4D          TSTA
-4D46: 54          LSRB
-4D47: 04 04       LSR    $04
-4D49: 04 04       LSR    $04
-4D4B: 04 04       LSR    $04
-4D4D: 04 04       LSR    $04
-4D4F: 04 03       LSR    $03
-4D51: 04 03       LSR    $03
-4D53: 04 04       LSR    $04
-4D55: 04 FF       LSR    $FF
-4D57: F0 FF F0    SUBB   $FFF0
-4D5A: FF F0 FF    STU    $F0FF
-4D5D: F0 FF F0    SUBB   $FFF0
-4D60: FF F0 FF    STU    $F0FF
-4D63: F0 FF F0    SUBB   $FFF0
-4D66: FF F0 FF    STU    $F0FF
-4D69: F0 4D 72    SUBB   $4D72
-4D6C: 4D          TSTA
-4D6D: 76 4D 7E    ROR    $4D7E
-4D70: 4D          TSTA
-4D71: 8C FF F0    CMPX   #$FFF0
-4D74: FF F0 FF    STU    $F0FF
-4D77: F0 FF F0    SUBB   $FFF0
-4D7A: FF F0 FF    STU    $F0FF
-4D7D: F0 FF F0    SUBB   $FFF0
-4D80: FF F0 FF    STU    $F0FF
-4D83: F0 FF F0    SUBB   $FFF0
-4D86: FF F0 FF    STU    $F0FF
-4D89: F0 FF F0    SUBB   $FFF0
-4D8C: FF F0 FF    STU    $F0FF
-4D8F: F0 34 7E    SUBB   $347E
+
+
 4D92: 6F 03       CLR    $3,X
 4D94: 96 36       LDA    $36
 4D96: 81 01       CMPA   #$01
@@ -1523,8 +1398,8 @@
 4DA0: A6 88 37    LDA    $37,X
 4DA3: 80 02       SUBA   #$02
 4DA5: 48          ASLA
-4DA6: 10 8E 4D AE LDY    #$4DAE
-4DAA: AD B6       JSR    [A,Y]
+4DA6: 10 8E 4D AE LDY    #table_4DAE
+4DAA: AD B6       JSR    [A,Y]		; [jump_table]
 4DAC: 35 FE       PULS   D,DP,X,Y,U,PC
 4DAE: 4D          TSTA
 4DAF: BE 4D BE    LDX    $4DBE
@@ -1635,26 +1510,18 @@
 4E9C: A6 88 37    LDA    $37,X
 4E9F: 80 02       SUBA   #$02
 4EA1: 48          ASLA
-4EA2: 10 8E 4E AB LDY    #$4EAB
-4EA6: 6E B6       JMP    [A,Y]
+4EA2: 10 8E 4E AB LDY    #table_4EAB
+4EA6: 6E B6       JMP    [A,Y]		; [jump_table]
 4EA8: 32 6F       LEAS   $F,S
 4EAA: 39          RTS
-4EAB: 4E          FCB    $4E
-4EAC: B7 4E E8    STA    $4EE8
-4EAF: 4E          FCB    $4E
-4EB0: B7 4E E8    STA    $4EE8
-4EB3: 4F          CLRA
-4EB4: 33 4F       LEAU   $F,U
-4EB6: 33 B6       LEAU   [A,Y]
-4EB8: 0B 4B 85    TIM    #$4B;$85
-4EBB: 0F 10       CLR    $10
-4EBD: 26 00       BNE    $4EBF
-4EBF: 9C B6       CMPX   $B6
-4EC1: 0B 4D 84    TIM    #$4D;$84
-4EC4: 0F 27       CLR    $27
-4EC6: 09 EC       ROL    $EC
-4EC8: 66 C3       ROR    ,--U
-4ECA: 00 0A       NEG    $0A
+4EB7: B6 0B 4B    LDA    $0B4B        
+4EBA: 85 0F       BITA   #$0F         
+4EBC: 10 26 00 9C LBNE   $4F5C        
+4EC0: B6 0B 4D    LDA    $0B4D        
+4EC3: 84 0F       ANDA   #$0F         
+4EC5: 27 09       BEQ    $4ED0        
+4EC7: EC 66       LDD    $6,S         
+4EC9: C3 00 0A    ADDD   #$000A       
 4ECC: ED 08       STD    $8,X
 4ECE: 20 15       BRA    $4EE5
 4ED0: EC 66       LDD    $6,S
@@ -1808,26 +1675,8 @@
 502C: FC 0B 52    LDD    $0B52
 502F: ED 08       STD    $8,X
 5031: 7E 4F B7    JMP    $4FB7
-5034: 04 04       LSR    $04
-5036: 04 06       LSR    $06
-5038: 05 05 05    EIM    #$05;$05
-503B: 07 04       ASR    $04
-503D: 00 00       NEG    $00
-503F: 00 00       NEG    $00
-5041: 00 00       NEG    $00
-5043: 00 20       NEG    $20
-5045: 00 04       NEG    $04
-5047: 00 20       NEG    $20
-5049: 00 04       NEG    $04
-504B: 00 00       NEG    $00
-504D: 00 04       NEG    $04
-504F: FF F0 00    STU    $F000
-5052: 00 FF       NEG    $FF
-5054: F0 FF FC    SUBB   $FFFC
-5057: FF F0 FF    STU    $F0FF
-505A: FC 00 00    LDD    >$0000
-505D: FF FC 00    STU    $FC00
-5060: 20 10       BRA    $5072
+
+
 5062: 8E 50 A5    LDX    #$50A5
 5065: A6 88 1B    LDA    $1B,X
 5068: 85 40       BITA   #$40
@@ -1858,18 +1707,18 @@
 509F: 86 10       LDA    #$10
 50A1: A7 88 53    STA    $53,X
 50A4: 39          RTS
-50A5: 20 21       BRA    $50C8
+
+
 50A7: A6 88 1B    LDA    $1B,X
 50AA: 2B 09       BMI    $50B5
 50AC: BD FE 64    JSR    $FE64
 50AF: 6F 88 1E    CLR    $1E,X
 50B2: 6F 88 1D    CLR    $1D,X
 50B5: A6 88 1E    LDA    $1E,X
-50B8: 10 8E 50 BF LDY    #$50BF
+50B8: 10 8E 50 BF LDY    #table_50BF
 50BC: 48          ASLA
-50BD: 6E B6       JMP    [A,Y]
-50BF: 50          NEGB
-50C0: C3 50 FD    ADDD   #$50FD
+50BD: 6E B6       JMP    [A,Y]		; [jump_table]
+
 50C3: A6 88 4B    LDA    $4B,X
 50C6: 81 04       CMPA   #$04
 50C8: 25 08       BCS    $50D2
@@ -2358,17 +2207,12 @@
 550A: B6 0E 55    LDA    $0E55
 550D: 84 0F       ANDA   #$0F
 550F: 48          ASLA
-5510: 10 8E 55 17 LDY    #$5517
-5514: 6E B6       JMP    [A,Y]
+5510: 10 8E 55 17 LDY    #table_5517
+5514: 6E B6       JMP    [A,Y]		; [jump_table]
 5516: 39          RTS
-5517: 55          FCB    $55
-5518: 25 55       BCS    $556F
-551A: 7B 55 B6 55 TIM    #$55,$B655
-551E: F7 56 35    STB    $5635
-5521: 56          RORB
-5522: 7B 56 B8 10 TIM    #$56,$B810
-5526: 8E 55 71    LDX    #$5571
-5529: B6 0E 55    LDA    $0E55
+
+5525: 10 8E 55 71 LDY    #$5571                      
+5529: B6 0E 55    LDA    $0E55                         
 552C: 2B 0F       BMI    $553D
 552E: 8A 80       ORA    #$80
 5530: B7 0E 55    STA    $0E55
@@ -2398,13 +2242,7 @@
 556B: 86 01       LDA    #$01
 556D: B7 0E 55    STA    $0E55
 5570: 39          RTS
-5571: 1D          SEX
-5572: 1E 20       EXG    Y,D
-5574: 18          FCB    $18
-5575: 10 08       FCB    $10,$08
-5577: 10          FCB    $10
-5578: 18          FCB    $18
-5579: 20 08       BRA    $5583
+
 557B: B6 0E 55    LDA    $0E55
 557E: 2B 17       BMI    $5597
 5580: 8A 80       ORA    #$80
@@ -2574,11 +2412,11 @@
 5705: 84 C0       ANDA   #$C0
 5707: 81 C0       CMPA   #$C0
 5709: 26 0B       BNE    $5716
-570B: 10 8E 57 24 LDY    #$5724
+570B: 10 8E 57 24 LDY    #table_5724
 570F: 96 29       LDA    $29
 5711: 84 03       ANDA   #$03
 5713: 48          ASLA
-5714: AD B6       JSR    [A,Y]
+5714: AD B6       JSR    [A,Y]		; [jump_table]
 5716: C6 55       LDB    #$55
 5718: 3A          ABX
 5719: 7C 09 F0    INC    $09F0
@@ -2586,12 +2424,7 @@
 571F: 81 09       CMPA   #$09
 5721: 25 E0       BCS    $5703
 5723: 39          RTS
-5724: 57          ASRB
-5725: 2C 57       BGE    $577E
-5727: 2D 57       BLT    $5780
-5729: 38          FCB    $38
-572A: 57          ASRB
-572B: 43          COMA
+
 572C: 39          RTS
 572D: 10 8E 03 A2 LDY    #$03A2
 5731: BD 57 55    JSR    $5755
@@ -2690,15 +2523,12 @@
 580D: 96 29       LDA    $29
 580F: 84 03       ANDA   #$03
 5811: 48          ASLA
-5812: 10 8E 58 1A LDY    #$581A
-5816: AD B6       JSR    [A,Y]
+5812: 10 8E 58 1A LDY    #table_581A
+5816: AD B6       JSR    [A,Y]		; [jump_table]
 5818: 35 FE       PULS   D,DP,X,Y,U,PC
-581A: 58          ASLB
-581B: 22 58       BHI    $5875
-581D: 23 58       BLS    $5877
-581F: 4F          CLRA
-5820: 58          ASLB
-5821: 7B 39 0F 00 TIM    #$39,$0F00
+
+5822: 39          RTS                        
+5823: 0F 00       CLR    $00                 
 5825: 96 80       LDA    $80
 5827: 27 12       BEQ    $583B
 5829: B7 03 E1    STA    $03E1
@@ -2931,8 +2761,10 @@
 5A2B: A7 88 38    STA    $38,X
 5A2E: 1A 01       ORCC   #$01
 5A30: 35 B6       PULS   D,X,Y,PC
+
 5A32: 1C FE       ANDCC  #$FE
 5A34: 35 B6       PULS   D,X,Y,PC
+
 5A36: 34 7E       PSHS   U,Y,X,DP,D
 5A38: A6 88 38    LDA    $38,X
 5A3B: 84 20       ANDA   #$20
@@ -2995,44 +2827,8 @@
 5AC5: A7 88 38    STA    $38,X
 5AC8: 1C FE       ANDCC  #$FE
 5ACA: 35 FE       PULS   D,DP,X,Y,U,PC
-5ACC: 02 03 03    AIM    #$03;$03
-5ACF: 03 03       COM    $03
-5AD1: 03 03       COM    $03
-5AD3: 03 03       COM    $03
-5AD5: 03 03       COM    $03
-5AD7: 24 2C       BCC    $5B05
-5AD9: 24 2C       BCC    $5B07
-5ADB: 24 2E       BCC    $5B0B
-5ADD: 24 2C       BCC    $5B0B
-5ADF: 24 2C       BCC    $5B0D
-5AE1: 24 2C       BCC    $5B0F
-5AE3: 24 2E       BCC    $5B13
-5AE5: 24 2C       BCC    $5B13
-5AE7: 24 2E       BCC    $5B17
-5AE9: 24 2C       BCC    $5B17
-5AEB: 24 2C       BCC    $5B19
-5AED: 24 2C       BCC    $5B1B
-5AEF: 24 2C       BCC    $5B1D
-5AF1: 24 2C       BCC    $5B1F
-5AF3: 24 2E       BCC    $5B23
-5AF5: 24 2E       BCC    $5B25
-5AF7: 24 2C       BCC    $5B25
-5AF9: 24 2C       BCC    $5B27
-5AFB: 24 2C       BCC    $5B29
-5AFD: 24 2C       BCC    $5B2B
-5AFF: FF FF FF    STU    $FFFF
-5B02: FF FF FF    STU    $FFFF
-5B05: FF FF 32    STU    $FF32
-5B08: 7C A6 88    INC    $A688
-5B0B: 21 81       BRN    $5A8E
-5B0D: 03 25       COM    $25
-5B0F: 0A 81       DEC    $81
-5B11: 04 27       LSR    $27
-5B13: 06 81       ROR    $81
-5B15: 06 10       ROR    $10
-5B17: 26 00       BNE    $5B19
-5B19: 66 96       ROR    [A,X]
-5B1B: 51          FCB    $51
+
+
 5B1C: 84 06       ANDA   #$06
 5B1E: 26 60       BNE    $5B80
 5B20: 10 BE 0E 4B LDY    $0E4B
@@ -3078,21 +2874,7 @@
 5B7B: 32 64       LEAS   $4,S
 5B7D: 1A 01       ORCC   #$01
 5B7F: 39          RTS
-5B80: 32 64       LEAS   $4,S
-5B82: 1C FE       ANDCC  #$FE
-5B84: 39          RTS
-5B85: 02 02 02    AIM    #$02;$02
-5B88: 02 02 02    AIM    #$02;$02
-5B8B: 05 02 04    EIM    #$02;$04
-5B8E: 05 02 34    EIM    #$02;$34
-5B91: 76 FE 0E    ROR    $FE0E
-5B94: 4B          FCB    $4B
-5B95: B6 0E 4A    LDA    $0E4A
-5B98: 84 01       ANDA   #$01
-5B9A: 10 8E 5B A4 LDY    #$5BA4
-5B9E: E6 43       LDB    $3,U
-5BA0: E1 A6       CMPB   A,Y
-5BA2: 35 F6       PULS   D,X,Y,U,PC
+
 5BA4: 80 00       SUBA   #$00
 5BA6: B6 0E 4A    LDA    $0E4A
 5BA9: 84 01       ANDA   #$01
@@ -3100,8 +2882,7 @@
 5BAF: E6 A6       LDB    A,Y
 5BB1: E1 0D       CMPB   $D,X
 5BB3: 39          RTS
-5BB4: 40          NEGA
-5BB5: C0 34       SUBB   #$34
+
 5BB7: 36 4F       PSHU   S,DP,D,CC
 5BB9: 10 8E 03 F6 LDY    #$03F6
 5BBD: E6 88 14    LDB    $14,X
@@ -3118,11 +2899,13 @@
 5BD9: A6 88 13    LDA    $13,X
 5BDC: A8 A8 13    EORA   $13,Y
 5BDF: 20 06       BRA    $5BE7
+
 5BE1: A6 88 14    LDA    $14,X
 5BE4: A8 A8 14    EORA   $14,Y
 5BE7: 84 01       ANDA   #$01
 5BE9: 35 B6       PULS   D,X,Y,PC
 5BEB: 39          RTS
+
 5BEC: 1C FE       ANDCC  #$FE
 5BEE: 35 B6       PULS   D,X,Y,PC
 5BF0: 39          RTS
@@ -3590,18 +3373,7 @@
 600D: 1C FE       ANDCC  #$FE
 600F: 32 64       LEAS   $4,S
 6011: 35 F6       PULS   D,X,Y,U,PC
-6013: 00 00       NEG    $00
-6015: 00 00       NEG    $00
-6017: 01 01 01    OIM    #$01;$01
-601A: 01 00 00    OIM    #$00;$00
-601D: 00 01       NEG    $01
-601F: 01 01 01    OIM    #$01;$01
-6022: 01 00 00    OIM    #$00;$00
-6025: 01 01 01    OIM    #$01;$01
-6028: 01 01 01    OIM    #$01;$01
-602B: 00 00       NEG    $00
-602D: 01 01 01    OIM    #$01;$01
-6030: 01 01 01    OIM    #$01;$01
+
 6033: 34 40       PSHS   U
 6035: 32 71       LEAS   -$F,S
 6037: 6F E4       CLR    ,S
@@ -3831,14 +3603,7 @@
 6234: 7F 0E 30    CLR    $0E30
 6237: 32 64       LEAS   $4,S
 6239: 39          RTS
-623A: 00 28       NEG    $28
-623C: 01 41 01    OIM    #$41;$01
-623F: 00 15       NEG    $15
-6241: 5E          FCB    $5E
-6242: 00 50       NEG    $50
-6244: 01 00 32    OIM    #$00;$32
-6247: 7F 8E 07    CLR    $8E07
-624A: 5B          FCB    $5B
+
 624B: 86 05       LDA    #$05
 624D: A7 E4       STA    ,S
 624F: 86 80       LDA    #$80
@@ -3889,13 +3654,7 @@
 62B3: 2A E3       BPL    $6298
 62B5: 32 61       LEAS   $1,S
 62B7: 39          RTS
-62B8: 02 03 04    AIM    #$03;$04
-62BB: 05 01 20    EIM    #$01;$20
-62BE: 00 60       NEG    $60
-62C0: 00 80       NEG    $80
-62C2: 00 1F       NEG    $1F
-62C4: 15          FCB    $15
-62C5: 60 15       NEG    -$B,X
+
 62C7: 80 A6       SUBA   #$A6
 62C9: 88 1B       EORA   #$1B
 62CB: 2B 21       BMI    $62EE
@@ -4280,25 +4039,7 @@
 663D: E6 80       LDB    ,X+
 663F: FD 1F 70    STD    $1F70
 6642: 35 90       PULS   X,PC
-6644: A0 90       SUBA   [,W]
-6646: 78 60 63    ASL    $6063
-6649: 64 65       LSR    $5,S
-664B: 66 FF 6C 6D ROR    [$6C6D]
-664F: 6E 6F       JMP    $F,S
-6651: FF 70 7A    STU    $707A
-6654: 71 7B 72 7C OIM    #$7B,$727C
-6658: 73 7D 74    COM    $7D74
-665B: 7E 75 7F    JMP    $757F
-665E: 76 80 77    ROR    $8077
-6661: 81 78       CMPA   #$78
-6663: 82 79       SBCA   #$79
-6665: 83 B6 03    SUBD   #$B603
-6668: C1 97       CMPB   #$97
-666A: 00 86       NEG    $86
-666C: C0 97       SUBB   #$97
-666E: 03 CC       COM    $CC
-6670: 1F 4A       TFR    S,CC
-6672: DD 01       STD    $01
+
 6674: BD 66 89    JSR    $6689
 6677: B6 04 1F    LDA    $041F
 667A: 97 00       STA    $00
@@ -4308,6 +4049,7 @@
 6683: DD 01       STD    $01
 6685: BD 66 89    JSR    $6689
 6688: 39          RTS
+
 6689: 34 50       PSHS   U,X
 668B: 32 7E       LEAS   -$2,S
 668D: 96 00       LDA    $00
@@ -4677,41 +4419,8 @@
 69D2: 86 03       LDA    #$03
 69D4: A7 88 4E    STA    $4E,X
 69D7: 39          RTS
-69D8: 0C 0C       INC    $0C
-69DA: FF 0D FF    STU    $0DFF
-69DD: FF FF FF    STU    $FFFF
-69E0: 03 02       COM    $02
-69E2: FF 03 02    STU    $0302
-69E5: 69 ED 69 F9 ROL    $D3E2,PCR
-69E9: 6A 01       DEC    $1,X
-69EB: 6A 15       DEC    -$B,X
-69ED: 01 D4 00    OIM    #$D4;$00
-69F0: 20 03       BRA    $69F5
-69F2: C8 01       EORB   #$01
-69F4: D8 04       EORB   $04
-69F6: F0 03 80    SUBB   $0380
-69F9: 07 1E       ASR    $1E
-69FB: 05 10 08    EIM    #$10;$08
-69FE: A0 07       SUBA   $7,X
-6A00: 1E 0A       EXG    D,CC
-6A02: 09 08       ROL    $08
-6A04: 00 0C       NEG    $0C
-6A06: 10 0A       FCB    $10,$0A
-6A08: 10          FCB    $10
-6A09: 0F 29       CLR    $29
-6A0B: 0C 10       INC    $10
-6A0D: 11 22       FCB    $11,$22
-6A0F: 0F          FCB    $0F
-6A10: 30 14 30    BAND   CC,2,4,$30
-6A13: 11 26       FCB    $11,$26
-6A15: 1A          FCB    $1A
-6A16: 00          FCB    $00
-6A17: 15          FCB    $15
-6A18: 10          FCB    $10
-6A19: 1B          FCB    $1B
-6A1A: F0 15 10    SUBB   $1510
-6A1D: B6 09 F2    LDA    $09F2
-6A20: 10 2B 00 9A LBMI   $6ABE
+
+
 6A24: EC 04       LDD    $4,X
 6A26: C3 00 40    ADDD   #$0040
 6A29: 10 93 3C    CMPD   $3C
@@ -5284,2165 +4993,62 @@
 6F5E: A7 A4       STA    ,Y
 6F60: 0C B9       INC    $B9
 6F62: 39          RTS
-6F63: A6 88 3A    LDA    $3A,X
-6F66: A1 88 3C    CMPA   $3C,X
-6F69: 27 08       BEQ    $6F73
-6F6B: 10 25 FF 66 LBCS   $6ED5
-6F6F: 10 24 FF A9 LBCC   $6F1C
-6F73: A6 88 3B    LDA    $3B,X
-6F76: A1 88 3D    CMPA   $3D,X
-6F79: 10 25 FF 58 LBCS   $6ED5
-6F7D: 10 24 FF 9B LBCC   $6F1C
-6F81: 10 8E 00 81 LDY    #$0081
-6F85: 96 80       LDA    $80
-6F87: 5F          CLRB
-6F88: BD 6F AC    JSR    $6FAC
-6F8B: 10 8E 00 94 LDY    #$0094
-6F8F: 96 93       LDA    $93
-6F91: 5F          CLRB
-6F92: BD 6F AC    JSR    $6FAC
-6F95: 10 8E 00 A7 LDY    #$00A7
-6F99: 96 A6       LDA    $A6
-6F9B: C6 01       LDB    #$01
-6F9D: BD 6F AC    JSR    $6FAC
-6FA0: 10 8E 00 BA LDY    #$00BA
-6FA4: 96 B9       LDA    $B9
-6FA6: C6 01       LDB    #$01
-6FA8: BD 6F AC    JSR    $6FAC
-6FAB: 39          RTS
-6FAC: 34 70       PSHS   U,Y,X
-6FAE: 4D          TSTA
-6FAF: 27 60       BEQ    $7011
-6FB1: 97 00       STA    $00
-6FB3: D7 05       STB    $05
-6FB5: 10 9F 01    STY    $01
-6FB8: 9E 01       LDX    $01
-6FBA: 31 02       LEAY   $2,X
-6FBC: 0F 03       CLR    $03
-6FBE: 0F 04       CLR    $04
-6FC0: 96 03       LDA    $03
-6FC2: 4C          INCA
-6FC3: 91 00       CMPA   $00
-6FC5: 24 46       BCC    $700D
-6FC7: 0C 03       INC    $03
-6FC9: A6 A1       LDA    ,Y++
-6FCB: A1 81       CMPA   ,X++
-6FCD: 25 2E       BCS    $6FFD
-6FCF: 26 3A       BNE    $700B
-6FD1: A6 3F       LDA    -$1,Y
-6FD3: 97 0F       STA    $0F
-6FD5: BD 71 F5    JSR    $71F5
-6FD8: DE 0E       LDU    $0E
-6FDA: E6 C8 3B    LDB    $3B,U
-6FDD: 0D 05       TST    $05
-6FDF: 27 03       BEQ    $6FE4
-6FE1: E6 C8 3D    LDB    $3D,U
-6FE4: A6 1F       LDA    -$1,X
-6FE6: 97 0F       STA    $0F
-6FE8: BD 71 F5    JSR    $71F5
-6FEB: DE 0E       LDU    $0E
-6FED: 0D 05       TST    $05
-6FEF: 27 07       BEQ    $6FF8
-6FF1: E1 C8 3D    CMPB   $3D,U
-6FF4: 24 15       BCC    $700B
-6FF6: 25 05       BCS    $6FFD
-6FF8: E1 C8 3B    CMPB   $3B,U
-6FFB: 24 0E       BCC    $700B
-6FFD: EC 1E       LDD    -$2,X
-6FFF: 34 00       PSHS   
-7001: 00 08       NEG    $08
-7003: 0A 28       DEC    $28
-7005: 18          FCB    $18
-7006: 08 63       ASL    $63
-7008: 0A 0C       DEC    $0C
-700A: 12          NOP
-700B: 04 02       LSR    $02
-700D: 02 04 01    AIM    #$04;$01
-7010: 14          SEXW
-7011: 04 04       LSR    $04
-7013: 03 14       COM    $14
-7015: 02 04 02    AIM    #$04;$02
-7018: 14          SEXW
-7019: 01 04 03    OIM    #$04;$03
-701C: 14          SEXW
-701D: 03 04       COM    $04
-701F: 01 14 04    OIM    #$14;$04
-7022: 04 03       LSR    $03
-7024: 14          SEXW
-7025: 03 04       COM    $04
-7027: 02 14 04    AIM    #$14;$04
-702A: 04 00       LSR    $00
-702C: 00 03       NEG    $03
-702E: 10 03       FCB    $10,$03
-7030: 00          FCB    $00
-7031: 03          FCB    $03
-7032: 10          FCB    $10
-7033: 04 00       LSR    $00
-7035: 03 10       COM    $10
-7037: 03 00       COM    $00
-7039: 03 10       COM    $10
-703B: 04 00       LSR    $00
-703D: 03 10       COM    $10
-703F: 04 00       LSR    $00
-7041: 02 10 01    AIM    #$10;$01
-7044: 00 01       NEG    $01
-7046: 10 02       FCB    $10,$02
-7048: 00          FCB    $00
-7049: 01          FCB    $01
-704A: 10          FCB    $10
-704B: 01 00 06    OIM    #$00;$06
-704E: 08 1F       ASL    $1F
-7050: 09 0C       ROL    $0C
-7052: 08 13       ASL    $13
-7054: 48          ASLA
-7055: 02 68 12    AIM    #$68;$12
-7058: 08 02       ASL    $02
-705A: 48          ASLA
-705B: 01 08 00    OIM    #$08;$00
-705E: 48          ASLA
-705F: 01 08 01    OIM    #$08;$01
-7062: 48          ASLA
-7063: 02 08 01    AIM    #$08;$01
-7066: 48          ASLA
-7067: 01 08 00    OIM    #$08;$00
-706A: 48          ASLA
-706B: 01 08 00    OIM    #$08;$00
-706E: 00 00       NEG    $00
-7070: 40          NEGA
-7071: 00 00       NEG    $00
-7073: 2B 04       BMI    $7079
-7075: 0A 05       DEC    $05
-7077: 05 04 00    EIM    #$04;$00
-707A: 14          SEXW
-707B: 02 00 03    AIM    #$00;$03
-707E: 10 04       FCB    $10,$04
-7080: 00          FCB    $00
-7081: 02          FCB    $02
-7082: 10          FCB    $10
-7083: 02 00 01    AIM    #$00;$01
-7086: 10 04       FCB    $10,$04
-7088: 00          FCB    $00
-7089: 01          FCB    $01
-708A: 10          FCB    $10
-708B: 01 00 02    OIM    #$00;$02
-708E: 10 02       FCB    $10,$02
-7090: 00          FCB    $00
-7091: 02          FCB    $02
-7092: 10          FCB    $10
-7093: 02 00 01    AIM    #$00;$01
-7096: 10 01       FCB    $10,$01
-7098: 00          FCB    $00
-7099: 02          FCB    $02
-709A: 10          FCB    $10
-709B: 02 00 02    AIM    #$00;$02
-709E: 10 02       FCB    $10,$02
-70A0: 00          FCB    $00
-70A1: 01          FCB    $01
-70A2: 10          FCB    $10
-70A3: 02 00 02    AIM    #$00;$02
-70A6: 10 01       FCB    $10,$01
-70A8: 00          FCB    $00
-70A9: 02          FCB    $02
-70AA: 10          FCB    $10
-70AB: 02 00 03    AIM    #$00;$03
-70AE: 10 01       FCB    $10,$01
-70B0: 00          FCB    $00
-70B1: 07          FCB    $07
-70B2: 01          FCB    $01
-70B3: 06          FCB    $06
-70B4: 09          FCB    $09
-70B5: 00          FCB    $00
-70B6: 18          FCB    $18
-70B7: 02          FCB    $02
-70B8: 08          FCB    $08
-70B9: 02          FCB    $02
-70BA: 18          FCB    $18
-70BB: 01          FCB    $01
-70BC: 08          FCB    $08
-70BD: 02          FCB    $02
-70BE: 18          FCB    $18
-70BF: 01          FCB    $01
-70C0: 08          FCB    $08
-70C1: 03          FCB    $03
-70C2: 18          FCB    $18
-70C3: 01          FCB    $01
-70C4: 08          FCB    $08
-70C5: 02          FCB    $02
-70C6: 18          FCB    $18
-70C7: 03          FCB    $03
-70C8: 08          FCB    $08
-70C9: 04          FCB    $04
-70CA: 10          FCB    $10
-70CB: 02 00 02    AIM    #$00;$02
-70CE: 10 02       FCB    $10,$02
-70D0: 00          FCB    $00
-70D1: 01          FCB    $01
-70D2: 10          FCB    $10
-70D3: 02 00 02    AIM    #$00;$02
-70D6: 10 02       FCB    $10,$02
-70D8: 00          FCB    $00
-70D9: 02          FCB    $02
-70DA: 10          FCB    $10
-70DB: 02 00 02    AIM    #$00;$02
-70DE: 10 02       FCB    $10,$02
-70E0: 00          FCB    $00
-70E1: 01          FCB    $01
-70E2: 10          FCB    $10
-70E3: 02 00 03    AIM    #$00;$03
-70E6: 10 02       FCB    $10,$02
-70E8: 00          FCB    $00
-70E9: 02          FCB    $02
-70EA: 10          FCB    $10
-70EB: 03 00       COM    $00
-70ED: 1D          SEX
-70EE: 30 2A       LEAX   $A,Y
-70F0: 20 00       BRA    $70F2
-70F2: 00 0B       NEG    $0B
-70F4: 08 07       ASL    $07
-70F6: 0A 25       DEC    $25
-70F8: 08 01       ASL    $01
-70FA: 00 00       NEG    $00
-70FC: 01 0D 21    OIM    #$0D;$21
-70FF: 03 68       COM    $68
-7101: 12          NOP
-7102: 60 09       NEG    $9,X
-7104: 40          NEGA
-7105: 01 00 15    OIM    #$00;$15
-7108: 30 2C       LEAX   $C,Y
-710A: 20 00       BRA    $710C
-710C: 00 2F       NEG    $2F
-710E: 04 09       LSR    $09
-7110: 00 01       NEG    $01
-7112: 30 19       LEAX   -$7,X
-7114: 20 06       BRA    $711C
-7116: 00 09       NEG    $09
-7118: 08 06       ASL    $06
-711A: 00 18       NEG    $18
-711C: 20 07       BRA    $7125
-711E: 00 06       NEG    $06
-7120: 20 00       BRA    $7122
-7122: 30 1D       LEAX   -$3,X
-7124: 20 02       BRA    $7128
-7126: 00 03       NEG    $03
-7128: 04 03       LSR    $03
-712A: 14          SEXW
-712B: 01 10 00    OIM    #$10;$00
-712E: 00 02       NEG    $02
-7130: 10 03       FCB    $10,$03
-7132: 00          FCB    $00
-7133: 03          FCB    $03
-7134: 10          FCB    $10
-7135: 04 00       LSR    $00
-7137: 03 10       COM    $10
-7139: 04 00       LSR    $00
-713B: 04 10       LSR    $10
-713D: 03 00       COM    $00
-713F: 03 10       COM    $10
-7141: 03 00       COM    $00
-7143: 01 10 03    OIM    #$10;$03
-7146: 00 0C       NEG    $0C
-7148: 08 17       ASL    $17
-714A: 00 03       NEG    $03
-714C: 04 06       LSR    $06
-714E: 10 04       FCB    $10,$04
-7150: 00          FCB    $00
-7151: 04          FCB    $04
-7152: 10          FCB    $10
-7153: 03 00       COM    $00
-7155: 02 10 04    AIM    #$10;$04
-7158: 00 02       NEG    $02
-715A: 10 03       FCB    $10,$03
-715C: 00          FCB    $00
-715D: 04          FCB    $04
-715E: 10          FCB    $10
-715F: 02 00 03    AIM    #$00;$03
-7162: 10 04       FCB    $10,$04
-7164: 00          FCB    $00
-7165: 02          FCB    $02
-7166: 10          FCB    $10
-7167: 03 00       COM    $00
-7169: 03 10       COM    $10
-716B: 03 00       COM    $00
-716D: 02 10 03    AIM    #$10;$03
-7170: 00 01       NEG    $01
-7172: 10 04       FCB    $10,$04
-7174: 00          FCB    $00
-7175: 01          FCB    $01
-7176: 10          FCB    $10
-7177: 03 00       COM    $00
-7179: 02 10 03    AIM    #$10;$03
-717C: 00 02       NEG    $02
-717E: 10 03       FCB    $10,$03
-7180: 00          FCB    $00
-7181: 03          FCB    $03
-7182: 10          FCB    $10
-7183: 03 00       COM    $00
-7185: 01 10 03    OIM    #$10;$03
-7188: 00 02       NEG    $02
-718A: 10 03       FCB    $10,$03
-718C: 00          FCB    $00
-718D: 03          FCB    $03
-718E: 10          FCB    $10
-718F: 02 00 03    AIM    #$00;$03
-7192: 10 03       FCB    $10,$03
-7194: 00          FCB    $00
-7195: 03          FCB    $03
-7196: 10          FCB    $10
-7197: 03 00       COM    $00
-7199: 02 10 03    AIM    #$10;$03
-719C: 00 02       NEG    $02
-719E: 10 02       FCB    $10,$02
-71A0: 00          FCB    $00
-71A1: 02          FCB    $02
-71A2: 10          FCB    $10
-71A3: 03 00       COM    $00
-71A5: 06 20       ROR    $20
-71A7: 04 08       LSR    $08
-71A9: 08 28       ASL    $28
-71AB: 03 08       COM    $08
-71AD: 02 28 04    AIM    #$28;$04
-71B0: 08 02       ASL    $02
-71B2: 28 03       BVC    $71B7
-71B4: 08 03       ASL    $03
-71B6: 28 04       BVC    $71BC
-71B8: 08 0F       ASL    $0F
-71BA: 0A 4B       DEC    $4B
-71BC: 08 23       ASL    $23
-71BE: 09 0A       ROL    $0A
-71C0: 08 81       ASL    $81
-71C2: 28 09       BVC    $71CD
-71C4: 68 20       ASL    $0,Y
-71C6: 08 01       ASL    $01
-71C8: 00 03       NEG    $03
-71CA: 04 05       LSR    $05
-71CC: 14          SEXW
-71CD: 00 10       NEG    $10
-71CF: 02 00 03    AIM    #$00;$03
-71D2: 10 01       FCB    $10,$01
-71D4: 18          FCB    $18
-71D5: 01          FCB    $01
-71D6: 08          FCB    $08
-71D7: 08          FCB    $08
-71D8: 18          FCB    $18
-71D9: 01          FCB    $01
-71DA: 08          FCB    $08
-71DB: 0E          FCB    $0E
-71DC: 28 05 2A    LBVC   $7709
-71DF: 03 6A       COM    $6A
-71E1: 23 42       BLS    $7225
-71E3: 01 02 08    OIM    #$02;$08
-71E6: 06 01       ROR    $01
-71E8: 14          SEXW
-71E9: 03 04       COM    $04
-71EB: 04 14       LSR    $14
-71ED: 03 04       COM    $04
-71EF: 02 00 00    AIM    #$00;$00
-71F2: 10 04       FCB    $10,$04
-71F4: 00          FCB    $00
-71F5: 01          FCB    $01
-71F6: 10          FCB    $10
-71F7: 03 00       COM    $00
-71F9: 04 10       LSR    $10
-71FB: 03 00       COM    $00
-71FD: 04 10       LSR    $10
-71FF: 03 00       COM    $00
-7201: 02 40 17    AIM    #$40;$17
-7204: 48          ASLA
-7205: 00 08       NEG    $08
-7207: 02 48 06    AIM    #$48;$06
-720A: 40          NEGA
-720B: 0A 00       DEC    $00
-720D: 02 04 08    AIM    #$04;$08
-7210: 44          LSRA
-7211: 02 00 01    AIM    #$00;$01
-7214: 40          NEGA
-7215: 02 00 01    AIM    #$00;$01
-7218: 40          NEGA
-7219: 02 00 01    AIM    #$00;$01
-721C: 40          NEGA
-721D: 04 00       LSR    $00
-721F: 04 08       LSR    $08
-7221: 10 09       FCB    $10,$09
-7223: 12          FCB    $12
-7224: 28 07 68    LBVC   $798F
-7227: 1F 08       TFR    D,A
-7229: 10 29 07 28 LBVS   $7955
-722D: 00 68       NEG    $68
-722F: 0A 69       DEC    $69
-7231: 00 61       NEG    $61
-7233: 00 01       NEG    $01
-7235: 1C 09       ANDCC  #$09
-7237: 00 08       NEG    $08
-7239: 00 28       NEG    $28
-723B: 04 68       LSR    $68
-723D: 0E 48       JMP    $48
-723F: 00 08       NEG    $08
-7241: 02 48 01    AIM    #$48;$01
-7244: 08 02       ASL    $02
-7246: 48          ASLA
-7247: 01 08 02    OIM    #$08;$02
-724A: 48          ASLA
-724B: 01 08 02    OIM    #$08;$02
-724E: 48          ASLA
-724F: 02 08 01    AIM    #$08;$01
-7252: 48          ASLA
-7253: 02 08 01    AIM    #$08;$01
-7256: 48          ASLA
-7257: 01 40 00    OIM    #$40;$00
-725A: 00 01       NEG    $01
-725C: 40          NEGA
-725D: 02 00 01    AIM    #$00;$01
-7260: 40          NEGA
-7261: 02 00 00    AIM    #$00;$00
-7264: 40          NEGA
-7265: 02 00 01    AIM    #$00;$01
-7268: 40          NEGA
-7269: 01 00 02    OIM    #$00;$02
-726C: 40          NEGA
-726D: 01 00 01    OIM    #$00;$01
-7270: 40          NEGA
-7271: 01 00 00    OIM    #$00;$00
-7274: 40          NEGA
-7275: 02 00 01    AIM    #$00;$01
-7278: 40          NEGA
-7279: 01 00 00    OIM    #$00;$00
-727C: 00 00       NEG    $00
-727E: 00 00       NEG    $00
-7280: 00 00       NEG    $00
-7282: 00 00       NEG    $00
-7284: 00 00       NEG    $00
-7286: 00 00       NEG    $00
-7288: 00 00       NEG    $00
-728A: 00 00       NEG    $00
-728C: 00 00       NEG    $00
-728E: 00 00       NEG    $00
-7290: 00 00       NEG    $00
-7292: 00 00       NEG    $00
-7294: 00 00       NEG    $00
-7296: 00 00       NEG    $00
-7298: 00 00       NEG    $00
-729A: 00 00       NEG    $00
-729C: 00 00       NEG    $00
-729E: 00 00       NEG    $00
-72A0: 00 00       NEG    $00
-72A2: 00 00       NEG    $00
-72A4: 00 00       NEG    $00
-72A6: 00 00       NEG    $00
-72A8: 00 00       NEG    $00
-72AA: 00 00       NEG    $00
-72AC: 00 00       NEG    $00
-72AE: 00 00       NEG    $00
-72B0: 00 00       NEG    $00
-72B2: 00 00       NEG    $00
-72B4: 00 00       NEG    $00
-72B6: 00 00       NEG    $00
-72B8: 00 00       NEG    $00
-72BA: 00 00       NEG    $00
-72BC: 00 00       NEG    $00
-72BE: 00 00       NEG    $00
-72C0: 00 00       NEG    $00
-72C2: 00 00       NEG    $00
-72C4: 00 00       NEG    $00
-72C6: 00 00       NEG    $00
-72C8: 00 00       NEG    $00
-72CA: 00 00       NEG    $00
-72CC: 00 00       NEG    $00
-72CE: 00 00       NEG    $00
-72D0: 00 00       NEG    $00
-72D2: 00 00       NEG    $00
-72D4: 00 00       NEG    $00
-72D6: 00 00       NEG    $00
-72D8: 00 00       NEG    $00
-72DA: 00 00       NEG    $00
-72DC: 00 00       NEG    $00
-72DE: 00 00       NEG    $00
-72E0: 00 00       NEG    $00
-72E2: 00 00       NEG    $00
-72E4: 00 00       NEG    $00
-72E6: 00 00       NEG    $00
-72E8: 00 00       NEG    $00
-72EA: 00 00       NEG    $00
-72EC: 00 00       NEG    $00
-72EE: 00 00       NEG    $00
-72F0: 00 00       NEG    $00
-72F2: 00 00       NEG    $00
-72F4: 00 00       NEG    $00
-72F6: 00 00       NEG    $00
-72F8: 00 00       NEG    $00
-72FA: 00 00       NEG    $00
-72FC: 00 00       NEG    $00
-72FE: 00 00       NEG    $00
-7300: 00 00       NEG    $00
-7302: 00 00       NEG    $00
-7304: 00 00       NEG    $00
-7306: 00 00       NEG    $00
-7308: 00 00       NEG    $00
-730A: 00 00       NEG    $00
-730C: 00 00       NEG    $00
-730E: 00 00       NEG    $00
-7310: 00 00       NEG    $00
-7312: 00 00       NEG    $00
-7314: 00 00       NEG    $00
-7316: 00 00       NEG    $00
-7318: 00 00       NEG    $00
-731A: 00 00       NEG    $00
-731C: 00 00       NEG    $00
-731E: 00 00       NEG    $00
-7320: 00 00       NEG    $00
-7322: 00 00       NEG    $00
-7324: 00 00       NEG    $00
-7326: 00 00       NEG    $00
-7328: 00 00       NEG    $00
-732A: 00 00       NEG    $00
-732C: 00 00       NEG    $00
-732E: 00 00       NEG    $00
-7330: 00 00       NEG    $00
-7332: 00 00       NEG    $00
-7334: 00 00       NEG    $00
-7336: 00 00       NEG    $00
-7338: 00 00       NEG    $00
-733A: 00 00       NEG    $00
-733C: 00 00       NEG    $00
-733E: 00 00       NEG    $00
-7340: 00 00       NEG    $00
-7342: 00 00       NEG    $00
-7344: 00 00       NEG    $00
-7346: 00 00       NEG    $00
-7348: 00 00       NEG    $00
-734A: 00 00       NEG    $00
-734C: 00 00       NEG    $00
-734E: 00 00       NEG    $00
-7350: 00 00       NEG    $00
-7352: 00 00       NEG    $00
-7354: 00 00       NEG    $00
-7356: 00 00       NEG    $00
-7358: 00 00       NEG    $00
-735A: 00 00       NEG    $00
-735C: 00 00       NEG    $00
-735E: 00 00       NEG    $00
-7360: 00 00       NEG    $00
-7362: 00 00       NEG    $00
-7364: 00 00       NEG    $00
-7366: 00 00       NEG    $00
-7368: 00 00       NEG    $00
-736A: 00 00       NEG    $00
-736C: 00 00       NEG    $00
-736E: 00 00       NEG    $00
-7370: 00 00       NEG    $00
-7372: 00 00       NEG    $00
-7374: 00 00       NEG    $00
-7376: 00 00       NEG    $00
-7378: 00 00       NEG    $00
-737A: 00 00       NEG    $00
-737C: 00 00       NEG    $00
-737E: 00 00       NEG    $00
-7380: 00 00       NEG    $00
-7382: 00 00       NEG    $00
-7384: 00 00       NEG    $00
-7386: 00 00       NEG    $00
-7388: 00 00       NEG    $00
-738A: 00 00       NEG    $00
-738C: 00 00       NEG    $00
-738E: 00 00       NEG    $00
-7390: 00 00       NEG    $00
-7392: 00 00       NEG    $00
-7394: 00 00       NEG    $00
-7396: 00 00       NEG    $00
-7398: 00 00       NEG    $00
-739A: 00 00       NEG    $00
-739C: 00 00       NEG    $00
-739E: 00 00       NEG    $00
-73A0: 00 00       NEG    $00
-73A2: 00 00       NEG    $00
-73A4: 00 00       NEG    $00
-73A6: 00 00       NEG    $00
-73A8: 00 00       NEG    $00
-73AA: 00 00       NEG    $00
-73AC: 00 00       NEG    $00
-73AE: 00 00       NEG    $00
-73B0: 00 00       NEG    $00
-73B2: 00 00       NEG    $00
-73B4: 00 00       NEG    $00
-73B6: 00 00       NEG    $00
-73B8: 00 00       NEG    $00
-73BA: 00 00       NEG    $00
-73BC: 00 00       NEG    $00
-73BE: 00 00       NEG    $00
-73C0: 00 00       NEG    $00
-73C2: 00 00       NEG    $00
-73C4: 00 00       NEG    $00
-73C6: 00 00       NEG    $00
-73C8: 00 00       NEG    $00
-73CA: 00 00       NEG    $00
-73CC: 00 00       NEG    $00
-73CE: 00 00       NEG    $00
-73D0: 00 00       NEG    $00
-73D2: 00 00       NEG    $00
-73D4: 00 00       NEG    $00
-73D6: 00 00       NEG    $00
-73D8: 00 00       NEG    $00
-73DA: 00 00       NEG    $00
-73DC: 00 00       NEG    $00
-73DE: 00 00       NEG    $00
-73E0: 00 00       NEG    $00
-73E2: 00 00       NEG    $00
-73E4: 00 00       NEG    $00
-73E6: 00 00       NEG    $00
-73E8: 00 00       NEG    $00
-73EA: 00 00       NEG    $00
-73EC: 00 00       NEG    $00
-73EE: 00 00       NEG    $00
-73F0: 00 00       NEG    $00
-73F2: 00 00       NEG    $00
-73F4: 00 00       NEG    $00
-73F6: 00 00       NEG    $00
-73F8: 00 00       NEG    $00
-73FA: 00 00       NEG    $00
-73FC: 00 00       NEG    $00
-73FE: 00 00       NEG    $00
-7400: 00 00       NEG    $00
-7402: 00 00       NEG    $00
-7404: 00 00       NEG    $00
-7406: 00 00       NEG    $00
-7408: 00 00       NEG    $00
-740A: 00 00       NEG    $00
-740C: 00 00       NEG    $00
-740E: 00 00       NEG    $00
-7410: 00 00       NEG    $00
-7412: 00 00       NEG    $00
-7414: 00 00       NEG    $00
-7416: 00 00       NEG    $00
-7418: 00 00       NEG    $00
-741A: 00 00       NEG    $00
-741C: 00 00       NEG    $00
-741E: 00 00       NEG    $00
-7420: 00 00       NEG    $00
-7422: 00 00       NEG    $00
-7424: 00 00       NEG    $00
-7426: 00 00       NEG    $00
-7428: 00 00       NEG    $00
-742A: 00 00       NEG    $00
-742C: 00 00       NEG    $00
-742E: 00 00       NEG    $00
-7430: 00 00       NEG    $00
-7432: 00 00       NEG    $00
-7434: 00 00       NEG    $00
-7436: 00 00       NEG    $00
-7438: 00 00       NEG    $00
-743A: 00 00       NEG    $00
-743C: 00 00       NEG    $00
-743E: 00 00       NEG    $00
-7440: 00 00       NEG    $00
-7442: 00 00       NEG    $00
-7444: 00 00       NEG    $00
-7446: 00 00       NEG    $00
-7448: 00 00       NEG    $00
-744A: 00 00       NEG    $00
-744C: 00 00       NEG    $00
-744E: 00 00       NEG    $00
-7450: 00 00       NEG    $00
-7452: 00 00       NEG    $00
-7454: 00 00       NEG    $00
-7456: 00 00       NEG    $00
-7458: 00 00       NEG    $00
-745A: 00 00       NEG    $00
-745C: 00 00       NEG    $00
-745E: 00 00       NEG    $00
-7460: 00 00       NEG    $00
-7462: 00 00       NEG    $00
-7464: 00 00       NEG    $00
-7466: 00 00       NEG    $00
-7468: 00 00       NEG    $00
-746A: 00 00       NEG    $00
-746C: 00 00       NEG    $00
-746E: 00 00       NEG    $00
-7470: 00 00       NEG    $00
-7472: 00 00       NEG    $00
-7474: 00 00       NEG    $00
-7476: 00 00       NEG    $00
-7478: 00 00       NEG    $00
-747A: 00 00       NEG    $00
-747C: 00 00       NEG    $00
-747E: 00 00       NEG    $00
-7480: 00 00       NEG    $00
-7482: 00 00       NEG    $00
-7484: 00 00       NEG    $00
-7486: 00 00       NEG    $00
-7488: 00 00       NEG    $00
-748A: 00 00       NEG    $00
-748C: 00 00       NEG    $00
-748E: 00 00       NEG    $00
-7490: 00 00       NEG    $00
-7492: 00 00       NEG    $00
-7494: 00 00       NEG    $00
-7496: 00 00       NEG    $00
-7498: 00 00       NEG    $00
-749A: 00 00       NEG    $00
-749C: 00 00       NEG    $00
-749E: 00 00       NEG    $00
-74A0: 00 00       NEG    $00
-74A2: 00 00       NEG    $00
-74A4: 00 00       NEG    $00
-74A6: 00 00       NEG    $00
-74A8: 00 00       NEG    $00
-74AA: 00 00       NEG    $00
-74AC: 00 00       NEG    $00
-74AE: 00 00       NEG    $00
-74B0: 00 00       NEG    $00
-74B2: 00 00       NEG    $00
-74B4: 00 00       NEG    $00
-74B6: 00 00       NEG    $00
-74B8: 00 00       NEG    $00
-74BA: 00 00       NEG    $00
-74BC: 00 00       NEG    $00
-74BE: 00 00       NEG    $00
-74C0: 00 00       NEG    $00
-74C2: 00 00       NEG    $00
-74C4: 00 00       NEG    $00
-74C6: 00 00       NEG    $00
-74C8: 00 00       NEG    $00
-74CA: 00 00       NEG    $00
-74CC: 00 00       NEG    $00
-74CE: 00 00       NEG    $00
-74D0: 00 00       NEG    $00
-74D2: 00 00       NEG    $00
-74D4: 00 00       NEG    $00
-74D6: 00 00       NEG    $00
-74D8: 00 00       NEG    $00
-74DA: 00 00       NEG    $00
-74DC: 00 00       NEG    $00
-74DE: 00 00       NEG    $00
-74E0: 00 00       NEG    $00
-74E2: 00 00       NEG    $00
-74E4: 00 00       NEG    $00
-74E6: 00 00       NEG    $00
-74E8: 00 00       NEG    $00
-74EA: 00 00       NEG    $00
-74EC: 00 00       NEG    $00
-74EE: 00 00       NEG    $00
-74F0: 00 00       NEG    $00
-74F2: 00 00       NEG    $00
-74F4: 00 00       NEG    $00
-74F6: 00 00       NEG    $00
-74F8: 00 00       NEG    $00
-74FA: 00 00       NEG    $00
-74FC: 00 00       NEG    $00
-74FE: 00 00       NEG    $00
-7500: 00 00       NEG    $00
-7502: 00 00       NEG    $00
-7504: 00 00       NEG    $00
-7506: 00 00       NEG    $00
-7508: 00 00       NEG    $00
-750A: 00 00       NEG    $00
-750C: 00 00       NEG    $00
-750E: 00 00       NEG    $00
-7510: 00 00       NEG    $00
-7512: 00 00       NEG    $00
-7514: 00 00       NEG    $00
-7516: 00 00       NEG    $00
-7518: 00 00       NEG    $00
-751A: 00 00       NEG    $00
-751C: 00 00       NEG    $00
-751E: 00 00       NEG    $00
-7520: 00 00       NEG    $00
-7522: 00 00       NEG    $00
-7524: 00 00       NEG    $00
-7526: 00 00       NEG    $00
-7528: 00 00       NEG    $00
-752A: 00 00       NEG    $00
-752C: 00 00       NEG    $00
-752E: 00 00       NEG    $00
-7530: 00 00       NEG    $00
-7532: 00 00       NEG    $00
-7534: 00 00       NEG    $00
-7536: 00 00       NEG    $00
-7538: 00 00       NEG    $00
-753A: 00 00       NEG    $00
-753C: 00 00       NEG    $00
-753E: 00 00       NEG    $00
-7540: 00 00       NEG    $00
-7542: 00 00       NEG    $00
-7544: 00 00       NEG    $00
-7546: 00 00       NEG    $00
-7548: 00 00       NEG    $00
-754A: 00 00       NEG    $00
-754C: 00 00       NEG    $00
-754E: 00 00       NEG    $00
-7550: 00 00       NEG    $00
-7552: 00 00       NEG    $00
-7554: 00 00       NEG    $00
-7556: 00 00       NEG    $00
-7558: 00 00       NEG    $00
-755A: 00 00       NEG    $00
-755C: 00 00       NEG    $00
-755E: 00 00       NEG    $00
-7560: 00 00       NEG    $00
-7562: 00 00       NEG    $00
-7564: 00 00       NEG    $00
-7566: 00 00       NEG    $00
-7568: 00 00       NEG    $00
-756A: 00 00       NEG    $00
-756C: 00 00       NEG    $00
-756E: 00 00       NEG    $00
-7570: 00 00       NEG    $00
-7572: 00 00       NEG    $00
-7574: 00 00       NEG    $00
-7576: 00 00       NEG    $00
-7578: 00 00       NEG    $00
-757A: 00 00       NEG    $00
-757C: 00 00       NEG    $00
-757E: 00 00       NEG    $00
-7580: 00 00       NEG    $00
-7582: 00 00       NEG    $00
-7584: 00 00       NEG    $00
-7586: 00 00       NEG    $00
-7588: 00 00       NEG    $00
-758A: 00 00       NEG    $00
-758C: 00 00       NEG    $00
-758E: 00 00       NEG    $00
-7590: 00 00       NEG    $00
-7592: 00 00       NEG    $00
-7594: 00 00       NEG    $00
-7596: 00 00       NEG    $00
-7598: 00 00       NEG    $00
-759A: 00 00       NEG    $00
-759C: 00 00       NEG    $00
-759E: 00 00       NEG    $00
-75A0: 00 00       NEG    $00
-75A2: 00 00       NEG    $00
-75A4: 00 00       NEG    $00
-75A6: 00 00       NEG    $00
-75A8: 00 00       NEG    $00
-75AA: 00 00       NEG    $00
-75AC: 00 00       NEG    $00
-75AE: 00 00       NEG    $00
-75B0: 00 00       NEG    $00
-75B2: 00 00       NEG    $00
-75B4: 00 00       NEG    $00
-75B6: 00 00       NEG    $00
-75B8: 00 00       NEG    $00
-75BA: 00 00       NEG    $00
-75BC: 00 00       NEG    $00
-75BE: 00 00       NEG    $00
-75C0: 00 00       NEG    $00
-75C2: 00 00       NEG    $00
-75C4: 00 00       NEG    $00
-75C6: 00 00       NEG    $00
-75C8: 00 00       NEG    $00
-75CA: 00 00       NEG    $00
-75CC: 00 00       NEG    $00
-75CE: 00 00       NEG    $00
-75D0: 00 00       NEG    $00
-75D2: 00 00       NEG    $00
-75D4: 00 00       NEG    $00
-75D6: 00 00       NEG    $00
-75D8: 00 00       NEG    $00
-75DA: 00 00       NEG    $00
-75DC: 00 00       NEG    $00
-75DE: 00 00       NEG    $00
-75E0: 00 00       NEG    $00
-75E2: 00 00       NEG    $00
-75E4: 00 00       NEG    $00
-75E6: 00 00       NEG    $00
-75E8: 00 00       NEG    $00
-75EA: 00 00       NEG    $00
-75EC: 00 00       NEG    $00
-75EE: 00 00       NEG    $00
-75F0: 00 00       NEG    $00
-75F2: 00 00       NEG    $00
-75F4: 00 00       NEG    $00
-75F6: 00 00       NEG    $00
-75F8: 00 00       NEG    $00
-75FA: 00 00       NEG    $00
-75FC: 00 00       NEG    $00
-75FE: 00 00       NEG    $00
-7600: 00 00       NEG    $00
-7602: 00 00       NEG    $00
-7604: 00 00       NEG    $00
-7606: 00 00       NEG    $00
-7608: 00 00       NEG    $00
-760A: 00 00       NEG    $00
-760C: 00 00       NEG    $00
-760E: 00 00       NEG    $00
-7610: 00 00       NEG    $00
-7612: 00 00       NEG    $00
-7614: 00 00       NEG    $00
-7616: 00 00       NEG    $00
-7618: 00 00       NEG    $00
-761A: 00 00       NEG    $00
-761C: 00 00       NEG    $00
-761E: 00 00       NEG    $00
-7620: 00 00       NEG    $00
-7622: 00 00       NEG    $00
-7624: 00 00       NEG    $00
-7626: 00 00       NEG    $00
-7628: 00 00       NEG    $00
-762A: 00 00       NEG    $00
-762C: 00 00       NEG    $00
-762E: 00 00       NEG    $00
-7630: 00 00       NEG    $00
-7632: 00 00       NEG    $00
-7634: 00 00       NEG    $00
-7636: 00 00       NEG    $00
-7638: 00 00       NEG    $00
-763A: 00 00       NEG    $00
-763C: 00 00       NEG    $00
-763E: 00 00       NEG    $00
-7640: 00 00       NEG    $00
-7642: 00 00       NEG    $00
-7644: 00 00       NEG    $00
-7646: 00 00       NEG    $00
-7648: 00 00       NEG    $00
-764A: 00 00       NEG    $00
-764C: 00 00       NEG    $00
-764E: 00 00       NEG    $00
-7650: 00 00       NEG    $00
-7652: 00 00       NEG    $00
-7654: 00 00       NEG    $00
-7656: 00 00       NEG    $00
-7658: 00 00       NEG    $00
-765A: 00 00       NEG    $00
-765C: 00 00       NEG    $00
-765E: 00 00       NEG    $00
-7660: 00 00       NEG    $00
-7662: 00 00       NEG    $00
-7664: 00 00       NEG    $00
-7666: 00 00       NEG    $00
-7668: 00 00       NEG    $00
-766A: 00 00       NEG    $00
-766C: 00 00       NEG    $00
-766E: 00 00       NEG    $00
-7670: 00 00       NEG    $00
-7672: 00 00       NEG    $00
-7674: 00 00       NEG    $00
-7676: 00 00       NEG    $00
-7678: 00 00       NEG    $00
-767A: 00 00       NEG    $00
-767C: 00 00       NEG    $00
-767E: 00 00       NEG    $00
-7680: 00 00       NEG    $00
-7682: 00 00       NEG    $00
-7684: 00 00       NEG    $00
-7686: 00 00       NEG    $00
-7688: 00 00       NEG    $00
-768A: 00 00       NEG    $00
-768C: 00 00       NEG    $00
-768E: 00 00       NEG    $00
-7690: 00 00       NEG    $00
-7692: 00 00       NEG    $00
-7694: 00 00       NEG    $00
-7696: 00 00       NEG    $00
-7698: 00 00       NEG    $00
-769A: 00 00       NEG    $00
-769C: 00 00       NEG    $00
-769E: 00 00       NEG    $00
-76A0: 00 00       NEG    $00
-76A2: 00 00       NEG    $00
-76A4: 00 00       NEG    $00
-76A6: 00 00       NEG    $00
-76A8: 00 00       NEG    $00
-76AA: 00 00       NEG    $00
-76AC: 00 00       NEG    $00
-76AE: 00 00       NEG    $00
-76B0: 00 00       NEG    $00
-76B2: 00 00       NEG    $00
-76B4: 00 00       NEG    $00
-76B6: 00 00       NEG    $00
-76B8: 00 00       NEG    $00
-76BA: 00 00       NEG    $00
-76BC: 00 00       NEG    $00
-76BE: 00 00       NEG    $00
-76C0: 00 00       NEG    $00
-76C2: 00 00       NEG    $00
-76C4: 00 00       NEG    $00
-76C6: 00 00       NEG    $00
-76C8: 00 00       NEG    $00
-76CA: 00 00       NEG    $00
-76CC: 00 00       NEG    $00
-76CE: 00 00       NEG    $00
-76D0: 00 00       NEG    $00
-76D2: 00 00       NEG    $00
-76D4: 00 00       NEG    $00
-76D6: 00 00       NEG    $00
-76D8: 00 00       NEG    $00
-76DA: 00 00       NEG    $00
-76DC: 00 00       NEG    $00
-76DE: 00 00       NEG    $00
-76E0: 00 00       NEG    $00
-76E2: 00 00       NEG    $00
-76E4: 00 00       NEG    $00
-76E6: 00 00       NEG    $00
-76E8: 00 00       NEG    $00
-76EA: 00 00       NEG    $00
-76EC: 00 00       NEG    $00
-76EE: 00 00       NEG    $00
-76F0: 00 00       NEG    $00
-76F2: 00 00       NEG    $00
-76F4: 00 00       NEG    $00
-76F6: 00 00       NEG    $00
-76F8: 00 00       NEG    $00
-76FA: 00 00       NEG    $00
-76FC: 00 00       NEG    $00
-76FE: 00 00       NEG    $00
-7700: 00 00       NEG    $00
-7702: 00 00       NEG    $00
-7704: 00 00       NEG    $00
-7706: 00 00       NEG    $00
-7708: 00 00       NEG    $00
-770A: 00 00       NEG    $00
-770C: 00 00       NEG    $00
-770E: 00 00       NEG    $00
-7710: 00 00       NEG    $00
-7712: 00 00       NEG    $00
-7714: 00 00       NEG    $00
-7716: 00 00       NEG    $00
-7718: 00 00       NEG    $00
-771A: 00 00       NEG    $00
-771C: 00 00       NEG    $00
-771E: 00 00       NEG    $00
-7720: 00 00       NEG    $00
-7722: 00 00       NEG    $00
-7724: 00 00       NEG    $00
-7726: 00 00       NEG    $00
-7728: 00 00       NEG    $00
-772A: 00 00       NEG    $00
-772C: 00 00       NEG    $00
-772E: 00 00       NEG    $00
-7730: 00 00       NEG    $00
-7732: 00 00       NEG    $00
-7734: 00 00       NEG    $00
-7736: 00 00       NEG    $00
-7738: 00 00       NEG    $00
-773A: 00 00       NEG    $00
-773C: 00 00       NEG    $00
-773E: 00 00       NEG    $00
-7740: 00 00       NEG    $00
-7742: 00 00       NEG    $00
-7744: 00 00       NEG    $00
-7746: 00 00       NEG    $00
-7748: 00 00       NEG    $00
-774A: 00 00       NEG    $00
-774C: 00 00       NEG    $00
-774E: 00 00       NEG    $00
-7750: 00 00       NEG    $00
-7752: 00 00       NEG    $00
-7754: 00 00       NEG    $00
-7756: 00 00       NEG    $00
-7758: 00 00       NEG    $00
-775A: 00 00       NEG    $00
-775C: 00 00       NEG    $00
-775E: 00 00       NEG    $00
-7760: 00 00       NEG    $00
-7762: 00 00       NEG    $00
-7764: 00 00       NEG    $00
-7766: 00 00       NEG    $00
-7768: 00 00       NEG    $00
-776A: 00 00       NEG    $00
-776C: 00 00       NEG    $00
-776E: 00 00       NEG    $00
-7770: 00 00       NEG    $00
-7772: 00 00       NEG    $00
-7774: 00 00       NEG    $00
-7776: 00 00       NEG    $00
-7778: 00 00       NEG    $00
-777A: 00 00       NEG    $00
-777C: 00 00       NEG    $00
-777E: 00 00       NEG    $00
-7780: 00 00       NEG    $00
-7782: 00 00       NEG    $00
-7784: 00 00       NEG    $00
-7786: 00 00       NEG    $00
-7788: 00 00       NEG    $00
-778A: 00 00       NEG    $00
-778C: 00 00       NEG    $00
-778E: 00 00       NEG    $00
-7790: 00 00       NEG    $00
-7792: 00 00       NEG    $00
-7794: 00 00       NEG    $00
-7796: 00 00       NEG    $00
-7798: 00 00       NEG    $00
-779A: 00 00       NEG    $00
-779C: 00 00       NEG    $00
-779E: 00 00       NEG    $00
-77A0: 00 00       NEG    $00
-77A2: 00 00       NEG    $00
-77A4: 00 00       NEG    $00
-77A6: 00 00       NEG    $00
-77A8: 00 00       NEG    $00
-77AA: 00 00       NEG    $00
-77AC: 00 00       NEG    $00
-77AE: 00 00       NEG    $00
-77B0: 00 00       NEG    $00
-77B2: 00 00       NEG    $00
-77B4: 00 00       NEG    $00
-77B6: 00 00       NEG    $00
-77B8: 00 00       NEG    $00
-77BA: 00 00       NEG    $00
-77BC: 00 00       NEG    $00
-77BE: 00 00       NEG    $00
-77C0: 00 00       NEG    $00
-77C2: 00 00       NEG    $00
-77C4: 00 00       NEG    $00
-77C6: 00 00       NEG    $00
-77C8: 00 00       NEG    $00
-77CA: 00 00       NEG    $00
-77CC: 00 00       NEG    $00
-77CE: 00 00       NEG    $00
-77D0: 00 00       NEG    $00
-77D2: 00 00       NEG    $00
-77D4: 00 00       NEG    $00
-77D6: 00 00       NEG    $00
-77D8: 00 00       NEG    $00
-77DA: 00 00       NEG    $00
-77DC: 00 00       NEG    $00
-77DE: 00 00       NEG    $00
-77E0: 00 00       NEG    $00
-77E2: 00 00       NEG    $00
-77E4: 00 00       NEG    $00
-77E6: 00 00       NEG    $00
-77E8: 00 00       NEG    $00
-77EA: 00 00       NEG    $00
-77EC: 00 00       NEG    $00
-77EE: 00 00       NEG    $00
-77F0: 00 00       NEG    $00
-77F2: 00 00       NEG    $00
-77F4: 00 00       NEG    $00
-77F6: 00 00       NEG    $00
-77F8: 00 00       NEG    $00
-77FA: 00 00       NEG    $00
-77FC: 00 00       NEG    $00
-77FE: 00 00       NEG    $00
-7800: 00 04       NEG    $04
-7802: 01 0A 09    OIM    #$0A;$09
-7805: 04 08       LSR    $08
-7807: 33 18       LEAU   -$8,X
-7809: 08 08       ASL    $08
-780B: 03 18       COM    $18
-780D: 04 08       LSR    $08
-780F: 01 18 02    OIM    #$18;$02
-7812: 08 05       ASL    $05
-7814: 10 08       FCB    $10,$08
-7816: 00          FCB    $00
-7817: 1F          FCB    $1F
-7818: 20          FCB    $20
-7819: 06          FCB    $06
-781A: 00          FCB    $00
-781B: 23 08 57    LBLS   $8075
-781E: 0A 06       DEC    $06
-7820: 48          ASLA
-7821: 02 08 00    AIM    #$08;$00
-7824: 48          ASLA
-7825: 01 40 00    OIM    #$40;$00
-7828: 00 00       NEG    $00
-782A: 40          NEGA
-782B: 02 00 00    AIM    #$00;$00
-782E: 40          NEGA
-782F: 01 00 01    OIM    #$00;$01
-7832: 40          NEGA
-7833: 01 00 01    OIM    #$00;$01
-7836: 40          NEGA
-7837: 01 00 01    OIM    #$00;$01
-783A: 40          NEGA
-783B: 00 00       NEG    $00
-783D: 01 40 01    OIM    #$40;$01
-7840: 00 00       NEG    $00
-7842: 40          NEGA
-7843: 02 00 01    AIM    #$00;$01
-7846: 40          NEGA
-7847: 02 00 01    AIM    #$00;$01
-784A: 40          NEGA
-784B: 01 00 02    OIM    #$00;$02
-784E: 40          NEGA
-784F: 01 00 03    OIM    #$00;$03
-7852: 04 1F       LSR    $1F
-7854: 06 0A       ROR    $0A
-7856: 04 07       LSR    $07
-7858: 44          LSRA
-7859: 01 04 03    OIM    #$04;$03
-785C: 44          LSRA
-785D: 02 04 01    AIM    #$04;$01
-7860: 44          LSRA
-7861: 02 40 00    AIM    #$40;$00
-7864: 00 01       NEG    $01
-7866: 40          NEGA
-7867: 02 00 00    AIM    #$00;$00
-786A: 40          NEGA
-786B: 01 00 01    OIM    #$00;$01
-786E: 40          NEGA
-786F: 01 00 01    OIM    #$00;$01
-7872: 40          NEGA
-7873: 01 00 00    OIM    #$00;$00
-7876: 40          NEGA
-7877: 02 00 00    AIM    #$00;$00
-787A: 40          NEGA
-787B: 01 00 03    OIM    #$00;$03
-787E: 01 04 09    OIM    #$04;$09
-7881: 03 49       COM    $49
-7883: 00 48       NEG    $48
-7885: 00 08       NEG    $08
-7887: 02 48 01    AIM    #$48;$01
-788A: 08 00       ASL    $00
-788C: 48          ASLA
-788D: 02 08 01    AIM    #$08;$01
-7890: 48          ASLA
-7891: 01 08 02    OIM    #$08;$02
-7894: 48          ASLA
-7895: 00 40       NEG    $40
-7897: 02 00 01    AIM    #$00;$01
-789A: 40          NEGA
-789B: 02 00 01    AIM    #$00;$01
-789E: 40          NEGA
-789F: 02 00 01    AIM    #$00;$01
-78A2: 40          NEGA
-78A3: 02 00 00    AIM    #$00;$00
-78A6: 40          NEGA
-78A7: 01 00 01    OIM    #$00;$01
-78AA: 40          NEGA
-78AB: 01 00 03    OIM    #$00;$03
-78AE: 40          NEGA
-78AF: 01 00 00    OIM    #$00;$00
-78B2: 40          NEGA
-78B3: 01 00 01    OIM    #$00;$01
-78B6: 40          NEGA
-78B7: 01 00 01    OIM    #$00;$01
-78BA: 40          NEGA
-78BB: 00 49       NEG    $49
-78BD: 02 09 02    AIM    #$09;$02
-78C0: 01 09 41    OIM    #$09;$41
-78C3: 01 01 02    OIM    #$01;$02
-78C6: 41          FCB    $41
-78C7: 01 01 01    OIM    #$01;$01
-78CA: 09 00       ROL    $00
-78CC: 49          ROLA
-78CD: 02 09 01    AIM    #$09;$01
-78D0: 41          FCB    $41
-78D1: 02 01 19    AIM    #$01;$19
-78D4: 09 03       ROL    $03
-78D6: 08 00       ASL    $00
-78D8: 48          ASLA
-78D9: 03 08       COM    $08
-78DB: 01 48 02    OIM    #$48;$02
-78DE: 40          NEGA
-78DF: 01 00 01    OIM    #$00;$01
-78E2: 40          NEGA
-78E3: 02 00 02    AIM    #$00;$02
-78E6: 40          NEGA
-78E7: 01 00 02    OIM    #$00;$02
-78EA: 44          LSRA
-78EB: 00 04       NEG    $04
-78ED: 03 44       COM    $44
-78EF: 03 04       COM    $04
-78F1: 01 44 02    OIM    #$44;$02
-78F4: 04 02       LSR    $02
-78F6: 44          LSRA
-78F7: 02 04 00    AIM    #$04;$00
-78FA: 44          LSRA
-78FB: 03 00       COM    $00
-78FD: 05 40 01    EIM    #$40;$01
-7900: 00 01       NEG    $01
-7902: 40          NEGA
-7903: 02 00 01    AIM    #$00;$01
-7906: 40          NEGA
-7907: 02 00 01    AIM    #$00;$01
-790A: 40          NEGA
-790B: 01 00 01    OIM    #$00;$01
-790E: 40          NEGA
-790F: 01 00 02    OIM    #$00;$02
-7912: 40          NEGA
-7913: 02 00 01    AIM    #$00;$01
-7916: 40          NEGA
-7917: 01 00 05    OIM    #$00;$05
-791A: 08 03       ASL    $03
-791C: 48          ASLA
-791D: 03 08       COM    $08
-791F: 02 48 01    AIM    #$48;$01
-7922: 00 01       NEG    $01
-7924: 40          NEGA
-7925: 02 00 01    AIM    #$00;$01
-7928: 40          NEGA
-7929: 01 00 01    OIM    #$00;$01
-792C: 40          NEGA
-792D: 01 00 01    OIM    #$00;$01
-7930: 40          NEGA
-7931: 01 00 01    OIM    #$00;$01
-7934: 40          NEGA
-7935: 02 00 45    AIM    #$00;$45
-7938: 08 02       ASL    $02
-793A: 48          ASLA
-793B: 01 00 01    OIM    #$00;$01
-793E: 40          NEGA
-793F: 01 00 02    OIM    #$00;$02
-7942: 40          NEGA
-7943: 02 00 01    AIM    #$00;$01
-7946: 40          NEGA
-7947: 01 00 00    OIM    #$00;$00
-794A: 08 14       ASL    $14
-794C: 00 03       NEG    $03
-794E: 04 01       LSR    $01
-7950: 44          LSRA
-7951: 01 04 06    OIM    #$04;$06
-7954: 44          LSRA
-7955: 01 04 01    OIM    #$04;$01
-7958: 44          LSRA
-7959: 00 40       NEG    $40
-795B: 00 00       NEG    $00
-795D: 02 40 02    AIM    #$40;$02
-7960: 00 02       NEG    $02
-7962: 40          NEGA
-7963: 00 00       NEG    $00
-7965: 01 40 02    OIM    #$40;$02
-7968: 00 02       NEG    $02
-796A: 08 0A       ASL    $0A
-796C: 48          ASLA
-796D: 02 08 03    AIM    #$08;$03
-7970: 48          ASLA
-7971: 01 08 02    OIM    #$08;$02
-7974: 48          ASLA
-7975: 02 08 02    AIM    #$08;$02
-7978: 48          ASLA
-7979: 03 08       COM    $08
-797B: 00 00       NEG    $00
-797D: 00 40       NEG    $40
-797F: 02 00 00    AIM    #$00;$00
-7982: 40          NEGA
-7983: 02 00 01    AIM    #$00;$01
-7986: 40          NEGA
-7987: 01 00 02    OIM    #$00;$02
-798A: 40          NEGA
-798B: 04 00       LSR    $00
-798D: 02 40 02    AIM    #$40;$02
-7990: 00 03       NEG    $03
-7992: 40          NEGA
-7993: 02 00 03    AIM    #$00;$03
-7996: 40          NEGA
-7997: 03 00       COM    $00
-7999: 02 40 02    AIM    #$40;$02
-799C: 00 02       NEG    $02
-799E: 40          NEGA
-799F: 02 00 01    AIM    #$00;$01
-79A2: 40          NEGA
-79A3: 02 00 02    AIM    #$00;$02
-79A6: 40          NEGA
-79A7: 01 00 01    OIM    #$00;$01
-79AA: 08 33       ASL    $33
-79AC: 48          ASLA
-79AD: 03 08       COM    $08
-79AF: 01 48 00    OIM    #$48;$00
-79B2: 40          NEGA
-79B3: 01 00 02    OIM    #$00;$02
-79B6: 40          NEGA
-79B7: 00 00       NEG    $00
-79B9: 02 40 01    AIM    #$40;$01
-79BC: 00 02       NEG    $02
-79BE: 40          NEGA
-79BF: 02 00 03    AIM    #$00;$03
-79C2: 40          NEGA
-79C3: 03 00       COM    $00
-79C5: 04 40       LSR    $40
-79C7: 02 00 03    AIM    #$00;$03
-79CA: 40          NEGA
-79CB: 03 00       COM    $00
-79CD: 03 40       COM    $40
-79CF: 03 00       COM    $00
-79D1: 02 40 04    AIM    #$40;$04
-79D4: 00 03       NEG    $03
-79D6: 40          NEGA
-79D7: 03 00       COM    $00
-79D9: 03 40       COM    $40
-79DB: 01 00 01    OIM    #$00;$01
-79DE: 40          NEGA
-79DF: 03 00       COM    $00
-79E1: 03 40       COM    $40
-79E3: 03 00       COM    $00
-79E5: 0B 40 03    TIM    #$40;$03
-79E8: 00 12       NEG    $12
-79EA: 08 43       ASL    $43
-79EC: 00 02       NEG    $02
-79EE: 04 9C       LSR    $9C
-79F0: 00 18       NEG    $18
-79F2: 08 37       ASL    $37
-79F4: 28 06       BVC    $79FC
-79F6: 68 06       ASL    $6,X
-79F8: 48          ASLA
-79F9: 27 08       BEQ    $7A03
-79FB: 18          FCB    $18
-79FC: 00 00       NEG    $00
-79FE: 02 0E 42    AIM    #$0E;$42
-7A01: 00 40       NEG    $40
-7A03: 01 48 02    OIM    #$48;$02
-7A06: 08 0A       ASL    $0A
-7A08: 00 56       NEG    $56
-7A0A: 08 00       ASL    $00
-7A0C: 09 1E       ROL    $1E
-7A0E: 08 71       ASL    $71
-7A10: 18          FCB    $18
-7A11: 03 08       COM    $08
-7A13: 04 18       LSR    $18
-7A15: 03 08       COM    $08
-7A17: 03 18       COM    $18
-7A19: 01 08 02    OIM    #$08;$02
-7A1C: 10 02       FCB    $10,$02
-7A1E: 00          FCB    $00
-7A1F: 01          FCB    $01
-7A20: 10          FCB    $10
-7A21: 03 00       COM    $00
-7A23: 05 10 04    EIM    #$10;$04
-7A26: 00 02       NEG    $02
-7A28: 10 03       FCB    $10,$03
-7A2A: 00          FCB    $00
-7A2B: 01          FCB    $01
-7A2C: 10          FCB    $10
-7A2D: 03 00       COM    $00
-7A2F: 07 10       ASR    $10
-7A31: 02 00 02    AIM    #$00;$02
-7A34: 10 04       FCB    $10,$04
-7A36: 00          FCB    $00
-7A37: 02          FCB    $02
-7A38: 10          FCB    $10
-7A39: 03 00       COM    $00
-7A3B: 02 10 01    AIM    #$10;$01
-7A3E: 00 02       NEG    $02
-7A40: 10 03       FCB    $10,$03
-7A42: 00          FCB    $00
-7A43: 03          FCB    $03
-7A44: 10          FCB    $10
-7A45: 01 00 04    OIM    #$00;$04
-7A48: 08 01       ASL    $01
-7A4A: 0A 1C       DEC    $1C
-7A4C: 08 04       ASL    $04
-7A4E: 09 05       ROL    $05
-7A50: 08 0A       ASL    $0A
-7A52: 00 02       NEG    $02
-7A54: 10 02       FCB    $10,$02
-7A56: 00          FCB    $00
-7A57: 02          FCB    $02
-7A58: 10          FCB    $10
-7A59: 02 00 03    AIM    #$00;$03
-7A5C: 10 01       FCB    $10,$01
-7A5E: 00          FCB    $00
-7A5F: 02          FCB    $02
-7A60: 10          FCB    $10
-7A61: 02 00 01    AIM    #$00;$01
-7A64: 10 05       FCB    $10,$05
-7A66: 00          FCB    $00
-7A67: 01          FCB    $01
-7A68: 10          FCB    $10
-7A69: 01 00 02    OIM    #$00;$02
-7A6C: 10 03       FCB    $10,$03
-7A6E: 00          FCB    $00
-7A6F: 03          FCB    $03
-7A70: 10          FCB    $10
-7A71: 02 00 01    AIM    #$00;$01
-7A74: 10 02       FCB    $10,$02
-7A76: 00          FCB    $00
-7A77: 00          FCB    $00
-7A78: 10          FCB    $10
-7A79: 04 00       LSR    $00
-7A7B: 01 10 02    OIM    #$10;$02
-7A7E: 00 02       NEG    $02
-7A80: 10 03       FCB    $10,$03
-7A82: 00          FCB    $00
-7A83: 02          FCB    $02
-7A84: 10          FCB    $10
-7A85: 01 00 13    OIM    #$00;$13
-7A88: 02 06 06    AIM    #$06;$06
-7A8B: 00 04       NEG    $04
-7A8D: 13          SYNC
-7A8E: 14          SEXW
-7A8F: 02 04 06    AIM    #$04;$06
-7A92: 00 11       NEG    $11
-7A94: 08 35       ASL    $35
-7A96: 09 0A       ROL    $0A
-7A98: 08 02       ASL    $02
-7A9A: 0A 03       DEC    $03
-7A9C: 2A 03       BPL    $7AA1
-7A9E: 6A 02       DEC    $2,X
-7AA0: 4A          DECA
-7AA1: 00 00       NEG    $00
-7AA3: 00 00       NEG    $00
-7AA5: 00 00       NEG    $00
-7AA7: 00 00       NEG    $00
-7AA9: 00 00       NEG    $00
-7AAB: 00 00       NEG    $00
-7AAD: 00 00       NEG    $00
-7AAF: 00 00       NEG    $00
-7AB1: 00 00       NEG    $00
-7AB3: 00 00       NEG    $00
-7AB5: 00 00       NEG    $00
-7AB7: 00 00       NEG    $00
-7AB9: 00 00       NEG    $00
-7ABB: 00 00       NEG    $00
-7ABD: 00 00       NEG    $00
-7ABF: 00 00       NEG    $00
-7AC1: 00 00       NEG    $00
-7AC3: 00 00       NEG    $00
-7AC5: 00 00       NEG    $00
-7AC7: 00 00       NEG    $00
-7AC9: 00 00       NEG    $00
-7ACB: 00 00       NEG    $00
-7ACD: 00 00       NEG    $00
-7ACF: 00 00       NEG    $00
-7AD1: 00 00       NEG    $00
-7AD3: 00 00       NEG    $00
-7AD5: 00 00       NEG    $00
-7AD7: 00 00       NEG    $00
-7AD9: 00 00       NEG    $00
-7ADB: 00 00       NEG    $00
-7ADD: 00 00       NEG    $00
-7ADF: 00 00       NEG    $00
-7AE1: 00 00       NEG    $00
-7AE3: 00 00       NEG    $00
-7AE5: 00 00       NEG    $00
-7AE7: 00 00       NEG    $00
-7AE9: 00 00       NEG    $00
-7AEB: 00 00       NEG    $00
-7AED: 00 00       NEG    $00
-7AEF: 00 00       NEG    $00
-7AF1: 00 00       NEG    $00
-7AF3: 00 00       NEG    $00
-7AF5: 00 00       NEG    $00
-7AF7: 00 00       NEG    $00
-7AF9: 00 00       NEG    $00
-7AFB: 00 00       NEG    $00
-7AFD: 00 00       NEG    $00
-7AFF: 00 00       NEG    $00
-7B01: 00 00       NEG    $00
-7B03: 00 00       NEG    $00
-7B05: 00 00       NEG    $00
-7B07: 00 00       NEG    $00
-7B09: 00 00       NEG    $00
-7B0B: 00 00       NEG    $00
-7B0D: 00 00       NEG    $00
-7B0F: 00 00       NEG    $00
-7B11: 00 00       NEG    $00
-7B13: 00 00       NEG    $00
-7B15: 00 00       NEG    $00
-7B17: 00 00       NEG    $00
-7B19: 00 00       NEG    $00
-7B1B: 00 00       NEG    $00
-7B1D: 00 00       NEG    $00
-7B1F: 00 00       NEG    $00
-7B21: 00 00       NEG    $00
-7B23: 00 00       NEG    $00
-7B25: 00 00       NEG    $00
-7B27: 00 00       NEG    $00
-7B29: 00 00       NEG    $00
-7B2B: 00 00       NEG    $00
-7B2D: 00 00       NEG    $00
-7B2F: 00 00       NEG    $00
-7B31: 00 00       NEG    $00
-7B33: 00 00       NEG    $00
-7B35: 00 00       NEG    $00
-7B37: 00 00       NEG    $00
-7B39: 00 00       NEG    $00
-7B3B: 00 00       NEG    $00
-7B3D: 00 00       NEG    $00
-7B3F: 00 00       NEG    $00
-7B41: 00 00       NEG    $00
-7B43: 00 00       NEG    $00
-7B45: 00 00       NEG    $00
-7B47: 00 00       NEG    $00
-7B49: 00 00       NEG    $00
-7B4B: 00 00       NEG    $00
-7B4D: 00 00       NEG    $00
-7B4F: 00 00       NEG    $00
-7B51: 00 00       NEG    $00
-7B53: 00 00       NEG    $00
-7B55: 00 00       NEG    $00
-7B57: 00 00       NEG    $00
-7B59: 00 00       NEG    $00
-7B5B: 00 00       NEG    $00
-7B5D: 00 00       NEG    $00
-7B5F: 00 00       NEG    $00
-7B61: 00 00       NEG    $00
-7B63: 00 00       NEG    $00
-7B65: 00 00       NEG    $00
-7B67: 00 00       NEG    $00
-7B69: 00 00       NEG    $00
-7B6B: 00 00       NEG    $00
-7B6D: 00 00       NEG    $00
-7B6F: 00 00       NEG    $00
-7B71: 00 00       NEG    $00
-7B73: 00 00       NEG    $00
-7B75: 00 00       NEG    $00
-7B77: 00 00       NEG    $00
-7B79: 00 00       NEG    $00
-7B7B: 00 00       NEG    $00
-7B7D: 00 00       NEG    $00
-7B7F: 00 00       NEG    $00
-7B81: 00 00       NEG    $00
-7B83: 00 00       NEG    $00
-7B85: 00 00       NEG    $00
-7B87: 00 00       NEG    $00
-7B89: 00 00       NEG    $00
-7B8B: 00 00       NEG    $00
-7B8D: 00 00       NEG    $00
-7B8F: 00 00       NEG    $00
-7B91: 00 00       NEG    $00
-7B93: 00 00       NEG    $00
-7B95: 00 00       NEG    $00
-7B97: 00 00       NEG    $00
-7B99: 00 00       NEG    $00
-7B9B: 00 00       NEG    $00
-7B9D: 00 00       NEG    $00
-7B9F: 00 00       NEG    $00
-7BA1: 00 00       NEG    $00
-7BA3: 00 00       NEG    $00
-7BA5: 00 00       NEG    $00
-7BA7: 00 00       NEG    $00
-7BA9: 00 00       NEG    $00
-7BAB: 00 00       NEG    $00
-7BAD: 00 00       NEG    $00
-7BAF: 00 00       NEG    $00
-7BB1: 00 00       NEG    $00
-7BB3: 00 00       NEG    $00
-7BB5: 00 00       NEG    $00
-7BB7: 00 00       NEG    $00
-7BB9: 00 00       NEG    $00
-7BBB: 00 00       NEG    $00
-7BBD: 00 00       NEG    $00
-7BBF: 00 00       NEG    $00
-7BC1: 00 00       NEG    $00
-7BC3: 00 00       NEG    $00
-7BC5: 00 00       NEG    $00
-7BC7: 00 00       NEG    $00
-7BC9: 00 00       NEG    $00
-7BCB: 00 00       NEG    $00
-7BCD: 00 00       NEG    $00
-7BCF: 00 00       NEG    $00
-7BD1: 00 00       NEG    $00
-7BD3: 00 00       NEG    $00
-7BD5: 00 00       NEG    $00
-7BD7: 00 00       NEG    $00
-7BD9: 00 00       NEG    $00
-7BDB: 00 00       NEG    $00
-7BDD: 00 00       NEG    $00
-7BDF: 00 00       NEG    $00
-7BE1: 00 00       NEG    $00
-7BE3: 00 00       NEG    $00
-7BE5: 00 00       NEG    $00
-7BE7: 00 00       NEG    $00
-7BE9: 00 00       NEG    $00
-7BEB: 00 00       NEG    $00
-7BED: 00 00       NEG    $00
-7BEF: 00 00       NEG    $00
-7BF1: 00 00       NEG    $00
-7BF3: 00 00       NEG    $00
-7BF5: 00 00       NEG    $00
-7BF7: 00 00       NEG    $00
-7BF9: 00 00       NEG    $00
-7BFB: 00 00       NEG    $00
-7BFD: 00 00       NEG    $00
-7BFF: 00 00       NEG    $00
-7C01: 00 00       NEG    $00
-7C03: 00 00       NEG    $00
-7C05: 00 00       NEG    $00
-7C07: 00 00       NEG    $00
-7C09: 00 00       NEG    $00
-7C0B: 00 00       NEG    $00
-7C0D: 00 00       NEG    $00
-7C0F: 00 00       NEG    $00
-7C11: 00 00       NEG    $00
-7C13: 00 00       NEG    $00
-7C15: 00 00       NEG    $00
-7C17: 00 00       NEG    $00
-7C19: 00 00       NEG    $00
-7C1B: 00 00       NEG    $00
-7C1D: 00 00       NEG    $00
-7C1F: 00 00       NEG    $00
-7C21: 00 00       NEG    $00
-7C23: 00 00       NEG    $00
-7C25: 00 00       NEG    $00
-7C27: 00 00       NEG    $00
-7C29: 00 00       NEG    $00
-7C2B: 00 00       NEG    $00
-7C2D: 00 00       NEG    $00
-7C2F: 00 00       NEG    $00
-7C31: 00 00       NEG    $00
-7C33: 00 00       NEG    $00
-7C35: 00 00       NEG    $00
-7C37: 00 00       NEG    $00
-7C39: 00 00       NEG    $00
-7C3B: 00 00       NEG    $00
-7C3D: 00 00       NEG    $00
-7C3F: 00 00       NEG    $00
-7C41: 00 00       NEG    $00
-7C43: 00 00       NEG    $00
-7C45: 00 00       NEG    $00
-7C47: 00 00       NEG    $00
-7C49: 00 00       NEG    $00
-7C4B: 00 00       NEG    $00
-7C4D: 00 00       NEG    $00
-7C4F: 00 00       NEG    $00
-7C51: 00 00       NEG    $00
-7C53: 00 00       NEG    $00
-7C55: 00 00       NEG    $00
-7C57: 00 00       NEG    $00
-7C59: 00 00       NEG    $00
-7C5B: 00 00       NEG    $00
-7C5D: 00 00       NEG    $00
-7C5F: 00 00       NEG    $00
-7C61: 00 00       NEG    $00
-7C63: 00 00       NEG    $00
-7C65: 00 00       NEG    $00
-7C67: 00 00       NEG    $00
-7C69: 00 00       NEG    $00
-7C6B: 00 00       NEG    $00
-7C6D: 00 00       NEG    $00
-7C6F: 00 00       NEG    $00
-7C71: 00 00       NEG    $00
-7C73: 00 00       NEG    $00
-7C75: 00 00       NEG    $00
-7C77: 00 00       NEG    $00
-7C79: 00 00       NEG    $00
-7C7B: 00 00       NEG    $00
-7C7D: 00 00       NEG    $00
-7C7F: 00 00       NEG    $00
-7C81: 00 00       NEG    $00
-7C83: 00 00       NEG    $00
-7C85: 00 00       NEG    $00
-7C87: 00 00       NEG    $00
-7C89: 00 00       NEG    $00
-7C8B: 00 00       NEG    $00
-7C8D: 00 00       NEG    $00
-7C8F: 00 00       NEG    $00
-7C91: 00 00       NEG    $00
-7C93: 00 00       NEG    $00
-7C95: 00 00       NEG    $00
-7C97: 00 00       NEG    $00
-7C99: 00 00       NEG    $00
-7C9B: 00 00       NEG    $00
-7C9D: 00 00       NEG    $00
-7C9F: 00 00       NEG    $00
-7CA1: 00 00       NEG    $00
-7CA3: 00 00       NEG    $00
-7CA5: 00 00       NEG    $00
-7CA7: 00 00       NEG    $00
-7CA9: 00 00       NEG    $00
-7CAB: 00 00       NEG    $00
-7CAD: 00 00       NEG    $00
-7CAF: 00 00       NEG    $00
-7CB1: 00 00       NEG    $00
-7CB3: 00 00       NEG    $00
-7CB5: 00 00       NEG    $00
-7CB7: 00 00       NEG    $00
-7CB9: 00 00       NEG    $00
-7CBB: 00 00       NEG    $00
-7CBD: 00 00       NEG    $00
-7CBF: 00 00       NEG    $00
-7CC1: 00 00       NEG    $00
-7CC3: 00 00       NEG    $00
-7CC5: 00 00       NEG    $00
-7CC7: 00 00       NEG    $00
-7CC9: 00 00       NEG    $00
-7CCB: 00 00       NEG    $00
-7CCD: 00 00       NEG    $00
-7CCF: 00 00       NEG    $00
-7CD1: 00 00       NEG    $00
-7CD3: 00 00       NEG    $00
-7CD5: 00 00       NEG    $00
-7CD7: 00 00       NEG    $00
-7CD9: 00 00       NEG    $00
-7CDB: 00 00       NEG    $00
-7CDD: 00 00       NEG    $00
-7CDF: 00 00       NEG    $00
-7CE1: 00 00       NEG    $00
-7CE3: 00 00       NEG    $00
-7CE5: 00 00       NEG    $00
-7CE7: 00 00       NEG    $00
-7CE9: 00 00       NEG    $00
-7CEB: 00 00       NEG    $00
-7CED: 00 00       NEG    $00
-7CEF: 00 00       NEG    $00
-7CF1: 00 00       NEG    $00
-7CF3: 00 00       NEG    $00
-7CF5: 00 00       NEG    $00
-7CF7: 00 00       NEG    $00
-7CF9: 00 00       NEG    $00
-7CFB: 00 00       NEG    $00
-7CFD: 00 00       NEG    $00
-7CFF: 00 00       NEG    $00
-7D01: 00 00       NEG    $00
-7D03: 00 00       NEG    $00
-7D05: 00 00       NEG    $00
-7D07: 00 00       NEG    $00
-7D09: 00 00       NEG    $00
-7D0B: 00 00       NEG    $00
-7D0D: 00 00       NEG    $00
-7D0F: 00 00       NEG    $00
-7D11: 00 00       NEG    $00
-7D13: 00 00       NEG    $00
-7D15: 00 00       NEG    $00
-7D17: 00 00       NEG    $00
-7D19: 00 00       NEG    $00
-7D1B: 00 00       NEG    $00
-7D1D: 00 00       NEG    $00
-7D1F: 00 00       NEG    $00
-7D21: 00 00       NEG    $00
-7D23: 00 00       NEG    $00
-7D25: 00 00       NEG    $00
-7D27: 00 00       NEG    $00
-7D29: 00 00       NEG    $00
-7D2B: 00 00       NEG    $00
-7D2D: 00 00       NEG    $00
-7D2F: 00 00       NEG    $00
-7D31: 00 00       NEG    $00
-7D33: 00 00       NEG    $00
-7D35: 00 00       NEG    $00
-7D37: 00 00       NEG    $00
-7D39: 00 00       NEG    $00
-7D3B: 00 00       NEG    $00
-7D3D: 00 00       NEG    $00
-7D3F: 00 00       NEG    $00
-7D41: 00 00       NEG    $00
-7D43: 00 00       NEG    $00
-7D45: 00 00       NEG    $00
-7D47: 00 00       NEG    $00
-7D49: 00 00       NEG    $00
-7D4B: 00 00       NEG    $00
-7D4D: 00 00       NEG    $00
-7D4F: 00 00       NEG    $00
-7D51: 00 00       NEG    $00
-7D53: 00 00       NEG    $00
-7D55: 00 00       NEG    $00
-7D57: 00 00       NEG    $00
-7D59: 00 00       NEG    $00
-7D5B: 00 00       NEG    $00
-7D5D: 00 00       NEG    $00
-7D5F: 00 00       NEG    $00
-7D61: 00 00       NEG    $00
-7D63: 00 00       NEG    $00
-7D65: 00 00       NEG    $00
-7D67: 00 00       NEG    $00
-7D69: 00 00       NEG    $00
-7D6B: 00 00       NEG    $00
-7D6D: 00 00       NEG    $00
-7D6F: 00 00       NEG    $00
-7D71: 00 00       NEG    $00
-7D73: 00 00       NEG    $00
-7D75: 00 00       NEG    $00
-7D77: 00 00       NEG    $00
-7D79: 00 00       NEG    $00
-7D7B: 00 00       NEG    $00
-7D7D: 00 00       NEG    $00
-7D7F: 00 00       NEG    $00
-7D81: 00 00       NEG    $00
-7D83: 00 00       NEG    $00
-7D85: 00 00       NEG    $00
-7D87: 00 00       NEG    $00
-7D89: 00 00       NEG    $00
-7D8B: 00 00       NEG    $00
-7D8D: 00 00       NEG    $00
-7D8F: 00 00       NEG    $00
-7D91: 00 00       NEG    $00
-7D93: 00 00       NEG    $00
-7D95: 00 00       NEG    $00
-7D97: 00 00       NEG    $00
-7D99: 00 00       NEG    $00
-7D9B: 00 00       NEG    $00
-7D9D: 00 00       NEG    $00
-7D9F: 00 00       NEG    $00
-7DA1: 00 00       NEG    $00
-7DA3: 00 00       NEG    $00
-7DA5: 00 00       NEG    $00
-7DA7: 00 00       NEG    $00
-7DA9: 00 00       NEG    $00
-7DAB: 00 00       NEG    $00
-7DAD: 00 00       NEG    $00
-7DAF: 00 00       NEG    $00
-7DB1: 00 00       NEG    $00
-7DB3: 00 00       NEG    $00
-7DB5: 00 00       NEG    $00
-7DB7: 00 00       NEG    $00
-7DB9: 00 00       NEG    $00
-7DBB: 00 00       NEG    $00
-7DBD: 00 00       NEG    $00
-7DBF: 00 00       NEG    $00
-7DC1: 00 00       NEG    $00
-7DC3: 00 00       NEG    $00
-7DC5: 00 00       NEG    $00
-7DC7: 00 00       NEG    $00
-7DC9: 00 00       NEG    $00
-7DCB: 00 00       NEG    $00
-7DCD: 00 00       NEG    $00
-7DCF: 00 00       NEG    $00
-7DD1: 00 00       NEG    $00
-7DD3: 00 00       NEG    $00
-7DD5: 00 00       NEG    $00
-7DD7: 00 00       NEG    $00
-7DD9: 00 00       NEG    $00
-7DDB: 00 00       NEG    $00
-7DDD: 00 00       NEG    $00
-7DDF: 00 00       NEG    $00
-7DE1: 00 00       NEG    $00
-7DE3: 00 00       NEG    $00
-7DE5: 00 00       NEG    $00
-7DE7: 00 00       NEG    $00
-7DE9: 00 00       NEG    $00
-7DEB: 00 00       NEG    $00
-7DED: 00 00       NEG    $00
-7DEF: 00 00       NEG    $00
-7DF1: 00 00       NEG    $00
-7DF3: 00 00       NEG    $00
-7DF5: 00 00       NEG    $00
-7DF7: 00 00       NEG    $00
-7DF9: 00 00       NEG    $00
-7DFB: 00 00       NEG    $00
-7DFD: 00 00       NEG    $00
-7DFF: 00 00       NEG    $00
-7E01: 00 00       NEG    $00
-7E03: 00 00       NEG    $00
-7E05: 00 00       NEG    $00
-7E07: 00 00       NEG    $00
-7E09: 00 00       NEG    $00
-7E0B: 00 00       NEG    $00
-7E0D: 00 00       NEG    $00
-7E0F: 00 00       NEG    $00
-7E11: 00 00       NEG    $00
-7E13: 00 00       NEG    $00
-7E15: 00 00       NEG    $00
-7E17: 00 00       NEG    $00
-7E19: 00 00       NEG    $00
-7E1B: 00 00       NEG    $00
-7E1D: 00 00       NEG    $00
-7E1F: 00 00       NEG    $00
-7E21: 00 00       NEG    $00
-7E23: 00 00       NEG    $00
-7E25: 00 00       NEG    $00
-7E27: 00 00       NEG    $00
-7E29: 00 00       NEG    $00
-7E2B: 00 00       NEG    $00
-7E2D: 00 00       NEG    $00
-7E2F: 00 00       NEG    $00
-7E31: 00 00       NEG    $00
-7E33: 00 00       NEG    $00
-7E35: 00 00       NEG    $00
-7E37: 00 00       NEG    $00
-7E39: 00 00       NEG    $00
-7E3B: 00 00       NEG    $00
-7E3D: 00 00       NEG    $00
-7E3F: 00 00       NEG    $00
-7E41: 00 00       NEG    $00
-7E43: 00 00       NEG    $00
-7E45: 00 00       NEG    $00
-7E47: 00 00       NEG    $00
-7E49: 00 00       NEG    $00
-7E4B: 00 00       NEG    $00
-7E4D: 00 00       NEG    $00
-7E4F: 00 00       NEG    $00
-7E51: 00 00       NEG    $00
-7E53: 00 00       NEG    $00
-7E55: 00 00       NEG    $00
-7E57: 00 00       NEG    $00
-7E59: 00 00       NEG    $00
-7E5B: 00 00       NEG    $00
-7E5D: 00 00       NEG    $00
-7E5F: 00 00       NEG    $00
-7E61: 00 00       NEG    $00
-7E63: 00 00       NEG    $00
-7E65: 00 00       NEG    $00
-7E67: 00 00       NEG    $00
-7E69: 00 00       NEG    $00
-7E6B: 00 00       NEG    $00
-7E6D: 00 00       NEG    $00
-7E6F: 00 00       NEG    $00
-7E71: 00 00       NEG    $00
-7E73: 00 00       NEG    $00
-7E75: 00 00       NEG    $00
-7E77: 00 00       NEG    $00
-7E79: 00 00       NEG    $00
-7E7B: 00 00       NEG    $00
-7E7D: 00 00       NEG    $00
-7E7F: 00 00       NEG    $00
-7E81: 00 00       NEG    $00
-7E83: 00 00       NEG    $00
-7E85: 00 00       NEG    $00
-7E87: 00 00       NEG    $00
-7E89: 00 00       NEG    $00
-7E8B: 00 00       NEG    $00
-7E8D: 00 00       NEG    $00
-7E8F: 00 00       NEG    $00
-7E91: 00 00       NEG    $00
-7E93: 00 00       NEG    $00
-7E95: 00 00       NEG    $00
-7E97: 00 00       NEG    $00
-7E99: 00 00       NEG    $00
-7E9B: 00 00       NEG    $00
-7E9D: 00 00       NEG    $00
-7E9F: 00 00       NEG    $00
-7EA1: 00 00       NEG    $00
-7EA3: 00 00       NEG    $00
-7EA5: 00 00       NEG    $00
-7EA7: 00 00       NEG    $00
-7EA9: 00 00       NEG    $00
-7EAB: 00 00       NEG    $00
-7EAD: 00 00       NEG    $00
-7EAF: 00 00       NEG    $00
-7EB1: 00 00       NEG    $00
-7EB3: 00 00       NEG    $00
-7EB5: 00 00       NEG    $00
-7EB7: 00 00       NEG    $00
-7EB9: 00 00       NEG    $00
-7EBB: 00 00       NEG    $00
-7EBD: 00 00       NEG    $00
-7EBF: 00 00       NEG    $00
-7EC1: 00 00       NEG    $00
-7EC3: 00 00       NEG    $00
-7EC5: 00 00       NEG    $00
-7EC7: 00 00       NEG    $00
-7EC9: 00 00       NEG    $00
-7ECB: 00 00       NEG    $00
-7ECD: 00 00       NEG    $00
-7ECF: 00 00       NEG    $00
-7ED1: 00 00       NEG    $00
-7ED3: 00 00       NEG    $00
-7ED5: 00 00       NEG    $00
-7ED7: 00 00       NEG    $00
-7ED9: 00 00       NEG    $00
-7EDB: 00 00       NEG    $00
-7EDD: 00 00       NEG    $00
-7EDF: 00 00       NEG    $00
-7EE1: 00 00       NEG    $00
-7EE3: 00 00       NEG    $00
-7EE5: 00 00       NEG    $00
-7EE7: 00 00       NEG    $00
-7EE9: 00 00       NEG    $00
-7EEB: 00 00       NEG    $00
-7EED: 00 00       NEG    $00
-7EEF: 00 00       NEG    $00
-7EF1: 00 00       NEG    $00
-7EF3: 00 00       NEG    $00
-7EF5: 00 00       NEG    $00
-7EF7: 00 00       NEG    $00
-7EF9: 00 00       NEG    $00
-7EFB: 00 00       NEG    $00
-7EFD: 00 00       NEG    $00
-7EFF: 00 00       NEG    $00
-7F01: 00 00       NEG    $00
-7F03: 00 00       NEG    $00
-7F05: 00 00       NEG    $00
-7F07: 00 00       NEG    $00
-7F09: 00 00       NEG    $00
-7F0B: 00 00       NEG    $00
-7F0D: 00 00       NEG    $00
-7F0F: 00 00       NEG    $00
-7F11: 00 00       NEG    $00
-7F13: 00 00       NEG    $00
-7F15: 00 00       NEG    $00
-7F17: 00 00       NEG    $00
-7F19: 00 00       NEG    $00
-7F1B: 00 00       NEG    $00
-7F1D: 00 00       NEG    $00
-7F1F: 00 00       NEG    $00
-7F21: 00 00       NEG    $00
-7F23: 00 00       NEG    $00
-7F25: 00 00       NEG    $00
-7F27: 00 00       NEG    $00
-7F29: 00 00       NEG    $00
-7F2B: 00 00       NEG    $00
-7F2D: 00 00       NEG    $00
-7F2F: 00 00       NEG    $00
-7F31: 00 00       NEG    $00
-7F33: 00 00       NEG    $00
-7F35: 00 00       NEG    $00
-7F37: 00 00       NEG    $00
-7F39: 00 00       NEG    $00
-7F3B: 00 00       NEG    $00
-7F3D: 00 00       NEG    $00
-7F3F: 00 00       NEG    $00
-7F41: 00 00       NEG    $00
-7F43: 00 00       NEG    $00
-7F45: 00 00       NEG    $00
-7F47: 00 00       NEG    $00
-7F49: 00 00       NEG    $00
-7F4B: 00 00       NEG    $00
-7F4D: 00 00       NEG    $00
-7F4F: 00 00       NEG    $00
-7F51: 00 00       NEG    $00
-7F53: 00 00       NEG    $00
-7F55: 00 00       NEG    $00
-7F57: 00 00       NEG    $00
-7F59: 00 00       NEG    $00
-7F5B: 00 00       NEG    $00
-7F5D: 00 00       NEG    $00
-7F5F: 00 00       NEG    $00
-7F61: 00 00       NEG    $00
-7F63: 00 00       NEG    $00
-7F65: 00 00       NEG    $00
-7F67: 00 00       NEG    $00
-7F69: 00 00       NEG    $00
-7F6B: 00 00       NEG    $00
-7F6D: 00 00       NEG    $00
-7F6F: 00 00       NEG    $00
-7F71: 00 00       NEG    $00
-7F73: 00 00       NEG    $00
-7F75: 00 00       NEG    $00
-7F77: 00 00       NEG    $00
-7F79: 00 00       NEG    $00
-7F7B: 00 00       NEG    $00
-7F7D: 00 00       NEG    $00
-7F7F: 00 00       NEG    $00
-7F81: 00 00       NEG    $00
-7F83: 00 00       NEG    $00
-7F85: 00 00       NEG    $00
-7F87: 00 00       NEG    $00
-7F89: 00 00       NEG    $00
-7F8B: 00 00       NEG    $00
-7F8D: 00 00       NEG    $00
-7F8F: 00 00       NEG    $00
-7F91: 00 00       NEG    $00
-7F93: 00 00       NEG    $00
-7F95: 00 00       NEG    $00
-7F97: 00 00       NEG    $00
-7F99: 00 00       NEG    $00
-7F9B: 00 00       NEG    $00
-7F9D: 00 00       NEG    $00
-7F9F: 00 00       NEG    $00
-7FA1: 00 00       NEG    $00
-7FA3: 00 00       NEG    $00
-7FA5: 00 00       NEG    $00
-7FA7: 00 00       NEG    $00
-7FA9: 00 00       NEG    $00
-7FAB: 00 00       NEG    $00
-7FAD: 00 00       NEG    $00
-7FAF: 00 00       NEG    $00
-7FB1: 00 00       NEG    $00
-7FB3: 00 00       NEG    $00
-7FB5: 00 00       NEG    $00
-7FB7: 00 00       NEG    $00
-7FB9: 00 00       NEG    $00
-7FBB: 00 00       NEG    $00
-7FBD: 00 00       NEG    $00
-7FBF: 00 00       NEG    $00
-7FC1: 00 00       NEG    $00
-7FC3: 00 00       NEG    $00
-7FC5: 00 00       NEG    $00
-7FC7: 00 00       NEG    $00
-7FC9: 00 00       NEG    $00
-7FCB: 00 00       NEG    $00
-7FCD: 00 00       NEG    $00
-7FCF: 00 00       NEG    $00
-7FD1: 00 00       NEG    $00
-7FD3: 00 00       NEG    $00
-7FD5: 00 00       NEG    $00
-7FD7: 00 00       NEG    $00
-7FD9: 00 00       NEG    $00
-7FDB: 00 00       NEG    $00
-7FDD: 00 00       NEG    $00
-7FDF: 00 00       NEG    $00
-7FE1: 00 00       NEG    $00
-7FE3: 00 00       NEG    $00
-7FE5: 00 00       NEG    $00
-7FE7: 00 00       NEG    $00
-7FE9: 00 00       NEG    $00
-7FEB: 00 00       NEG    $00
-7FED: 00 00       NEG    $00
-7FEF: 00 00       NEG    $00
-7FF1: 00 00       NEG    $00
-7FF3: 00 00       NEG    $00
-7FF5: 00 00       NEG    $00
-7FF7: 00 00       NEG    $00
-7FF9: 00 00       NEG    $00
-7FFB: 00 00       NEG    $00
-7FFD: 00 00       NEG    $00
-7FFF: 00 4F       NEG    $4F
+table_43b0:
+	dc.w	$43f4	; $43b0
+	dc.w	$4502	; $43b2
+	dc.w	$4596	; $43b4
+	dc.w	$4621	; $43b6
+	dc.w	$469f	; $43b8
+	dc.w	$46c9	; $43ba
+	dc.w	$46d2	; $43bc
+	dc.w	$485b	; $43be
+	dc.w	$489b	; $43c0
+	dc.w	$48b6	; $43c2
+	dc.w	$48b6	; $43c4
+	dc.w	$48ba	; $43c6
+	dc.w	$48e8	; $43c8
+	dc.w	$4a0e	; $43ca
+	dc.w	$4a0e	; $43cc
+	dc.w	$4a7a	; $43ce
+table_4708:
+	dc.w	$4710	; $4708
+	dc.w	$4777	; $470a
+	dc.w	$47cf	; $470c
+	dc.w	$4813	; $470e
+table_4dae:
+	dc.w	$4dbe	; $4dae
+	dc.w	$4dbe	; $4db0
+	dc.w	$4dbe	; $4db2
+	dc.w	$4dbe	; $4db4
+	dc.w	$4dbe	; $4db6
+	dc.w	$4dbe	; $4db8
+	dc.w	$4f7e	; $4dba
+	dc.w	$4ffd	; $4dbc
+table_4eab:
+	dc.w	$4eb7	; $4eab
+	dc.w	$4ee8	; $4ead
+	dc.w	$4eb7	; $4eaf
+	dc.w	$4ee8	; $4eb1
+	dc.w	$4f33	; $4eb3
+	dc.w	$4f33	; $4eb5
+table_50bf:
+	dc.w	$50c3	; $50bf
+	dc.w	$50fd	; $50c1
+table_5517:
+	dc.w	$5525	; $5517
+	dc.w	$557b	; $5519
+	dc.w	$55b6	; $551b
+	dc.w	$55f7	; $551d
+	dc.w	$5635	; $551f
+	dc.w	$567b	; $5521
+	dc.w	$56b8	; $5523
+table_5724:
+	dc.w	$572c	; $5724
+	dc.w	$572d	; $5726
+	dc.w	$5738	; $5728
+	dc.w	$5743	; $572a
+table_581a:
+	dc.w	$5822	; $581a
+	dc.w	$5823	; $581c
+	dc.w	$584f	; $581e
+	dc.w	$587b	; $5820
