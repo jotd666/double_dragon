@@ -1,5 +1,12 @@
 - log writes to 3808 bank switching
 - finalize jump tables
-- when called bogus jump table??
+- by default, seems that all JSR 4xxx jump to bank 1 vectors
+  wrap those calls with a macro to redirect calls or check
+  for proper bank
+- at first try to link without bank ROMs
+- FD06 discover entry
+- play with palette write wpoint
+- palette writes can be useful to detect 
+  level changes & load new tilesets
 - improve 6309 converter
 - convert subcpu???

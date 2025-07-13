@@ -73,11 +73,7 @@
 40A1: A6 A4          LDA    ,Y
 40A3: 97 59          STA    $59
 40A5: 39             RTS
-40A6: 08 01          ASL    $01
-40A8: 02 07 00       AIM    #$07;$00
-40AB: 03 06          COM    $06
-40AD: 05 04 C6       EIM    #$04;$C6
-40B0: 01 D7 58       OIM    #$D7;$58
+
 40B3: BD 40 E6       JSR    $40E6
 40B6: 4D             TSTA
 40B7: 27 24          BEQ    $40DD
@@ -139,24 +135,7 @@
 412B: DD 5E          STD    $5E
 412D: 86 FF          LDA    #$FF
 412F: 39             RTS
-4130: 00 00          NEG    $00
-4132: 00 00          NEG    $00
-4134: 00 00          NEG    $00
-4136: 00 04          NEG    $04
-4138: 00 06          NEG    $06
-413A: 00 04          NEG    $04
-413C: 00 06          NEG    $06
-413E: 00 00          NEG    $00
-4140: 00 06          NEG    $06
-4142: FF FC 00       STU    $FC00
-4145: 00 FF          NEG    $FF
-4147: FC FF FA       LDD    $FFFA
-414A: FF FC FF       STU    $FCFF
-414D: FA 00 00       ORB    >$0000
-4150: FF FA 00       STU    $FA00
-4153: 04 DC          LSR    $DC
-4155: 60 D3          NEG    [,--U]
-4157: 5E             FCB    $5E
+
 4158: C6 80          LDB    #$80
 415A: 3D             MUL
 415B: 34 06          PSHS   D

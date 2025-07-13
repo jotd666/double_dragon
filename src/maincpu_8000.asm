@@ -1,10 +1,65 @@
+;	map(0x0000, 0x0fff).ram().share("rambase");
+;	map(0x1000, 0x11ff).ram().w(m_palette, FUNC(palette_device::write8)).share("palette");
+;	map(0x1200, 0x13ff).ram().w(m_palette, FUNC(palette_device::write8_ext)).share("palette_ext");
+;	map(0x1800, 0x1fff).ram().w(FUNC(ddragon_state::fgvideoram_w)).share(m_fgvideoram);
+;	map(0x2000, 0x21ff).rw(FUNC(ddragon_state::comram_r), FUNC(ddragon_state::comram_w)).mirror(0x0600);
+;	map(0x2800, 0x2fff).ram().share(m_spriteram);
+;	map(0x3000, 0x37ff).ram().w(FUNC(ddragon_state::bgvideoram_w)).share(m_bgvideoram);
+;	map(0x3800, 0x3800).portr("P1");
+;	map(0x3801, 0x3801).portr("P2");
+;	map(0x3802, 0x3802).portr("EXTRA");
+;	map(0x3803, 0x3803).portr("DSW0");
+;	map(0x3804, 0x3804).portr("DSW1");
+;	map(0x3808, 0x3808).w(FUNC(ddragon_state::bankswitch_w));
+;	map(0x3809, 0x3809).writeonly().share(m_scrollx_lo);
+;	map(0x380a, 0x380a).writeonly().share(m_scrolly_lo);
+;	map(0x380b, 0x380f).rw(FUNC(ddragon_state::interrupt_r), FUNC(ddragon_state::interrupt_w));
+;	map(0x4000, 0x7fff).bankr(m_mainbank);
+;	map(0x8000, 0xffff).rom();
+
+;void ddragon_state::bankswitch_w(uint8_t data)
+;{
+;	/*
+;	    76543210
+;	    .......x    X-scroll D9 (H9BT)
+;	    ......x.    Y-scroll D9 (V9BT)
+;	    .....x..    /Screen flip (*1P/2P)
+;	    ....x...    /Sub CPU reset (*RESET)
+;	    ...x....    /Sub CPU halt (*HALT)
+;	    xxx.....    ROM bank (*BANK)
+;	*/
+;	m_scrollx_hi = data & 0x01;
+;	m_scrolly_hi = (data & 0x02) >> 1;
+;	flip_screen_set(~data & 0x04);
+;
+;	m_subcpu->set_input_line(INPUT_LINE_RESET, data & 0x08 ? CLEAR_LINE : ASSERT_LINE);
+;	m_subcpu->set_input_line(INPUT_LINE_HALT, data & 0x10 ? ASSERT_LINE : CLEAR_LINE);
+;	m_mainbank->set_entry((data & 0xe0) >> 5);
+;}
+
+bank_switch_copy_3a = $3a
+
+port_1_3800 = $3800
+port_2_3800 = $3801
+extra_3802 = $3802
+dsw_0_3803 = $3803
+dsw_1_3804 = $3804
+bankswitch_3808 =  $3808
+nmi_ack_380b = $380b
+sub_irq_380f = $380f
+irq_ack_380d = $380d
+sound_irq_380e = $380e
+firq_ack_380c = $380c
+scroll_x_lo_3809 = $3809
+scroll_y_lo_380a = $380a
+
 8000: 4F             CLRA
 8001: B7 0E 71       STA    $0E71
-8004: B7 38 08       STA    $3808
+8004: B7 38 08       STA     bankswitch_3808
 8007: 1A 50          ORCC   #$50
-8009: B7 38 0D       STA    $380D
-800C: B7 38 0B       STA    $380B
-800F: B7 38 0C       STA    $380C
+8009: B7 38 0D       STA    irq_ack_380d
+800C: B7 38 0B       STA    nmi_ack_380b
+800F: B7 38 0C       STA    firq_ack_380c
 8012: 4F             CLRA
 8013: 1F 8B          TFR    A,DP
 8015: CE 0E FF       LDU    #$0EFF
@@ -16,13 +71,13 @@
 8028: BD FE A1       JSR    $FEA1
 802B: BD FD F0       JSR    $FDF0
 802E: 1C EF          ANDCC  #$EF
-8030: 96 3A          LDA    $3A
+8030: 96 3A          LDA    bank_switch_copy_3a
 8032: 84 E7          ANDA   #$E7
-8034: 97 3A          STA    $3A
-8036: B7 38 08       STA    $3808
+8034: 97 3A          STA    bank_switch_copy_3a
+8036: B7 38 08       STA     bankswitch_3808
 8039: 8A 08          ORA    #$08
-803B: 97 3A          STA    $3A
-803D: B7 38 08       STA    $3808
+803B: 97 3A          STA    bank_switch_copy_3a
+803D: B7 38 08       STA     bankswitch_3808
 8040: 7E B7 ED       JMP    $B7ED
 8043: 86 20          LDA    #$20
 8045: BD B7 56       JSR    $B756
@@ -56,7 +111,7 @@
 8088: 96 22          LDA    $22
 808A: 84 7F          ANDA   #$7F
 808C: 97 22          STA    $22
-808E: B7 38 0B       STA    $380B
+808E: B7 38 0B       STA    nmi_ack_380b
 8091: 3B             RTI
 8092: 34 7F          PSHS   U,Y,X,DP,D,CC
 8094: 4F             CLRA
@@ -70,24 +125,24 @@
 80A4: 96 22          LDA    $22
 80A6: 84 DF          ANDA   #$DF
 80A8: 97 22          STA    $22
-80AA: B7 38 0C       STA    $380C
+80AA: B7 38 0C       STA    firq_ack_380c
 80AD: 35 7F          PULS   CC,D,DP,X,Y,U
 80AF: 3B             RTI
 80B0: 86 01          LDA    #$01
 80B2: B7 0E 3E       STA    $0E3E
-80B5: B7 38 0D       STA    $380D
+80B5: B7 38 0D       STA    irq_ack_380d
 80B8: 3B             RTI
 80B9: 3B             RTI
 80BA: 86 FF          LDA    #$FF
-80BC: B7 38 0E       STA    $380E
+80BC: B7 38 0E       STA    sound_irq_380e
 80BF: C6 FF          LDB    #$FF
 80C1: 5A             DECB
 80C2: 26 FD          BNE    $80C1
 80C4: 86 FE          LDA    #$FE
-80C6: B7 38 0E       STA    $380E
+80C6: B7 38 0E       STA    sound_irq_380e
 80C9: 9E 23          LDX    $23
 80CB: 96 25          LDA    $25
-80CD: D6 3A          LDB    $3A
+80CD: D6 3A          LDB    bank_switch_copy_3a
 80CF: 34 16          PSHS   X,D
 80D1: 9E 2D          LDX    $2D
 80D3: DC 20          LDD    $20
@@ -103,7 +158,7 @@
 80E8: 35 16          PULS   D,X
 80EA: 9F 23          STX    $23
 80EC: 97 25          STA    $25
-80EE: D7 3A          STB    $3A
+80EE: D7 3A          STB    bank_switch_copy_3a
 80F0: 86 01          LDA    #$01
 80F2: BD FE B6       JSR    $FEB6
 80F5: 0F 26          CLR    $26
@@ -145,12 +200,12 @@
 8152: BD B7 56       JSR    $B756
 8155: 16 00 BD       LBRA   $8215
 8158: 86 FF          LDA    #$FF
-815A: B7 38 0E       STA    $380E
+815A: B7 38 0E       STA    sound_irq_380e
 815D: C6 FF          LDB    #$FF
 815F: 5A             DECB
 8160: 26 FD          BNE    $815F
 8162: 86 FE          LDA    #$FE
-8164: B7 38 0E       STA    $380E
+8164: B7 38 0E       STA    sound_irq_380e
 8167: 7F 03 EE       CLR    $03EE
 816A: 7F 04 4C       CLR    $044C
 816D: 0F 29          CLR    $29
@@ -163,7 +218,7 @@
 8180: BD FE 98       JSR    $FE98
 8183: BD FE E3       JSR    $FEE3
 8186: 86 FF          LDA    #$FF
-8188: B7 38 0E       STA    $380E
+8188: B7 38 0E       STA    sound_irq_380e
 818B: 7C 0E 34       INC    $0E34
 818E: B6 0E 34       LDA    $0E34
 8191: 10 8E 88 41    LDY    #$8841
@@ -202,7 +257,7 @@
 81DB: BD 84 45       JSR    $8445
 81DE: 86 01          LDA    #$01
 81E0: BD B7 56       JSR    $B756
-81E3: F6 38 00       LDB    $3800
+81E3: F6 38 00       LDB    port_1_3800
 81E6: 53             COMB
 81E7: C4 C0          ANDB   #$C0
 81E9: 27 9B          BEQ    $8186
@@ -241,7 +296,7 @@
 822B: 0D 29          TST    $29
 822D: 2B 03          BMI    $8232
 822F: 7F 04 48       CLR    $0448
-8232: B6 38 04       LDA    $3804
+8232: B6 38 04       LDA    dsw_1_3804
 8235: 43             COMA
 8236: 84 03          ANDA   #$03
 8238: 8E 82 6B       LDX    #$826B
@@ -369,11 +424,7 @@
 836B: A6 A6          LDA    A,Y
 836D: BD FE B6       JSR    $FEB6
 8370: 20 0C          BRA    $837E
-8372: 09 07          ROL    $07
-8374: 0A 0D          DEC    $0D
-8376: 00 01          NEG    $01
-8378: 02 03 00       AIM    #$03;$00
-837B: 01 02 03       OIM    #$02;$03
+
 837E: B6 0E 71       LDA    $0E71
 8381: 8A 80          ORA    #$80
 8383: B7 0E 71       STA    $0E71
@@ -393,7 +444,7 @@
 83AB: BD FC C8       JSR    $FCC8
 83AE: BD B7 CA       JSR    $B7CA
 83B1: BD FC 82       JSR    $FC82
-83B4: BD 40 5D       JSR    $405D
+83B4: BD 40 5D       JSR    $405D		; [bank_1]
 83B7: BD FC 8F       JSR    $FC8F
 83BA: BD FF 01       JSR    $FF01
 83BD: BD FF 5E       JSR    $FF5E
@@ -413,7 +464,7 @@
 83E2: 96 22          LDA    $22
 83E4: 8A 01          ORA    #$01
 83E6: 97 22          STA    $22
-83E8: 7F 38 0B       CLR    $380B
+83E8: 7F 38 0B       CLR    nmi_ack_380b
 83EB: 96 22          LDA    $22
 83ED: 84 02          ANDA   #$02
 83EF: 27 FA          BEQ    $83EB
@@ -458,21 +509,21 @@
 844F: 39             RTS
 8450: 7F 0E 71       CLR    $0E71
 8453: 86 FF          LDA    #$FF
-8455: B7 38 0E       STA    $380E
+8455: B7 38 0E       STA    sound_irq_380e
 8458: BD FE 98       JSR    $FE98
 845B: BD FE 9B       JSR    $FE9B
 845E: BD FE 9E       JSR    $FE9E
 8461: 86 FE          LDA    #$FE
-8463: B7 38 0E       STA    $380E
-8466: 96 3A          LDA    $3A
+8463: B7 38 0E       STA    sound_irq_380e
+8466: 96 3A          LDA    bank_switch_copy_3a
 8468: 8A 60          ORA    #$60
-846A: B7 38 08       STA    $3808
-846D: 97 3A          STA    $3A
+846A: B7 38 08       STA     bankswitch_3808
+846D: 97 3A          STA    bank_switch_copy_3a
 846F: BD 6C 1E       JSR    $6C1E
-8472: 96 3A          LDA    $3A
+8472: 96 3A          LDA    bank_switch_copy_3a
 8474: 84 1F          ANDA   #$1F
-8476: B7 38 08       STA    $3808
-8479: 97 3A          STA    $3A
+8476: B7 38 08       STA     bankswitch_3808
+8479: 97 3A          STA    bank_switch_copy_3a
 847B: 7E 80 BA       JMP    $80BA
 847E: 96 29          LDA    $29
 8480: 2B 1D          BMI    $849F
@@ -509,7 +560,7 @@
 84CD: 20 28          BRA    $84F7
 84CF: A6 88 48       LDA    $48,X
 84D2: 10 27 02 43    LBEQ   $8719
-84D6: B6 38 04       LDA    $3804
+84D6: B6 38 04       LDA    dsw_1_3804
 84D9: 43             COMA
 84DA: 84 C0          ANDA   #$C0
 84DC: 81 C0          CMPA   #$C0
@@ -552,7 +603,7 @@
 853A: 96 22          LDA    $22
 853C: 8A 01          ORA    #$01
 853E: 97 22          STA    $22
-8540: 7F 38 0B       CLR    $380B
+8540: 7F 38 0B       CLR    nmi_ack_380b
 8543: 96 22          LDA    $22
 8545: 84 02          ANDA   #$02
 8547: 27 FA          BEQ    $8543
@@ -571,7 +622,7 @@
 8564: 86 80          LDA    #$80
 8566: B7 0E 52       STA    $0E52
 8569: 86 FE          LDA    #$FE
-856B: B7 38 0E       STA    $380E
+856B: B7 38 0E       STA    sound_irq_380e
 856E: C6 FF          LDB    #$FF
 8570: 5A             DECB
 8571: 26 FD          BNE    $8570
@@ -663,7 +714,7 @@
 8645: 96 22          LDA    $22
 8647: 8A 01          ORA    #$01
 8649: 97 22          STA    $22
-864B: 7F 38 0B       CLR    $380B
+864B: 7F 38 0B       CLR    nmi_ack_380b
 864E: 96 22          LDA    $22
 8650: 84 02          ANDA   #$02
 8652: 27 FA          BEQ    $864E
@@ -768,7 +819,7 @@
 8744: A4 A5          ANDA   B,Y
 8746: 97 29          STA    $29
 8748: BD FD A0       JSR    $FDA0
-874B: BD 40 99       JSR    $4099
+874B: BD 40 99       JSR    $4099		; [bank_1]
 874E: 34 01          PSHS   CC
 8750: BD FD B2       JSR    $FDB2
 8753: 35 01          PULS   CC
@@ -779,7 +830,7 @@
 875F: 34 36          PSHS   Y,X,D
 8761: 0D 21          TST    $21
 8763: 27 68          BEQ    $87CD
-8765: F6 38 00       LDB    $3800
+8765: F6 38 00       LDB    port_1_3800
 8768: 53             COMB
 8769: C4 C0          ANDB   #$C0
 876B: 27 60          BEQ    $87CD
@@ -1019,9 +1070,9 @@
 8990: 32 7E          LEAS   -$2,S
 8992: B6 0E 71       LDA    $0E71
 8995: B7 0E 72       STA    $0E72
-8998: B6 38 01       LDA    $3801
+8998: B6 38 01       LDA    port_1_3801
 899B: 43             COMA
-899C: F6 38 02       LDB    $3802
+899C: F6 38 02       LDB    extra_3802
 899F: 53             COMB
 89A0: 54             LSRB
 89A1: 46             RORA
@@ -1046,21 +1097,21 @@
 89D1: 10 27 00 A3    LBEQ   $8A78
 89D5: 17 00 A9       LBSR   $8A81
 89D8: 10 27 00 9C    LBEQ   $8A78
-89DC: B6 38 01       LDA    $3801
+89DC: B6 38 01       LDA    port_1_3801
 89DF: 43             COMA
-89E0: F6 38 02       LDB    $3802
+89E0: F6 38 02       LDB    extra_3802
 89E3: 53             COMB
 89E4: 54             LSRB
 89E5: 46             RORA
 89E6: 84 E0          ANDA   #$E0
 89E8: 26 F2          BNE    $89DC
 89EA: 86 02          LDA    #$02
-89EC: B7 38 0E       STA    $380E
+89EC: B7 38 0E       STA    sound_irq_380e
 89EF: 6F E4          CLR    ,S
 89F1: 5F             CLRB
 89F2: 96 20          LDA    $20
 89F4: 2B 0F          BMI    $8A05
-89F6: F6 38 03       LDB    $3803
+89F6: F6 38 03       LDB    dsw_0_3803
 89F9: 53             COMB
 89FA: C4 3F          ANDB   #$3F
 89FC: 48             ASLA
@@ -1094,31 +1145,31 @@
 8A32: 97 21          STA    $21
 8A34: B6 0B 03       LDA    $0B03
 8A37: 2B 15          BMI    $8A4E
-8A39: 96 3A          LDA    $3A
+8A39: 96 3A          LDA    bank_switch_copy_3a
 8A3B: 34 02          PSHS   A
 8A3D: 84 1F          ANDA   #$1F
-8A3F: 97 3A          STA    $3A
-8A41: B7 38 08       STA    $3808
+8A3F: 97 3A          STA    bank_switch_copy_3a
+8A41: B7 38 08       STA     bankswitch_3808
 8A44: BD 84 4A       JSR    $844A
 8A47: 35 02          PULS   A
-8A49: 97 3A          STA    $3A
-8A4B: B7 38 08       STA    $3808
+8A49: 97 3A          STA    bank_switch_copy_3a
+8A4B: B7 38 08       STA     bankswitch_3808
 8A4E: 96 26          LDA    $26
 8A50: 26 26          BNE    $8A78
 8A52: 10 CE 0F FF    LDS    #$0FFF
 8A56: CE 0E FF       LDU    #$0EFF
 8A59: 7F 0E 71       CLR    $0E71
-8A5C: 7F 38 0D       CLR    $380D
+8A5C: 7F 38 0D       CLR    irq_ack_380d
 8A5F: 86 44          LDA    #$44
 8A61: 97 22          STA    $22
 8A63: 0C 26          INC    $26
 8A65: 1C AF          ANDCC  #$AF
 8A67: 86 01          LDA    #$01
 8A69: BD B7 56       JSR    $B756
-8A6C: 96 3A          LDA    $3A
+8A6C: 96 3A          LDA    bank_switch_copy_3a
 8A6E: 84 1F          ANDA   #$1F
-8A70: 97 3A          STA    $3A
-8A72: B7 38 08       STA    $3808
+8A70: 97 3A          STA    bank_switch_copy_3a
+8A72: B7 38 08       STA     bankswitch_3808
 8A75: 7E 81 58       JMP    $8158
 8A78: 32 62          LEAS   $2,S
 8A7A: F6 0E 72       LDB    $0E72
@@ -1128,9 +1179,9 @@
 8A84: 30 1F          LEAX   -$1,X
 8A86: 8C 00 00       CMPX   #$0000
 8A89: 26 F9          BNE    $8A84
-8A8B: B6 38 01       LDA    $3801
+8A8B: B6 38 01       LDA    port_1_3801
 8A8E: 43             COMA
-8A8F: F6 38 02       LDB    $3802
+8A8F: F6 38 02       LDB    extra_3802
 8A92: 53             COMB
 8A93: 54             LSRB
 8A94: 46             RORA
@@ -1148,11 +1199,11 @@
 8AAE: B7 03 C1       STA    $03C1
 8AB1: B7 04 1F       STA    $041F
 8AB4: 39             RTS
-8AB5: 96 3A          LDA    $3A
+8AB5: 96 3A          LDA    bank_switch_copy_3a
 8AB7: 8A 10          ORA    #$10
-8AB9: 97 3A          STA    $3A
-8ABB: B7 38 08       STA    $3808
-8ABE: B6 38 02       LDA    $3802
+8AB9: 97 3A          STA    bank_switch_copy_3a
+8ABB: B7 38 08       STA     bankswitch_3808
+8ABE: B6 38 02       LDA    extra_3802
 8AC1: 84 10          ANDA   #$10
 8AC3: 26 F9          BNE    $8ABE
 8AC5: 39             RTS
@@ -1192,8 +1243,8 @@
 8B11: D1 2A          CMPB   $2A
 8B13: 27 1E          BEQ    $8B33
 8B15: 48             ASLA
-8B16: 10 8E 8B 59    LDY    #$8B59
-8B1A: AD B6          JSR    [A,Y]
+8B16: 10 8E 8B 59    LDY   #table_8b59
+8B1A: AD B6          JSR    [A,Y]        ; [jump_table]
 8B1C: BD FD 12       JSR    $FD12
 8B1F: BD FD 00       JSR    $FD00
 8B22: BD FD 03       JSR    $FD03
@@ -1303,7 +1354,7 @@
 8C0B: A7 02          STA    $2,X
 8C0D: A6 88 37       LDA    $37,X
 8C10: 48             ASLA
-8C11: 10 8E 8C 21    LDY    #table_8C21
+8C11: 10 8E 8C 21    LDY   #table_8c21
 8C15: AD B6          JSR    [A,Y]		; [jump_table]
 8C17: 35 FE          PULS   D,DP,X,Y,U,PC
 table_8C21:
@@ -1392,9 +1443,9 @@ table_8C21:
 8CDC: A7 2C          STA    $C,Y
 8CDE: BD FE 80       JSR    $FE80
 8CE1: BD FD A0       JSR    $FDA0
-8CE4: BD 40 8A       JSR    $408A
-8CE7: BD 40 A8       JSR    $40A8
-8CEA: BD 40 AB       JSR    $40AB
+8CE4: BD 40 8A       JSR    $408A	; [bank_1]
+8CE7: BD 40 A8       JSR    $40A8	; [bank_1]
+8CEA: BD 40 AB       JSR    $40AB	; [bank_1]
 8CED: BD FD B2       JSR    $FDB2
 8CF0: EC 04          LDD    $4,X
 8CF2: ED 26          STD    $6,Y
@@ -1437,7 +1488,7 @@ table_8C21:
 8D41: 90 3F          SUBA   $3F
 8D43: A7 E4          STA    ,S
 8D45: EC 61          LDD    $1,S
-8D47: ED 88 3A       STD    $3A,X
+8D47: ED 88 3A       STD    bank_switch_copy_3a,X
 8D4A: EC 88 38       LDD    $38,X
 8D4D: 10 83 C1 00    CMPD   #$C100
 8D51: 25 06          BCS    $8D59
@@ -1448,16 +1499,16 @@ table_8C21:
 8D60: 24 06          BCC    $8D68
 8D62: CC 10 00       LDD    #$1000
 8D65: ED 88 38       STD    $38,X
-8D68: EC 88 3A       LDD    $3A,X
+8D68: EC 88 3A       LDD    bank_switch_copy_3a,X
 8D6B: 10 83 C1 00    CMPD   #$C100
 8D6F: 25 06          BCS    $8D77
 8D71: CC C1 00       LDD    #$C100
-8D74: ED 88 3A       STD    $3A,X
-8D77: EC 88 3A       LDD    $3A,X
+8D74: ED 88 3A       STD    bank_switch_copy_3a,X
+8D77: EC 88 3A       LDD    bank_switch_copy_3a,X
 8D7A: 10 83 10 00    CMPD   #$1000
 8D7E: 24 06          BCC    $8D86
 8D80: CC 10 00       LDD    #$1000
-8D83: ED 88 3A       STD    $3A,X
+8D83: ED 88 3A       STD    bank_switch_copy_3a,X
 8D86: DC 3C          LDD    $3C
 8D88: C3 00 C1       ADDD   #$00C1
 8D8B: 10 A3 04       CMPD   $4,X
@@ -2202,7 +2253,8 @@ table_8C21:
 93F1: 1C FE          ANDCC  #$FE
 93F3: 39             RTS
 
-941B: 7F 48 10       CLR    $4810
+; looks like a programming error, loads X jumps indees in Y
+941B: 7F 48 10       CLR    $4810		; [unreached]
 941E: 8E 94 23       LDX    #table_9423
 9421: 6E B6          JMP    [A,Y]		; [jump_table]
 table_9423:
@@ -2289,18 +2341,7 @@ table_9423:
 94D7: 88 04          EORA   #$04
 94D9: A7 88 15       STA    $15,X
 94DC: 39             RTS
-94DD: 12             NOP
-94DE: 03 13          COM    $13
-94E0: 03 14          COM    $14
-94E2: 03 15          COM    $15
-94E4: 03 16          COM    $16
-94E6: 03 11          COM    $11
-94E8: 03 BD          COM    $BD
-94EA: FC 82 BD       LDD    $82BD
-94ED: 40             NEGA
-94EE: 78 BD FC       ASL    $BDFC
-94F1: 8F             FCB    $8F
-94F2: 39             RTS
+
 94F3: 10 8E 95 2E    LDY    #$952E
 94F7: A6 88 1B       LDA    $1B,X
 94FA: 2B 0E          BMI    $950A
@@ -2583,7 +2624,7 @@ table_9423:
 976F: 39             RTS
 9770: 38             FCB    $38
 9771: 03 39          COM    $39
-9773: 03 3A          COM    $3A
+9773: 03 3A          COM    bank_switch_copy_3a
 9775: 03 3B          COM    $3B
 9777: 03 3C          COM    $3C
 9779: 03 80          COM    $80
@@ -3232,7 +3273,7 @@ table_9423:
 9D46: A7 88 22       STA    $22,X
 9D49: 86 01          LDA    #$01
 9D4B: 7E 9D DA       JMP    $9DDA
-9D4E: A6 88 3A       LDA    $3A,X
+9D4E: A6 88 3A       LDA    bank_switch_copy_3a,X
 9D51: 97 00          STA    $00
 9D53: A6 88 3B       LDA    $3B,X
 9D56: 97 01          STA    $01
@@ -3458,11 +3499,11 @@ table_9423:
 9F68: 10 2A 02 A8    LBPL   $A214
 9F6C: A6 88 2F       LDA    $2F,X
 9F6F: 84 7F          ANDA   #$7F
-9F71: 10 8E 9F 79    LDY    #table_9F79
+9F71: 10 8E 9F 79    LDY   #table_9f79
 9F75: 48             ASLA
 9F76: 6E B6          JMP    [A,Y]		; [jump_table]
 9F78: 39             RTS
-table_9F79:
+table_9f79:
 	.word 	$9FAA
 	.word 	$A003
 	.word 	$A126
@@ -4315,7 +4356,7 @@ A70F: 86 01          LDA    #$01
 A711: A7 88 22       STA    $22,X
 A714: A6 88 22       LDA    $22,X
 A717: 48             ASLA
-A718: 10 8E A7 1E    LDY    #table_A71E
+A718: 10 8E A7 1E    LDY   #table_a71e
 A71C: 6E B6          JMP    [A,Y]			; [jump_table]
 table_A71E:
 	.word	$A732
@@ -4502,6 +4543,7 @@ A8B1: 04 00          LSR    $00
 A8B3: 35 06          PULS   D
 A8B5: 00 00          NEG    $00
 A8B7: 35 8B          PULS   CC,A,DP,PC
+
 A8B9: 8B 20          ADDA   #$20
 A8BB: 00 04          NEG    $04
 A8BD: 06 35          ROR    $35
@@ -4544,82 +4586,98 @@ A916: 25 02          BCS    $A91A
 A918: 80 17          SUBA   #$17
 A91A: 80 02          SUBA   #$02
 A91C: 48             ASLA
-A91D: 10 8E A9 2D    LDY    #table_A92D
+; double table structure (table of tables)
+A91D: 10 8E A9 2D    LDY   #table_a92d
 A921: 10 AE A6       LDY    A,Y
 A924: A6 88 1E       LDA    $1E,X
 A927: 84 7F          ANDA   #$7F
 A929: 48             ASLA
 A92A: 6E B6          JMP    [A,Y]		; [jump_table] sound bogus!!
 A92C: 39             RTS
-table_A92D:
-A92D: A9 43
-A92F: A9 4D
-A931: A9 75
-A933: A9 7D
-A935: A9 85
-A937: A9 8F
-A939: A9 99 
-A9 A5    ADCA   [-$565B,X]
-A93D: A9 B1          ADCA   [,Y++]
-A93F: A9 99 
-A9 A5    ADCA   [-$565B,X]
-A943: AA D4          ORA    [,U]
-A945: AA DE          ORA    [W,U]
-A947: AA E8 AB       ORA    -$55,S
-A94A: A6 AE          LDA    W,Y
-A94C: B4 A9 BB       ANDA   $A9BB
-A94F: 94 F3          ANDA   $F3
-A951: AC 37          CMPX   -$9,Y
-A953: AC E4          CMPX   ,S
-A955: 96 33          LDA    $33
-A957: 95 F3          BITA   $F3
-A959: 95 F3          BITA   $F3
-A95B: 97 2F          STA    $2F
-A95D: 97 F5          STA    $F5
-A95F: 97 7C          STA    $7C
-A961: AB B0 AA F2    ADDA   [-$550E,W]
-A965: 9A 26          ORA    $26
-A967: 98 34          EORA   $34
-A969: 99 71          ADCA   $71
-A96B: 96 EE          LDA    $EE
-A96D: 97 F5          STA    $F5
-A96F: 9A 92          ORA    $92
-A971: 9B 40          ADDA   $40
-A973: 96 7D          LDA    $7D
-A975: A9 BB          ADCA   [D,Y]
-A977: AD AA          JSR    F,Y
-A979: AE A0          LDX    ,Y+
-A97B: 9A 26          ORA    $26
-A97D: A9 BB          ADCA   [D,Y]
-A97F: AD AA          JSR    F,Y
-A981: AE A0          LDX    ,Y+
-A983: 9A 26          ORA    $26
-A985: A9 BB          ADCA   [D,Y]
-A987: AD AA          JSR    F,Y
-A989: AE A0          LDX    ,Y+
-A98B: AE AA          LDX    F,Y
-A98D: 9A 26          ORA    $26
-A98F: A9 BB          ADCA   [D,Y]
-A991: AD AA          JSR    F,Y
-A993: AE A0          LDX    ,Y+
-A995: AE AA          LDX    F,Y
-A997: 9A 26          ORA    $26
-A999: A9 BB          ADCA   [D,Y]
-A99B: AC E4          CMPX   ,S
-A99D: 99 71          ADCA   $71
-A99F: 98 34          EORA   $34
-A9A1: AE 38          LDX    -$8,Y
-A9A3: AA F2          ORA    Illegal Postbyte
-A9A5: A9 BB          ADCA   [D,Y]
-A9A7: 99 71          ADCA   $71
-A9A9: 98 34          EORA   $34
-A9AB: 9A 26          ORA    $26
-A9AD: AA F2          ORA    Illegal Postbyte
-A9AF: AC E4          CMPX   ,S
-A9B1: A9 BB          ADCA   [D,Y]
-A9B3: AE 42          LDX    $2,U
-A9B5: AE 42          LDX    $2,U
-A9B7: AE 42          LDX    $2,U
+
+
+
+table_a92d:
+	dc.w	$a943	; $a92d
+	dc.w	$a94d	; $a92f
+	dc.w	$a975	; $a931
+	dc.w	$a97d	; $a933
+	dc.w	$a985	; $a935
+	dc.w	$a98f	; $a937
+	dc.w	$a999	; $a939
+	dc.w	$a9a5	; $a93b
+	dc.w	$a9b1	; $a93d
+	dc.w	$a999	; $a93f
+	dc.w	$a9a5	; $a941
+	
+	dc.w	$aad4	; $a943
+	dc.w	$aade	; $a945
+	dc.w	$aae8	; $a947
+	dc.w	$aba6	; $a949
+	dc.w	$aeb4	; $a94b
+
+	dc.w	$a9bb	; $a94d
+	dc.w	$94f3	; $a94f
+	dc.w	$ac37	; $a951
+	dc.w	$ace4	; $a953
+	dc.w	$9633	; $a955
+	dc.w	$95f3	; $a957
+	dc.w	$95f3	; $a959
+	dc.w	$972f	; $a95b
+	dc.w	$97f5	; $a95d
+	dc.w	$977c	; $a95f
+	dc.w	$abb0	; $a961
+	dc.w	$aaf2	; $a963
+	dc.w	$9a26	; $a965
+	dc.w	$9834	; $a967
+	dc.w	$9971	; $a969
+	dc.w	$96ee	; $a96b
+	dc.w	$97f5	; $a96d
+	dc.w	$9a92	; $a96f
+	dc.w	$9b40	; $a971
+	dc.w	$967d	; $a973
+	
+	dc.w	$a9bb	; $a975
+	dc.w	$adaa	; $a977
+	dc.w	$aea0	; $a979
+	dc.w	$9a26	; $a97b
+	dc.w	$a9bb	; $a97d
+	dc.w	$adaa	; $a97f
+	dc.w	$aea0	; $a981
+	dc.w	$9a26	; $a983
+	dc.w	$a9bb	; $a985
+	dc.w	$adaa	; $a987
+	dc.w	$aea0	; $a989
+	dc.w	$aeaa	; $a98b
+	dc.w	$9a26	; $a98d
+	
+	dc.w	$a9bb	; $a98f
+	dc.w	$adaa	; $a991
+	dc.w	$aea0	; $a993
+	dc.w	$aeaa	; $a995
+	dc.w	$9a26	; $a997
+	
+	dc.w	$a9bb	; $a999
+	dc.w	$ace4	; $a99b
+	dc.w	$9971	; $a99d
+	dc.w	$9834	; $a99f
+	dc.w	$ae38	; $a9a1
+	dc.w	$aaf2	; $a9a3
+	
+	dc.w	$a9bb	; $a9a5
+	dc.w	$9971	; $a9a7
+	dc.w	$9834	; $a9a9
+	dc.w	$9a26	; $a9ab
+	dc.w	$aaf2	; $a9ad
+	dc.w	$ace4	; $a9af
+	
+	dc.w	$a9bb	; $a9b1
+	dc.w	$ae42	; $a9b3
+	dc.w	$ae42	; $a9b5
+	dc.w	$ae42	; $a9b7
+	dc.w	$9633	; $a9b9
+	
+
 A9B9: 96 33          LDA    $33
 A9BB: 34 40          PSHS   U
 A9BD: CE AA 9A       LDU    #$AA9A
@@ -4788,7 +4846,7 @@ AB39: BD FA 60       JSR    $FA60
 AB3C: BD FC 00       JSR    $FC00
 AB3F: 27 53          BEQ    $AB94
 AB41: BD FA D0       JSR    $FAD0
-AB44: A6 88 3A       LDA    $3A,X
+AB44: A6 88 3A       LDA    bank_switch_copy_3a,X
 AB47: E6 88 14       LDB    $14,X
 AB4A: C5 40          BITB   #$40
 AB4C: 27 03          BEQ    $AB51
@@ -4886,10 +4944,7 @@ AC2A: 35 C0          PULS   U,PC
 AC2C: 86 00          LDA    #$00
 AC2E: A7 88 1B       STA    $1B,X
 AC31: 35 C0          PULS   U,PC
-AC33: 00 00          NEG    $00
-AC35: FF 00 34       STU    >$0034
-AC38: 7E 10 8E       JMP    $108E
-AC3B: AC DC A6       CMPX   [$ABE4,PCR]
+
 AC3E: 88 1B          EORA   #$1B
 AC40: 2B 3F          BMI    $AC81
 AC42: BD B7 BD       JSR    $B7BD
@@ -5151,14 +5206,7 @@ AE8F: 20 05          BRA    $AE96
 AE91: 86 00          LDA    #$00
 AE93: A7 88 1B       STA    $1B,X
 AE96: 35 C0          PULS   U,PC
-AE98: 30 31          LEAX   -$F,Y
-AE9A: 32 33          LEAS   -$D,Y
-AE9C: 02 02 02       AIM    #$02;$02
-AE9F: 03 BD          COM    $BD
-AEA1: FC 82 BD       LDD    $82BD
-AEA4: 40             NEGA
-AEA5: E4 BD FC 8F    ANDB   [$AB38,PCR]
-AEA9: 39             RTS
+
 AEAA: BD FC 82       JSR    $FC82
 AEAD: BD 40 E7       JSR    $40E7
 AEB0: BD FC 8F       JSR    $FC8F
@@ -5171,7 +5219,7 @@ AEBE: BD FC 82       JSR    $FC82
 AEC1: BD 40 B4       JSR    $40B4
 AEC4: BD FC 8F       JSR    $FC8F
 AEC7: 96 36          LDA    $36
-AEC9: 10 8E AE D1    LDY    #table_aed1
+AEC9: 10 8E AE D1    LDY   #table_aed1
 AECD: 48             ASLA
 AECE: 6E B6          JMP    [A,Y]		; [jump_table]
 AED0: 39             RTS
@@ -5185,17 +5233,16 @@ AEDB: 97 4B          STA    $4B
 AEDD: B6 0E 2D       LDA    $0E2D
 AEE0: 84 0F          ANDA   #$0F
 AEE2: 48             ASLA
-AEE3: 10 8E AE EA    LDY    #table_AEEA
+AEE3: 10 8E AE EA    LDY   #table_aeea
 AEE7: 6E B6          JMP    [A,Y]		; [jump_table]
 AEE9: 39             RTS
-table_AEEA:
-AEEA: AE F0          LDX    [,--W]
-AEEC: AE FC AF       LDX    [$AE9E,PCR]
-AEEF: 26 BD          BNE    $AEAE
-AEF1: B0 D0 BD       SUBA   $D0BD
-AEF4: B0 FE 24       SUBA   $FE24
-AEF7: 03 BD          COM    $BD
-AEF9: B0 F1 39       SUBA   $F139
+
+AEF0: BD B0 D0       JSR    $B0D0            
+AEF3: BD B0 FE       JSR    $B0FE            
+AEF6: 24 03          BCC    $AEFB            
+AEF8: BD B0 F1       JSR    $B0F1            
+AEFB: 39             RTS                                                 39
+
 AEFC: 10 8E AF 22    LDY    #$AF22
 AF00: 96 36          LDA    $36
 AF02: 81 02          CMPA   #$02
@@ -5249,7 +5296,7 @@ AF6B: 39             RTS
 AF6C: B6 0E 2D       LDA    $0E2D
 AF6F: 84 0F          ANDA   #$0F
 AF71: 48             ASLA
-AF72: 10 8E AF 79    LDY    #table_AF79
+AF72: 10 8E AF 79    LDY   #table_af79
 AF76: 6E B6          JMP    [A,Y]		; [jump_table]
 AF78: 39             RTS
 table_AF79:
@@ -5291,7 +5338,7 @@ AFCA: 7C 0E 2D       INC    $0E2D
 AFCD: 39             RTS
 AFCE: 96 37          LDA    $37
 AFD0: 48             ASLA
-AFD1: 10 8E AF E1    LDY    #table_AFE1
+AFD1: 10 8E AF E1    LDY   #table_afe1
 AFD5: 10 AE A6       LDY    A,Y
 AFD8: B6 0E 2D       LDA    $0E2D
 AFDB: 84 0F          ANDA   #$0F
@@ -5348,7 +5395,7 @@ B04E: 96 29          LDA    $29
 B050: 84 03          ANDA   #$03
 B052: 81 03          CMPA   #$03
 B054: 26 4B          BNE    $B0A1
-B056: 10 8E B0 63    LDY    #$B063
+B056: 10 8E B0 63    LDY   #table_b063
 B05A: B6 0E 2D       LDA    $0E2D
 B05D: 84 0F          ANDA   #$0F
 B05F: 48             ASLA
@@ -5378,7 +5425,7 @@ B098: 7F 03 A5       CLR    $03A5
 B09B: 86 80          LDA    #$80
 B09D: B7 04 03       STA    $0403
 B0A0: 39             RTS
-B0A1: 10 8E B0 B5    LDY    #$B0B5
+B0A1: 10 8E B0 B5    LDY   #table_b0b5
 B0A5: B6 0E 2D       LDA    $0E2D
 B0A8: 26 05          BNE    $B0AF
 B0AA: C6 01          LDB    #$01
@@ -5459,8 +5506,8 @@ B159: 27 19          BEQ    $B174
 B15B: 81 05          CMPA   #$05
 B15D: 27 0D          BEQ    $B16C
 B15F: 48             ASLA
-B160: 10 8E 8B 59    LDY    #$8B59
-B164: AD B6          JSR    [A,Y]
+B160: 10 8E 8B 59    LDY   #table_8b59
+B164: AD B6          JSR    [A,Y]        ; [jump_table]
 B166: BD FC B4       JSR    $FCB4
 B169: 7E B2 29       JMP    $B229
 B16C: 86 04          LDA    #$04
@@ -5840,8 +5887,8 @@ B49A: 39             RTS
 B49B: A6 88 1B       LDA    $1B,X
 B49E: 84 7F          ANDA   #$7F
 B4A0: 48             ASLA
-B4A1: 10 8E B4 AB    LDY    #$B4AB
-B4A5: AD B6          JSR    [A,Y]
+B4A1: 10 8E B4 AB    LDY   #table_b4ab
+B4A5: AD B6          JSR    [A,Y]        ; [jump_table]
 B4A7: BD FF 10       JSR    $FF10
 B4AA: 39             RTS
 B4AB: B4 B7 B4       ANDA   $B7B4
@@ -5950,8 +5997,8 @@ B599: 39             RTS
 B59A: A6 88 1B       LDA    $1B,X
 B59D: 84 7F          ANDA   #$7F
 B59F: 48             ASLA
-B5A0: 10 8E B5 AA    LDY    #$B5AA
-B5A4: AD B6          JSR    [A,Y]
+B5A0: 10 8E B5 AA    LDY   #table_b5aa
+B5A4: AD B6          JSR    [A,Y]        ; [jump_table]
 B5A6: BD FF 10       JSR    $FF10
 B5A9: 39             RTS
 B5AA: B5 B6 00       BITA   $B600
@@ -6145,11 +6192,11 @@ B765: 8D 06          BSR    $B76D
 B767: 6A E4          DEC    ,S
 B769: 26 F8          BNE    $B763
 B76B: 35 F6          PULS   D,X,Y,U,PC
-B76D: F6 38 02       LDB    $3802
+B76D: F6 38 02       LDB    extra_3802
 B770: C4 08          ANDB   #$08
 B772: 26 F9          BNE    $B76D
 B774: 39             RTS
-B775: F6 38 02       LDB    $3802
+B775: F6 38 02       LDB    extra_3802
 B778: C4 08          ANDB   #$08
 B77A: 27 F9          BEQ    $B775
 B77C: 39             RTS
@@ -6160,25 +6207,25 @@ B782: 34 04          PSHS   B
 B784: 8D EF          BSR    $B775
 B786: 8D E5          BSR    $B76D
 B788: 35 84          PULS   B,PC
-B78A: 96 3A          LDA    $3A
+B78A: 96 3A          LDA    bank_switch_copy_3a
 B78C: 8A 60          ORA    #$60
-B78E: 97 3A          STA    $3A
-B790: B7 38 08       STA    $3808
+B78E: 97 3A          STA    bank_switch_copy_3a
+B790: B7 38 08       STA     bankswitch_3808
 B793: BD 6C 0F       JSR    $6C0F
 B796: BD FC 8F       JSR    $FC8F
 B799: 39             RTS
-B79A: 96 3A          LDA    $3A
+B79A: 96 3A          LDA    bank_switch_copy_3a
 B79C: 8A 60          ORA    #$60
-B79E: 97 3A          STA    $3A
-B7A0: B7 38 08       STA    $3808
+B79E: 97 3A          STA    bank_switch_copy_3a
+B7A0: B7 38 08       STA     bankswitch_3808
 B7A3: BD 6C 15       JSR    $6C15
 B7A6: 34 01          PSHS   CC
 B7A8: BD FC 8F       JSR    $FC8F
 B7AB: 35 81          PULS   CC,PC
-B7AD: 96 3A          LDA    $3A
+B7AD: 96 3A          LDA    bank_switch_copy_3a
 B7AF: 8A 60          ORA    #$60
-B7B1: 97 3A          STA    $3A
-B7B3: B7 38 08       STA    $3808
+B7B1: 97 3A          STA    bank_switch_copy_3a
+B7B3: B7 38 08       STA     bankswitch_3808
 B7B6: BD 6C 18       JSR    $6C18
 B7B9: BD FC 8F       JSR    $FC8F
 B7BC: 39             RTS
@@ -6187,22 +6234,22 @@ B7C0: BD 40 AB       JSR    $40AB
 B7C3: 34 01          PSHS   CC
 B7C5: BD FC 8F       JSR    $FC8F
 B7C8: 35 81          PULS   CC,PC
-B7CA: 96 3A          LDA    $3A
+B7CA: 96 3A          LDA    bank_switch_copy_3a
 B7CC: 8A 60          ORA    #$60
-B7CE: 97 3A          STA    $3A
-B7D0: B7 38 08       STA    $3808
+B7CE: 97 3A          STA    bank_switch_copy_3a
+B7D0: B7 38 08       STA     bankswitch_3808
 B7D3: BD 6C 1B       JSR    $6C1B
-B7D6: 96 3A          LDA    $3A
+B7D6: 96 3A          LDA    bank_switch_copy_3a
 B7D8: 84 1F          ANDA   #$1F
-B7DA: 97 3A          STA    $3A
-B7DC: B7 38 08       STA    $3808
+B7DA: 97 3A          STA    bank_switch_copy_3a
+B7DC: B7 38 08       STA     bankswitch_3808
 B7DF: 39             RTS
 B7E0: BD FC 82       JSR    $FC82
 B7E3: BD 40 C6       JSR    $40C6
 B7E6: 34 01          PSHS   CC
 B7E8: BD FC 8F       JSR    $FC8F
 B7EB: 35 81          PULS   CC,PC
-B7ED: DE 3A          LDU    $3A
+B7ED: DE 3A          LDU    bank_switch_copy_3a
 B7EF: 8E 00 00       LDX    #$0000
 B7F2: 10 8E B8 E5    LDY    #$B8E5
 B7F6: C6 03          LDB    #$03
@@ -6220,27 +6267,27 @@ B80C: C6 00          LDB    #$00
 B80E: 20 02          BRA    $B812
 B810: C6 01          LDB    #$01
 B812: 86 00          LDA    #$00
-B814: DF 3A          STU    $3A
+B814: DF 3A          STU    bank_switch_copy_3a
 B816: BD FE A1       JSR    $FEA1
 B819: BD B8 EA       JSR    $B8EA
 B81C: 0F 02          CLR    $02
-B81E: 96 3A          LDA    $3A
+B81E: 96 3A          LDA    bank_switch_copy_3a
 B820: 84 1F          ANDA   #$1F
-B822: 97 3A          STA    $3A
+B822: 97 3A          STA    bank_switch_copy_3a
 B824: 0F 00          CLR    $00
 B826: 0F 01          CLR    $01
 B828: 8E 40 00       LDX    #$4000
-B82B: 96 3A          LDA    $3A
-B82D: B7 38 08       STA    $3808
+B82B: 96 3A          LDA    bank_switch_copy_3a
+B82D: B7 38 08       STA     bankswitch_3808
 B830: A6 80          LDA    ,X+
 B832: 9B 00          ADDA   $00
 B834: 97 00          STA    $00
 B836: 8C 80 00       CMPX   #$8000
 B839: 26 F5          BNE    $B830
 B83B: 0C 01          INC    $01
-B83D: 96 3A          LDA    $3A
+B83D: 96 3A          LDA    bank_switch_copy_3a
 B83F: 8B 20          ADDA   #$20
-B841: 97 3A          STA    $3A
+B841: 97 3A          STA    bank_switch_copy_3a
 B843: 96 01          LDA    $01
 B845: 81 02          CMPA   #$02
 B847: 26 DF          BNE    $B828
@@ -6274,21 +6321,21 @@ B884: C6 01          LDB    #$01
 B886: 86 04          LDA    #$04
 B888: BD B8 EA       JSR    $B8EA
 B88B: 7F 0E 3E       CLR    $0E3E
-B88E: 96 3A          LDA    $3A
+B88E: 96 3A          LDA    bank_switch_copy_3a
 B890: 8A 10          ORA    #$10
-B892: 97 3A          STA    $3A
-B894: B7 38 08       STA    $3808
-B897: B6 38 02       LDA    $3802
+B892: 97 3A          STA    bank_switch_copy_3a
+B894: B7 38 08       STA     bankswitch_3808
+B897: B6 38 02       LDA    extra_3802
 B89A: 84 10          ANDA   #$10
 B89C: 26 F9          BNE    $B897
-B89E: 96 3A          LDA    $3A
+B89E: 96 3A          LDA    bank_switch_copy_3a
 B8A0: 84 EF          ANDA   #$EF
-B8A2: 97 3A          STA    $3A
-B8A4: B7 38 08       STA    $3808
-B8A7: B6 38 02       LDA    $3802
+B8A2: 97 3A          STA    bank_switch_copy_3a
+B8A4: B7 38 08       STA     bankswitch_3808
+B8A7: B6 38 02       LDA    extra_3802
 B8AA: 84 10          ANDA   #$10
 B8AC: 27 F9          BEQ    $B8A7
-B8AE: B7 38 0F       STA    $380F
+B8AE: B7 38 0F       STA    sub_irq_380f
 B8B1: 7D 0E 3E       TST    $0E3E
 B8B4: 27 FB          BEQ    $B8B1
 B8B6: BD 8A B5       JSR    $8AB5
@@ -6305,10 +6352,10 @@ B8CE: BD B8 EA       JSR    $B8EA
 B8D1: 86 80          LDA    #$80
 B8D3: BD B7 56       JSR    $B756
 B8D6: CE 0E FF       LDU    #$0EFF
-B8D9: 96 3A          LDA    $3A
+B8D9: 96 3A          LDA    bank_switch_copy_3a
 B8DB: 84 1F          ANDA   #$1F
-B8DD: 97 3A          STA    $3A
-B8DF: B7 38 08       STA    $3808
+B8DD: 97 3A          STA    bank_switch_copy_3a
+B8DF: B7 38 08       STA     bankswitch_3808
 B8E2: 7E 80 43       JMP    $8043
 B8E5: 00 44          NEG    $44
 B8E7: 99 AA          ADCA   $AA
@@ -6456,7 +6503,7 @@ BA0A: 27 08          BEQ    $BA14
 BA0C: 10 AE 88 41    LDY    $41,X
 BA10: A6 03          LDA    $3,X
 BA12: A7 23          STA    $3,Y
-BA14: 10 8E BA 1D    LDY    #$BA1D
+BA14: 10 8E BA 1D    LDY   #table_ba1d
 BA18: 96 36          LDA    $36
 BA1A: 48             ASLA
 BA1B: 6E B6          JMP    [A,Y]		; [jump_table]
@@ -6529,8 +6576,8 @@ BACA: A7 88 39       STA    $39,X
 BACD: A6 88 1B       LDA    $1B,X
 BAD0: 84 3F          ANDA   #$3F
 BAD2: 48             ASLA
-BAD3: 10 8E BA DD    LDY    #$BADD
-BAD7: AD B6          JSR    [A,Y]
+BAD3: 10 8E BA DD    LDY   #table_badd
+BAD7: AD B6          JSR    [A,Y]        ; [jump_table]
 BAD9: BD F9 88       JSR    $F988
 BADC: 39             RTS
 BADD: F9 C4 FE       ADCB   $C4FE
@@ -6578,16 +6625,16 @@ BB39: BD 40 33       JSR    $4033
 BB3C: BD BB 4D       JSR    $BB4D
 BB3F: 39             RTS
 BB40: 34 02          PSHS   A
-BB42: 96 3A          LDA    $3A
+BB42: 96 3A          LDA    bank_switch_copy_3a
 BB44: 8A 20          ORA    #$20
-BB46: 97 3A          STA    $3A
-BB48: B7 38 08       STA    $3808
+BB46: 97 3A          STA    bank_switch_copy_3a
+BB48: B7 38 08       STA     bankswitch_3808
 BB4B: 35 82          PULS   A,PC
 BB4D: 34 03          PSHS   A,CC
-BB4F: 96 3A          LDA    $3A
+BB4F: 96 3A          LDA    bank_switch_copy_3a
 BB51: 84 1F          ANDA   #$1F
-BB53: 97 3A          STA    $3A
-BB55: B7 38 08       STA    $3808
+BB53: 97 3A          STA    bank_switch_copy_3a
+BB55: B7 38 08       STA     bankswitch_3808
 BB58: 35 83          PULS   CC,A,PC
 BB5A: BD BB 40       JSR    $BB40
 BB5D: BD 40 72       JSR    $4072
@@ -6632,9 +6679,9 @@ BBB9: A7 88 16       STA    $16,X
 BBBC: ED 88 1F       STD    $1F,X
 BBBF: 20 14          BRA    $BBD5
 BBC1: 84 1F          ANDA   #$1F
-BBC3: 10 8E BB EC    LDY    #$BBEC
+BBC3: 10 8E BB EC    LDY   #table_bbec
 BBC7: 48             ASLA
-BBC8: AD B6          JSR    [A,Y]
+BBC8: AD B6          JSR    [A,Y]        ; [jump_table]
 BBCA: BD FE FB       JSR    $FEFB
 BBCD: 25 03          BCS    $BBD2
 BBCF: BD FF 10       JSR    $FF10
@@ -6673,8 +6720,8 @@ BC15: FC 82 A6       LDD    $82A6
 BC18: 88 17          EORA   #$17
 BC1A: 84 1F          ANDA   #$1F
 BC1C: 48             ASLA
-BC1D: 10 8E BC 27    LDY    #$BC27
-BC21: AD B6          JSR    [A,Y]
+BC1D: 10 8E BC 27    LDY   #table_bc27
+BC21: AD B6          JSR    [A,Y]        ; [jump_table]
 BC23: BD FC 8F       JSR    $FC8F
 BC26: 39             RTS
 BC27: 40             NEGA
@@ -6719,8 +6766,8 @@ BC78: 8A 80          ORA    #$80
 BC7A: A7 88 1B       STA    $1B,X
 BC7D: 84 7F          ANDA   #$7F
 BC7F: 48             ASLA
-BC80: 10 8E BC 8D    LDY    #$BC8D
-BC84: AD B6          JSR    [A,Y]
+BC80: 10 8E BC 8D    LDY   #table_bc8d
+BC84: AD B6          JSR    [A,Y]        ; [jump_table]
 BC86: 6F 88 19       CLR    $19,X
 BC89: 6F 88 18       CLR    $18,X
 BC8C: 39             RTS
@@ -6833,8 +6880,8 @@ BD78: A7 0E          STA    $E,X
 BD7A: A6 88 1B       LDA    $1B,X
 BD7D: 84 7F          ANDA   #$7F
 BD7F: 48             ASLA
-BD80: 10 8E BD 91    LDY    #$BD91
-BD84: AD B6          JSR    [A,Y]
+BD80: 10 8E BD 91    LDY   #table_bd91
+BD84: AD B6          JSR    [A,Y]        ; [jump_table]
 BD86: A6 03          LDA    $3,X
 BD88: 2A 06          BPL    $BD90
 BD8A: A6 02          LDA    $2,X
@@ -7051,8 +7098,8 @@ BF92: 8A 80          ORA    #$80
 BF94: A7 88 1B       STA    $1B,X
 BF97: 84 7F          ANDA   #$7F
 BF99: 48             ASLA
-BF9A: 10 8E BF A7    LDY    #$BFA7
-BF9E: AD B6          JSR    [A,Y]
+BF9A: 10 8E BF A7    LDY   #table_bfa7
+BF9E: AD B6          JSR    [A,Y]        ; [jump_table]
 BFA0: 6F 88 19       CLR    $19,X
 BFA3: 6F 88 18       CLR    $18,X
 BFA6: 39             RTS
@@ -7169,8 +7216,8 @@ C091: 39             RTS
 C092: A6 88 1B       LDA    $1B,X
 C095: 84 7F          ANDA   #$7F
 C097: 48             ASLA
-C098: 10 8E C0 A9    LDY    #$C0A9
-C09C: AD B6          JSR    [A,Y]
+C098: 10 8E C0 A9    LDY   #table_c0a9
+C09C: AD B6          JSR    [A,Y]        ; [jump_table]
 C09E: A6 03          LDA    $3,X
 C0A0: 2A 06          BPL    $C0A8
 C0A2: A6 02          LDA    $2,X
@@ -7352,8 +7399,8 @@ C248: 8A 80          ORA    #$80
 C24A: A7 88 1B       STA    $1B,X
 C24D: 84 7F          ANDA   #$7F
 C24F: 48             ASLA
-C250: 10 8E C2 5D    LDY    #$C25D
-C254: AD B6          JSR    [A,Y]
+C250: 10 8E C2 5D    LDY   #table_c25d
+C254: AD B6          JSR    [A,Y]        ; [jump_table]
 C256: 6F 88 19       CLR    $19,X
 C259: 6F 88 18       CLR    $18,X
 C25C: 39             RTS
@@ -7464,8 +7511,8 @@ C339: 39             RTS
 C33A: A6 88 1B       LDA    $1B,X
 C33D: 84 7F          ANDA   #$7F
 C33F: 48             ASLA
-C340: 10 8E C3 51    LDY    #$C351
-C344: AD B6          JSR    [A,Y]
+C340: 10 8E C3 51    LDY   #table_c351
+C344: AD B6          JSR    [A,Y]        ; [jump_table]
 C346: A6 03          LDA    $3,X
 C348: 2A 06          BPL    $C350
 C34A: A6 02          LDA    $2,X
@@ -7636,8 +7683,8 @@ C4DB: 8A 80          ORA    #$80
 C4DD: A7 88 1B       STA    $1B,X
 C4E0: 84 7F          ANDA   #$7F
 C4E2: 48             ASLA
-C4E3: 10 8E C4 F0    LDY    #$C4F0
-C4E7: AD B6          JSR    [A,Y]
+C4E3: 10 8E C4 F0    LDY   #table_c4f0
+C4E7: AD B6          JSR    [A,Y]        ; [jump_table]
 C4E9: 6F 88 19       CLR    $19,X
 C4EC: 6F 88 18       CLR    $18,X
 C4EF: 39             RTS
@@ -7707,8 +7754,8 @@ C56A: 39             RTS
 C56B: A6 88 1B       LDA    $1B,X
 C56E: 84 7F          ANDA   #$7F
 C570: 48             ASLA
-C571: 10 8E C5 82    LDY    #$C582
-C575: AD B6          JSR    [A,Y]
+C571: 10 8E C5 82    LDY   #table_c582
+C575: AD B6          JSR    [A,Y]        ; [jump_table]
 C577: A6 03          LDA    $3,X
 C579: 2A 06          BPL    $C581
 C57B: A6 02          LDA    $2,X
@@ -7855,8 +7902,8 @@ C6B1: 8A 80          ORA    #$80
 C6B3: A7 88 1B       STA    $1B,X
 C6B6: 84 7F          ANDA   #$7F
 C6B8: 48             ASLA
-C6B9: 10 8E C6 C6    LDY    #$C6C6
-C6BD: AD B6          JSR    [A,Y]
+C6B9: 10 8E C6 C6    LDY   #table_c6c6
+C6BD: AD B6          JSR    [A,Y]        ; [jump_table]
 C6BF: 6F 88 19       CLR    $19,X
 C6C2: 6F 88 18       CLR    $18,X
 C6C5: 39             RTS
@@ -7917,8 +7964,8 @@ C72C: 39             RTS
 C72D: A6 88 1B       LDA    $1B,X
 C730: 84 7F          ANDA   #$7F
 C732: 48             ASLA
-C733: 10 8E C7 44    LDY    #$C744
-C737: AD B6          JSR    [A,Y]
+C733: 10 8E C7 44    LDY   #table_c744
+C737: AD B6          JSR    [A,Y]        ; [jump_table]
 C739: A6 03          LDA    $3,X
 C73B: 2A 06          BPL    $C743
 C73D: A6 02          LDA    $2,X
@@ -7995,8 +8042,8 @@ C7D7: 8A 80          ORA    #$80
 C7D9: A7 88 1B       STA    $1B,X
 C7DC: 84 7F          ANDA   #$7F
 C7DE: 48             ASLA
-C7DF: 10 8E C7 EC    LDY    #$C7EC
-C7E3: AD B6          JSR    [A,Y]
+C7DF: 10 8E C7 EC    LDY   #table_c7ec
+C7E3: AD B6          JSR    [A,Y]        ; [jump_table]
 C7E5: 6F 88 19       CLR    $19,X
 C7E8: 6F 88 18       CLR    $18,X
 C7EB: 39             RTS
@@ -8063,8 +8110,8 @@ C861: 39             RTS
 C862: A6 88 1B       LDA    $1B,X
 C865: 84 7F          ANDA   #$7F
 C867: 48             ASLA
-C868: 10 8E C8 79    LDY    #$C879
-C86C: AD B6          JSR    [A,Y]
+C868: 10 8E C8 79    LDY   #table_c879
+C86C: AD B6          JSR    [A,Y]        ; [jump_table]
 C86E: A6 03          LDA    $3,X
 C870: 2A 06          BPL    $C878
 C872: A6 02          LDA    $2,X
@@ -8256,8 +8303,8 @@ CA10: 8A 80          ORA    #$80
 CA12: A7 88 1B       STA    $1B,X
 CA15: 84 7F          ANDA   #$7F
 CA17: 48             ASLA
-CA18: 10 8E CA 25    LDY    #$CA25
-CA1C: AD B6          JSR    [A,Y]
+CA18: 10 8E CA 25    LDY   #table_ca25
+CA1C: AD B6          JSR    [A,Y]        ; [jump_table]
 CA1E: 6F 88 19       CLR    $19,X
 CA21: 6F 88 18       CLR    $18,X
 CA24: 39             RTS
@@ -8321,8 +8368,8 @@ CA94: 39             RTS
 CA95: A6 88 1B       LDA    $1B,X
 CA98: 84 7F          ANDA   #$7F
 CA9A: 48             ASLA
-CA9B: 10 8E CA AC    LDY    #$CAAC
-CA9F: AD B6          JSR    [A,Y]
+CA9B: 10 8E CA AC    LDY   #table_caac
+CA9F: AD B6          JSR    [A,Y]        ; [jump_table]
 CAA1: A6 03          LDA    $3,X
 CAA3: 2A 06          BPL    $CAAB
 CAA5: A6 02          LDA    $2,X
@@ -10735,7 +10782,7 @@ E195: A6 09          LDA    $9,X
 E197: E6 0C          LDB    $C,X
 E199: D3 03          ADDD   $03
 E19B: D3 01          ADDD   $01
-E19D: ED 88 3A       STD    $3A,X
+E19D: ED 88 3A       STD    bank_switch_copy_3a,X
 E1A0: 39             RTS
 E1A1: 32 7C          LEAS   -$4,S
 E1A3: 96 29          LDA    $29
@@ -10954,7 +11001,7 @@ E3B7: 48             ASLA
 E3B8: EC 86          LDD    A,X
 E3BA: ED 62          STD    $2,S
 E3BC: 37 10          PULU   X
-E3BE: EC 88 3A       LDD    $3A,X
+E3BE: EC 88 3A       LDD    bank_switch_copy_3a,X
 E3C1: ED 22          STD    $2,Y
 E3C3: 10 A3 E4       CMPD   ,S
 E3C6: 24 0A          BCC    $E3D2
@@ -11167,7 +11214,7 @@ E5B4: 7F 0A 4B       CLR    $0A4B
 E5B7: 20 00          BRA    $E5B9
 E5B9: 32 E8 13       LEAS   $13,S
 E5BC: 39             RTS
-E5BD: 96 3A          LDA    $3A
+E5BD: 96 3A          LDA    bank_switch_copy_3a
 E5BF: 34 02          PSHS   A
 E5C1: 32 E8 EE       LEAS   -$12,S
 E5C4: FC 0A 46       LDD    $0A46
@@ -11266,7 +11313,7 @@ E6A1: 32 E8 12       LEAS   $12,S
 E6A4: 35 02          PULS   A
 E6A6: BD E8 FB       JSR    $E8FB
 E6A9: 39             RTS
-E6AA: 96 3A          LDA    $3A
+E6AA: 96 3A          LDA    bank_switch_copy_3a
 E6AC: 34 02          PSHS   A
 E6AE: 32 E8 EE       LEAS   -$12,S
 E6B1: FC 0A 49       LDD    $0A49
@@ -11413,7 +11460,7 @@ E7EE: 32 67          LEAS   $7,S
 E7F0: 39             RTS
 E7F1: 34 36          PSHS   Y,X,D
 E7F3: 1F 01          TFR    D,X
-E7F5: 96 3A          LDA    $3A
+E7F5: 96 3A          LDA    bank_switch_copy_3a
 E7F7: 34 02          PSHS   A
 E7F9: 1F 10          TFR    X,D
 E7FB: 32 7D          LEAS   -$3,S
@@ -11434,7 +11481,7 @@ E819: 6C 62          INC    $2,S
 E81B: 26 F5          BNE    $E812
 E81D: 32 63          LEAS   $3,S
 E81F: 35 02          PULS   A
-E821: 97 3A          STA    $3A
+E821: 97 3A          STA    bank_switch_copy_3a
 E823: BD E8 FB       JSR    $E8FB
 E826: 35 B6          PULS   D,X,Y,PC
 E828: 34 30          PSHS   Y,X
@@ -11525,7 +11572,7 @@ E8C2: 1F 01          TFR    D,X
 E8C4: EC 84          LDD    ,X
 E8C6: 35 B0          PULS   X,Y,PC
 E8C8: 34 30          PSHS   Y,X
-E8CA: 96 3A          LDA    $3A
+E8CA: 96 3A          LDA    bank_switch_copy_3a
 E8CC: 34 02          PSHS   A
 E8CE: 32 7A          LEAS   -$6,S
 E8D0: AF E4          STX    ,S
@@ -11552,11 +11599,11 @@ E8F6: BD E8 FB       JSR    $E8FB
 E8F9: 35 B0          PULS   X,Y,PC
 E8FB: 84 E0          ANDA   #$E0
 E8FD: 34 02          PSHS   A
-E8FF: 96 3A          LDA    $3A
+E8FF: 96 3A          LDA    bank_switch_copy_3a
 E901: 84 1F          ANDA   #$1F
 E903: AA E0          ORA    ,S+
-E905: 97 3A          STA    $3A
-E907: B7 38 08       STA    $3808
+E905: 97 3A          STA    bank_switch_copy_3a
+E907: B7 38 08       STA     bankswitch_3808
 E90A: 39             RTS
 E90B: B6 0E 71       LDA    $0E71
 E90E: 85 40          BITA   #$40
@@ -11573,16 +11620,16 @@ E926: 34 02          PSHS   A
 E928: CC 01 00       LDD    #$0100
 E92B: B3 0A 62       SUBD   $0A62
 E92E: 84 01          ANDA   #$01
-E930: F7 38 0A       STB    $380A
+E930: F7 38 0A       STB    scroll_y_lo_380a
 E933: 84 01          ANDA   #$01
 E935: 48             ASLA
 E936: AA E0          ORA    ,S+
 E938: 34 02          PSHS   A
-E93A: 96 3A          LDA    $3A
+E93A: 96 3A          LDA    bank_switch_copy_3a
 E93C: 84 FC          ANDA   #$FC
 E93E: AA E0          ORA    ,S+
-E940: 97 3A          STA    $3A
-E942: B7 38 08       STA    $3808
+E940: 97 3A          STA    bank_switch_copy_3a
+E942: B7 38 08       STA     bankswitch_3808
 E945: 39             RTS
 E946: B6 0E 71       LDA    $0E71
 E949: 8A 40          ORA    #$40
@@ -12280,7 +12327,7 @@ EEA8: 32 61          LEAS   $1,S
 EEAA: 35 C0          PULS   U,PC
 EEAC: 34 14          PSHS   X,B
 EEAE: 32 7D          LEAS   -$3,S
-EEB0: B6 38 02       LDA    $3802
+EEB0: B6 38 02       LDA    extra_3802
 EEB3: 84 08          ANDA   #$08
 EEB5: 27 F9          BEQ    $EEB0
 EEB7: 86 10          LDA    #$10
@@ -13650,35 +13697,35 @@ FA83: BD 78 00       JSR    $7800
 FA86: BD FF 9C       JSR    $FF9C
 FA89: 39             RTS
 FA8A: 34 02          PSHS   A
-FA8C: 96 3A          LDA    $3A
+FA8C: 96 3A          LDA    bank_switch_copy_3a
 FA8E: 84 1F          ANDA   #$1F
 FA90: 8A 80          ORA    #$80
-FA92: 97 3A          STA    $3A
-FA94: B7 38 08       STA    $3808
+FA92: 97 3A          STA    bank_switch_copy_3a
+FA94: B7 38 08       STA     bankswitch_3808
 FA97: 35 82          PULS   A,PC
 FA99: FF FF FF       STU    $FFFF
 FA9C: FF FF FF       STU    $FFFF
 FA9F: FF 96 3A       STU    $963A
 FAA2: 84 1F          ANDA   #$1F
 FAA4: 8A 20          ORA    #$20
-FAA6: 97 3A          STA    $3A
-FAA8: B7 38 08       STA    $3808
+FAA6: 97 3A          STA    bank_switch_copy_3a
+FAA8: B7 38 08       STA     bankswitch_3808
 FAAB: 17 45 EE       LBSR   $409C
-FAAE: 96 3A          LDA    $3A
+FAAE: 96 3A          LDA    bank_switch_copy_3a
 FAB0: 84 1F          ANDA   #$1F
-FAB2: 97 3A          STA    $3A
-FAB4: B7 38 08       STA    $3808
+FAB2: 97 3A          STA    bank_switch_copy_3a
+FAB4: B7 38 08       STA     bankswitch_3808
 FAB7: 39             RTS
-FAB8: 96 3A          LDA    $3A
+FAB8: 96 3A          LDA    bank_switch_copy_3a
 FABA: 84 1F          ANDA   #$1F
 FABC: 8A 20          ORA    #$20
-FABE: 97 3A          STA    $3A
-FAC0: B7 38 08       STA    $3808
+FABE: 97 3A          STA    bank_switch_copy_3a
+FAC0: B7 38 08       STA     bankswitch_3808
 FAC3: 17 45 D9       LBSR   $409F
-FAC6: 96 3A          LDA    $3A
+FAC6: 96 3A          LDA    bank_switch_copy_3a
 FAC8: 84 1F          ANDA   #$1F
-FACA: 97 3A          STA    $3A
-FACC: B7 38 08       STA    $3808
+FACA: 97 3A          STA    bank_switch_copy_3a
+FACC: B7 38 08       STA     bankswitch_3808
 FACF: 39             RTS
 FAD0: BD FD A0       JSR    $FDA0
 FAD3: BD 40 42       JSR    $4042
@@ -13703,31 +13750,31 @@ FB01: 3A             ABX
 FB02: B7 0E 45       STA    $0E45
 FB05: 84 1F          ANDA   #$1F
 FB07: 8A 80          ORA    #$80
-FB09: 97 3A          STA    $3A
-FB0B: B7 38 08       STA    $3808
+FB09: 97 3A          STA    bank_switch_copy_3a
+FB0B: B7 38 08       STA     bankswitch_3808
 FB0E: BD 40 00       JSR    $4000
-FB11: 96 3A          LDA    $3A
+FB11: 96 3A          LDA    bank_switch_copy_3a
 FB13: 84 1F          ANDA   #$1F
-FB15: 97 3A          STA    $3A
+FB15: 97 3A          STA    bank_switch_copy_3a
 FB17: B6 0E 45       LDA    $0E45
 FB1A: 84 E0          ANDA   #$E0
-FB1C: 9A 3A          ORA    $3A
-FB1E: 97 3A          STA    $3A
-FB20: B7 38 08       STA    $3808
+FB1C: 9A 3A          ORA    bank_switch_copy_3a
+FB1E: 97 3A          STA    bank_switch_copy_3a
+FB20: B7 38 08       STA     bankswitch_3808
 FB23: 39             RTS
 FB24: 34 02          PSHS   A
-FB26: 96 3A          LDA    $3A
+FB26: 96 3A          LDA    bank_switch_copy_3a
 FB28: B7 0E 44       STA    $0E44
 FB2B: 84 1F          ANDA   #$1F
-FB2D: 97 3A          STA    $3A
-FB2F: B7 38 08       STA    $3808
+FB2D: 97 3A          STA    bank_switch_copy_3a
+FB2F: B7 38 08       STA     bankswitch_3808
 FB32: 35 82          PULS   A,PC
 FB34: 34 02          PSHS   A
 FB36: B6 0E 44       LDA    $0E44
 FB39: 84 E0          ANDA   #$E0
-FB3B: 9A 3A          ORA    $3A
-FB3D: 97 3A          STA    $3A
-FB3F: B7 38 08       STA    $3808
+FB3B: 9A 3A          ORA    bank_switch_copy_3a
+FB3D: 97 3A          STA    bank_switch_copy_3a
+FB3F: B7 38 08       STA     bankswitch_3808
 FB42: 35 82          PULS   A,PC
 FB44: BD FB 24       JSR    $FB24
 FB47: BD 40 03       JSR    $4003
@@ -13820,22 +13867,22 @@ FC21: BD 40 0F       JSR    $400F
 FC24: BD FC 3A       JSR    $FC3A
 FC27: 39             RTS
 FC28: 34 02          PSHS   A
-FC2A: 96 3A          LDA    $3A
+FC2A: 96 3A          LDA    bank_switch_copy_3a
 FC2C: B7 0E 43       STA    $0E43
 FC2F: 84 1F          ANDA   #$1F
 FC31: 8A A0          ORA    #$A0
-FC33: 97 3A          STA    $3A
-FC35: B7 38 08       STA    $3808
+FC33: 97 3A          STA    bank_switch_copy_3a
+FC35: B7 38 08       STA     bankswitch_3808
 FC38: 35 82          PULS   A,PC
 FC3A: 34 02          PSHS   A
-FC3C: 96 3A          LDA    $3A
+FC3C: 96 3A          LDA    bank_switch_copy_3a
 FC3E: 84 1F          ANDA   #$1F
-FC40: 97 3A          STA    $3A
+FC40: 97 3A          STA    bank_switch_copy_3a
 FC42: B6 0E 43       LDA    $0E43
 FC45: 84 E0          ANDA   #$E0
-FC47: 9A 3A          ORA    $3A
-FC49: 97 3A          STA    $3A
-FC4B: B7 38 08       STA    $3808
+FC47: 9A 3A          ORA    bank_switch_copy_3a
+FC49: 97 3A          STA    bank_switch_copy_3a
+FC4B: B7 38 08       STA     bankswitch_3808
 FC4E: 35 82          PULS   A,PC
 FC50: BD FC 82       JSR    $FC82
 FC53: BD 40 45       JSR    $4045
@@ -13858,16 +13905,16 @@ FC7B: BD 40 57       JSR    $4057
 FC7E: BD FC 8F       JSR    $FC8F
 FC81: 39             RTS
 FC82: 34 02          PSHS   A
-FC84: 96 3A          LDA    $3A
+FC84: 96 3A          LDA    bank_switch_copy_3a
 FC86: 8A A0          ORA    #$A0
-FC88: 97 3A          STA    $3A
-FC8A: B7 38 08       STA    $3808
+FC88: 97 3A          STA    bank_switch_copy_3a
+FC8A: B7 38 08       STA     bankswitch_3808
 FC8D: 35 82          PULS   A,PC
 FC8F: 34 02          PSHS   A
-FC91: 96 3A          LDA    $3A
+FC91: 96 3A          LDA    bank_switch_copy_3a
 FC93: 84 1F          ANDA   #$1F
-FC95: 97 3A          STA    $3A
-FC97: B7 38 08       STA    $3808
+FC95: 97 3A          STA    bank_switch_copy_3a
+FC97: B7 38 08       STA     bankswitch_3808
 FC9A: 35 82          PULS   A,PC
 FC9C: FF FF FF       STU    $FFFF
 FC9F: FF BD FC       STU    $BDFC
@@ -13910,26 +13957,20 @@ FCF6: FD 0A 44       STD    $0A44
 FCF9: 39             RTS
 FCFA: 44             LSRA
 FCFB: 39             RTS
-FCFC: FF FF FF       STU    $FFFF
-FCFF: FF 7E FB       STU    $7EFB
-FD02: C0 7E          SUBB   #$7E
-FD04: FB CA 7E       ADDB   $CA7E
-FD07: FB D4 7E       ADDB   $D47E
-FD0A: FB DE 7E       ADDB   $DE7E
-FD0D: B9 B0 7E       ADCA   $B07E
-FD10: F9 C4 7E       ADCB   $C47E
-FD13: F9 88 7E       ADCB   $887E
-FD16: BB 82 96       ADDA   $8296
-FD19: 36 81          PSHU   PC,CC
-FD1B: 03 26          COM    $26
-FD1D: 09 BD          ROL    $BD
-FD1F: FC 82 BD       LDD    $82BD
-FD22: 40             NEGA
-FD23: AB BD FC 8F    ADDA   [$F9B6,PCR]
+
+FD06: 7E FB D4       JMP    $FBD4
+FD09: 7E FB DE       JMP    $FBDE
+FD0C: 7E B9 B0       JMP    $B9B0
+FD0F: 7E F9 C4       JMP    $F9C4
+FD12: 7E F9 88       JMP    $F988
+FD15: 7E BB 82       JMP    $BB82
+FD18: 96 36          LDA    $36
+FD1A: 81 03          CMPA   #$03
+FD1C: 26 09          BNE    $FD27
+FD1E: BD FC 82       JSR    $FC82
+FD21: BD 40 AB       JSR    $40AB
+FD24: BD FC 8F       JSR    $FC8F
 FD27: 39             RTS
-FD28: FF FF FF       STU    $FFFF
-FD2B: FF FF FF       STU    $FFFF
-FD2E: FF FF BD       STU    $FFBD
 FD31: FC 82 BD       LDD    $82BD
 FD34: 40             NEGA
 FD35: 7E BD FC       JMP    $BDFC
@@ -13964,10 +14005,10 @@ FD7A: BD FC 82       JSR    $FC82
 FD7D: BD 40 3C       JSR    $403C
 FD80: BD FC 8F       JSR    $FC8F
 FD83: 39             RTS
-FD84: 96 3A          LDA    $3A
+FD84: 96 3A          LDA    bank_switch_copy_3a
 FD86: 8A 80          ORA    #$80
-FD88: 97 3A          STA    $3A
-FD8A: B7 38 08       STA    $3808
+FD88: 97 3A          STA    bank_switch_copy_3a
+FD8A: B7 38 08       STA     bankswitch_3808
 FD8D: BD 40 00       JSR    $4000
 FD90: BD FC 8F       JSR    $FC8F
 FD93: 39             RTS
@@ -13976,34 +14017,34 @@ FD97: FF FF FF       STU    $FFFF
 FD9A: FF FF FF       STU    $FFFF
 FD9D: FF FF FF       STU    $FFFF
 FDA0: 34 02          PSHS   A
-FDA2: 96 3A          LDA    $3A
+FDA2: 96 3A          LDA    bank_switch_copy_3a
 FDA4: B7 0E 46       STA    $0E46
 FDA7: 84 1F          ANDA   #$1F
 FDA9: 8A 20          ORA    #$20
-FDAB: 97 3A          STA    $3A
-FDAD: B7 38 08       STA    $3808
+FDAB: 97 3A          STA    bank_switch_copy_3a
+FDAD: B7 38 08       STA     bankswitch_3808
 FDB0: 35 82          PULS   A,PC
 FDB2: 34 03          PSHS   A,CC
-FDB4: 96 3A          LDA    $3A
+FDB4: 96 3A          LDA    bank_switch_copy_3a
 FDB6: 84 1F          ANDA   #$1F
-FDB8: 97 3A          STA    $3A
+FDB8: 97 3A          STA    bank_switch_copy_3a
 FDBA: B6 0E 46       LDA    $0E46
 FDBD: 84 E0          ANDA   #$E0
-FDBF: 9A 3A          ORA    $3A
-FDC1: 97 3A          STA    $3A
-FDC3: B7 38 08       STA    $3808
+FDBF: 9A 3A          ORA    bank_switch_copy_3a
+FDC1: 97 3A          STA    bank_switch_copy_3a
+FDC3: B7 38 08       STA     bankswitch_3808
 FDC6: 35 83          PULS   CC,A,PC
-FDC8: 96 3A          LDA    $3A
+FDC8: 96 3A          LDA    bank_switch_copy_3a
 FDCA: 84 1F          ANDA   #$1F
 FDCC: 8A 60          ORA    #$60
-FDCE: 97 3A          STA    $3A
-FDD0: B7 38 08       STA    $3808
+FDCE: 97 3A          STA    bank_switch_copy_3a
+FDD0: B7 38 08       STA     bankswitch_3808
 FDD3: BD 6C 12       JSR    $6C12
-FDD6: 96 3A          LDA    $3A
+FDD6: 96 3A          LDA    bank_switch_copy_3a
 FDD8: 84 1F          ANDA   #$1F
 FDDA: 8A A0          ORA    #$A0
-FDDC: B7 38 08       STA    $3808
-FDDF: 97 3A          STA    $3A
+FDDC: B7 38 08       STA     bankswitch_3808
+FDDF: 97 3A          STA    bank_switch_copy_3a
 FDE1: 39             RTS
 FDE2: A7 88 24       STA    $24,X
 FDE5: C1 0A          CMPB   #$0A
@@ -14086,26 +14127,26 @@ FF1D: BD 40 03       JSR    $4003
 FF20: BD FD B2       JSR    $FDB2
 FF23: 39             RTS
 FF24: 34 02          PSHS   A
-FF26: 96 3A          LDA    $3A
+FF26: 96 3A          LDA    bank_switch_copy_3a
 FF28: B7 0E 3D       STA    $0E3D
 FF2B: 84 1F          ANDA   #$1F
-FF2D: 97 3A          STA    $3A
-FF2F: B7 38 08       STA    $3808
+FF2D: 97 3A          STA    bank_switch_copy_3a
+FF2F: B7 38 08       STA     bankswitch_3808
 FF32: 35 82          PULS   A,PC
 FF34: 34 02          PSHS   A
-FF36: 96 3A          LDA    $3A
+FF36: 96 3A          LDA    bank_switch_copy_3a
 FF38: 84 1F          ANDA   #$1F
-FF3A: 97 3A          STA    $3A
+FF3A: 97 3A          STA    bank_switch_copy_3a
 FF3C: B6 0E 3D       LDA    $0E3D
 FF3F: 84 E0          ANDA   #$E0
-FF41: 9A 3A          ORA    $3A
-FF43: 97 3A          STA    $3A
-FF45: B7 38 08       STA    $3808
+FF41: 9A 3A          ORA    bank_switch_copy_3a
+FF43: 97 3A          STA    bank_switch_copy_3a
+FF45: B7 38 08       STA     bankswitch_3808
 FF48: 35 82          PULS   A,PC
-FF4A: 96 3A          LDA    $3A
+FF4A: 96 3A          LDA    bank_switch_copy_3a
 FF4C: 8A 60          ORA    #$60
-FF4E: 97 3A          STA    $3A
-FF50: B7 38 08       STA    $3808
+FF4E: 97 3A          STA    bank_switch_copy_3a
+FF50: B7 38 08       STA     bankswitch_3808
 FF53: 39             RTS
 FF54: BD FF 4A       JSR    $FF4A
 FF57: BD 6C 03       JSR    $6C03
@@ -14124,22 +14165,22 @@ FF76: 35 40          PULS   U
 FF78: 7E A1 F7       JMP    $A1F7
 
 FF84: 8A 80          ORA    #$80
-FF86: 97 3A          STA    $3A
-FF88: B7 38 08       STA    $3808
+FF86: 97 3A          STA    bank_switch_copy_3a
+FF88: B7 38 08       STA     bankswitch_3808
 FF8B: 35 82          PULS   A,PC
 FF8D: 34 02          PSHS   A
-FF8F: 96 3A          LDA    $3A
+FF8F: 96 3A          LDA    bank_switch_copy_3a
 FF91: 84 1F          ANDA   #$1F
 FF93: 8A A0          ORA    #$A0
-FF95: 97 3A          STA    $3A
-FF97: B7 38 08       STA    $3808
+FF95: 97 3A          STA    bank_switch_copy_3a
+FF97: B7 38 08       STA     bankswitch_3808
 FF9A: 35 82          PULS   A,PC
 FF9C: 34 02          PSHS   A
-FF9E: 96 3A          LDA    $3A
+FF9E: 96 3A          LDA    bank_switch_copy_3a
 FFA0: 84 1F          ANDA   #$1F
 FFA2: 8A 60          ORA    #$60
-FFA4: 97 3A          STA    $3A
-FFA6: B7 38 08       STA    $3808
+FFA4: 97 3A          STA    bank_switch_copy_3a
+FFA6: B7 38 08       STA     bankswitch_3808
 FFA9: 35 82          PULS   A,PC
 FFAB: BD FF 80       JSR    $FF80
 FFAE: BD 78 09       JSR    $7809
@@ -14163,3 +14204,412 @@ FFD9: BD FF 9C       JSR    $FF9C
 FFDC: 39             RTS
 FFDD: 39             RTS
 
+table_8b59:
+	dc.w	$8bcd	; $8b59
+	dc.w	$a6f4	; $8b5b
+	dc.w	$9c17	; $8b5d
+	dc.w	$9c8e	; $8b5f
+	dc.w	$9ce0	; $8b61
+	dc.w	$91af	; $8b63
+	dc.w	$9293	; $8b65
+	dc.w	$9417	; $8b67
+	dc.w	$9417	; $8b69
+	dc.w	$a3fa	; $8b6b
+	dc.w	$9eaf	; $8b6d
+	dc.w	$a31c	; $8b6f
+	dc.w	$a3c6	; $8b71
+	dc.w	$9e14	; $8b73
+	dc.w	$8bcd	; $8b75
+	dc.w	$a643	; $8b77
+	dc.w	$a3c6	; $8b79
+	dc.w	$a643	; $8b7b
+	dc.w	$a3c6	; $8b7d
+	dc.w	$a3c6	; $8b7f
+	dc.w	$a3c6	; $8b81
+	dc.w	$a3c6	; $8b83
+	dc.w	$a43d	; $8b85
+	dc.w	$a3c6	; $8b87
+	dc.w	$a4a3	; $8b89
+
+table_aed1:
+	dc.w	$aed9	; $aed1
+	dc.w	$af6c	; $aed3
+	dc.w	$afce	; $aed5
+	dc.w	$b04e	; $aed7
+	dc.w	$8601	; $aed9
+	dc.w	$974b	; $aedb
+	dc.w	$b60e	; $aedd
+table_aeea:
+	dc.w	$aef0	; $aeea
+	dc.w	$aefc	; $aeec
+	dc.w	$af26	; $aeee
+	dc.w	$bdb0	; $aef0
+table_af79:
+	dc.w	$aef0	; $af79
+	dc.w	$af85	; $af7b
+	dc.w	$af8e	; $af7d
+	dc.w	$afaa	; $af7f
+	dc.w	$aef0	; $af81
+	dc.w	$af26	; $af83
+	dc.w	$8612	; $af85
+	dc.w	$bdfe	; $af87
+	dc.w	$b0bd	; $af89
+	dc.w	$af11	; $af8b
+table_afe1:
+	dc.w	$afe5	; $afe1
+	dc.w	$afed	; $afe3
+	dc.w	$aef0	; $afe5
+	dc.w	$aef0	; $afe7
+	dc.w	$aefc	; $afe9
+	dc.w	$af26	; $afeb
+	dc.w	$aff1	; $afed
+	dc.w	$b013	; $afef
+	dc.w	$8603	; $aff1
+	dc.w	$974b	; $aff3
+	dc.w	$bdb0	; $aff5
+table_b063:
+	dc.w	$aef0	; $b063
+	dc.w	$b067	; $b065
+	dc.w	$860f	; $b067
+	dc.w	$bdfe	; $b069
+	dc.w	$b0bd	; $b06b
+	dc.w	$b0d0	; $b06d
+	dc.w	$bdb0	; $b06f
+table_b0b5:
+	dc.w	$aef0	; $b0b5
+	dc.w	$b0bb	; $b0b7
+	dc.w	$b0cf	; $b0b9
+	dc.w	$bdb0	; $b0bb
+table_8b59:
+	dc.w	$8bcd	; $8b59
+	dc.w	$a6f4	; $8b5b
+	dc.w	$9c17	; $8b5d
+	dc.w	$9c8e	; $8b5f
+	dc.w	$9ce0	; $8b61
+	dc.w	$91af	; $8b63
+	dc.w	$9293	; $8b65
+	dc.w	$9417	; $8b67
+	dc.w	$9417	; $8b69
+	dc.w	$a3fa	; $8b6b
+	dc.w	$9eaf	; $8b6d
+	dc.w	$a31c	; $8b6f
+	dc.w	$a3c6	; $8b71
+	dc.w	$9e14	; $8b73
+	dc.w	$8bcd	; $8b75
+	dc.w	$a643	; $8b77
+	dc.w	$a3c6	; $8b79
+	dc.w	$a643	; $8b7b
+	dc.w	$a3c6	; $8b7d
+	dc.w	$a3c6	; $8b7f
+	dc.w	$a3c6	; $8b81
+	dc.w	$a3c6	; $8b83
+	dc.w	$a43d	; $8b85
+	dc.w	$a3c6	; $8b87
+	dc.w	$a4a3	; $8b89
+table_b4ab:
+	dc.w	$b4b7	; $b4ab
+	dc.w	$b4bc	; $b4ad
+table_b5aa:
+	dc.w	$b5b6	; $b5aa
+table_ba1d:
+	dc.w	$ba25	; $ba1d
+	dc.w	$ba31	; $ba1f
+	dc.w	$ba46	; $ba21
+	dc.w	$ba5b	; $ba23
+	dc.w	$bdf9	; $ba25
+	dc.w	$92bd	; $ba27
+	dc.w	$baa7	; $ba29
+	dc.w	$bdf9	; $ba2b
+table_badd:
+table_bbec:
+	dc.w	$bc63	; $bbec
+	dc.w	$bc14	; $bbee
+	dc.w	$bc14	; $bbf0
+	dc.w	$c233	; $bbf2
+	dc.w	$bf7d	; $bbf4
+	dc.w	$c7bf	; $bbf6
+	dc.w	$c4c6	; $bbf8
+	dc.w	$c69c	; $bbfa
+	dc.w	$bc14	; $bbfc
+	dc.w	$bc14	; $bbfe
+	dc.w	$bc14	; $bc00
+	dc.w	$bc14	; $bc02
+	dc.w	$bc14	; $bc04
+	dc.w	$bc14	; $bc06
+	dc.w	$c9fb	; $bc08
+	dc.w	$bc14	; $bc0a
+	dc.w	$bc58	; $bc0c
+	dc.w	$bc58	; $bc0e
+	dc.w	$bc58	; $bc10
+	dc.w	$bc58	; $bc12
+	dc.w	$bdfc	; $bc14
+	dc.w	$82a6	; $bc16
+	dc.w	$8817	; $bc18
+	dc.w	$841f	; $bc1a
+table_bc27:
+table_bc8d:
+	dc.w	$bcb6	; $bc8d
+	dc.w	$bcc1	; $bc8f
+	dc.w	$bcc7	; $bc91
+	dc.w	$bcb5	; $bc93
+	dc.w	$bcb5	; $bc95
+	dc.w	$bccd	; $bc97
+	dc.w	$bcd1	; $bc99
+	dc.w	$bce1	; $bc9b
+	dc.w	$bd12	; $bc9d
+	dc.w	$bd16	; $bc9f
+	dc.w	$bd27	; $bca1
+	dc.w	$bd2d	; $bca3
+	dc.w	$bcb6	; $bca5
+	dc.w	$bd33	; $bca7
+	dc.w	$bd48	; $bca9
+	dc.w	$bd58	; $bcab
+	dc.w	$bcb5	; $bcad
+	dc.w	$bcb5	; $bcaf
+	dc.w	$bd68	; $bcb1
+	dc.w	$bd6e	; $bcb3
+table_bd91:
+	dc.w	$bdba	; $bd91
+	dc.w	$bdbe	; $bd93
+	dc.w	$bde9	; $bd95
+	dc.w	$bdb9	; $bd97
+	dc.w	$bdb9	; $bd99
+	dc.w	$be14	; $bd9b
+	dc.w	$be19	; $bd9d
+	dc.w	$be5a	; $bd9f
+	dc.w	$be89	; $bda1
+	dc.w	$beb6	; $bda3
+	dc.w	$beb6	; $bda5
+	dc.w	$bebb	; $bda7
+	dc.w	$bec0	; $bda9
+	dc.w	$beef	; $bdab
+	dc.w	$bf18	; $bdad
+	dc.w	$bf41	; $bdaf
+	dc.w	$bdb9	; $bdb1
+	dc.w	$bdb9	; $bdb3
+	dc.w	$bf6c	; $bdb5
+	dc.w	$be19	; $bdb7
+table_bfa7:
+	dc.w	$bfd0	; $bfa7
+	dc.w	$bfdb	; $bfa9
+	dc.w	$bfe1	; $bfab
+	dc.w	$bfcf	; $bfad
+	dc.w	$bfcf	; $bfaf
+	dc.w	$bfe7	; $bfb1
+	dc.w	$bfeb	; $bfb3
+	dc.w	$bff8	; $bfb5
+	dc.w	$c029	; $bfb7
+	dc.w	$c02d	; $bfb9
+	dc.w	$c03e	; $bfbb
+	dc.w	$c044	; $bfbd
+	dc.w	$bfd0	; $bfbf
+	dc.w	$c04a	; $bfc1
+	dc.w	$c05f	; $bfc3
+	dc.w	$c06f	; $bfc5
+	dc.w	$bfcf	; $bfc7
+	dc.w	$bfcf	; $bfc9
+	dc.w	$c07f	; $bfcb
+	dc.w	$c085	; $bfcd
+table_c0a9:
+	dc.w	$c0d2	; $c0a9
+	dc.w	$c0d6	; $c0ab
+	dc.w	$c0fd	; $c0ad
+	dc.w	$c0d1	; $c0af
+	dc.w	$c0d1	; $c0b1
+	dc.w	$c124	; $c0b3
+	dc.w	$c129	; $c0b5
+	dc.w	$c14d	; $c0b7
+	dc.w	$c178	; $c0b9
+	dc.w	$c1a3	; $c0bb
+	dc.w	$c1a3	; $c0bd
+	dc.w	$c1a8	; $c0bf
+	dc.w	$bec0	; $c0c1
+	dc.w	$c1ad	; $c0c3
+	dc.w	$c1d4	; $c0c5
+	dc.w	$c1fb	; $c0c7
+	dc.w	$c0d1	; $c0c9
+	dc.w	$c0d1	; $c0cb
+	dc.w	$c222	; $c0cd
+	dc.w	$c129	; $c0cf
+table_c25d:
+	dc.w	$c286	; $c25d
+	dc.w	$c291	; $c25f
+	dc.w	$c297	; $c261
+	dc.w	$c285	; $c263
+	dc.w	$c285	; $c265
+	dc.w	$c286	; $c267
+	dc.w	$c29d	; $c269
+	dc.w	$c2aa	; $c26b
+	dc.w	$c286	; $c26d
+	dc.w	$c2db	; $c26f
+	dc.w	$c2ec	; $c271
+	dc.w	$c2f2	; $c273
+	dc.w	$c286	; $c275
+	dc.w	$c2f8	; $c277
+	dc.w	$c30d	; $c279
+	dc.w	$c31d	; $c27b
+table_c351:
+	dc.w	$c37a	; $c351
+	dc.w	$c37e	; $c353
+	dc.w	$c3a5	; $c355
+	dc.w	$c379	; $c357
+	dc.w	$c379	; $c359
+	dc.w	$c3cc	; $c35b
+	dc.w	$c3d1	; $c35d
+	dc.w	$c40c	; $c35f
+	dc.w	$c433	; $c361
+	dc.w	$c439	; $c363
+	dc.w	$c439	; $c365
+	dc.w	$c43e	; $c367
+	dc.w	$bec0	; $c369
+	dc.w	$c44f	; $c36b
+	dc.w	$c478	; $c36d
+	dc.w	$c49f	; $c36f
+table_c4f0:
+	dc.w	$c517	; $c4f0
+	dc.w	$c522	; $c4f2
+	dc.w	$c528	; $c4f4
+	dc.w	$c517	; $c4f6
+	dc.w	$c516	; $c4f8
+	dc.w	$c517	; $c4fa
+	dc.w	$c516	; $c4fc
+	dc.w	$c53c	; $c4fe
+	dc.w	$c517	; $c500
+	dc.w	$c548	; $c502
+	dc.w	$c559	; $c504
+	dc.w	$c55f	; $c506
+	dc.w	$c517	; $c508
+	dc.w	$c516	; $c50a
+	dc.w	$c516	; $c50c
+	dc.w	$c516	; $c50e
+	dc.w	$c516	; $c510
+	dc.w	$c517	; $c512
+	dc.w	$c565	; $c514
+table_c582:
+	dc.w	$c5a9	; $c582
+	dc.w	$c5ad	; $c584
+	dc.w	$c5dc	; $c586
+	dc.w	$c60a	; $c588
+	dc.w	$c5a8	; $c58a
+	dc.w	$c634	; $c58c
+	dc.w	$c5a8	; $c58e
+	dc.w	$c639	; $c590
+	dc.w	$c668	; $c592
+	dc.w	$c66e	; $c594
+	dc.w	$c66e	; $c596
+	dc.w	$c66e	; $c598
+	dc.w	$bec0	; $c59a
+	dc.w	$c5a8	; $c59c
+	dc.w	$c5a8	; $c59e
+	dc.w	$c5a8	; $c5a0
+	dc.w	$c5a8	; $c5a2
+	dc.w	$c673	; $c5a4
+	dc.w	$c68b	; $c5a6
+table_c6c6:
+	dc.w	$c6ed	; $c6c6
+	dc.w	$c6f8	; $c6c8
+	dc.w	$c6ec	; $c6ca
+	dc.w	$c6ec	; $c6cc
+	dc.w	$c6ec	; $c6ce
+	dc.w	$c6ed	; $c6d0
+	dc.w	$c6ec	; $c6d2
+	dc.w	$c6fe	; $c6d4
+	dc.w	$c6ed	; $c6d6
+	dc.w	$c70a	; $c6d8
+	dc.w	$c71b	; $c6da
+	dc.w	$c721	; $c6dc
+	dc.w	$c6ed	; $c6de
+	dc.w	$c6ec	; $c6e0
+	dc.w	$c6ec	; $c6e2
+	dc.w	$c6ec	; $c6e4
+	dc.w	$c6ec	; $c6e6
+	dc.w	$c6ec	; $c6e8
+	dc.w	$c727	; $c6ea
+table_c744:
+	dc.w	$c76b	; $c744
+	dc.w	$c76f	; $c746
+	dc.w	$c76a	; $c748
+	dc.w	$c76a	; $c74a
+	dc.w	$c76a	; $c74c
+	dc.w	$c79a	; $c74e
+	dc.w	$c76a	; $c750
+	dc.w	$c79f	; $c752
+	dc.w	$c7a3	; $c754
+	dc.w	$c7a9	; $c756
+	dc.w	$c7a9	; $c758
+	dc.w	$c7a9	; $c75a
+	dc.w	$bec0	; $c75c
+	dc.w	$c76a	; $c75e
+	dc.w	$c76a	; $c760
+	dc.w	$c76a	; $c762
+	dc.w	$c76a	; $c764
+	dc.w	$c76a	; $c766
+	dc.w	$c7ae	; $c768
+table_c7ec:
+	dc.w	$c813	; $c7ec
+	dc.w	$c81e	; $c7ee
+	dc.w	$c824	; $c7f0
+	dc.w	$c813	; $c7f2
+	dc.w	$c82a	; $c7f4
+	dc.w	$c813	; $c7f6
+	dc.w	$c812	; $c7f8
+	dc.w	$c833	; $c7fa
+	dc.w	$c813	; $c7fc
+	dc.w	$c83f	; $c7fe
+	dc.w	$c850	; $c800
+	dc.w	$c856	; $c802
+	dc.w	$c813	; $c804
+table_c879:
+	dc.w	$c8a0	; $c879
+	dc.w	$c8ed	; $c87b
+	dc.w	$c922	; $c87d
+	dc.w	$c957	; $c87f
+	dc.w	$c981	; $c881
+	dc.w	$c9a5	; $c883
+	dc.w	$c89f	; $c885
+	dc.w	$c9aa	; $c887
+	dc.w	$c9df	; $c889
+	dc.w	$c9e5	; $c88b
+	dc.w	$c9e5	; $c88d
+	dc.w	$c9e5	; $c88f
+	dc.w	$bec0	; $c891
+table_ca25:
+	dc.w	$ca4c	; $ca25
+	dc.w	$ca57	; $ca27
+	dc.w	$ca4b	; $ca29
+	dc.w	$ca4b	; $ca2b
+	dc.w	$ca4b	; $ca2d
+	dc.w	$ca4c	; $ca2f
+	dc.w	$ca4b	; $ca31
+	dc.w	$ca5d	; $ca33
+	dc.w	$ca69	; $ca35
+	dc.w	$ca72	; $ca37
+	dc.w	$ca83	; $ca39
+	dc.w	$ca89	; $ca3b
+	dc.w	$ca4c	; $ca3d
+	dc.w	$ca4b	; $ca3f
+	dc.w	$ca4b	; $ca41
+	dc.w	$ca4b	; $ca43
+	dc.w	$ca4b	; $ca45
+	dc.w	$ca4b	; $ca47
+	dc.w	$ca8f	; $ca49
+table_caac:
+	dc.w	$cad3	; $caac
+	dc.w	$cad7	; $caae
+	dc.w	$cad2	; $cab0
+	dc.w	$cad2	; $cab2
+	dc.w	$cad2	; $cab4
+	dc.w	$cb00	; $cab6
+	dc.w	$cad2	; $cab8
+	dc.w	$cb05	; $caba
+	dc.w	$cb09	; $cabc
+	dc.w	$cb0f	; $cabe
+	dc.w	$cb0f	; $cac0
+	dc.w	$cb14	; $cac2
+	dc.w	$bec0	; $cac4
+	dc.w	$cad2	; $cac6
+	dc.w	$cad2	; $cac8
+	dc.w	$cad2	; $caca
+	dc.w	$cad2	; $cacc
+	dc.w	$cad2	; $cace
+	dc.w	$cb19	; $cad0
