@@ -381,22 +381,13 @@
 433A: 26 F6          BNE    $4332
 433C: 5F             CLRB
 433D: 39             RTS
-433E: 04 05          LSR    $05
-4340: 06 07          ROR    $07
-4342: FF 8E 44       STU    $8E44
-4345: 06 96          ROR    $96
-4347: 69 91          ROL    [,X++]
-4349: 6A 23          DEC    $3,Y
-434B: 05 8E 43       EIM    #$8E;$43
-434E: 63 96          COM    [A,X]
-4350: 6A 91          DEC    [,X++]
-4352: 6B 23 05       TIM    #$23;$5,X
+
 4355: 8E 44 70       LDX    #$4470
 4358: 96 6B          LDA    $6B
 435A: 91 6C          CMPA   $6C
 435C: 23 03          BLS    $4361
 435E: 8E 44 2F       LDX    #$442F
-4361: 6E 84          JMP    ,X
+4361: 6E 84          JMP    ,X		; [indirect_jump]
 4363: 4F             CLRA
 4364: D6 6A          LDB    $6A
 4366: C1 FF          CMPB   #$FF
@@ -687,6 +678,7 @@
 4603: 93 01          SUBD   $01
 4605: DD 01          STD    $01
 4607: 35 FE          PULS   D,DP,X,Y,U,PC
+
 4609: 34 7E          PSHS   U,Y,X,DP,D
 460B: 10 9E 00       LDY    $00
 460E: 0F 00          CLR    $00
@@ -721,6 +713,7 @@
 464B: 93 05          SUBD   $05
 464D: DD 05          STD    $05
 464F: 35 FE          PULS   D,DP,X,Y,U,PC
+
 4651: 34 7E          PSHS   U,Y,X,DP,D
 4653: 32 71          LEAS   -$F,S
 4655: BD 45 D6       JSR    $45D6

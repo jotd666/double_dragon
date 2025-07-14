@@ -14,15 +14,10 @@
 4023: A6 84          LDA    ,X
 4025: 84 0F          ANDA   #$0F
 4027: 48             ASLA
-4028: 10 8E 40 30    LDY    #$4030
+4028: 10 8E 40 30    LDY    #table_4030
 402C: AD B6          JSR    [A,Y]
 402E: 35 FE          PULS   D,DP,X,Y,U,PC
-4030: 40             NEGA
-4031: 3A             ABX
-4032: 40             NEGA
-4033: 73 40 B2       COM    $40B2
-4036: 40             NEGA
-4037: B2 41 1A       SBCA   $411A
+
 403A: 34 7E          PSHS   U,Y,X,DP,D
 403C: A6 05          LDA    $5,X
 403E: E6 0A          LDB    $A,X
@@ -212,14 +207,7 @@
 41B1: DD 02          STD    $02
 41B3: 32 68          LEAS   $8,S
 41B5: 35 B6          PULS   D,X,Y,PC
-41B7: 00 81          NEG    $81
-41B9: 01 80 00       OIM    #$80;$00
-41BC: 81 01          CMPA   #$01
-41BE: 80 34          SUBA   #$34
-41C0: 31 6F          LEAY   $F,S
-41C2: 80 31          SUBA   #$31
-41C4: 3F             SWI
-41C5: 26 FA          BNE    $41C1
+
 41C7: 35 B1          PULS   CC,X,Y,PC
 41C9: 34 31          PSHS   Y,X,CC
 41CB: 8E 00 20       LDX    #$0020
@@ -442,94 +430,7 @@
 43AC: 86 01          LDA    #$01
 43AE: BD FC 78       JSR    $FC78
 43B1: 35 F7          PULS   CC,D,X,Y,U,PC
-43B3: 03 00          COM    $00
-43B5: 04 00          LSR    $00
-43B7: 02 00 04       AIM    #$00;$04
-43BA: 00 06          NEG    $06
-43BC: 08 08          ASL    $08
-43BE: 08 00          ASL    $00
-43C0: 00 00          NEG    $00
-43C2: 00 00          NEG    $00
-43C4: 10 00          FCB    $10,$00
-43C6: 00             FCB    $00
-43C7: 20             FCB    $20
-43C8: 00             FCB    $00
-43C9: 00             FCB    $00
-43CA: 30 00          ADDR   D,D
-43CC: 00 40          NEG    $40
-43CE: 00 00          NEG    $00
-43D0: 50             NEGB
-43D1: 00 00          NEG    $00
-43D3: 60 00          NEG    $0,X
-43D5: 00 70          NEG    $70
-43D7: 00 00          NEG    $00
-43D9: 80 00          SUBA   #$00
-43DB: 00 90          NEG    $90
-43DD: 00 01          NEG    $01
-43DF: 00 00          NEG    $00
-43E1: 02 00 00       AIM    #$00;$00
-43E4: 03 00          COM    $00
-43E6: 00 04          NEG    $04
-43E8: 00 00          NEG    $00
-43EA: 05 00 00       EIM    #$00;$00
-43ED: 06 00          ROR    $00
-43EF: 00 07          NEG    $07
-43F1: 00 00          NEG    $00
-43F3: 08 00          ASL    $00
-43F5: 00 09          NEG    $09
-43F7: 00 00          NEG    $00
-43F9: 10 00          FCB    $10,$00
-43FB: 00             FCB    $00
-43FC: 20             FCB    $20
-43FD: 00             FCB    $00
-43FE: 00             FCB    $00
-43FF: 30 00          ADDR   D,D
-4401: 00 40          NEG    $40
-4403: 00 00          NEG    $00
-4405: 50             NEGB
-4406: 00 00          NEG    $00
-4408: 60 00          NEG    $0,X
-440A: 00 70          NEG    $70
-440C: 00 00          NEG    $00
-440E: 80 00          SUBA   #$00
-4410: 00 90          NEG    $90
-4412: 00 01          NEG    $01
-4414: 00 00          NEG    $00
-4416: 02 00 00       AIM    #$00;$00
-4419: 03 00          COM    $00
-441B: 00 04          NEG    $04
-441D: 00 00          NEG    $00
-441F: 05 00 00       EIM    #$00;$00
-4422: 06 00          ROR    $00
-4424: 00 07          NEG    $07
-4426: 00 00          NEG    $00
-4428: 08 00          ASL    $00
-442A: 00 09          NEG    $09
-442C: 00 00          NEG    $00
-442E: 10 00          FCB    $10,$00
-4430: 00             FCB    $00
-4431: 20             FCB    $20
-4432: 00             FCB    $00
-4433: 00             FCB    $00
-4434: 30 00          ADDR   D,D
-4436: 00 40          NEG    $40
-4438: 00 00          NEG    $00
-443A: 00 01          NEG    $01
-443C: 50             NEGB
-443D: 00 15          NEG    $15
-443F: 00 50          NEG    $50
-4441: 00 00          NEG    $00
-4443: 00 01          NEG    $01
-4445: 20 00          BRA    $4447
-4447: 01 80 96       OIM    #$80;$96
-444A: 26 26          BNE    $4472
-444C: 11 A6 88 5C    LDE    $5C,X
-4450: 27 05          BEQ    $4457
-4452: 6A 88 5C       DEC    $5C,X
-4455: 20 03          BRA    $445A
-4457: 17 B6 46       LBSR   $FAA0
-445A: A6 88 5A       LDA    $5A,X
-445D: 39             RTS
+
 445E: 10 8E 38 00    LDY    #$3800
 4462: D6 2A          LDB    $2A
 4464: A6 A5          LDA    B,Y
@@ -662,9 +563,7 @@
 455A: 26 EC          BNE    $4548
 455C: 32 68          LEAS   $8,S
 455E: 35 F6          PULS   D,X,Y,U,PC
-4560: 10 80 11 00    SUBW   #$1100
-4564: 10 00          FCB    $10,$00
-4566: 34 76          ANDR   V,W
+
 4568: B6 0B C0       LDA    $0BC0
 456B: 27 1B          BEQ    $4588
 456D: 8E 0B 80       LDX    #$0B80
@@ -878,19 +777,7 @@
 4720: A6 A5          LDA    B,Y
 4722: 32 65          LEAS   $5,S
 4724: 35 B4          PULS   B,X,Y,PC
-4726: 00 20          NEG    $20
-4728: 40             NEGA
-4729: 20 80          BRA    $46AB
-472B: 60 40          NEG    $0,U
-472D: 60 00          NEG    $0,X
-472F: E0 C0          SUBB   ,U+
-4731: E0 80          SUBB   ,X+
-4733: A0 C0          SUBA   ,U+
-4735: A0 34          SUBA   -$C,Y
-4737: 66 32          ROR    -$E,Y
-4739: 7F EE 88       CLR    $EE88
-473C: 2D A6          BLT    $46E4
-473E: 02 84 7F       AIM    #$84;$7F
+
 4741: 81 7F          CMPA   #$7F
 4743: 10 27 00 7F    LBEQ   $47C6
 4747: 10 8E 02 81    LDY    #$0281
@@ -954,6 +841,7 @@
 47C3: 7C 03 A1       INC    $03A1
 47C6: 32 61          LEAS   $1,S
 47C8: 35 E6          PULS   D,Y,U,PC
+
 47CA: 34 36          PSHS   Y,X,D
 47CC: D6 35          LDB    $35
 47CE: C1 04          CMPB   #$04
@@ -962,6 +850,7 @@
 47D5: A7 85          STA    B,X
 47D7: 0C 35          INC    $35
 47D9: 35 B6          PULS   D,X,Y,PC
+
 47DB: CC 00 00       LDD    #$0000
 47DE: A3 0F          SUBD   $F,X
 47E0: ED 0F          STD    $F,X
@@ -1003,50 +892,7 @@
 4828: 8A 02          ORA    #$02
 482A: A7 84          STA    ,X
 482C: 35 FE          PULS   D,DP,X,Y,U,PC
-482E: 01 00 01       OIM    #$00;$01
-4831: 00 00          NEG    $00
-4833: 90 01          SUBA   $01
-4835: 00 FF          NEG    $FF
-4837: 00 00          NEG    $00
-4839: 90 01          SUBA   $01
-483B: 00 00          NEG    $00
-483D: 00 00          NEG    $00
-483F: 90 08          SUBA   $08
-4841: 00 03          NEG    $03
-4843: 00 00          NEG    $00
-4845: C0 01          SUBB   #$01
-4847: 00 00          NEG    $00
-4849: 00 00          NEG    $00
-484B: 90 06          SUBA   $06
-484D: 00 02          NEG    $02
-484F: 00 00          NEG    $00
-4851: 90 01          SUBA   $01
-4853: 00 03          NEG    $03
-4855: 00 00          NEG    $00
-4857: 90 00          SUBA   $00
-4859: 00 00          NEG    $00
-485B: 00 00          NEG    $00
-485D: 50             NEGB
-485E: 0A 00          DEC    $00
-4860: 02 00 00       AIM    #$00;$00
-4863: D0 09          SUBB   $09
-4865: 00 02          NEG    $02
-4867: 00 01          NEG    $01
-4869: 00 07          NEG    $07
-486B: 00 00          NEG    $00
-486D: 00 00          NEG    $00
-486F: E0 09          SUBB   $9,X
-4871: F0 02 00       SUBB   $0200
-4874: 01 00 07       OIM    #$00;$07
-4877: 00 00          NEG    $00
-4879: 00 00          NEG    $00
-487B: E0 07          SUBB   $7,X
-487D: 00 00          NEG    $00
-487F: 00 00          NEG    $00
-4881: E0 00          SUBB   $0,X
-4883: 00 01          NEG    $01
-4885: 80 00          SUBA   #$00
-4887: 50             NEGB
+
 4888: 34 1F          PSHS   X,DP,D,CC
 488A: 35 9F          PULS   CC,D,DP,X,PC
 488C: 34 37          PSHS   Y,X,D,CC
@@ -1202,13 +1048,12 @@
 49BA: BD FE 23       JSR    $FE23
 49BD: 20 EF          BRA    $49AE
 49BF: 39             RTS
-49C0: 8E 49 CA       LDX    #$49CA
+49C0: 8E 49 CA       LDX    #table_49CA
 49C3: F6 0A F6       LDB    $0AF6
 49C6: 58             ASLB
 49C7: AD 95          JSR    [B,X]
 49C9: 39             RTS
-49CA: 49             ROLA
-49CB: CE 4A 08       LDU    #$4A08
+
 49CE: B6 0A F5       LDA    $0AF5
 49D1: 2B 14          BMI    $49E7
 49D3: 7F 0A F7       CLR    $0AF7
@@ -1261,16 +1106,15 @@
 4A4D: B7 10 8C       STA    $108C
 4A50: F7 12 8C       STB    $128C
 4A53: 39             RTS
-4A54: 00 00          NEG    $00
-4A56: FF 04 BD       STU    $04BD
-4A59: 4A             DECA
-4A5A: 97 BD          STA    $BD
-4A5C: 4A             DECA
-4A5D: A5 BD 4A B7    BITA   [$9518,PCR]
+
+4A58: BD 4A 97       JSR    $4A97
+4A5B: BD 4A A5       JSR    $4AA5
+4A5F: BD 4A B7       JSR    $4AB7
 4A61: BD 4A 7E       JSR    $4A7E
 4A64: BD 4A C7       JSR    $4AC7
 4A67: BD 4A E4       JSR    $4AE4
 4A6A: 39             RTS
+
 4A6B: BD 4A 97       JSR    $4A97
 4A6E: BD 4A A5       JSR    $4AA5
 4A71: BD 4A B7       JSR    $4AB7
@@ -1278,6 +1122,7 @@
 4A77: BD 4A E4       JSR    $4AE4
 4A7A: BD 4B 2E       JSR    $4B2E
 4A7D: 39             RTS
+
 4A7E: 8E 10 10       LDX    #$1010
 4A81: 10 8E 10 70    LDY    #$1070
 4A85: 6F 89 02 00    CLR    $0200,X
@@ -1293,6 +1138,7 @@
 4A9F: 8C 38 00       CMPX   #$3800
 4AA2: 26 F9          BNE    $4A9D
 4AA4: 39             RTS
+
 4AA5: C6 00          LDB    #$00
 4AA7: F7 38 09       STB    $3809
 4AAA: F7 38 0A       STB    $380A
@@ -1371,17 +1217,13 @@
 4B39: C1 04          CMPB   #$04
 4B3B: 26 F6          BNE    $4B33
 4B3D: 39             RTS
-4B3E: 4B             FCB    $4B
-4B3F: 7A 4B E2       DEC    $4BE2
-4B42: 4C             INCA
-4B43: 53             COMB
-4B44: 4C             INCA
-4B45: C6 34          LDB    #$34
-4B47: 36 EC          PSHU   PC,S,Y,DP,B
-4B49: 81 DD          CMPA   #$DD
-4B4B: 00 EC          NEG    $EC
-4B4D: 81 DD          CMPA   #$DD
-4B4F: 02 DD 04       AIM    #$DD;$04
+
+4B46: 34 36          PSHS   Y,X,D     
+4B48: EC 81          LDD    ,X++      
+4B4A: DD 00          STD    $00       
+4B4C: EC 81          LDD    ,X++      
+4B4E: DD 02          STD    $02       
+4B50: DD 04          STD    $04       
 4B52: A6 80          LDA    ,X+
 4B54: 97 06          STA    $06
 4B56: 10 9E 00       LDY    $00
@@ -1402,292 +1244,7 @@
 4B74: 0A 05          DEC    $05
 4B76: 26 DE          BNE    $4B56
 4B78: 35 B6          PULS   D,X,Y,PC
-4B7A: 1B             FCB    $1B
-4B7B: C2 09          SBCB   #$09
-4B7D: 0B 21 FF       TIM    #$21;$FF
-4B80: FF 00 01       STU    >$0001
-4B83: 02 FF FF       AIM    #$FF;$FF
-4B86: FF FF 03       STU    $FF03
-4B89: 04 05          LSR    $05
-4B8B: 06 07          ROR    $07
-4B8D: 08 FF          ASL    $FF
-4B8F: FF FF 09       STU    $FF09
-4B92: 0A 0B          DEC    $0B
-4B94: 0C 0D          INC    $0D
-4B96: 0E 0F          JMP    $0F
-4B98: 10 FF FF 11    STS    $FF11
-4B9C: 12             NOP
-4B9D: 13             SYNC
-4B9E: 14             SEXW
-4B9F: 15             FCB    $15
-4BA0: 16 17 FF       LBRA   $63A2
-4BA3: FF FF 18       STU    $FF18
-4BA6: 19             DAA
-4BA7: 1A 1B          ORCC   #$1B
-4BA9: 1C 1D          ANDCC  #$1D
-4BAB: 1E FF          EXG    F,F
-4BAD: 1F 20          TFR    Y,D
-4BAF: 21 22          BRN    $4BD3
-4BB1: FF 23 24       STU    $2324
-4BB4: 25 26          BCS    $4BDC
-4BB6: 27 28          BEQ    $4BE0
-4BB8: 29 2A          BVS    $4BE4
-4BBA: 2B 2C          BMI    $4BE8
-4BBC: 2D 2E          BLT    $4BEC
-4BBE: 2F 30          BLE    $4BF0
-4BC0: 31 32          LEAY   -$E,Y
-4BC2: 33 34          LEAU   -$C,Y
-4BC4: 35 36          PULS   D,X,Y
-4BC6: FF 37 38       STU    $3738
-4BC9: 39             RTS
-4BCA: 3A             ABX
-4BCB: 3B             RTI
-4BCC: 3C 3D          CWAI   #$3D
-4BCE: 3E             FCB    $3E
-4BCF: 3F             SWI
-4BD0: 40             NEGA
-4BD1: 41             FCB    $41
-4BD2: 42             FCB    $42
-4BD3: 43             COMA
-4BD4: 44             LSRA
-4BD5: 45             FCB    $45
-4BD6: 46             RORA
-4BD7: 47             ASRA
-4BD8: 48             ASLA
-4BD9: FF 49 FF       STU    $49FF
-4BDC: FF FF 4A       STU    $FF4A
-4BDF: 4B             FCB    $4B
-4BE0: 4C             INCA
-4BE1: 4D             TSTA
-4BE2: 1B             FCB    $1B
-4BE3: 96 09          LDA    $09
-4BE5: 0C 21          INC    $21
-4BE7: FF FF FF       STU    $FFFF
-4BEA: FF 4E FF       STU    $4EFF
-4BED: FF FF FF       STU    $FFFF
-4BF0: FF 4F 50       STU    $4F50
-4BF3: 51             FCB    $51
-4BF4: 52             FCB    $52
-4BF5: 53             COMB
-4BF6: 54             LSRB
-4BF7: 55             FCB    $55
-4BF8: FF 56 57       STU    $5657
-4BFB: 58             ASLB
-4BFC: 59             ROLB
-4BFD: 5A             DECB
-4BFE: 5B             FCB    $5B
-4BFF: 5C             INCB
-4C00: 5D             TSTB
-4C01: FF 5E 5F       STU    $5E5F
-4C04: 60 61          NEG    $1,S
-4C06: 62 63 64       AIM    #$63;$4,S
-4C09: 65 FF 66       EIM    #$FF;$6,S
-4C0C: 67 68          ASR    $8,S
-4C0E: 69 6A          ROL    $A,S
-4C10: 6B 6C 6D       TIM    #$6C;$D,S
-4C13: FF 6E 6F       STU    $6E6F
-4C16: 70 71 72       NEG    $7172
-4C19: 73 74 FF       COM    $74FF
-4C1C: FF 75 76       STU    $7576
-4C1F: 77 78 79       ASR    $7879
-4C22: 7A 7B 7C       DEC    $7B7C
-4C25: FF 7D 7E       STU    $7D7E
-4C28: 7F 80 81       CLR    $8081
-4C2B: 82 83          SBCA   #$83
-4C2D: 84 FF          ANDA   #$FF
-4C2F: FF 85 86       STU    $8586
-4C32: 87             FCB    $87
-4C33: 88 89          EORA   #$89
-4C35: 8A 8B          ORA    #$8B
-4C37: 8C FF 8D       CMPX   #$FF8D
-4C3A: 8E 8F 90       LDX    #$8F90
-4C3D: 91 92          CMPA   $92
-4C3F: 93 94          SUBD   $94
-4C41: 95 96          BITA   $96
-4C43: 97 98          STA    $98
-4C45: 99 9A          ADCA   $9A
-4C47: 9B 9C          ADDA   $9C
-4C49: 9D 9E          JSR    $9E
-4C4B: 9F A0          STX    $A0
-4C4D: A1 A2          CMPA   ,-Y
-4C4F: FF A3 A4       STU    $A3A4
-4C52: A5 1B          BITA   -$5,X
-4C54: EA 0A          ORB    $A,X
-4C56: 0B 22 FF       TIM    #$22;$FF
-4C59: 00 01          NEG    $01
-4C5B: 02 FF 03       AIM    #$FF;$03
-4C5E: 04 FF          LSR    $FF
-4C60: FF FF FF       STU    $FFFF
-4C63: 05 06 07       EIM    #$06;$07
-4C66: 08 09          ASL    $09
-4C68: 0A 0B          DEC    $0B
-4C6A: FF FF 0C       STU    $FF0C
-4C6D: 0D 0E          TST    $0E
-4C6F: 0F 10          CLR    $10
-4C71: 11 12          FCB    $11,$12
-4C73: 13             FCB    $13
-4C74: 14             FCB    $14
-4C75: FF             FCB    $FF
-4C76: FF             FCB    $FF
-4C77: 15             FCB    $15
-4C78: 16             FCB    $16
-4C79: 17             FCB    $17
-4C7A: 18             FCB    $18
-4C7B: 19             FCB    $19
-4C7C: 1A             FCB    $1A
-4C7D: 1B             FCB    $1B
-4C7E: FF             FCB    $FF
-4C7F: FF             FCB    $FF
-4C80: 1C             FCB    $1C
-4C81: 1D             FCB    $1D
-4C82: 1E             FCB    $1E
-4C83: 1F             FCB    $1F
-4C84: 20             FCB    $20
-4C85: 21             FCB    $21
-4C86: 22             FCB    $22
-4C87: 23             FCB    $23
-4C88: 24             FCB    $24
-4C89: FF             FCB    $FF
-4C8A: 25             FCB    $25
-4C8B: 26             FCB    $26
-4C8C: 27             FCB    $27
-4C8D: 28             FCB    $28
-4C8E: 29             FCB    $29
-4C8F: 2A             FCB    $2A
-4C90: 2B             FCB    $2B
-4C91: 2C             FCB    $2C
-4C92: 2D             FCB    $2D
-4C93: FF             FCB    $FF
-4C94: FF             FCB    $FF
-4C95: 2E             FCB    $2E
-4C96: 2F             FCB    $2F
-4C97: 30 31 32       BAND   CC,6,1,$32
-4C9A: 33 34          LEAU   -$C,Y
-4C9C: 35 FF          PULS   CC,D,DP,X,Y,U,PC
-4C9E: FF 36 37       STU    $3637
-4CA1: 38             FCB    $38
-4CA2: 39             RTS
-4CA3: 3A             ABX
-4CA4: 3B             RTI
-4CA5: 3C 3D          CWAI   #$3D
-4CA7: FF FF 3E       STU    $FF3E
-4CAA: 3F             SWI
-4CAB: 40             NEGA
-4CAC: 41             FCB    $41
-4CAD: 42             FCB    $42
-4CAE: 43             COMA
-4CAF: 44             LSRA
-4CB0: 45             FCB    $45
-4CB1: 46             RORA
-4CB2: FF 47 48       STU    $4748
-4CB5: 49             ROLA
-4CB6: 4A             DECA
-4CB7: 4B             FCB    $4B
-4CB8: 4C             INCA
-4CB9: 4D             TSTA
-4CBA: 4E             FCB    $4E
-4CBB: 4F             CLRA
-4CBC: FF 50 51       STU    $5051
-4CBF: 52             FCB    $52
-4CC0: 53             COMB
-4CC1: 54             LSRB
-4CC2: 55             FCB    $55
-4CC3: 56             RORB
-4CC4: 57             ASRB
-4CC5: 58             ASLB
-4CC6: 1A C8          ORCC   #$C8
-4CC8: 19             DAA
-4CC9: 03 E2          COM    $E2
-4CCB: 59             ROLB
-4CCC: 5A             DECB
-4CCD: 5B             FCB    $5B
-4CCE: 5C             INCB
-4CCF: 5D             TSTB
-4CD0: 5E             FCB    $5E
-4CD1: 5F             CLRB
-4CD2: 60 61          NEG    $1,S
-4CD4: 62 63 64       AIM    #$63;$4,S
-4CD7: 7D 7E 7F       TST    $7E7F
-4CDA: 80 81          SUBA   #$81
-4CDC: 82 83          SBCA   #$83
-4CDE: 84 95          ANDA   #$95
-4CE0: 96 97          LDA    $97
-4CE2: 98 99          EORA   $99
-4CE4: 65 66 67       EIM    #$66;$7,S
-4CE7: 68 69          ASL    $9,S
-4CE9: 6A 6B          DEC    $B,S
-4CEB: 6C 6D          INC    $D,S
-4CED: 6E 6F          JMP    $F,S
-4CEF: 70 85 86       NEG    $8586
-4CF2: 87             FCB    $87
-4CF3: 88 89          EORA   #$89
-4CF5: 8A 8B          ORA    #$8B
-4CF7: 8C 9A 9B       CMPX   #$9A9B
-4CFA: 9C 9D          CMPX   $9D
-4CFC: 9E 71          LDX    $71
-4CFE: 72 73 74 75    AIM    #$73,$7475
-4D02: 76 77 78       ROR    $7778
-4D05: 79 7A 7B       ROL    $7A7B
-4D08: 7C 8D 8E       INC    $8D8E
-4D0B: 8F             FCB    $8F
-4D0C: 90 91          SUBA   $91
-4D0E: 92 93          SBCA   $93
-4D10: 94 9F          ANDA   $9F
-4D12: A0 A1          SUBA   ,Y++
-4D14: A2 A3          SBCA   ,--Y
-4D16: 30 96          LEAX   [A,X]
-4D18: E8 E9 EA FF    EORB   -$1501,S
-4D1C: 30 B6          LEAX   [A,Y]
-4D1E: EB EC ED       ADDB   $4D0E,PCR
-4D21: FF 30 D6       STU    $30D6
-4D24: EE EF          LDU    ,--W
-4D26: F0 FF 30       SUBB   $FF30
-4D29: F6 FF F1       LDB    $FFF1
-4D2C: F2 FF 31       SBCB   $FF31
-4D2F: 16 FF F3       LBRA   $4D25
-4D32: F4 FF 31       ANDB   $FF31
-4D35: 36 F5          PSHU   PC,S,Y,X,B,CC
-4D37: F6 FF F7       LDB    $FFF7
-4D3A: 31 56          LEAY   -$A,U
-4D3C: F8 F9 FA       EORB   $F9FA
-4D3F: FF 31 76       STU    $3176
-4D42: FB FC FF       ADDB   $FCFF
-4D45: FF 31 96       STU    $3196
-4D48: FD FE FF       STD    $FEFF
-4D4B: FF FF CA       STU    $FFCA
-4D4E: CB 98          ADDB   #$98
-4D50: 99 9A          ADCA   $9A
-4D52: 9B FF          ADDA   $FF
-4D54: FF FF CE       STU    $FFCE
-4D57: CF             FCB    $CF
-4D58: 9C 9D          CMPX   $9D
-4D5A: 9E 9F          LDX    $9F
-4D5C: A0 FF FF D3    SUBA   [$FFD3]
-4D60: D4 A1          ANDB   $A1
-4D62: A2 A3          SBCA   ,--Y
-4D64: A4 A5          ANDA   B,Y
-4D66: A6 FF C8 C9    LDA    [$C8C9]
-4D6A: A7 A8 A9       STA    -$57,Y
-4D6D: AA AB          ORA    D,Y
-4D6F: AC FF CC CD    CMPX   [$CCCD]
-4D73: AD AE          JSR    W,Y
-4D75: AF B0 B1 B2    STX    [-$4E4E,W]
-4D79: D0 D1          SUBB   $D1
-4D7B: D2 B3          SBCB   $B3
-4D7D: B4 B5 B6       ANDA   $B5B6
-4D80: B7 B8 D5       STA    $B8D5
-4D83: D6 D7          LDB    $D7
-4D85: B9 BA BB       ADCA   $BABB
-4D88: BC BD BE       CMPX   $BDBE
-4D8B: FF FF FF       STU    $FFFF
-4D8E: BF C0 C1       STX    $C0C1
-4D91: C2 C3          SBCB   #$C3
-4D93: C4 FF          ANDB   #$FF
-4D95: FF FF FF       STU    $FFFF
-4D98: FF FF C5       STU    $FFC5
-4D9B: C6 C7          LDB    #$C7
-4D9D: D6 38          LDB    $38
-4D9F: 26 0C          BNE    $4DAD
+
 4DA1: 7F 0A 55       CLR    $0A55
 4DA4: 7F 0B 02       CLR    $0B02
 4DA7: 7F 0A F1       CLR    $0AF1
@@ -1709,21 +1266,18 @@
 4DD6: 7F 0B 20       CLR    $0B20
 4DD9: BD 4E 56       JSR    $4E56
 4DDC: 39             RTS
+
 4DDD: B6 0B 03       LDA    $0B03
 4DE0: 84 C0          ANDA   #$C0
 4DE2: 81 C0          CMPA   #$C0
 4DE4: 27 08          BEQ    $4DEE
-4DE6: 8E 4D EF       LDX    #$4DEF
+4DE6: 8E 4D EF       LDX    #table_4DEF
 4DE9: 96 36          LDA    $36
 4DEB: 48             ASLA
 4DEC: AD 96          JSR    [A,X]	; [jump_table]
 4DEE: 39             RTS
 
-4DEF: 4D             TSTA
-4DF0: F7 4E 04       STB    $4E04
-4DF3: 4E             FCB    $4E
-4DF4: 0E 4E          JMP    $4E
-4DF6: 18             FCB    $18
+
 4DF7: BD 50 6C       JSR    $506C
 4DFA: BD 5B 1F       JSR    $5B1F
 4DFD: BD 58 8F       JSR    $588F
@@ -1778,6 +1332,7 @@
 4E72: FD 0A 59       STD    $0A59
 4E75: 39             RTS
 4E76: 7E 7F DD       JMP    $7FDD
+
 4E79: C1 00          CMPB   #$00
 4E7B: 26 08          BNE    $4E85
 4E7D: CC 00 00       LDD    #$0000
@@ -1802,16 +1357,12 @@
 4EAD: F6 0A 56       LDB    $0A56
 4EB0: C1 04          CMPB   #$04
 4EB2: 26 08          BNE    $4EBC
-4EB4: 8E 4E BD       LDX    #$4EBD
+4EB4: 8E 4E BD       LDX    #table_4EBD
 4EB7: D6 36          LDB    $36
 4EB9: 58             ASLB
-4EBA: AD 95          JSR    [B,X]
+4EBA: AD 95          JSR    [B,X]		; [jump_table]
 4EBC: 39             RTS
-4EBD: 4E             FCB    $4E
-4EBE: C5 4E          BITB   #$4E
-4EC0: DA 4F          ORB    $4F
-4EC2: 36 4F          PSHU   S,DP,D,CC
-4EC4: 6B FC 0A       TIM    #$FC;$A,X
+
 4EC7: 5F             CLRB
 4EC8: 10 83 05 00    CMPD   #$0500
 4ECC: 24 08          BCC    $4ED6
@@ -1906,141 +1457,7 @@
 4FB4: 23 03          BLS    $4FB9
 4FB6: FD 0A 46       STD    $0A46
 4FB9: 39             RTS
-4FBA: 4F             CLRA
-4FBB: C2 4F          SBCB   #$4F
-4FBD: EA 50          ORB    -$10,U
-4FBF: 08 50          ASL    $50
-4FC1: 49             ROLA
-4FC2: 01 00 00       OIM    #$00;$00
-4FC5: 00 D4          NEG    $D4
-4FC7: 00 00          NEG    $00
-4FC9: 00 FF          NEG    $FF
-4FCB: FF 01 00       STU    $0100
-4FCE: D4 01          ANDB   $01
-4FD0: CE 03 01       LDU    #$0301
-4FD3: CE 02 C8       LDU    #$02C8
-4FD6: 01 00 00       OIM    #$00;$00
-4FD9: FF FF 03       STU    $FF03
-4FDC: 03 80          COM    $80
-4FDE: 04 00          LSR    $00
-4FE0: 04 00          LSR    $00
-4FE2: 00 FF          NEG    $FF
-4FE4: FF FF 00       STU    $FF00
-4FE7: 00 FF          NEG    $FF
-4FE9: FF 01 05       STU    $0105
-4FEC: 00 FF          NEG    $FF
-4FEE: FF 03 05       STU    $0305
-4FF1: 7C 06 1E       INC    $061E
-4FF4: 03 05          COM    $05
-4FF6: 7C FF FF       INC    $FFFF
-4FF9: 03 07          COM    $07
-4FFB: 50             NEGB
-4FFC: 07 C0          ASR    $C0
-4FFE: 04 00          LSR    $00
-5000: 00 FF          NEG    $FF
-5002: FF FF 00       STU    $FF00
-5005: 00 FF          NEG    $FF
-5007: FF 01 08       STU    $0108
-500A: 00 09          NEG    $09
-500C: 09 00          ROL    $00
-500E: 00 00          NEG    $00
-5010: FF FF 01       STU    $FF01
-5013: 09 09          ROL    $09
-5015: 0B 10 00       TIM    #$10;$00
-5018: 00 00          NEG    $00
-501A: FF FF 01       STU    $FF01
-501D: 00 00          NEG    $00
-501F: 0D E6          TST    $E6
-5021: 03 0D          COM    $0D
-5023: E6 0E          LDB    $E,X
-5025: 29 01          BVS    $5028
-5027: 00 00          NEG    $00
-5029: 10 00          FCB    $10,$00
-502B: 03             FCB    $03
-502C: 10             FCB    $10
-502D: 00 10          NEG    $10
-502F: 22 04          BHI    $5035
-5031: 00 00          NEG    $00
-5033: FF FF 01       STU    $FF01
-5036: 00 00          NEG    $00
-5038: 12             NOP
-5039: 00 03          NEG    $03
-503B: 12             NOP
-503C: 00 12          NEG    $12
-503E: 41             FCB    $41
-503F: 01 00 00       OIM    #$00;$00
-5042: 13             SYNC
-5043: 08 03          ASL    $03
-5045: 13             SYNC
-5046: 08 13          ASL    $13
-5048: 29 01          BVS    $504B
-504A: 00 00          NEG    $00
-504C: 18             FCB    $18
-504D: DE 03          LDU    $03
-504F: 18             FCB    $18
-5050: DE 19          LDU    $19
-5052: 05 01 00       EIM    #$01;$00
-5055: 00 1A          NEG    $1A
-5057: 05 03 1A       EIM    #$03;$1A
-505A: 05 FF FF       EIM    #$FF;$FF
-505D: 04 00          LSR    $00
-505F: 00 FF          NEG    $FF
-5061: FF 00 00       STU    >$0000
-5064: 00 FF          NEG    $FF
-5066: FF FF 00       STU    $FF00
-5069: 00 FF          NEG    $FF
-506B: FF 8E 50       STU    $8E50
-506E: 8A 20          ORA    #$20
-5070: 0F 8E          CLR    $8E
-5072: 50             NEGB
-5073: 9A 20          ORA    $20
-5075: 0A 8E          DEC    $8E
-5077: 50             NEGB
-5078: A4 20          ANDA   $0,Y
-507A: 05 8E 50       EIM    #$8E;$50
-507D: C0 20          SUBB   #$20
-507F: 00 BD          NEG    $BD
-5081: 51             FCB    $51
-5082: AB F6          ADDA   [A,S]
-5084: 0A 55          DEC    $55
-5086: 58             ASLB
-5087: AD 95          JSR    [B,X]
-5089: 39             RTS
-508A: 50             NEGB
-508B: CE 50 DA       LDU    #$50DA
-508E: 50             NEGB
-508F: E8 50          EORB   -$10,U
-5091: DA 50          ORB    $50
-5093: F4 7C 99       ANDB   $7C99
-5096: 7C 99 7C       INC    $997C
-5099: 99 51          ADCA   $51
-509B: 00 50          NEG    $50
-509D: DA 51          ORB    $51
-509F: 0D 7C          TST    $7C
-50A1: 99 7C          ADCA   $7C
-50A3: 99 51          ADCA   $51
-50A5: 1A 50          ORCC   #$50
-50A7: DA 51          ORB    $51
-50A9: 27 50          BEQ    $50FB
-50AB: DA 51          ORB    $51
-50AD: 33 50          LEAU   -$10,U
-50AF: DA 51          ORB    $51
-50B1: 3F             SWI
-50B2: 51             FCB    $51
-50B3: 4B             FCB    $4B
-50B4: 7C 99 51       INC    $9951
-50B7: 61 51 6D       OIM    #$51;$D,S
-50BA: 51             FCB    $51
-50BB: 79 51 85       ROL    $5185
-50BE: 7C 99 51       INC    $9951
-50C1: 91 50          CMPA   $50
-50C3: DA 51          ORB    $51
-50C5: 9E 7C          LDX    $7C
-50C7: 99 7C          ADCA   $7C
-50C9: 99 7C          ADCA   $7C
-50CB: 99 7C          ADCA   $7C
-50CD: 99 DC          ADCA   $DC
-50CF: 3C 10          CWAI   #$10
+
 50D1: 83 00 D4       SUBD   #$00D4
 50D4: 25 03          BCS    $50D9
 50D6: 73 0A 54       COM    $0A54
@@ -2178,18 +1595,13 @@
 521D: 86 80          LDA    #$80
 521F: B7 0A FB       STA    $0AFB
 5222: 39             RTS
-5223: 8E 52 2D       LDX    #$522D
+5223: 8E 52 2D       LDX    #table_522D
 5226: F6 0A FC       LDB    $0AFC
 5229: 58             ASLB
-522A: AD 95          JSR    [B,X]
+522A: AD 95          JSR    [B,X]	; [jump_table]
 522C: 39             RTS
-522D: 52             FCB    $52
-522E: 37 53          PULU   CC,A,X,S
-5230: 40             NEGA
-5231: 53             COMB
-5232: 7B 53 8F 53    TIM    #$53,$8F53
-5236: 9F B6          STX    $B6
-5238: 0A FD          DEC    $FD
+
+5237: B6 0A FD       LDA    $0AFD          
 523A: 26 18          BNE    $5254
 523C: BD 52 58       JSR    $5258
 523F: 24 16          BCC    $5257
@@ -2274,34 +1686,7 @@
 52FF: 1C FE          ANDCC  #$FE
 5301: 32 68          LEAS   $8,S
 5303: 39             RTS
-5304: 0A 09          DEC    $09
-5306: 08 0A          ASL    $0A
-5308: 09 08          ROL    $08
-530A: 0A 08          DEC    $08
-530C: 09 0A          ROL    $0A
-530E: 08 09          ASL    $09
-5310: 0A 0A          DEC    $0A
-5312: 09 0A          ROL    $0A
-5314: 0A 09          DEC    $09
-5316: 0A 0A          DEC    $0A
-5318: 08 0A          ASL    $0A
-531A: 09 09          ROL    $09
-531C: 02 38 01       AIM    #$38;$01
-531F: 40             NEGA
-5320: 01 00 02       OIM    #$00;$02
-5323: 3B             RTI
-5324: 01 40 01       OIM    #$40;$01
-5327: 00 02          NEG    $02
-5329: 35 01          PULS   CC
-532B: 40             NEGA
-532C: 01 00 09       OIM    #$00;$09
-532F: B8 00 E0       EORA   >$00E0
-5332: 01 00 09       OIM    #$00;$09
-5335: BB 00 E0       ADDA   >$00E0
-5338: 01 00 09       OIM    #$00;$09
-533B: B5 00 E0       BITA   >$00E0
-533E: 01 00 B6       OIM    #$00;$B6
-5341: 0E 18          JMP    $18
+
 5343: 85 01          BITA   #$01
 5345: 27 33          BEQ    $537A
 5347: B6 0A FD       LDA    $0AFD
@@ -2349,6 +1734,7 @@
 53AA: 8A 01          ORA    #$01
 53AC: B7 0A FB       STA    $0AFB
 53AF: 39             RTS
+
 53B0: 32 79          LEAS   -$7,S
 53B2: 96 51          LDA    $51
 53B4: 84 03          ANDA   #$03
@@ -2394,101 +1780,7 @@
 5406: 26 C2          BNE    $53CA
 5408: 32 67          LEAS   $7,S
 540A: 39             RTS
-540B: 54             LSRB
-540C: 13             SYNC
-540D: 54             LSRB
-540E: 13             SYNC
-540F: 54             LSRB
-5410: 19             DAA
-5411: 54             LSRB
-5412: 19             DAA
-5413: 02 20 02       AIM    #$20;$02
-5416: 50             NEGB
-5417: 02 40 09       AIM    #$40;$09
-541A: A0 09          SUBA   $9,X
-541C: D0 01          SUBB   $01
-541E: E0 00          SUBB   $0,X
-5420: 40             NEGA
-5421: 10 40          NEGD
-5423: 20 40          BRA    $5465
-5425: 00 30          NEG    $30
-5427: 10 30 20       ADDR   Y,D
-542A: 30 00          LEAX   $0,X
-542C: 20 10          BRA    $543E
-542E: 20 20          BRA    $5450
-5430: 20 00          BRA    $5432
-5432: 10 10          FCB    $10,$10
-5434: 10 20          FCB    $10,$20
-5436: 10             FCB    $10
-5437: 00 00          NEG    $00
-5439: 10 00          FCB    $10,$00
-543B: 20             FCB    $20
-543C: 00             FCB    $00
-543D: 54             LSRW
-543E: 45             FCB    $45
-543F: 54             LSRB
-5440: 45             FCB    $45
-5441: 54             LSRB
-5442: 4F             CLRA
-5443: 54             LSRB
-5444: 4F             CLRA
-5445: 54             LSRB
-5446: 59             ROLB
-5447: 54             LSRB
-5448: 95 54          BITA   $54
-544A: 95 54          BITA   $54
-544C: 95 54          BITA   $54
-544E: 59             ROLB
-544F: 54             LSRB
-5450: 77 54 95       ASR    $5495
-5453: 54             LSRB
-5454: 95 54          BITA   $54
-5456: 95 54          BITA   $54
-5458: 77 00 11       ASR    >$0011
-545B: 00 12          NEG    $12
-545D: 00 13          NEG    $13
-545F: 00 14          NEG    $14
-5461: 00 15          NEG    $15
-5463: 00 16          NEG    $16
-5465: 00 17          NEG    $17
-5467: 00 18          NEG    $18
-5469: 00 19          NEG    $19
-546B: 00 1A          NEG    $1A
-546D: 00 1B          NEG    $1B
-546F: 00 1C          NEG    $1C
-5471: 00 1D          NEG    $1D
-5473: 00 1E          NEG    $1E
-5475: 00 1F          NEG    $1F
-5477: 08 11          ASL    $11
-5479: 08 12          ASL    $12
-547B: 08 13          ASL    $13
-547D: 08 14          ASL    $14
-547F: 08 15          ASL    $15
-5481: 08 16          ASL    $16
-5483: 08 17          ASL    $17
-5485: 08 18          ASL    $18
-5487: 08 19          ASL    $19
-5489: 08 1A          ASL    $1A
-548B: 08 1B          ASL    $1B
-548D: 08 1C          ASL    $1C
-548F: 08 1D          ASL    $1D
-5491: 08 1E          ASL    $1E
-5493: 08 1F          ASL    $1F
-5495: 00 00          NEG    $00
-5497: 00 00          NEG    $00
-5499: 00 00          NEG    $00
-549B: 00 00          NEG    $00
-549D: 00 00          NEG    $00
-549F: 00 00          NEG    $00
-54A1: 00 00          NEG    $00
-54A3: 00 00          NEG    $00
-54A5: 00 00          NEG    $00
-54A7: 00 00          NEG    $00
-54A9: 00 00          NEG    $00
-54AB: 00 00          NEG    $00
-54AD: 00 00          NEG    $00
-54AF: 00 00          NEG    $00
-54B1: 00 00          NEG    $00
+
 54B3: FC 0B 04       LDD    $0B04
 54B6: 10 83 02 04    CMPD   #$0204
 54BA: 27 15          BEQ    $54D1
@@ -2540,9 +1832,7 @@
 5532: 86 80          LDA    #$80
 5534: B7 0A F1       STA    $0AF1
 5537: 39             RTS
-5538: 02 02 02       AIM    #$02;$02
-553B: 03 03          COM    $03
-553D: 03 B6          COM    $B6
+
 553F: 0A F1          DEC    $F1
 5541: 85 40          BITA   #$40
 5543: 26 2D          BNE    $5572
@@ -2569,15 +1859,13 @@
 5576: 2A 09          BPL    $5581
 5578: B6 0A F2       LDA    $0AF2
 557B: 48             ASLA
-557C: 8E 55 82       LDX    #$5582
-557F: AD 96          JSR    [A,X]
+557C: 8E 55 82       LDX    #table_5582
+557F: AD 96          JSR    [A,X]		; [jump_table]
 5581: 39             RTS
-5582: 55             FCB    $55
-5583: 88 55          EORA   #$55
-5585: 9B 55          ADDA   $55
-5587: B1 B6 0A       CMPA   $B60A
-558A: EC 85          LDD    B,X
-558C: 01 27 0B       OIM    #$27;$0B
+
+5588: B6 0A EC       LDA    $0AEC
+558B: 85 01          BITA   #$01 
+558D: 27 0B          BEQ    $559A
 558F: BD 55 C1       JSR    $55C1
 5592: 24 06          BCC    $559A
 5594: 7C 0A F2       INC    $0AF2
@@ -2631,10 +1919,7 @@
 5606: A7 88 17       STA    $17,X
 5609: 1A 01          ORCC   #$01
 560B: 35 B0          PULS   X,Y,PC
-560D: 07 13          ASR    $13
-560F: C8 01          EORB   #$01
-5611: 38             FCB    $38
-5612: 01 30 B6       OIM    #$30;$B6
+
 5615: 0A EC          DEC    $EC
 5617: 85 40          BITA   #$40
 5619: 26 14          BNE    $562F
@@ -2648,6 +1933,7 @@
 562D: 24 03          BCC    $5632
 562F: BD 56 53       JSR    $5653
 5632: 39             RTS
+
 5633: BE 0A EF       LDX    $0AEF
 5636: DC 3C          LDD    $3C
 5638: 10 A3 04       CMPD   $4,X
@@ -2734,222 +2020,8 @@
 56E7: 26 CE          BNE    $56B7
 56E9: 32 6F          LEAS   $F,S
 56EB: 39             RTS
-56EC: 56             RORB
-56ED: F4 56 F4       ANDB   $56F4
-56F0: 56             RORB
-56F1: F4 57 07       ANDB   $5707
-56F4: 13             SYNC
-56F5: A0 02          SUBA   $2,X
-56F7: 70 13 F0       NEG    $13F0
-56FA: 10 04          FCB    $10,$04
-56FC: 1E             FCB    $1E
-56FD: 57             FCB    $57
-56FE: 18             FCB    $18
-56FF: 57             FCB    $57
-5700: 45             FCB    $45
-5701: 57             FCB    $57
-5702: 81 57 BD       CMPW   #$57BD
-5705: 57             ASRB
-5706: F9 1A C0       ADCB   $1AC0
-5709: 01 B0 1A       OIM    #$B0;$1A
-570C: F0 10 03       SUBB   $1003
-570F: 0F 57          CLR    $57
-5711: 36 58          PSHU   S,X,DP
-5713: 35 58          PULS   DP,X,U
-5715: 53             COMB
-5716: 58             ASLB
-5717: 71 05 15 25    OIM    #$05,$1525
-571B: 35 45          PULS   CC,B,U
-571D: 04 14          LSR    $14
-571F: 24 34          BCC    $5755
-5721: 44             LSRA
-5722: 03 13          COM    $13
-5724: 23 33          BLS    $5759
-5726: 43             COMA
-5727: 02 12 22       AIM    #$12;$22
-572A: 32 42          LEAS   $2,U
-572C: 01 11 21       OIM    #$11;$21
-572F: 31 41          LEAY   $1,U
-5731: 00 10          NEG    $10
-5733: 20 30          BRA    $5765
-5735: 40             NEGA
-5736: 04 14          LSR    $14
-5738: 24 03          BCC    $573D
-573A: 13             SYNC
-573B: 23 02          BLS    $573F
-573D: 12             NOP
-573E: 22 01          BHI    $5741
-5740: 11 21          FCB    $11,$21
-5742: 00             FCB    $00
-5743: 10             FCB    $10
-5744: 20 37          BRA    $577D
-5746: 70 37 71       NEG    $3771
-5749: 37 72          PULU   A,X,Y,S
-574B: 37 73          PULU   CC,A,X,Y,S
-574D: 37 74          PULU   B,X,Y,S
-574F: 37 75          PULU   CC,B,X,Y,S
-5751: 37 76          PULU   D,X,Y,S
-5753: 37 77          PULU   CC,D,X,Y,S
-5755: 37 78          PULU   DP,X,Y,S
-5757: 37 79          PULU   CC,DP,X,Y,S
-5759: 37 7A          PULU   A,DP,X,Y,S
-575B: 37 7B          PULU   CC,A,DP,X,Y,S
-575D: 37 7C          PULU   B,DP,X,Y,S
-575F: 37 7D          PULU   CC,B,DP,X,Y,S
-5761: 37 7E          PULU   D,DP,X,Y,S
-5763: 37 7F          PULU   CC,D,DP,X,Y,S
-5765: 37 80          PULU   PC
-5767: 37 81          PULU   CC,PC
-5769: 37 82          PULU   A,PC
-576B: 37 83          PULU   CC,A,PC
-576D: 37 84          PULU   B,PC
-576F: 37 85          PULU   CC,B,PC
-5771: 37 86          PULU   D,PC
-5773: 37 87          PULU   CC,D,PC
-5775: 37 88          PULU   DP,PC
-5777: 37 89          PULU   CC,DP,PC
-5779: 37 8A          PULU   A,DP,PC
-577B: 37 8B          PULU   CC,A,DP,PC
-577D: 37 8C          PULU   B,DP,PC
-577F: 37 8D          PULU   CC,B,DP,PC
-5781: 37 8E          PULU   D,DP,PC
-5783: 37 8F          PULU   CC,D,DP,PC
-5785: 37 AC          PULU   B,DP,Y,PC
-5787: 77 8F 77       ASR    $8F77
-578A: 8E 37 93       LDX    #$3793
-578D: 37 94          PULU   B,X,PC
-578F: 37 AC          PULU   B,DP,Y,PC
-5791: 77 94 77       ASR    $9477
-5794: 93 37          SUBD   $37
-5796: 98 37          EORA   $37
-5798: 99 37          ADCA   $37
-579A: AC 77          CMPX   -$9,S
-579C: 99 77          ADCA   $77
-579E: 98 37          EORA   $37
-57A0: 9D 37          JSR    $37
-57A2: 9E 37          LDX    $37
-57A4: AC 77          CMPX   -$9,S
-57A6: 9E 77          LDX    $77
-57A8: 9D 37          JSR    $37
-57AA: A2 37          SBCA   -$9,Y
-57AC: A3 37          SUBD   -$9,Y
-57AE: AC 77          CMPX   -$9,S
-57B0: A3 77          SUBD   -$9,S
-57B2: A2 37          SBCA   -$9,Y
-57B4: A7 37          STA    -$9,Y
-57B6: A8 37          EORA   -$9,Y
-57B8: AC 77          CMPX   -$9,S
-57BA: A8 77          EORA   -$9,S
-57BC: A7 37          STA    -$9,Y
-57BE: 90 37          SUBA   $37
-57C0: 91 37          CMPA   $37
-57C2: AC 77          CMPX   -$9,S
-57C4: 91 77          CMPA   $77
-57C6: 90 37          SUBA   $37
-57C8: 95 37          BITA   $37
-57CA: 96 37          LDA    $37
-57CC: AC 77          CMPX   -$9,S
-57CE: 96 77          LDA    $77
-57D0: 95 37          BITA   $37
-57D2: 9A 37          ORA    $37
-57D4: 9B 37          ADDA   $37
-57D6: AC 77          CMPX   -$9,S
-57D8: 9B 77          ADDA   $77
-57DA: 9A 37          ORA    $37
-57DC: 9F 37          STX    $37
-57DE: A0 37          SUBA   -$9,Y
-57E0: AC 77          CMPX   -$9,S
-57E2: A0 77          SUBA   -$9,S
-57E4: 9F 37          STX    $37
-57E6: A4 37          ANDA   -$9,Y
-57E8: A5 37          BITA   -$9,Y
-57EA: AC 77          CMPX   -$9,S
-57EC: A5 77          BITA   -$9,S
-57EE: A4 37          ANDA   -$9,Y
-57F0: A9 37          ADCA   -$9,Y
-57F2: AA 37          ORA    -$9,Y
-57F4: AC 77          CMPX   -$9,S
-57F6: AA 77          ORA    -$9,S
-57F8: A9 37          ADCA   -$9,Y
-57FA: 92 37          SBCA   $37
-57FC: 00 37          NEG    $37
-57FE: 00 37          NEG    $37
-5800: 00 77          NEG    $77
-5802: 92 37          SBCA   $37
-5804: 97 37          STA    $37
-5806: 00 37          NEG    $37
-5808: 00 37          NEG    $37
-580A: 00 77          NEG    $77
-580C: 97 37          STA    $37
-580E: 9C 37          CMPX   $37
-5810: 00 37          NEG    $37
-5812: 00 37          NEG    $37
-5814: 00 77          NEG    $77
-5816: 9C 37          CMPX   $37
-5818: A1 37          CMPA   -$9,Y
-581A: 00 37          NEG    $37
-581C: 00 37          NEG    $37
-581E: 00 77          NEG    $77
-5820: A1 37          CMPA   -$9,Y
-5822: A6 37          LDA    -$9,Y
-5824: 00 37          NEG    $37
-5826: 00 37          NEG    $37
-5828: 00 77          NEG    $77
-582A: A6 37          LDA    -$9,Y
-582C: AB 37          ADDA   -$9,Y
-582E: 00 37          NEG    $37
-5830: 00 37          NEG    $37
-5832: 00 77          NEG    $77
-5834: AB 57          ADDA   -$9,U
-5836: D8 17          EORB   $17
-5838: D7 17          STB    $17
-583A: D8 57          EORB   $57
-583C: DB 17          ADDB   $17
-583E: DA 17          ORB    $17
-5840: DB 57          ADDB   $57
-5842: DE 17          LDU    $17
-5844: DD 17          STD    $17
-5846: DE 57          LDU    $57
-5848: E1 17          CMPB   -$9,X
-584A: E0 17          SUBB   -$9,X
-584C: E1 57          CMPB   -$9,U
-584E: E4 17          ANDB   -$9,X
-5850: E3 17          ADDD   -$9,X
-5852: E4 57          ANDB   -$9,U
-5854: D9 17          ADCB   $17
-5856: E5 17          BITB   -$9,X
-5858: D9 57          ADCB   $57
-585A: DC 17          LDD    $17
-585C: E5 17          BITB   -$9,X
-585E: DC 57          LDD    $57
-5860: DF 17          STU    $17
-5862: E5 17          BITB   -$9,X
-5864: DF 57          STU    $57
-5866: E2 17          SBCB   -$9,X
-5868: E5 17          BITB   -$9,X
-586A: E2 57          SBCB   -$9,U
-586C: E6 17          LDB    -$9,X
-586E: E5 17          BITB   -$9,X
-5870: E6 17          LDB    -$9,X
-5872: E5 17          BITB   -$9,X
-5874: E5 17          BITB   -$9,X
-5876: E5 17          BITB   -$9,X
-5878: E5 17          BITB   -$9,X
-587A: E5 17          BITB   -$9,X
-587C: E5 17          BITB   -$9,X
-587E: E5 17          BITB   -$9,X
-5880: E5 17          BITB   -$9,X
-5882: E5 17          BITB   -$9,X
-5884: E5 17          BITB   -$9,X
-5886: E5 17          BITB   -$9,X
-5888: E5 17          BITB   -$9,X
-588A: E5 17          BITB   -$9,X
-588C: E5 17          BITB   -$9,X
-588E: E5 B6          BITB   [A,Y]
-5890: 0B 19 2B       TIM    #$19;$2B
-5893: 2C 96          BGE    $582B
-5895: 36 D6          PSHU   PC,S,X,D
-5897: 38             FCB    $38
+
+
 5898: 10 83 00 01    CMPD   #$0001
 589C: 27 08          BEQ    $58A6
 589E: 10 83 03 00    CMPD   #$0300
@@ -3050,19 +2122,7 @@
 597C: 10 AE 22       LDY    $2,Y
 597F: 10 AF 04       STY    $4,X
 5982: 35 B0          PULS   X,Y,PC
-5984: 00 01          NEG    $01
-5986: 59             ROLB
-5987: 8C 00 01       CMPX   #$0001
-598A: 59             ROLB
-598B: 95 02          BITA   $02
-598D: 58             ASLB
-598E: 01 4C 01       OIM    #$4C;$01
-5991: 70 00 00       NEG    >$0000
-5994: 00 02          NEG    $02
-5996: E8 01          EORB   $1,X
-5998: 40             NEGA
-5999: 01 00 00       OIM    #$00;$00
-599C: 00 00          NEG    $00
+
 599E: 9E 01          LDX    $01
 59A0: 86 C1          LDA    #$C1
 59A2: A7 84          STA    ,X
@@ -3116,26 +2176,8 @@
 5A11: 8A 80          ORA    #$80
 5A13: B7 0A 95       STA    $0A95
 5A16: 39             RTS
-5A17: 03 02          COM    $02
-5A19: 04 02          LSR    $02
-5A1B: 05 02 03       EIM    #$02;$03
-5A1E: 04 04          LSR    $04
-5A20: 03 03          COM    $03
-5A22: 05 02 04       EIM    #$02;$04
-5A25: 05 03 00       EIM    #$03;$00
-5A28: 00 00          NEG    $00
-5A2A: 00 00          NEG    $00
-5A2C: 01 01 01       OIM    #$01;$01
-5A2F: 01 01 01       OIM    #$01;$01
-5A32: 01 02 02       OIM    #$02;$02
-5A35: 02 02 02       AIM    #$02;$02
-5A38: 03 04          COM    $04
-5A3A: 04 04          LSR    $04
-5A3C: 04 05          LSR    $05
-5A3E: 05 05 06       EIM    #$05;$06
-5A41: 06 07          ROR    $07
-5A43: 07 07          ASR    $07
-5A45: 07 07          ASR    $07
+
+
 5A47: B6 0A 95       LDA    $0A95
 5A4A: 2A 3E          BPL    $5A8A
 5A4C: B6 0E 13       LDA    $0E13
@@ -3165,8 +2207,7 @@
 5A85: 86 01          LDA    #$01
 5A87: BD 5A BB       JSR    $5ABB
 5A8A: 39             RTS
-5A8B: 00 00          NEG    $00
-5A8D: 01 02 04       OIM    #$02;$04
+
 5A90: 08 B6          ASL    $B6
 5A92: 0A 96          DEC    $96
 5A94: 26 21          BNE    $5AB7
@@ -3185,6 +2226,7 @@
 5AB5: 20 03          BRA    $5ABA
 5AB7: 7A 0A 96       DEC    $0A96
 5ABA: 39             RTS
+
 5ABB: B6 0A 97       LDA    $0A97
 5ABE: 26 21          BNE    $5AE1
 5AC0: BD 5A E5       JSR    $5AE5
@@ -3212,27 +2254,7 @@
 5AF6: 20 02          BRA    $5AFA
 5AF8: 1A 01          ORCC   #$01
 5AFA: 39             RTS
-5AFB: 5B             FCB    $5B
-5AFC: 07 5B          ASR    $5B
-5AFE: 07 5B          ASR    $5B
-5B00: 07 5B          ASR    $5B
-5B02: 0D 5B          TST    $5B
-5B04: 13             SYNC
-5B05: 5B             FCB    $5B
-5B06: 19             DAA
-5B07: 19             DAA
-5B08: 38             FCB    $38
-5B09: 00 58          NEG    $58
-5B0B: 01 00 19       OIM    #$00;$19
-5B0E: 68 00          ASL    $0,X
-5B10: 58             ASLB
-5B11: 01 00 19       OIM    #$00;$19
-5B14: 98 00          EORA   $00
-5B16: 58             ASLB
-5B17: 01 00 19       OIM    #$00;$19
-5B1A: C8 00          EORB   #$00
-5B1C: 58             ASLB
-5B1D: 01 00 7F       OIM    #$00;$7F
+
 5B20: 0A 92          DEC    $92
 5B22: 86 01          LDA    #$01
 5B24: B7 0A 93       STA    $0A93
@@ -3265,9 +2287,9 @@
 5B68: B7 0A 92       STA    $0A92
 5B6B: BD 5B 73       JSR    $5B73
 5B6E: 39             RTS
-5B6F: 02 00 00       AIM    #$00;$00
-5B72: 04 32          LSR    $32
-5B74: 7A 96 51       DEC    $9651
+
+5B73: 32 7A          LEAS   -$6,S                 
+5B75: 96 51          LDA    $51                   
 5B77: 84 07          ANDA   #$07
 5B79: 26 6D          BNE    $5BE8
 5B7B: 8E 5B EB       LDX    #$5BEB
@@ -3321,97 +2343,8 @@
 5BE6: 2A CB          BPL    $5BB3
 5BE8: 32 66          LEAS   $6,S
 5BEA: 39             RTS
-5BEB: 5B             FCB    $5B
-5BEC: F7 5C 02       STB    $5C02
-5BEF: 5C             INCB
-5BF0: 0D 5C          TST    $5C
-5BF2: 18             FCB    $18
-5BF3: 5C             INCB
-5BF4: 23 5C          BLS    $5C52
-5BF6: 2E 02          BGT    $5BFA
-5BF8: 40             NEGA
-5BF9: 02 70 02       AIM    #$70;$02
-5BFC: C0 0E          SUBB   #$0E
-5BFE: 5C             INCB
-5BFF: 39             RTS
-5C00: 5C             INCB
-5C01: 57             ASRB
-5C02: 02 D0 03       AIM    #$D0;$03
-5C05: 00 02          NEG    $02
-5C07: 40             NEGA
-5C08: 0E 5C          JMP    $5C
-5C0A: 39             RTS
-5C0B: 5C             INCB
-5C0C: 57             ASRB
-5C0D: 19             DAA
-5C0E: 20 19          BRA    $5C29
-5C10: 50             NEGB
-5C11: 01 60 0E       OIM    #$60;$0E
-5C14: 5C             INCB
-5C15: 39             RTS
-5C16: 5C             INCB
-5C17: 75 19 50 19    EIM    #$19,$5019
-5C1B: 80 01          SUBA   #$01
-5C1D: 60 0E          NEG    $E,X
-5C1F: 5C             INCB
-5C20: 39             RTS
-5C21: 5C             INCB
-5C22: 75 19 80 19    EIM    #$19,$8019
-5C26: B0 01 60       SUBA   $0160
-5C29: 0E 5C          JMP    $5C
-5C2B: 39             RTS
-5C2C: 5C             INCB
-5C2D: 75 19 B0 19    EIM    #$19,$B019
-5C31: E0 01          SUBB   $1,X
-5C33: 60 0E          NEG    $E,X
-5C35: 5C             INCB
-5C36: 39             RTS
-5C37: 5C             INCB
-5C38: 75 00 40 10    EIM    #$00,$4010
-5C3C: 40             NEGA
-5C3D: 20 40          BRA    $5C7F
-5C3F: 00 30          NEG    $30
-5C41: 10 30 20       ADDR   Y,D
-5C44: 30 00          LEAX   $0,X
-5C46: 20 10          BRA    $5C58
-5C48: 20 20          BRA    $5C6A
-5C4A: 20 00          BRA    $5C4C
-5C4C: 10 10          FCB    $10,$10
-5C4E: 10 20          FCB    $10,$20
-5C50: 10             FCB    $10
-5C51: 00 00          NEG    $00
-5C53: 10 00          FCB    $10,$00
-5C55: 20             FCB    $20
-5C56: 00             FCB    $00
-5C57: 27 C9 27       LBEQ   $2581
-5C5A: CA 27          ORB    #$27
-5C5C: CB 27          ADDB   #$27
-5C5E: CC 00 00       LDD    #$0000
-5C61: 27 CD          BEQ    $5C30
-5C63: 27 CE          BEQ    $5C33
-5C65: 00 00          NEG    $00
-5C67: 27 CF          BEQ    $5C38
-5C69: 27 D0          BEQ    $5C3B
-5C6B: 00 00          NEG    $00
-5C6D: 27 D1          BEQ    $5C40
-5C6F: 27 D4          BEQ    $5C45
-5C71: 27 D5          BEQ    $5C48
-5C73: 27 D6          BEQ    $5C4B
-5C75: 03 DB          COM    $DB
-5C77: 03 DC          COM    $DC
-5C79: 03 DD          COM    $DD
-5C7B: 03 DE          COM    $DE
-5C7D: 03 DF          COM    $DF
-5C7F: 03 E0          COM    $E0
-5C81: 03 E1          COM    $E1
-5C83: 03 E2          COM    $E2
-5C85: 03 E3          COM    $E3
-5C87: 03 E4          COM    $E4
-5C89: 03 E5          COM    $E5
-5C8B: 03 E6          COM    $E6
-5C8D: 03 E7          COM    $E7
-5C8F: 03 E8          COM    $E8
-5C91: 03 E9          COM    $E9
+
+
 5C93: B6 0A EC       LDA    $0AEC
 5C96: 85 04          BITA   #$04
 5C98: 26 0B          BNE    $5CA5
@@ -3429,20 +2362,12 @@
 5CB5: BD 5C D5       JSR    $5CD5
 5CB8: BD 5C EC       JSR    $5CEC
 5CBB: 24 09          BCC    $5CC6
-5CBD: 8E 5C C7       LDX    #$5CC7
+5CBD: 8E 5C C7       LDX    #table_5CC7
 5CC0: B6 0A EE       LDA    $0AEE
 5CC3: 48             ASLA
 5CC4: AD 96          JSR    [A,X]
 5CC6: 39             RTS
-5CC7: 5C             INCB
-5CC8: FB 5E 12       ADDB   $5E12
-5CCB: 5E             FCB    $5E
-5CCC: 05 5E 47       EIM    #$5E;$47
-5CCF: 5E             FCB    $5E
-5CD0: 98 5E          EORA   $5E
-5CD2: AE 5E          LDX    -$2,U
-5CD4: EC B6          LDD    [A,Y]
-5CD6: 0E 16          JMP    $16
+
 5CD8: 84 F8          ANDA   #$F8
 5CDA: 8E 5C E9       LDX    #$5CE9
 5CDD: F6 0A F1       LDB    $0AF1
@@ -3450,8 +2375,7 @@
 5CE2: B7 0E 16       STA    $0E16
 5CE5: BD 5F 2B       JSR    $5F2B
 5CE8: 39             RTS
-5CE9: 04 02          LSR    $02
-5CEB: 01 DC 3C       OIM    #$DC;$3C
+
 5CEE: 10 83 07 50    CMPD   #$0750
 5CF2: 25 04          BCS    $5CF8
 5CF4: 1A 01          ORCC   #$01
@@ -3515,9 +2439,7 @@
 5D84: 84 03          ANDA   #$03
 5D86: A6 86          LDA    A,X
 5D88: 35 90          PULS   X,PC
-5D8A: 03 02          COM    $02
-5D8C: 00 03          NEG    $03
-5D8E: 02 02 34       AIM    #$02;$34
+
 5D91: 36 B6          PSHU   PC,Y,X,D
 5D93: 0A F3          DEC    $F3
 5D95: 48             ASLA
@@ -3713,24 +2635,7 @@
 5F5A: 2A D5          BPL    $5F31
 5F5C: 32 61          LEAS   $1,S
 5F5E: 39             RTS
-5F5F: 5F             CLRB
-5F60: 65 5F 6B       EIM    #$5F;$B,S
-5F63: 5F             CLRB
-5F64: 71 0F F0 07    OIM    #$0F,$F007
-5F68: 77 07 77       ASR    $0777
-5F6B: 07 77          ASR    $77
-5F6D: 0F F0          CLR    $F0
-5F6F: 07 77          ASR    $77
-5F71: 07 77          ASR    $77
-5F73: 07 77          ASR    $77
-5F75: 0F F0          CLR    $F0
-5F77: 01 0D 01       OIM    #$0D;$01
-5F7A: 0E 01          JMP    $01
-5F7C: 0F 07          CLR    $07
-5F7E: E0 01          SUBB   $1,X
-5F80: 35 01          PULS   CC
-5F82: C0 08          SUBB   #$08
-5F84: 00 34          NEG    $34
+
 5F86: 40             NEGA
 5F87: B6 0E 2D       LDA    $0E2D
 5F8A: 27 20          BEQ    $5FAC
@@ -3776,10 +2681,7 @@
 5FEC: 8C 07 5B       CMPX   #$075B
 5FEF: 26 EB          BNE    $5FDC
 5FF1: 35 C0          PULS   U,PC
-5FF3: 04 08          LSR    $08
-5FF5: 14             SEXW
-5FF6: 1A 34          ORCC   #$34
-5FF8: 40             NEGA
+
 5FF9: B6 0A B6       LDA    $0AB6
 5FFC: 2B 08          BMI    $6006
 5FFE: 10 8E 66 D2    LDY    #$66D2
@@ -4132,14 +3034,10 @@
 6337: A7 88 4A       STA    $4A,X
 633A: 32 64          LEAS   $4,S
 633C: 35 D0          PULS   X,U,PC
-633E: 7A 09 EF       DEC    $09EF
+
 6341: 6F 84          CLR    ,X
 6343: 20 F5          BRA    $633A
-6345: 02 03 04       AIM    #$03;$04
-6348: 05 06 07       EIM    #$06;$07
-634B: 08 09          ASL    $09
-634D: 0A 22          DEC    $22
-634F: 23 6F          BLS    $63C0
+
 6351: 88 4B          EORA   #$4B
 6353: 6F 88 21       CLR    $21,X
 6356: 6F 88 41       CLR    $41,X
@@ -4218,14 +3116,7 @@
 6402: A7 88 17       STA    $17,X
 6405: 32 61          LEAS   $1,S
 6407: 35 F6          PULS   D,X,Y,U,PC
-6409: 00 00          NEG    $00
-640B: 06 0F          ROR    $0F
-640D: 07 10          ASR    $10
-640F: 00 0C          NEG    $0C
-6411: 05 11 04       EIM    #$11;$04
-6414: 0D 03          TST    $03
-6416: 0E 0E          JMP    $0E
-6418: 12             NOP
+
 6419: 34 32          PSHS   Y,X,A
 641B: BD 64 80       JSR    $6480
 641E: 80 02          SUBA   #$02
@@ -4241,45 +3132,7 @@
 6434: 20 02          BRA    $6438
 6436: C6 0A          LDB    #$0A
 6438: 35 B2          PULS   A,X,Y,PC
-643A: 64 50          LSR    -$10,U
-643C: 64 54          LSR    -$C,U
-643E: 64 58          LSR    -$8,U
-6440: 64 5C          LSR    -$4,U
-6442: 64 60          LSR    $0,S
-6444: 64 64          LSR    $4,S
-6446: 64 68          LSR    $8,S
-6448: 64 6C          LSR    $C,S
-644A: 64 70          LSR    -$10,S
-644C: 64 74          LSR    -$C,S
-644E: 64 78          LSR    -$8,S
-6450: 3C 3C          CWAI   #$3C
-6452: 3C 3C          CWAI   #$3C
-6454: 34 34          PSHS   Y,X,B
-6456: 38             FCB    $38
-6457: 3C 22          CWAI   #$22
-6459: 26 2C          BNE    $6487
-645B: 2E 28          BGT    $6485
-645D: 2C 30          BGE    $648F
-645F: 34 2C          PSHS   Y,DP,B
-6461: 30 32          LEAX   -$E,Y
-6463: 38             FCB    $38
-6464: 30 34          LEAX   -$C,Y
-6466: 38             FCB    $38
-6467: 3C 0C          CWAI   #$0C
-6469: 12             NOP
-646A: 18             FCB    $18
-646B: 1E 0C          EXG    D,0
-646D: 14             SEXW
-646E: 18             FCB    $18
-646F: 1E 08          EXG    D,A
-6471: 0C 10          INC    $10
-6473: 14             SEXW
-6474: 10 16          FCB    $10,$16
-6476: 1E             FCB    $1E
-6477: 26 10 16       LBNE   $7490
-647A: 1E 26          EXG    Y,W
-647C: 00 04          NEG    $04
-647E: 08 0C          ASL    $0C
+
 6480: 81 22          CMPA   #$22
 6482: 25 02          BCS    $6486
 6484: 80 17          SUBA   #$17
@@ -4352,275 +3205,8 @@
 652A: 8A 01          ORA    #$01
 652C: B7 09 F2       STA    $09F2
 652F: 39             RTS
-6530: 02 01 04       AIM    #$01;$04
-6533: 01 65 3C       OIM    #$65;$3C
-6536: 65 3D 65       EIM    #$3D;$5,S
-6539: 47             ASRA
-653A: 65 48 FF 4C F5 EIM    #$48;[$4CF5]
-653F: 00 24          NEG    $24
-6541: 41             FCB    $41
-6542: 00 01          NEG    $01
-6544: 07 C0          ASR    $C0
-6546: 08 FF          ASL    $FF
-6548: 8C 95 00       CMPX   #$9500
-654B: 24 40          BCC    $658D
-654D: 19             DAA
-654E: 01 60 C0       OIM    #$60;$C0
-6551: 1B             FCB    $1B
-6552: 65 5A 65       EIM    #$5A;$5,S
-6555: 60 65          NEG    $5,S
-6557: 64 65          LSR    $5,S
-6559: 6E 65          JMP    $5,S
-655B: 72 65 87 65    AIM    #$65,$8765
-655F: 92 65          SBCA   $65
-6561: B1 65 DA       CMPA   $65DA
-6564: 65 DB 65       EIM    #$DB;$5,S
-6567: FA 66 23       ORB    $6623
-656A: 66 4C          ROR    $C,U
-656C: 66 6B          ROR    $B,S
-656E: 66 9E          ROR    [W,X]
-6570: 66 B3          ROR    [,--Y]
-6572: 20 30          BRA    $65A4
-6574: 01 24 46       OIM    #$24;$46
-6577: 00 01          NEG    $01
-6579: 00 00          NEG    $00
-657B: 01 40 20       OIM    #$40;$20
-657E: 01 24 4A       OIM    #$24;$4A
-6581: 00 01          NEG    $01
-6583: 00 00          NEG    $00
-6585: 01 FF F0       OIM    #$FF;$F0
-6588: 40             NEGA
-6589: 01 24 46       OIM    #$24;$46
-658C: 10 09          FCB    $10,$09
-658E: 70             FCB    $70
-658F: 20             FCB    $20
-6590: 01             FCB    $01
-6591: FF 46 80       STS    $4680
-6594: 01 24 46       OIM    #$24;$46
-6597: 10 11          FCB    $10,$11
-6599: 70 20 04       NEG    $2004
-659C: 30 48          LEAX   $8,U
-659E: 01 24 4A       OIM    #$24;$4A
-65A1: 00 01          NEG    $01
-65A3: 00 41          NEG    $41
-65A5: 04 D0          LSR    $D0
-65A7: 18             FCB    $18
-65A8: 01 24 4A       OIM    #$24;$4A
-65AB: 00 01          NEG    $01
-65AD: 00 40          NEG    $40
-65AF: 04 FF          LSR    $FF
-65B1: 90 4F          SUBA   $4F
-65B3: 01 24 49       OIM    #$24;$49
-65B6: 10 11          FCB    $10,$11
-65B8: 70 24 05       NEG    $2405
-65BB: 1A 4C          ORCC   #$4C
-65BD: 01 24 47       OIM    #$24;$47
-65C0: 00 01          NEG    $01
-65C2: 30 04          LEAX   $4,X
-65C4: 06 7E          ROR    $7E
-65C6: 16 01 24       LBRA   $66ED
-65C9: 09 00          ROL    $00
-65CB: 01 60 02       OIM    #$60;$02
-65CE: 06 B2          ROR    $B2
-65D0: 41             FCB    $41
-65D1: 01 24 07       OIM    #$24;$07
-65D4: 00 01          NEG    $01
-65D6: 74 00 06       LSR    >$0006
-65D9: FF FF 01       STU    $FF01
-65DC: C4 00          ANDB   #$00
-65DE: 24 46          BCC    $6626
-65E0: 00 01          NEG    $01
-65E2: 00 02          NEG    $02
-65E4: 09 13          ROL    $13
-65E6: 9F 00          STX    $00
-65E8: 24 4A          BCC    $6634
-65EA: 00 01          NEG    $01
-65EC: 00 00          NEG    $00
-65EE: 09 61          ROL    $61
-65F0: BF 00 24       STX    >$0024
-65F3: 4A             DECA
-65F4: 00 01          NEG    $01
-65F6: 00 00          NEG    $00
-65F8: 09 FF          ROL    $FF
-65FA: 6D BF 00 24    TST    [$0024]
-65FE: 47             ASRA
-65FF: 00 01          NEG    $01
-6601: 00 00          NEG    $00
-6603: 0A 30          DEC    $30
-6605: D5 00          BITB   $00
-6607: 24 46          BCC    $664F
-6609: 10 09          FCB    $10,$09
-660B: 63             FCB    $63
-660C: 00             FCB    $00
-660D: 0B             FCB    $0B
-660E: 8B D5 00       ADDW   #$D500
-6611: 24 46          BCC    $6659
-6613: 10 11          FCB    $10,$11
-6615: 63 01          COM    $1,X
-6617: 0B DB 93       TIM    #$DB;$93
-661A: 00 24          NEG    $24
-661C: 46             RORA
-661D: 10 20          FCB    $10,$20
-661F: F0             FCB    $F0
-6620: 01             FCB    $01
-6621: 0B             FCB    $0B
-6622: FF 3D C1       STS    $3DC1
-6625: 00 24          NEG    $24
-6627: 42             FCB    $42
-6628: 00 01          NEG    $01
-662A: 00 00          NEG    $00
-662C: 0C 93          INC    $93
-662E: BB 00 24       ADDA   >$0024
-6631: 43             COMA
-6632: 00 01          NEG    $01
-6634: 00 00          NEG    $00
-6636: 0D 31          TST    $31
-6638: C5 00          BITB   #$00
-663A: 24 46          BCC    $6682
-663C: 10 29 43 01    LBVS   $A941
-6640: 0E 2B          JMP    $2B
-6642: 92 00          SBCA   $00
-6644: 24 46          BCC    $668C
-6646: 10 30 F0       ADDR   F,D
-6649: 00 0E          NEG    $0E
-664B: FF 6F AD       STU    $6FAD
-664E: 00 24          NEG    $24
-6650: 46             RORA
-6651: 00 01          NEG    $01
-6653: 00 00          NEG    $00
-6655: 10 01          FCB    $10,$01
-6657: C4             FCB    $C4
-6658: 00             FCB    $00
-6659: 24 42 00       LBCC   $A85C
-665C: 01 00 00       OIM    #$00;$00
-665F: 11 01          FCB    $11,$01
-6661: A0 00          SUBE   $0,X
-6663: 24 42          BCC    $66A7
-6665: 00 01          NEG    $01
-6667: 00 00          NEG    $00
-6669: 11 FF          FCB    $11,$FF
-666B: 62             FCB    $62
-666C: C9             FCB    $C9
-666D: 00             FCB    $00
-666E: 24             FCB    $24
-666F: 41             FCB    $41
-6670: 00             FCB    $00
-6671: 00             FCB    $00
-6672: 90 00          SUBE   $00
-6674: 11 92          FCB    $11,$92
-6676: C9             FCB    $C9
-6677: 00             FCB    $00
-6678: 24             FCB    $24
-6679: 41             FCB    $41
-667A: 00             FCB    $00
-667B: 00             FCB    $00
-667C: 90 00          SUBE   $00
-667E: 12             NOP
-667F: F8 E9 00       EORB   $E900
-6682: 24 47          BCC    $66CB
-6684: 00 01          NEG    $01
-6686: 30 04          LEAX   $4,X
-6688: 12             NOP
-6689: 68 1D          ASL    -$3,X
-668B: 01 24 41       OIM    #$24;$41
-668E: 10 39          PULSW
-6690: 50             NEGB
-6691: 00 13          NEG    $13
-6693: 96 E3          LDA    $E3
-6695: 00 24          NEG    $24
-6697: 46             RORA
-6698: 00 01          NEG    $01
-669A: 30 00          LEAX   $0,X
-669C: 13             SYNC
-669D: FF B1 40       STU    $B140
-66A0: 00 24          NEG    $24
-66A2: 46             RORA
-66A3: 13             SYNC
-66A4: 21 00          BRN    $66A6
-66A6: 04 17          LSR    $17
-66A8: C1 40          CMPB   #$40
-66AA: 00 24          NEG    $24
-66AC: 47             ASRA
-66AD: 14             SEXW
-66AE: 29 00          BVS    $66B0
-66B0: 00 17          NEG    $17
-66B2: FF 8A A5       STU    $8AA5
-66B5: 00 24          NEG    $24
-66B7: 47             ASRA
-66B8: 00 01          NEG    $01
-66BA: 00 00          NEG    $00
-66BC: 1A 00          ORCC   #$00
-66BE: 80 00          SUBA   #$00
-66C0: 24 49          BCC    $670B
-66C2: 00 01          NEG    $01
-66C4: 00 02          NEG    $02
-66C6: 1B             FCB    $1B
-66C7: 70 8F 00       NEG    $8F00
-66CA: 24 42          BCC    $670E
-66CC: 00 01          NEG    $01
-66CE: 00 00          NEG    $00
-66D0: 1B             FCB    $1B
-66D1: FF 00 00       STU    >$0000
-66D4: 66 F6          ROR    [A,S]
-66D6: 00 80          NEG    $80
-66D8: 66 F7          ROR    [E,S]
-66DA: 02 00 67       AIM    #$00;$67
-66DD: 0E 05          JMP    $05
-66DF: 20 67          BRA    $6748
-66E1: 1B             FCB    $1B
-66E2: 08 20          ASL    $20
-66E4: 67 28          ASR    $8,Y
-66E6: 0C E0          INC    $E0
-66E8: 67 35          ASR    -$B,Y
-66EA: 0F A0          CLR    $A0
-66EC: 67 42          ASR    $2,U
-66EE: 17 A0 67       LBSR   $0758
-66F1: 50             NEGB
-66F2: FF FF 66       STU    $FF66
-66F5: F6 FF FC       LDB    $FFFC
-66F8: 02 F8 18       AIM    #$F8;$18
-66FB: 01 24 27       OIM    #$24;$27
-66FE: 00 01          NEG    $01
-6700: 00 00          NEG    $00
-6702: 00 08          NEG    $08
-6704: 18             FCB    $18
-6705: 01 24 06       OIM    #$24;$06
-6708: 00 01          NEG    $01
-670A: 00 00          NEG    $00
-670C: 00 FF          NEG    $FF
-670E: FC 01 08       LDD    $0108
-6711: 18             FCB    $18
-6712: 01 24 06       OIM    #$24;$06
-6715: 00 01          NEG    $01
-6717: 00 02          NEG    $02
-6719: 00 FF          NEG    $FF
-671B: FC 01 F8       LDD    $01F8
-671E: 30 01          LEAX   $1,X
-6720: 24 26          BCC    $6748
-6722: 00 01          NEG    $01
-6724: 00 00          NEG    $00
-6726: 00 FF          NEG    $FF
-6728: FC 01 F8       LDD    $01F8
-672B: B8 00 24       EORA   >$0024
-672E: 27 00          BEQ    $6730
-6730: 01 00 00       OIM    #$00;$00
-6733: 00 FF          NEG    $FF
-6735: FC 01 0E       LDD    $010E
-6738: B8 00 24       EORA   >$0024
-673B: 07 00          ASR    $00
-673D: 01 00 01       OIM    #$00;$01
-6740: 00 FF          NEG    $FF
-6742: FC 01 F8       LDD    $01F8
-6745: B0 00 24       SUBA   >$0024
-6748: 27 00          BEQ    $674A
-674A: 01 00 00       OIM    #$00;$00
-674D: 00 FF          NEG    $FF
-674F: FF FC 01       STU    $FC01
-6752: F8 35 00       EORB   $3500
-6755: 24 29          BCC    $6780
-6757: 00 01          NEG    $01
-6759: 00 01          NEG    $01
-675B: 00 FF          NEG    $FF
+
+
 675D: A6 88 15       LDA    $15,X
 6760: 84 01          ANDA   #$01
 6762: 27 60          BEQ    $67C4
@@ -4946,23 +3532,7 @@
 6A70: 10 AE A6       LDY    A,Y
 6A73: 32 62          LEAS   $2,S
 6A75: 39             RTS
-6A76: 00 00          NEG    $00
-6A78: 01 02 03       OIM    #$02;$03
-6A7B: 03 03          COM    $03
-6A7D: 03 04          COM    $04
-6A7F: 04 04          LSR    $04
-6A81: 04 00          LSR    $00
-6A83: 00 00          NEG    $00
-6A85: 00 00          NEG    $00
-6A87: 00 00          NEG    $00
-6A89: 00 00          NEG    $00
-6A8B: 00 00          NEG    $00
-6A8D: 00 00          NEG    $00
-6A8F: 00 00          NEG    $00
-6A91: 00 00          NEG    $00
-6A93: 00 00          NEG    $00
-6A95: 00 00          NEG    $00
-6A97: 00 04          NEG    $04
+
 6A99: 04 B6          LSR    $B6
 6A9B: 0A 75          DEC    $75
 6A9D: B1 0A 82       CMPA   $0A82
@@ -5321,37 +3891,7 @@
 6E1F: A6 A6          LDA    A,Y
 6E21: BD 42 D3       JSR    $42D3
 6E24: 39             RTS
-6E25: 05 0A 0A       EIM    #$0A;$0A
-6E28: 00 00          NEG    $00
-6E2A: 2D 0B          BLT    $6E37
-6E2C: 0C 0C          INC    $0C
-6E2E: 00 00          NEG    $00
-6E30: 0B 00 00       TIM    #$00;$00
-6E33: 0B 0B 00       TIM    #$0B;$00
-6E36: 00 00          NEG    $00
-6E38: 0C 00          INC    $00
-6E3A: 00 00          NEG    $00
-6E3C: 00 02          NEG    $02
-6E3E: 02 02 02       AIM    #$02;$02
-6E41: 02 02 02       AIM    #$02;$02
-6E44: 02 02 02       AIM    #$02;$02
-6E47: 02 02 02       AIM    #$02;$02
-6E4A: 02 02 02       AIM    #$02;$02
-6E4D: 02 02 02       AIM    #$02;$02
-6E50: 02 02 02       AIM    #$02;$02
-6E53: 02 02 02       AIM    #$02;$02
-6E56: 02 80 81       AIM    #$80;$81
-6E59: 81 81          CMPA   #$81
-6E5B: 80 80          SUBA   #$80
-6E5D: 81 80          CMPA   #$80
-6E5F: 81 00          CMPA   #$00
-6E61: 00 80          NEG    $80
-6E63: 00 00          NEG    $00
-6E65: 00 00          NEG    $00
-6E67: 00 00          NEG    $00
-6E69: 81 81          CMPA   #$81
-6E6B: 00 81          NEG    $81
-6E6D: 00 00          NEG    $00
+
 6E6F: 32 7A          LEAS   -$6,S
 6E71: 36 04          PSHU   B
 6E73: 1F 89          TFR    A,B
@@ -5392,1140 +3932,8 @@
 6EB4: AE 86          LDX    A,X
 6EB6: EC 85          LDD    B,X
 6EB8: 35 B0          PULS   X,Y,PC
-6EBA: 6E D4          JMP    [,U]
-6EBC: 6E D4          JMP    [,U]
-6EBE: 6E D4          JMP    [,U]
-6EC0: 6E D4          JMP    [,U]
-6EC2: 6E D4          JMP    [,U]
-6EC4: 6E D4          JMP    [,U]
-6EC6: 6E D4          JMP    [,U]
-6EC8: 6E D4          JMP    [,U]
-6ECA: 6E D4          JMP    [,U]
-6ECC: 6E D4          JMP    [,U]
-6ECE: 6E D4          JMP    [,U]
-6ED0: 6E D4          JMP    [,U]
-6ED2: 6E D4          JMP    [,U]
-6ED4: 15             FCB    $15
-6ED5: 12             NOP
-6ED6: 1C 20          ANDCC  #$20
-6ED8: 44             LSRA
-6ED9: 1E 66          EXG    W,W
-6EDB: 2D 36          BLT    $6F13
-6EDD: 39             RTS
-6EDE: 57             ASRB
-6EDF: FF 6F F8       STU    $6FF8
-6EE2: 6F F8 6F       CLR    [$6F,S]
-6EE5: F8 6F F8       EORB   $6FF8
-6EE8: 6F F8 6F       CLR    [$6F,S]
-6EEB: F8 6F F8       EORB   $6FF8
-6EEE: 6F F8 6F       CLR    [$6F,S]
-6EF1: DE 6F          LDU    $6F
-6EF3: DE 6F          LDU    $6F
-6EF5: DE 6F          LDU    $6F
-6EF7: DE 6F          LDU    $6F
-6EF9: DE 6F          LDU    $6F
-6EFB: DE 6F          LDU    $6F
-6EFD: DE 70          LDU    $70
-6EFF: 4F             CLRA
-6F00: 6F DE          CLR    [W,U]
-6F02: 70 79 70       NEG    $7970
-6F05: 95 70          BITA   $70
-6F07: A1 71          CMPA   -$F,S
-6F09: 23 71          BLS    $6F7C
-6F0B: 2F 71          BLE    $6F7E
-6F0D: 3B             RTI
-6F0E: 71 47 71 63    OIM    #$47,$7163
-6F12: 71 7F 71 E3    OIM    #$7F,$71E3
-6F16: 71 F7 72 0B    OIM    #$F7,$720B
-6F1A: 72 1F 72 41    AIM    #$1F,$7241
-6F1E: 72 55 72 7B    AIM    #$55,$727B
-6F22: 72 97 72 B1    AIM    #$97,$72B1
-6F26: 72 C5 72 DF    AIM    #$C5,$72DF
-6F2A: 72 EB 72 FF    AIM    #$EB,$72FF
-6F2E: 73 28 73       COM    $2873
-6F31: 44             LSRA
-6F32: 73 66 6F       COM    $666F
-6F35: DE 6F          LDU    $6F
-6F37: DE 73          LDU    $73
-6F39: 7A 73 9E       DEC    $739E
-6F3C: 73 B8 73       COM    $B873
-6F3F: E8 74          EORB   -$C,S
-6F41: 0A 74          DEC    $74
-6F43: 1E 74          EXG    V,S
-6F45: 32 74          LEAS   -$C,S
-6F47: 46             RORA
-6F48: 74 5A 74       LSR    $5A74
-6F4B: 6E 74          JMP    -$C,S
-6F4D: 82 74          SBCA   #$74
-6F4F: 9E 74          LDX    $74
-6F51: C0 74          SUBB   #$74
-6F53: D4 74          ANDB   $74
-6F55: E8 75          EORB   -$B,S
-6F57: 10 6F          FCB    $10,$6F
-6F59: DE 6F          LDS    $6F
-6F5B: DE 6F          LDU    $6F
-6F5D: DE 6F          LDU    $6F
-6F5F: DE 6F          LDU    $6F
-6F61: DE 75          LDU    $75
-6F63: 24 6F          BCC    $6FD4
-6F65: DE 75          LDU    $75
-6F67: 38             FCB    $38
-6F68: 75 54 75 70    EIM    #$54,$7570
-6F6C: 75 C6 75 E8    EIM    #$C6,$75E8
-6F70: 76 04 76       ROR    $0476
-6F73: 20 76          BRA    $6FEB
-6F75: 3C 76          CWAI   #$76
-6F77: 58             ASLB
-6F78: 76 6C 76       ROR    $6C76
-6F7B: 80 76          SUBA   #$76
-6F7D: 94 76          ANDA   $76
-6F7F: A8 76          EORA   -$A,S
-6F81: BC 76 D0       CMPX   $76D0
-6F84: 76 E4 76       ROR    $E476
-6F87: F8 76 F8       EORB   $76F8
-6F8A: 76 F8 76       ROR    $F876
-6F8D: F8 6F DE       EORB   $6FDE
-6F90: 6F DE          CLR    [W,U]
-6F92: 77 30 77       ASR    $3077
-6F95: 44             LSRA
-6F96: 77 50 77       ASR    $5077
-6F99: 5C             INCB
-6F9A: 6F DE          CLR    [W,U]
-6F9C: 6F DE          CLR    [W,U]
-6F9E: 77 30 77       ASR    $3077
-6FA1: 30 77          LEAX   -$9,S
-6FA3: 30 77          LEAX   -$9,S
-6FA5: 30 77          LEAX   -$9,S
-6FA7: 7C 6F DE       INC    $6FDE
-6FAA: 6F DE          CLR    [W,U]
-6FAC: 6F DE          CLR    [W,U]
-6FAE: 6F DE          CLR    [W,U]
-6FB0: 6F DE          CLR    [W,U]
-6FB2: 6F DE          CLR    [W,U]
-6FB4: 6F DE          CLR    [W,U]
-6FB6: 6F DE          CLR    [W,U]
-6FB8: 6F DE          CLR    [W,U]
-6FBA: 6F DE          CLR    [W,U]
-6FBC: 6F DE          CLR    [W,U]
-6FBE: 6F DE          CLR    [W,U]
-6FC0: 6F DE          CLR    [W,U]
-6FC2: 6F DE          CLR    [W,U]
-6FC4: 6F DE          CLR    [W,U]
-6FC6: 6F DE          CLR    [W,U]
-6FC8: 6F DE          CLR    [W,U]
-6FCA: 6F DE          CLR    [W,U]
-6FCC: 6F DE          CLR    [W,U]
-6FCE: 6F DE          CLR    [W,U]
-6FD0: 6F DE          CLR    [W,U]
-6FD2: 6F DE          CLR    [W,U]
-6FD4: 6F DE          CLR    [W,U]
-6FD6: 6F DE          CLR    [W,U]
-6FD8: 6F DE          CLR    [W,U]
-6FDA: 6F DE          CLR    [W,U]
-6FDC: 6F DE          CLR    [W,U]
-6FDE: 6F EA          CLR    F,S
-6FE0: 6F EA          CLR    F,S
-6FE2: 6F EA          CLR    F,S
-6FE4: 6F EA          CLR    F,S
-6FE6: 6F EA          CLR    F,S
-6FE8: 6F EA          CLR    F,S
-6FEA: 00 00          NEG    $00
-6FEC: 77 96 78       ASR    $9678
-6FEF: 4A             DECA
-6FF0: 6F F2          CLR    Illegal Postbyte
-6FF2: FF FF FF       STU    $FFFF
-6FF5: FF FF FD       STU    $FFFD
-6FF8: 70 04 70       NEG    $0470
-6FFB: 0C 70          INC    $70
-6FFD: 14             SEXW
-6FFE: 70 1C 70       NEG    $1C70
-7001: 14             SEXW
-7002: 6F EA          CLR    F,S
-7004: 01 00 77       OIM    #$00;$77
-7007: DA 78          ORB    $78
-7009: 4E             FCB    $4E
-700A: 70 24 00       NEG    $2400
-700D: 00 78          NEG    $78
-700F: 2E 78          BGT    $7089
-7011: 4A             DECA
-7012: 6F F2          CLR    Illegal Postbyte
-7014: 00 00          NEG    $00
-7016: 77 DA 78       ASR    $DA78
-7019: 4A             DECA
-701A: 6F F2          CLR    Illegal Postbyte
-701C: 00 00          NEG    $00
-701E: 78 12 78       ASL    $1278
-7021: 4A             DECA
-7022: 6F F2          CLR    Illegal Postbyte
-7024: 00 0F          NEG    $0F
-7026: 0C 00          INC    $00
-7028: FF FF 02       STU    $FF02
-702B: 0F 0C          CLR    $0C
-702D: 00 FF          NEG    $FF
-702F: FF 03 0F       STU    $030F
-7032: 0C 00          INC    $00
-7034: FF FF 08       STU    $FF08
-7037: 0F 0C          CLR    $0C
-7039: 00 FF          NEG    $FF
-703B: FF 09 0F       STU    $090F
-703E: 0C 00          INC    $00
-7040: FF FF 22       STU    $FF22
-7043: 0F 0C          CLR    $0C
-7045: 00 FF          NEG    $FF
-7047: FF 23 0F       STU    $230F
-704A: 0C 00          INC    $00
-704C: FF FF FD       STU    $FFFD
-704F: 70 5B 70       NEG    $5B70
-7052: 63 70          COM    -$10,S
-7054: 63 70          COM    -$10,S
-7056: 6B 70 63       TIM    #$70;$3,S
-7059: 6F EA          CLR    F,S
-705B: 00 00          NEG    $00
-705D: 78 32 78       ASL    $3278
-7060: 4A             DECA
-7061: 6F F2          CLR    Illegal Postbyte
-7063: 00 00          NEG    $00
-7065: 77 D6 78       ASR    $D678
-7068: 4A             DECA
-7069: 6F F2          CLR    Illegal Postbyte
-706B: 00 00          NEG    $00
-706D: 78 1A 78       ASL    $1A78
-7070: 4A             DECA
-7071: 6F F2          CLR    Illegal Postbyte
-7073: FF 0C FF       STU    $0CFF
-7076: FF FF FD       STU    $FFFD
-7079: 70 85 6F       NEG    $856F
-707C: EA 70          ORB    -$10,S
-707E: 85 70          BITA   #$70
-7080: 8D 70          BSR    $70F2
-7082: 85 6F          BITA   #$6F
-7084: EA 00          ORB    $0,X
-7086: 00 77          NEG    $77
-7088: CA 78          ORB    #$78
-708A: 4A             DECA
-708B: 70 73 00       NEG    $7300
-708E: 00 78          NEG    $78
-7090: 06 78          ROR    $78
-7092: 4A             DECA
-7093: 70 73 70       NEG    $7370
-7096: 85 6F          BITA   #$6F
-7098: EA 70          ORB    -$10,S
-709A: 85 70          BITA   #$70
-709C: 8D 70          BSR    $710E
-709E: 85 6F          BITA   #$6F
-70A0: EA 70          ORB    -$10,S
-70A2: AD 6F          JSR    $F,S
-70A4: EA 70          ORB    -$10,S
-70A6: AD 70          JSR    -$10,S
-70A8: B5 70 AD       BITA   $70AD
-70AB: 6F EA          CLR    F,S
-70AD: 01 02 77       OIM    #$02;$77
-70B0: CA 78          ORB    #$78
-70B2: 52             FCB    $52
-70B3: 70 BD 01       NEG    $BD01
-70B6: 02 78 06       AIM    #$78;$06
-70B9: 78 8A 70       ASL    $8A70
-70BC: BD FE 22       JSR    $FE22
-70BF: 01 00 01       OIM    #$00;$01
-70C2: 00 FE          NEG    $FE
-70C4: 23 01          BLS    $70C7
-70C6: 00 01          NEG    $01
-70C8: 00 FE          NEG    $FE
-70CA: 24 01          BCC    $70CD
-70CC: 00 01          NEG    $01
-70CE: 00 FE          NEG    $FE
-70D0: 25 01          BCS    $70D3
-70D2: 00 01          NEG    $01
-70D4: 00 FE          NEG    $FE
-70D6: 26 01          BNE    $70D9
-70D8: 00 01          NEG    $01
-70DA: 00 00          NEG    $00
-70DC: 5B             FCB    $5B
-70DD: 01 00 01       OIM    #$00;$01
-70E0: 00 03          NEG    $03
-70E2: 5B             FCB    $5B
-70E3: 01 00 01       OIM    #$00;$01
-70E6: 00 08          NEG    $08
-70E8: 5B             FCB    $5B
-70E9: 01 00 01       OIM    #$00;$01
-70EC: 00 09          NEG    $09
-70EE: 5B             FCB    $5B
-70EF: 01 00 01       OIM    #$00;$01
-70F2: 00 22          NEG    $22
-70F4: 5B             FCB    $5B
-70F5: 01 00 01       OIM    #$00;$01
-70F8: 00 23          NEG    $23
-70FA: 5B             FCB    $5B
-70FB: 01 00 01       OIM    #$00;$01
-70FE: 00 03          NEG    $03
-7100: 59             ROLB
-7101: 01 00 01       OIM    #$00;$01
-7104: 00 08          NEG    $08
-7106: 59             ROLB
-7107: 01 00 01       OIM    #$00;$01
-710A: 00 09          NEG    $09
-710C: 59             ROLB
-710D: 01 00 01       OIM    #$00;$01
-7110: 00 22          NEG    $22
-7112: 59             ROLB
-7113: 01 00 01       OIM    #$00;$01
-7116: 00 23          NEG    $23
-7118: 59             ROLB
-7119: 01 00 01       OIM    #$00;$01
-711C: 00 FF          NEG    $FF
-711E: 02 00 03       AIM    #$00;$03
-7121: 01 FD 70       OIM    #$FD;$70
-7124: 85 6F          BITA   #$6F
-7126: EA 70          ORB    -$10,S
-7128: 85 70          BITA   #$70
-712A: 8D 70          BSR    $719C
-712C: 85 6F          BITA   #$6F
-712E: EA 70          ORB    -$10,S
-7130: 85 6F          BITA   #$6F
-7132: EA 70          ORB    -$10,S
-7134: 85 70          BITA   #$70
-7136: 8D 70          BSR    $71A8
-7138: 85 6F          BITA   #$6F
-713A: EA 70          ORB    -$10,S
-713C: AD 6F          JSR    $F,S
-713E: EA 70          ORB    -$10,S
-7140: AD 70          JSR    -$10,S
-7142: B5 70 AD       BITA   $70AD
-7145: 6F EA          CLR    F,S
-7147: 71 53 71 5B    OIM    #$53,$715B
-714B: 71 53 6F EA    OIM    #$53,$6FEA
-714F: 71 53 6F EA    OIM    #$53,$6FEA
-7153: 00 00          NEG    $00
-7155: 77 9E 78       ASR    $9E78
-7158: 4A             DECA
-7159: 6F F2          CLR    Illegal Postbyte
-715B: 00 00          NEG    $00
-715D: 78 2E 78       ASL    $2E78
-7160: 4A             DECA
-7161: 6F F2          CLR    Illegal Postbyte
-7163: 71 6F 71 77    OIM    #$6F,$7177
-7167: 71 6F 6F EA    OIM    #$6F,$6FEA
-716B: 71 6F 6F EA    OIM    #$6F,$6FEA
-716F: 00 00          NEG    $00
-7171: 77 CE 78       ASR    $CE78
-7174: 4A             DECA
-7175: 6F F2          CLR    Illegal Postbyte
-7177: 00 00          NEG    $00
-7179: 78 3A 78       ASL    $3A78
-717C: 4A             DECA
-717D: 6F F2          CLR    Illegal Postbyte
-717F: 71 8B 6F EA    OIM    #$8B,$6FEA
-7183: 71 93 6F EA    OIM    #$93,$6FEA
-7187: 71 93 6F EA    OIM    #$93,$6FEA
-718B: 01 03 77       OIM    #$03;$77
-718E: EE 78          LDU    -$8,S
-7190: 56             RORB
-7191: 71 A1 01 03    OIM    #$A1,$0103
-7195: 77 EE 78       ASR    $EE78
-7198: 56             RORB
-7199: 71 9B FF 01    OIM    #$9B,$FF01
-719D: 00 01          NEG    $01
-719F: 01 FD 03       OIM    #$FD;$03
-71A2: 59             ROLB
-71A3: FC 00 FC       LDD    >$00FC
-71A6: 01 08 59       OIM    #$08;$59
-71A9: FC 00 FC       LDD    >$00FC
-71AC: 01 09 59       OIM    #$09;$59
-71AF: FC 00 FC       LDD    >$00FC
-71B2: 01 22 59       OIM    #$22;$59
-71B5: FC 00 FC       LDD    >$00FC
-71B8: 01 23 59       OIM    #$23;$59
-71BB: FC 00 FC       LDD    >$00FC
-71BE: 01 03 5B       OIM    #$03;$5B
-71C1: FC 00 FC       LDD    >$00FC
-71C4: 01 08 5B       OIM    #$08;$5B
-71C7: FC 00 FC       LDD    >$00FC
-71CA: 01 09 5B       OIM    #$09;$5B
-71CD: FC 00 FC       LDD    >$00FC
-71D0: 01 22 5B       OIM    #$22;$5B
-71D3: FC 00 FC       LDD    >$00FC
-71D6: 01 23 5B       OIM    #$23;$5B
-71D9: FC 00 FC       LDD    >$00FC
-71DC: 01 FF 01       OIM    #$FF;$01
-71DF: 00 01          NEG    $01
-71E1: 01 FD 71       OIM    #$FD;$71
-71E4: EF 6F          STU    $F,S
-71E6: EA 71          ORB    -$F,S
-71E8: EF 6F          STU    $F,S
-71EA: EA 6F          ORB    $F,S
-71EC: EA 6F          ORB    $F,S
-71EE: EA 01          ORB    $1,X
-71F0: 00 77          NEG    $77
-71F2: D2 78          SBCB   $78
-71F4: 4A             DECA
-71F5: 6F F2          CLR    Illegal Postbyte
-71F7: 72 03 6F EA    AIM    #$03,$6FEA
-71FB: 72 03 6F EA    AIM    #$03,$6FEA
-71FF: 6F EA          CLR    F,S
-7201: 6F EA          CLR    F,S
-7203: 01 03 77       OIM    #$03;$77
-7206: A2 78          SBCA   -$8,S
-7208: 5A             DECB
-7209: 71 9B 72 17    OIM    #$9B,$7217
-720D: 6F EA          CLR    F,S
-720F: 72 17 6F EA    AIM    #$17,$6FEA
-7213: 6F EA          CLR    F,S
-7215: 6F EA          CLR    F,S
-7217: 00 00          NEG    $00
-7219: 77 D6 78       ASR    $D678
-721C: 4A             DECA
-721D: 6F F2          CLR    Illegal Postbyte
-721F: 72 2B 72 33    AIM    #$2B,$7233
-7223: 72 2B 6F EA    AIM    #$2B,$6FEA
-7227: 6F EA          CLR    F,S
-7229: 6F EA          CLR    F,S
-722B: 01 05 77       OIM    #$05;$77
-722E: DA 78          ORB    $78
-7230: 5E             FCB    $5E
-7231: 72 3B 00 00    AIM    #$3B,$0000
-7235: 78 2E 78       ASL    $2E78
-7238: 4A             DECA
-7239: 6F F2          CLR    Illegal Postbyte
-723B: FF 01 01       STU    $0101
-723E: 01 01 FD       OIM    #$01;$FD
-7241: 72 4D 72 33    AIM    #$4D,$7233
-7245: 72 4D 6F EA    AIM    #$4D,$6FEA
-7249: 6F EA          CLR    F,S
-724B: 6F EA          CLR    F,S
-724D: 00 00          NEG    $00
-724F: 77 DE 78       ASR    $DE78
-7252: 4A             DECA
-7253: 6F F2          CLR    Illegal Postbyte
-7255: 72 61 72 33    AIM    #$61,$7233
-7259: 72 61 6F EA    AIM    #$61,$6FEA
-725D: 6F EA          CLR    F,S
-725F: 6F EA          CLR    F,S
-7261: 01 03 77       OIM    #$03;$77
-7264: DE 78          LDU    $78
-7266: 62 72 69       AIM    #$72;$9,S
-7269: FE 59 01       LDU    $5901
-726C: 01 FF 00       OIM    #$FF;$00
-726F: FE 5B 01       LDU    $5B01
-7272: 01 FF 00       OIM    #$FF;$00
-7275: FF 03 00       STU    $0300
-7278: 03 01          COM    $01
-727A: FD 72 87       STD    $7287
-727D: 72 8F 72 87    AIM    #$8F,$7287
-7281: 6F EA          CLR    F,S
-7283: 6F EA          CLR    F,S
-7285: 6F EA          CLR    F,S
-7287: 00 00          NEG    $00
-7289: 77 C2 78       ASR    $C278
-728C: 4A             DECA
-728D: 6F F2          CLR    Illegal Postbyte
-728F: 00 00          NEG    $00
-7291: 78 3E 78       ASL    $3E78
-7294: 4A             DECA
-7295: 6F F2          CLR    Illegal Postbyte
-7297: 72 A3 72 33    AIM    #$A3,$7233
-729B: 72 A3 6F EA    AIM    #$A3,$6FEA
-729F: 6F EA          CLR    F,S
-72A1: 6F EA          CLR    F,S
-72A3: 01 01 77       OIM    #$01;$77
-72A6: D6 78          LDB    $78
-72A8: 66 72          ROR    -$E,S
-72AA: AB FF 03 00    ADDA   [$0300]
-72AE: 03 01          COM    $01
-72B0: FD 72 BD       STD    $72BD
-72B3: 72 33 72 BD    AIM    #$33,$72BD
-72B7: 6F EA          CLR    F,S
-72B9: 72 BD 6F EA    AIM    #$BD,$6FEA
-72BD: 00 00          NEG    $00
-72BF: 77 DA 78       ASR    $DA78
-72C2: 4A             DECA
-72C3: 6F F2          CLR    Illegal Postbyte
-72C5: 72 BD 72 D1    AIM    #$BD,$72D1
-72C9: 72 BD 6F EA    AIM    #$BD,$6FEA
-72CD: 72 BD 6F EA    AIM    #$BD,$6FEA
-72D1: 01 01 78       OIM    #$01;$78
-72D4: 2E 78          BGT    $734E
-72D6: 96 72          LDA    $72
-72D8: D9 FF          ADCB   $FF
-72DA: 01 00 01       OIM    #$00;$01
-72DD: 01 FD 72       OIM    #$FD;$72
-72E0: BD 72 33       JSR    $7233
-72E3: 72 BD 6F EA    AIM    #$BD,$6FEA
-72E7: 72 BD 6F EA    AIM    #$BD,$6FEA
-72EB: 72 F7 72 33    AIM    #$F7,$7233
-72EF: 72 F7 6F EA    AIM    #$F7,$6FEA
-72F3: 72 F7 6F EA    AIM    #$F7,$6FEA
-72F7: 00 00          NEG    $00
-72F9: 77 A6 78       ASR    $A678
-72FC: 4A             DECA
-72FD: 6F F2          CLR    Illegal Postbyte
-72FF: 73 0B 73       COM    $0B73
-7302: 13             SYNC
-7303: 73 0B 6F       COM    $0B6F
-7306: EA 73          ORB    -$D,S
-7308: 0B 6F EA       TIM    #$6F;$EA
-730B: 00 00          NEG    $00
-730D: 77 AA 78       ASR    $AA78
-7310: 4A             DECA
-7311: 6F F2          CLR    Illegal Postbyte
-7313: 01 00 78       OIM    #$00;$78
-7316: 2E 78          BGT    $7390
-7318: 9A 73          ORA    $73
-731A: 1B             FCB    $1B
-731B: 00 1F          NEG    $1F
-731D: 01 09 FF       OIM    #$09;$FF
-7320: FF 00 3A       STU    >$003A
-7323: 01 09 FF       OIM    #$09;$FF
-7326: FF FD 73       STU    $FD73
-7329: 34 73          PSHS   U,Y,X,A,CC
-732B: 3C 73          CWAI   #$73
-732D: 34 6F          PSHS   U,Y,DP,D,CC
-732F: EA 73          ORB    -$D,S
-7331: 34 6F          PSHS   U,Y,DP,D,CC
-7333: EA 00          ORB    $0,X
-7335: 00 77          NEG    $77
-7337: D6 78          LDB    $78
-7339: 4A             DECA
-733A: 6F F2          CLR    Illegal Postbyte
-733C: 00 00          NEG    $00
-733E: 78 42 78       ASL    $4278
-7341: 4A             DECA
-7342: 6F F2          CLR    Illegal Postbyte
-7344: 73 50 73       COM    $5073
-7347: 58             ASLB
-7348: 73 50 6F       COM    $506F
-734B: EA 73          ORB    -$D,S
-734D: 50             NEGB
-734E: 6F EA          CLR    F,S
-7350: 00 00          NEG    $00
-7352: 77 D6 78       ASR    $D678
-7355: 4A             DECA
-7356: 6F F2          CLR    Illegal Postbyte
-7358: 01 04 78       OIM    #$04;$78
-735B: 46             RORA
-735C: 78 9E 73       ASL    $9E73
-735F: 60 FF 01 00    NEG    [$0100]
-7363: 01 01 FD       OIM    #$01;$FD
-7366: 73 72 6F       COM    $726F
-7369: EA 73          ORB    -$D,S
-736B: 72 6F EA 73    AIM    #$6F,$EA73
-736F: 72 6F EA 00    AIM    #$6F,$EA00
-7373: 00 77          NEG    $77
-7375: D6 78          LDB    $78
-7377: 4A             DECA
-7378: 6F F2          CLR    Illegal Postbyte
-737A: 73 86 6F       COM    $866F
-737D: EA 73          ORB    -$D,S
-737F: 86 73          LDA    #$73
-7381: 8E 73 96       LDX    #$7396
-7384: 6F EA          CLR    F,S
-7386: 00 00          NEG    $00
-7388: 77 D6 78       ASR    $D678
-738B: 4A             DECA
-738C: 6F F2          CLR    Illegal Postbyte
-738E: 00 00          NEG    $00
-7390: 78 22 78       ASL    $2278
-7393: 4A             DECA
-7394: 6F F2          CLR    Illegal Postbyte
-7396: 00 00          NEG    $00
-7398: 78 2A 78       ASL    $2A78
-739B: 4A             DECA
-739C: 6F F2          CLR    Illegal Postbyte
-739E: 73 AA 6F       COM    $AA6F
-73A1: EA 73          ORB    -$D,S
-73A3: AA 73          ORA    -$D,S
-73A5: 8E 73 96       LDX    #$7396
-73A8: 6F EA          CLR    F,S
-73AA: 01 06 77       OIM    #$06;$77
-73AD: B2 78 6E       SBCA   $786E
-73B0: 73 B2 FF       COM    $B2FF
-73B3: 01 00 01       OIM    #$00;$01
-73B6: 01 FD 73       OIM    #$FD;$73
-73B9: C4 6F          ANDB   #$6F
-73BB: EA 73          ORB    -$D,S
-73BD: C4 73          ANDB   #$73
-73BF: CC 73 D4       LDD    #$73D4
-73C2: 6F EA          CLR    F,S
-73C4: 00 00          NEG    $00
-73C6: 77 DA 78       ASR    $DA78
-73C9: 4A             DECA
-73CA: 6F F2          CLR    Illegal Postbyte
-73CC: 01 01 78       OIM    #$01;$78
-73CF: 22 78          BHI    $7449
-73D1: 86 73          LDA    #$73
-73D3: DC 01          LDD    $01
-73D5: 01 78 2A       OIM    #$78;$2A
-73D8: 78 92 73       ASL    $9273
-73DB: E2 FF 01 00    SBCB   [$0100]
-73DF: 01 01 FD       OIM    #$01;$FD
-73E2: FF 03 00       STU    $0300
-73E5: 01 01 FD       OIM    #$01;$FD
-73E8: 73 F4 6F       COM    $F46F
-73EB: EA 73          ORB    -$D,S
-73ED: F4 6F EA       ANDB   $6FEA
-73F0: 73 FC 6F       COM    $FC6F
-73F3: EA 01          ORB    $1,X
-73F5: 01 77 D6       OIM    #$77;$D6
-73F8: 78 82 74       ASL    $8274
-73FB: 04 00          LSR    $00
-73FD: 00 77          NEG    $77
-73FF: D6 78          LDB    $78
-7401: 4A             DECA
-7402: 6F F2          CLR    Illegal Postbyte
-7404: FF 03 00       STU    $0300
-7407: 01 01 FD       OIM    #$01;$FD
-740A: 74 16 6F       LSR    $166F
-740D: EA 74          ORB    -$C,S
-740F: 16 6F EA       LBRA   $E3FC
-7412: 74 16 6F       LSR    $166F
-7415: EA 00          ORB    $0,X
-7417: 00 77          NEG    $77
-7419: A2 78          SBCA   -$8,S
-741B: 4A             DECA
-741C: 6F F2          CLR    Illegal Postbyte
-741E: 74 2A 6F       LSR    $2A6F
-7421: EA 74          ORB    -$C,S
-7423: 2A 6F          BPL    $7494
-7425: EA 74          ORB    -$C,S
-7427: 2A 6F          BPL    $7498
-7429: EA 00          ORB    $0,X
-742B: 00 77          NEG    $77
-742D: D2 78          SBCB   $78
-742F: 4A             DECA
-7430: 6F F2          CLR    Illegal Postbyte
-7432: 74 3E 6F       LSR    $3E6F
-7435: EA 74          ORB    -$C,S
-7437: 3E             FCB    $3E
-7438: 6F EA          CLR    F,S
-743A: 74 3E 6F       LSR    $3E6F
-743D: EA 00          ORB    $0,X
-743F: 00 77          NEG    $77
-7441: A6 78          LDA    -$8,S
-7443: 4A             DECA
-7444: 6F F2          CLR    Illegal Postbyte
-7446: 74 52 6F       LSR    $526F
-7449: EA 74          ORB    -$C,S
-744B: 52             FCB    $52
-744C: 6F EA          CLR    F,S
-744E: 74 52 6F       LSR    $526F
-7451: EA 00          ORB    $0,X
-7453: 00 77          NEG    $77
-7455: DA 78          ORB    $78
-7457: 4A             DECA
-7458: 6F F2          CLR    Illegal Postbyte
-745A: 6F EA          CLR    F,S
-745C: 6F EA          CLR    F,S
-745E: 74 66 6F       LSR    $666F
-7461: EA 6F          ORB    $F,S
-7463: EA 6F          ORB    $F,S
-7465: EA 00          ORB    $0,X
-7467: 00 77          NEG    $77
-7469: FE 78 4A       LDU    $784A
-746C: 6F F2          CLR    Illegal Postbyte
-746E: 6F EA          CLR    F,S
-7470: 6F EA          CLR    F,S
-7472: 6F EA          CLR    F,S
-7474: 74 7A 6F       LSR    $7A6F
-7477: EA 6F          ORB    $F,S
-7479: EA 00          ORB    $0,X
-747B: 00 78          NEG    $78
-747D: 12             NOP
-747E: 78 4A 6F       ASL    $4A6F
-7481: F2 74 8E       SBCB   $748E
-7484: 6F EA          CLR    F,S
-7486: 74 8E 74       LSR    $8E74
-7489: 96 6F          LDA    $6F
-748B: EA 6F          ORB    $F,S
-748D: EA 00          ORB    $0,X
-748F: 00 77          NEG    $77
-7491: B6 78 4A       LDA    $784A
-7494: 6F F2          CLR    Illegal Postbyte
-7496: 00 00          NEG    $00
-7498: 78 12 78       ASL    $1278
-749B: 4A             DECA
-749C: 6F F2          CLR    Illegal Postbyte
-749E: 74 AA 6F       LSR    $AA6F
-74A1: EA 74          ORB    -$C,S
-74A3: AA 74          ORA    -$C,S
-74A5: B2 6F EA       SBCA   $6FEA
-74A8: 6F EA          CLR    F,S
-74AA: 01 03 77       OIM    #$03;$77
-74AD: B6 78 72       LDA    $7872
-74B0: 74 BA 00       LSR    $BA00
-74B3: 00 78          NEG    $78
-74B5: 12             NOP
-74B6: 78 4A 6F       ASL    $4A6F
-74B9: F2 FF 01       SBCB   $FF01
-74BC: 00 01          NEG    $01
-74BE: 01 FD 74       OIM    #$FD;$74
-74C1: CC 6F EA       LDD    #$6FEA
-74C4: 74 CC 6F       LSR    $CC6F
-74C7: EA 6F          ORB    $F,S
-74C9: EA 6F          ORB    $F,S
-74CB: EA 00          ORB    $0,X
-74CD: 00 77          NEG    $77
-74CF: D2 78          SBCB   $78
-74D1: 4A             DECA
-74D2: 6F F2          CLR    Illegal Postbyte
-74D4: 74 E0 6F       LSR    $E06F
-74D7: EA 74          ORB    -$C,S
-74D9: E0 6F          SUBB   $F,S
-74DB: EA 6F          ORB    $F,S
-74DD: EA 6F          ORB    $F,S
-74DF: EA 00          ORB    $0,X
-74E1: 00 77          NEG    $77
-74E3: F2 78 4A       SBCB   $784A
-74E6: 6F F2          CLR    Illegal Postbyte
-74E8: 74 F4 6F       LSR    $F46F
-74EB: EA 74          ORB    -$C,S
-74ED: FC 6F EA       LDD    $6FEA
-74F0: 6F EA          CLR    F,S
-74F2: 6F EA          CLR    F,S
-74F4: 01 04 77       OIM    #$04;$77
-74F7: F6 78 76       LDB    $7876
-74FA: 75 0A 01 04    EIM    #$0A,$0104
-74FE: 77 F6 78       ASR    $F678
-7501: 76 75 04       ROR    $7504
-7504: FF 01 00       STU    $0100
-7507: 01 01 FD       OIM    #$01;$FD
-750A: FF 01 00       STU    $0100
-750D: 01 01 FD       OIM    #$01;$FD
-7510: 75 1C 6F EA    EIM    #$1C,$6FEA
-7514: 75 1C 6F EA    EIM    #$1C,$6FEA
-7518: 6F EA          CLR    F,S
-751A: 6F EA          CLR    F,S
-751C: 00 00          NEG    $00
-751E: 77 D6 78       ASR    $D678
-7521: 4A             DECA
-7522: 6F F2          CLR    Illegal Postbyte
-7524: 75 30 6F EA    EIM    #$30,$6FEA
-7528: 75 30 6F EA    EIM    #$30,$6FEA
-752C: 75 30 6F EA    EIM    #$30,$6FEA
-7530: 00 00          NEG    $00
-7532: 77 EA 78       ASR    $EA78
-7535: 4A             DECA
-7536: 6F F2          CLR    Illegal Postbyte
-7538: 75 44 6F EA    EIM    #$44,$6FEA
-753C: 75 44 75 4C    EIM    #$44,$754C
-7540: 75 44 6F EA    EIM    #$44,$6FEA
-7544: 00 00          NEG    $00
-7546: 77 A2 78       ASR    $A278
-7549: 4A             DECA
-754A: 6F F2          CLR    Illegal Postbyte
-754C: 00 00          NEG    $00
-754E: 78 0A 78       ASL    $0A78
-7551: 4A             DECA
-7552: 6F F2          CLR    Illegal Postbyte
-7554: 75 60 6F EA    EIM    #$60,$6FEA
-7558: 75 60 75 68    EIM    #$60,$7568
-755C: 75 60 6F EA    EIM    #$60,$6FEA
-7560: 00 00          NEG    $00
-7562: 77 A2 78       ASR    $A278
-7565: 4A             DECA
-7566: 6F F2          CLR    Illegal Postbyte
-7568: 00 00          NEG    $00
-756A: 77 FA 78       ASR    $FA78
-756D: 4A             DECA
-756E: 6F F2          CLR    Illegal Postbyte
-7570: 75 7C 6F EA    EIM    #$7C,$6FEA
-7574: 75 7C 6F EA    EIM    #$7C,$6FEA
-7578: 75 7C 6F EA    EIM    #$7C,$6FEA
-757C: 01 05 77       OIM    #$05;$77
-757F: C6 78          LDB    #$78
-7581: 7A 75 84       DEC    $7584
-7584: 03 59          COM    $59
-7586: 01 01 FC       OIM    #$01;$FC
-7589: 00 08          NEG    $08
-758B: 59             ROLB
-758C: 01 01 FC       OIM    #$01;$FC
-758F: 00 09          NEG    $09
-7591: 59             ROLB
-7592: 01 01 FC       OIM    #$01;$FC
-7595: 00 22          NEG    $22
-7597: 59             ROLB
-7598: 01 01 FC       OIM    #$01;$FC
-759B: 00 23          NEG    $23
-759D: 59             ROLB
-759E: 01 01 FC       OIM    #$01;$FC
-75A1: 00 03          NEG    $03
-75A3: 5B             FCB    $5B
-75A4: 01 01 FC       OIM    #$01;$FC
-75A7: 00 08          NEG    $08
-75A9: 5B             FCB    $5B
-75AA: 01 01 FC       OIM    #$01;$FC
-75AD: 00 09          NEG    $09
-75AF: 5B             FCB    $5B
-75B0: 01 01 FC       OIM    #$01;$FC
-75B3: 00 22          NEG    $22
-75B5: 5B             FCB    $5B
-75B6: 01 01 FC       OIM    #$01;$FC
-75B9: 00 23          NEG    $23
-75BB: 5B             FCB    $5B
-75BC: 01 01 FC       OIM    #$01;$FC
-75BF: 00 FF          NEG    $FF
-75C1: 01 00 01       OIM    #$00;$01
-75C4: 01 FD 75       OIM    #$FD;$75
-75C7: D2 6F          SBCB   $6F
-75C9: EA 75          ORB    -$B,S
-75CB: D2 75          SBCB   $75
-75CD: DA 75          ORB    $75
-75CF: D2 6F          SBCB   $6F
-75D1: EA 00          ORB    $0,X
-75D3: 00 77          NEG    $77
-75D5: A2 78          SBCA   -$8,S
-75D7: 4A             DECA
-75D8: 6F F2          CLR    Illegal Postbyte
-75DA: 01 01 78       OIM    #$01;$78
-75DD: 02 78 8E       AIM    #$78;$8E
-75E0: 75 E2 FF 01    EIM    #$E2,$FF01
-75E4: 00 01          NEG    $01
-75E6: 01 FD 75       OIM    #$FD;$75
-75E9: F4 6F EA       ANDB   $6FEA
-75EC: 75 F4 75 FC    EIM    #$F4,$75FC
-75F0: 75 F4 6F EA    EIM    #$F4,$6FEA
-75F4: 00 00          NEG    $00
-75F6: 77 E2 78       ASR    $E278
-75F9: 4A             DECA
-75FA: 6F F2          CLR    Illegal Postbyte
-75FC: 00 00          NEG    $00
-75FE: 78 16 78       ASL    $1678
-7601: 4A             DECA
-7602: 6F F2          CLR    Illegal Postbyte
-7604: 76 10 6F       ROR    $106F
-7607: EA 76          ORB    -$A,S
-7609: 10 76          FCB    $10,$76
-760B: 18             FCB    $18
-760C: 76             FCB    $76
-760D: 10             FCB    $10
-760E: 6F EA          CLR    F,S
-7610: 00 00          NEG    $00
-7612: 77 E6 78       ASR    $E678
-7615: 4A             DECA
-7616: 6F F2          CLR    Illegal Postbyte
-7618: 00 00          NEG    $00
-761A: 78 1A 78       ASL    $1A78
-761D: 4A             DECA
-761E: 6F F2          CLR    Illegal Postbyte
-7620: 76 2C 6F       ROR    $2C6F
-7623: EA 76          ORB    -$A,S
-7625: 2C 76          BGE    $769D
-7627: 34 76          PSHS   U,Y,X,D
-7629: 2C 6F          BGE    $769A
-762B: EA 00          ORB    $0,X
-762D: 00 77          NEG    $77
-762F: C6 78          LDB    #$78
-7631: 4A             DECA
-7632: 6F F2          CLR    Illegal Postbyte
-7634: 00 00          NEG    $00
-7636: 78 26 78       ASL    $2678
-7639: 4A             DECA
-763A: 6F F2          CLR    Illegal Postbyte
-763C: 76 48 6F       ROR    $486F
-763F: EA 76          ORB    -$A,S
-7641: 48             ASLA
-7642: 76 50 76       ROR    $5076
-7645: 48             ASLA
-7646: 6F EA          CLR    F,S
-7648: 00 00          NEG    $00
-764A: 77 D6 78       ASR    $D678
-764D: 4A             DECA
-764E: 6F F2          CLR    Illegal Postbyte
-7650: 00 00          NEG    $00
-7652: 78 1E 78       ASL    $1E78
-7655: 4A             DECA
-7656: 6F F2          CLR    Illegal Postbyte
-7658: 76 64 6F       ROR    $646F
-765B: EA 76          ORB    -$A,S
-765D: 64 76          LSR    -$A,S
-765F: 50             NEGB
-7660: 76 64 6F       ROR    $646F
-7663: EA 00          ORB    $0,X
-7665: 00 77          NEG    $77
-7667: D6 78          LDB    $78
-7669: 4A             DECA
-766A: 6F F2          CLR    Illegal Postbyte
-766C: 76 78 6F       ROR    $786F
-766F: EA 76          ORB    -$A,S
-7671: 78 76 50       ASL    $7650
-7674: 76 78 6F       ROR    $786F
-7677: EA 00          ORB    $0,X
-7679: 00 77          NEG    $77
-767B: D6 78          LDB    $78
-767D: 4A             DECA
-767E: 6F F2          CLR    Illegal Postbyte
-7680: 76 8C 6F       ROR    $8C6F
-7683: EA 76          ORB    -$A,S
-7685: 8C 76 50       CMPX   #$7650
-7688: 76 8C 6F       ROR    $8C6F
-768B: EA 00          ORB    $0,X
-768D: 00 77          NEG    $77
-768F: D6 78          LDB    $78
-7691: 4A             DECA
-7692: 6F F2          CLR    Illegal Postbyte
-7694: 76 A0 6F       ROR    $A06F
-7697: EA 76          ORB    -$A,S
-7699: A0 76          SUBA   -$A,S
-769B: 50             NEGB
-769C: 76 A0 6F       ROR    $A06F
-769F: EA 00          ORB    $0,X
-76A1: 00 77          NEG    $77
-76A3: D6 78          LDB    $78
-76A5: 4A             DECA
-76A6: 6F F2          CLR    Illegal Postbyte
-76A8: 76 B4 6F       ROR    $B46F
-76AB: EA 76          ORB    -$A,S
-76AD: B4 76 50       ANDA   $7650
-76B0: 76 B4 6F       ROR    $B46F
-76B3: EA 00          ORB    $0,X
-76B5: 00 77          NEG    $77
-76B7: D6 78          LDB    $78
-76B9: 4A             DECA
-76BA: 6F F2          CLR    Illegal Postbyte
-76BC: 76 C8 6F       ROR    $C86F
-76BF: EA 76          ORB    -$A,S
-76C1: C8 76          EORB   #$76
-76C3: 50             NEGB
-76C4: 76 C8 6F       ROR    $C86F
-76C7: EA 00          ORB    $0,X
-76C9: 00 77          NEG    $77
-76CB: D6 78          LDB    $78
-76CD: 4A             DECA
-76CE: 6F F2          CLR    Illegal Postbyte
-76D0: 76 DC 6F       ROR    $DC6F
-76D3: EA 76          ORB    -$A,S
-76D5: DC 76          LDD    $76
-76D7: 50             NEGB
-76D8: 76 DC 6F       ROR    $DC6F
-76DB: EA 00          ORB    $0,X
-76DD: 00 77          NEG    $77
-76DF: D6 78          LDB    $78
-76E1: 4A             DECA
-76E2: 6F F2          CLR    Illegal Postbyte
-76E4: 76 F0 6F       ROR    $F06F
-76E7: EA 76          ORB    -$A,S
-76E9: F0 76 50       SUBB   $7650
-76EC: 76 F0 6F       ROR    $F06F
-76EF: EA 00          ORB    $0,X
-76F1: 00 77          NEG    $77
-76F3: BA 78 4A       ORA    $784A
-76F6: 6F F2          CLR    Illegal Postbyte
-76F8: 77 3C 6F       ASR    $3C6F
-76FB: EA 77          ORB    -$9,S
-76FD: 3C 6F          CWAI   #$6F
-76FF: EA 77          ORB    -$9,S
-7701: 3C 6F          CWAI   #$6F
-7703: EA 00          ORB    $0,X
-7705: 00 77          NEG    $77
-7707: 96 78          LDA    $78
-7709: 4A             DECA
-770A: 6F F2          CLR    Illegal Postbyte
-770C: 6F EA          CLR    F,S
-770E: 6F EA          CLR    F,S
-7710: 6F EA          CLR    F,S
-7712: 6F EA          CLR    F,S
-7714: 6F EA          CLR    F,S
-7716: 6F EA          CLR    F,S
-7718: 6F EA          CLR    F,S
-771A: 6F EA          CLR    F,S
-771C: 6F EA          CLR    F,S
-771E: 6F EA          CLR    F,S
-7720: 6F EA          CLR    F,S
-7722: 6F EA          CLR    F,S
-7724: 6F EA          CLR    F,S
-7726: 6F EA          CLR    F,S
-7728: 6F EA          CLR    F,S
-772A: 6F EA          CLR    F,S
-772C: 6F EA          CLR    F,S
-772E: 6F EA          CLR    F,S
-7730: 77 3C 6F       ASR    $3C6F
-7733: EA 77          ORB    -$9,S
-7735: 3C 6F          CWAI   #$6F
-7737: EA 77          ORB    -$9,S
-7739: 3C 6F          CWAI   #$6F
-773B: EA 00          ORB    $0,X
-773D: 00 77          NEG    $77
-773F: BE 78 4A       LDX    $784A
-7742: 6F F2          CLR    Illegal Postbyte
-7744: 77 3C 6F       ASR    $3C6F
-7747: EA 77          ORB    -$9,S
-7749: 3C 6F          CWAI   #$6F
-774B: EA 77          ORB    -$9,S
-774D: 3C 6F          CWAI   #$6F
-774F: EA 77          ORB    -$9,S
-7751: 3C 6F          CWAI   #$6F
-7753: EA 77          ORB    -$9,S
-7755: 3C 6F          CWAI   #$6F
-7757: EA 77          ORB    -$9,S
-7759: 3C 6F          CWAI   #$6F
-775B: EA 77          ORB    -$9,S
-775D: 3C 6F          CWAI   #$6F
-775F: EA 77          ORB    -$9,S
-7761: 3C 6F          CWAI   #$6F
-7763: EA 77          ORB    -$9,S
-7765: 3C 6F          CWAI   #$6F
-7767: EA 6F          ORB    $F,S
-7769: EA 6F          ORB    $F,S
-776B: EA 77          ORB    -$9,S
-776D: 74 6F EA       LSR    $6FEA
-7770: 77 74 6F       ASR    $746F
-7773: EA 01          ORB    $1,X
-7775: 04 77          LSR    $77
-7777: BE 78 4A       LDX    $784A
-777A: 6F F2          CLR    Illegal Postbyte
-777C: 6F EA          CLR    F,S
-777E: 6F EA          CLR    F,S
-7780: 77 88 6F       ASR    $886F
-7783: EA 77          ORB    -$9,S
-7785: 88 6F          EORA   #$6F
-7787: EA 01          ORB    $1,X
-7789: 04 77          LSR    $77
-778B: BE 78 7E       LDX    $787E
-778E: 77 90 FF       ASR    $90FF
-7791: 03 00          COM    $00
-7793: 03 01          COM    $01
-7795: FD 00 00       STD    >$0000
-7798: 00 00          NEG    $00
-779A: 08 00          ASL    $00
-779C: 20 0C          BRA    $77AA
-779E: 00 10          NEG    $10
-77A0: 0C 38          INC    $38
-77A2: 00 00          NEG    $00
-77A4: 0C 38          INC    $38
-77A6: 00 00          NEG    $00
-77A8: 08 38          ASL    $38
-77AA: 00 10          NEG    $10
-77AC: 0C 28          INC    $28
-77AE: 00 10          NEG    $10
-77B0: 10 28 00 00    LBVC   $77B4
-77B4: 08 38          ASL    $38
-77B6: 00 20          NEG    $20
-77B8: 10 10          FCB    $10,$10
-77BA: 00 10          NEG    $10
-77BC: 10 20          FCB    $10,$20
-77BE: 00             FCB    $00
-77BF: 00             FCB    $00
-77C0: 08             FCB    $08
-77C1: 38             PSHSW
-77C2: FC 00 0C       LDD    >$000C
-77C5: 38             FCB    $38
-77C6: FC 00 08       LDD    >$0008
-77C9: 38             FCB    $38
-77CA: F8 00 28       EORB   >$0028
-77CD: 38             FCB    $38
-77CE: F8 10 10       EORB   $1010
-77D1: 18             FCB    $18
-77D2: F8 00 08       EORB   >$0008
-77D5: 38             FCB    $38
-77D6: F8 00 10       EORB   >$0010
-77D9: 38             FCB    $38
-77DA: FA 08 0A       ORB    $080A
-77DD: 2A F8          BPL    $77D7
-77DF: 18             FCB    $18
-77E0: 0C 20          INC    $20
-77E2: F8 00 10       EORB   >$0010
-77E5: 20 F8          BRA    $77DF
-77E7: 00 10          NEG    $10
-77E9: 30 F8 08       LEAX   [$08,S]
-77EC: 10 18          FCB    $10,$18
-77EE: F0             FCB    $F0
-77EF: 10             FCB    $10
-77F0: 10 18          FCB    $10,$18
-77F2: F0             FCB    $F0
-77F3: 00             FCB    $00
-77F4: 10             FCB    $10
-77F5: 38             FCB    $38
-77F6: F0 18 10       SUBB   $1810
-77F9: 20 04          BRA    $77FF
-77FB: 10 10          FCB    $10,$10
-77FD: 30 00          LEAX   $0,X
-77FF: 00 10          NEG    $10
-7801: 40             NEGA
-7802: 00 10          NEG    $10
-7804: 10 38          PSHSW
-7806: FC 18 0C       LDD    $180C
-7809: 30 FC 10       LEAX   [$781C,PCR]
-780C: 10 30 FC       ADDR   F,0
-780F: 10 10          FCB    $10,$10
-7811: 38             FCB    $38
-7812: F8 00 10       EORB   >$0010
-7815: 48             ASLA
-7816: F8 00 18       EORB   >$0018
-7819: 28 F8          BVC    $7813
-781B: 00 10          NEG    $10
-781D: 38             FCB    $38
-781E: F8 18 10       EORB   $1810
-7821: 30 F4          LEAX   [,S]
-7823: 00 0C          NEG    $0C
-7825: 48             ASLA
-7826: F8 18 10       EORB   $1810
-7829: 30 F8 00       LEAX   [$00,S]
-782C: 10 18          FCB    $10,$18
-782E: F8             FCB    $F8
-782F: 00             FCB    $00
-7830: 10             FCB    $10
-7831: 38             FCB    $38
-7832: F4 00 10       ANDB   >$0010
-7835: 30 00          LEAX   $0,X
-7837: 00 10          NEG    $10
-7839: 28 F8          BVC    $7833
-783B: 04 10          LSR    $10
-783D: 20 00          BRA    $783F
-783F: 00 10          NEG    $10
-7841: 38             FCB    $38
-7842: F4 10 10       ANDB   $1010
-7845: 28 00          BVC    $7847
-7847: 18             FCB    $18
-7848: 10 20          FCB    $10,$20
-784A: 00             FCB    $00
-784B: 00             FCB    $00
-784C: 00             FCB    $00
-784D: 00             FCB    $00
-784E: FC 00 14       LDQ    >$0014
-7851: 38             FCB    $38
-7852: 0C 30          INC    $30
-7854: 10 08          FCB    $10,$08
-7856: 08             FCB    $08
-7857: 10             FCB    $10
-7858: 0C 0C          INC    $0C
-785A: 08 28          ASL    $28
-785C: 0E 0E          JMP    $0E
-785E: DC 20          LDD    $20
-7860: 10 10          FCB    $10,$10
-7862: 0C 30          INC    $30
-7864: 0C 0C          INC    $0C
-7866: 04 00          LSR    $00
-7868: 08 08          ASL    $08
-786A: 00 00          NEG    $00
-786C: 08 10          ASL    $10
-786E: 0C 24          INC    $24
-7870: 0C 10          INC    $10
-7872: EC 20          LDD    $0,Y
-7874: 0C 08          INC    $08
-7876: 10 2C 0C 0C    LBGE   $8486
-787A: 08 20          ASL    $20
-787C: 1D             SEX
-787D: 08 10          ASL    $10
-787F: 18             FCB    $18
-7880: 14             SEXW
-7881: 10 08          FCB    $10,$08
-7883: 20             FCB    $20
-7884: 04             FCB    $04
-7885: 08             FCB    $08
-7886: 08             FCB    $08
-7887: 30 0C          ADDR   D,0
-7889: 0C 18          INC    $18
-788B: 10 0C          FCB    $10,$0C
-788D: 10             FCB    $10
-788E: 0C 20          INC    $20
-7890: 1C 0C          ANDCC  #$0C
-7892: 14             SEXW
-7893: 1C 0C          ANDCC  #$0C
-7895: 08 0C          ASL    $0C
-7897: 28 18          BVC    $78B1
-7899: 18             FCB    $18
-789A: 08 20          ASL    $20
-789C: 30 20          LEAX   $0,Y
-789E: E0 20          SUBB   $0,Y
-78A0: 20 10          BRA    $78B2
+
+
 78A2: B6 0A AE       LDA    $0AAE
 78A5: 85 40          BITA   #$40
 78A7: 10 26 00 86    LBNE   $7931
@@ -6586,19 +3994,7 @@
 792C: 8A 40          ORA    #$40
 792E: B7 0A AE       STA    $0AAE
 7931: 39             RTS
-7932: 0C 00          INC    $00
-7934: 00 0E          NEG    $0E
-7936: 0D 11          TST    $11
-7938: 0F 10          CLR    $10
-793A: 00 00          NEG    $00
-793C: 00 00          NEG    $00
-793E: 00 00          NEG    $00
-7940: 12             NOP
-7941: 00 81          NEG    $81
-7943: 00 27          NEG    $27
-7945: 0A 81          DEC    $81
-7947: 04 27          LSR    $27
-7949: 12             NOP
+
 794A: 81 03          CMPA   #$03
 794C: 27 1A          BEQ    $7968
 794E: 20 28          BRA    $7978
@@ -6621,58 +4017,7 @@
 7976: 20 02          BRA    $797A
 7978: 1C FE          ANDCC  #$FE
 797A: 39             RTS
-797B: 79 81 79       ROL    $8179
-797E: 87             FCB    $87
-797F: 79 8B 79       ROL    $8B79
-7982: 99 79          ADCA   $79
-7984: 9A 79          ORA    $79
-7986: 9B 79          ADDA   $79
-7988: AA 79          ORA    -$7,S
-798A: B2 79 BA       SBCA   $79BA
-798D: 79 C2 79       ROL    $C279
-7990: C3 79 C4       ADDD   #$79C4
-7993: 79 D3 79       ROL    $D379
-7996: E9 79          ADCB   -$7,S
-7998: EA FF FF 00    ORB    [$FF00]
-799C: 04 55          LSR    $55
-799E: 01 39 01       OIM    #$39;$01
-79A1: 00 00          NEG    $00
-79A3: 04 C1          LSR    $C1
-79A5: 01 1D 01       OIM    #$1D;$01
-79A8: 00 FF          NEG    $FF
-79AA: 04 05          LSR    $05
-79AC: A2 01          SBCA   $1,X
-79AE: 35 01          PULS   CC
-79B0: 00 FF          NEG    $FF
-79B2: 04 07          LSR    $07
-79B4: A4 01          ANDA   $1,X
-79B6: 20 01          BRA    $79B9
-79B8: C0 FF          SUBB   #$FF
-79BA: 00 09          NEG    $09
-79BC: 53             COMB
-79BD: 00 A3          NEG    $A3
-79BF: 01 00 FF       OIM    #$00;$FF
-79C2: FF FF 03       STU    $FF03
-79C5: 10 98 00       EORD   $00
-79C8: B2 01 00       SBCA   $0100
-79CB: 03 10          COM    $10
-79CD: D0 00          SUBB   $00
-79CF: D0 01          SUBB   $01
-79D1: 00 FF          NEG    $FF
-79D3: 03 12          COM    $12
-79D5: 9A 00          ORA    $00
-79D7: E7 01          STB    $1,X
-79D9: 30 03          LEAX   $3,X
-79DB: 13             SYNC
-79DC: 64 00          LSR    $0,X
-79DE: FD 01 30       STD    $0130
-79E1: 03 13          COM    $13
-79E3: A6 01          LDA    $1,X
-79E5: 19             DAA
-79E6: 01 30 FF       OIM    #$30;$FF
-79E9: FF FF 34       STU    $FF34
-79EC: 76 10 8E       ROR    $108E
-79EF: 07 5B          ASR    $5B
+
 79F1: A6 A4          LDA    ,Y
 79F3: 2A 7F          BPL    $7A74
 79F5: 34 10          PSHS   X
@@ -6790,19 +4135,7 @@
 7B07: A7 88 34       STA    $34,X
 7B0A: 35 20          PULS   Y
 7B0C: 39             RTS
-7B0D: 00 FF          NEG    $FF
-7B0F: FF 00 00       STU    >$0000
-7B12: 00 00          NEG    $00
-7B14: 00 FF          NEG    $FF
-7B16: 00 FF          NEG    $FF
-7B18: 00 FF          NEG    $FF
-7B1A: FF 00 00       STU    >$0000
-7B1D: FF FF FF       STU    $FFFF
-7B20: FF 00 02       STU    >$0002
-7B23: 02 00 00       AIM    #$00;$00
-7B26: 00 02          NEG    $02
-7B28: 02 00 00       AIM    #$00;$00
-7B2B: 00 00          NEG    $00
+
 7B2D: 34 30          PSHS   Y,X
 7B2F: 10 9F 0E       STY    $0E
 7B32: A6 A8 1B       LDA    $1B,Y
@@ -6814,18 +4147,10 @@
 7B40: A6 A8 17       LDA    $17,Y
 7B43: 84 1F          ANDA   #$1F
 7B45: 48             ASLA
-7B46: 10 8E 7B 4E    LDY    #$7B4E
+7B46: 10 8E 7B 4E    LDY    #table_7B4E
 7B4A: AD B6          JSR    [A,Y]
 7B4C: 35 B0          PULS   X,Y,PC
-7B4E: 7B 6E 7C 99    TIM    #$6E,$7C99
-7B52: 7C 99 7B       INC    $997B
-7B55: 77 7B 80       ASR    $7B80
-7B58: 7B 89 7B B4    TIM    #$89,$7BB4
-7B5C: 7B C9 7C 99    TIM    #$C9,$7C99
-7B60: 7B D9 7C 99    TIM    #$D9,$7C99
-7B64: 7B EF 7C 99    TIM    #$EF,$7C99
-7B68: 7C 99 7C       INC    $997C
-7B6B: 05 7C 66       EIM    #$7C;$66
+
 7B6E: 86 06          LDA    #$06
 7B70: A7 88 20       STA    $20,X
 7B73: BD 7C 9A       JSR    $7C9A
@@ -7142,181 +4467,8 @@
 7E2D: 1C FE          ANDCC  #$FE
 7E2F: 39             RTS
 7E30: 7E 50 7E       JMP    $507E
-7E33: 88 7E          EORA   #$7E
-7E35: 88 7E          EORA   #$7E
-7E37: 88 7E          EORA   #$7E
-7E39: 98 7E          EORA   $7E
-7E3B: AA 7E          ORA    -$2,S
-7E3D: F4 7F 2C       ANDB   $7F2C
-7E40: 7F 52 7F       CLR    $527F
-7E43: 52             FCB    $52
-7E44: 7F 5E 7F       CLR    $5E7F
-7E47: 5E             FCB    $5E
-7E48: 7F 8A 7F       CLR    $8A7F
-7E4B: 8A 7F          ORA    #$7F
-7E4D: 8A 7F          ORA    #$7F
-7E4F: C4 7E          ANDB   #$7E
-7E51: 70 7E 70       NEG    $7E70
-7E54: 7E 70 7E       JMP    $707E
-7E57: 70 7E 76       NEG    $7E76
-7E5A: 7E 76 7E       JMP    $767E
-7E5D: 76 7E 76       ROR    $7E76
-7E60: 7E 76 7E       JMP    $767E
-7E63: 76 7E 76       ROR    $7E76
-7E66: 7E 76 7E       JMP    $767E
-7E69: 76 7E 76       ROR    $7E76
-7E6C: 7E 7C 7E       JMP    $7C7E
-7E6F: 82 00          SBCA   #$00
-7E71: 00 00          NEG    $00
-7E73: 00 00          NEG    $00
-7E75: 00 FE          NEG    $FE
-7E77: F0 FE 18       SUBB   $FE18
-7E7A: 30 18          LEAX   -$8,X
-7E7C: E0 00          SUBB   $0,X
-7E7E: 00 20          NEG    $20
-7E80: 14             SEXW
-7E81: 14             SEXW
-7E82: F0 00 08       SUBB   >$0008
-7E85: 18             FCB    $18
-7E86: 14             SEXW
-7E87: 20 7E          BRA    $7F07
-7E89: 92 7E          SBCA   $7E
-7E8B: 92 7E          SBCA   $7E
-7E8D: 92 7E          SBCA   $7E
-7E8F: 70 7E 92       NEG    $7E92
-7E92: FE FA FE       LDU    $FAFE
-7E95: 16 1C 16       LBRA   $9AAE
-7E98: 7E A4 7E       JMP    $A47E
-7E9B: 70 7E A4       NEG    $7EA4
-7E9E: 7E A4 7E       JMP    $A47E
-7EA1: A4 7E          ANDA   -$2,S
-7EA3: 70 FE EE       NEG    $FEEE
-7EA6: FE 16 34       LDU    $1634
-7EA9: 16 7E 70       LBRA   $FD1C
-7EAC: 7E 70 7E       JMP    $707E
-7EAF: 70 7E 70       NEG    $7E70
-7EB2: 7E 70 7E       JMP    $707E
-7EB5: 70 7E 70       NEG    $7E70
-7EB8: 7E 70 7E       JMP    $707E
-7EBB: 70 7E 70       NEG    $7E70
-7EBE: 7E 70 7E       JMP    $707E
-7EC1: 70 7E 70       NEG    $7E70
-7EC4: 7E 70 7E       JMP    $707E
-7EC7: 70 7E 70       NEG    $7E70
-7ECA: 7E 70 7E       JMP    $707E
-7ECD: 70 7E 70       NEG    $7E70
-7ED0: 7E 70 7E       JMP    $707E
-7ED3: 70 7E 70       NEG    $7E70
-7ED6: 7E E8 7E       JMP    $E87E
-7ED9: 70 7E 70       NEG    $7E70
-7EDC: 7E 70 7E       JMP    $707E
-7EDF: EE 7E          LDU    -$2,S
-7EE1: EE 7E          LDU    -$2,S
-7EE3: EE 7E          LDU    -$2,S
-7EE5: EE 7E          LDU    -$2,S
-7EE7: EE FA          LDU    [F,S]
-7EE9: FC 00 0C       LDD    >$000C
-7EEC: 08 06          ASL    $06
-7EEE: F1 F1 F1       CMPB   $F1F1
-7EF1: 1E 1E          EXG    X,E
-7EF3: 1E 7E          EXG    V,E
-7EF5: 70 7E 70       NEG    $7E70
-7EF8: 7E 70 7E       JMP    $707E
-7EFB: 70 7E 70       NEG    $7E70
-7EFE: 7E 70 7E       JMP    $707E
-7F01: 70 7E 70       NEG    $7E70
-7F04: 7E 70 7E       JMP    $707E
-7F07: 70 7E 70       NEG    $7E70
-7F0A: 7E 70 7E       JMP    $707E
-7F0D: 70 7E 70       NEG    $7E70
-7F10: 7E 70 7E       JMP    $707E
-7F13: 70 7E 70       NEG    $7E70
-7F16: 7F 26 7F       CLR    $267F
-7F19: 26 7F          BNE    $7F9A
-7F1B: 26 7F          BNE    $7F9C
-7F1D: 26 7F          BNE    $7F9E
-7F1F: 26 7E          BNE    $7F9F
-7F21: 70 7E 70       NEG    $7E70
-7F24: 7E 70 FA       JMP    $70FA
-7F27: FA FE 0C       ORB    $FE0C
-7F2A: 0C 08          INC    $08
-7F2C: 7E 70 7E       JMP    $707E
-7F2F: 70 7E 70       NEG    $7E70
-7F32: 7E 70 7E       JMP    $707E
-7F35: 70 7E 70       NEG    $7E70
-7F38: 7E 70 7E       JMP    $707E
-7F3B: 70 7E 70       NEG    $7E70
-7F3E: 7E 70 7F       JMP    $707F
-7F41: 4C             INCA
-7F42: 7E 70 7E       JMP    $707E
-7F45: 70 7E 70       NEG    $7E70
-7F48: 7E 70 7E       JMP    $707E
-7F4B: 70 F4 FC       NEG    $F4FC
-7F4E: 00 18          NEG    $18
-7F50: 08 08          ASL    $08
-7F52: 7E 70 7F       JMP    $707F
-7F55: 58             ASLB
-7F56: 7E 70 90       JMP    $7090
-7F59: F0 B0 18       SUBB   $B018
-7F5C: 18             FCB    $18
-7F5D: 10 7E          FCB    $10,$7E
-7F5F: 70             FCB    $70
-7F60: 7E             FCB    $7E
-7F61: 70             FCB    $70
-7F62: 7F             FCB    $7F
-7F63: 6C             FCB    $6C
-7F64: 7F             FCB    $7F
-7F65: 72             FCB    $72
-7F66: 7F             FCB    $7F
-7F67: 78             FCB    $78
-7F68: 7F             FCB    $7F
-7F69: 7E             FCB    $7E
-7F6A: 7F             FCB    $7F
-7F6B: 84 10 F8       ANDD   #$10F8
-7F6E: DB 14          ADDB   $14
-7F70: 0C 25          INC    $25
-7F72: 14             SEXW
-7F73: F0 DB 14       SUBB   $DB14
-7F76: 14             SEXW
-7F77: 25 18          BCS    $7F91
-7F79: E8 DB          EORB   [D,U]
-7F7B: 14             SEXW
-7F7C: 1C 25          ANDCC  #$25
-7F7E: 1C E0          ANDCC  #$E0
-7F80: DB 14          ADDB   $14
-7F82: 24 25          BCC    $7FA9
-7F84: 20 D8          BRA    $7F5E
-7F86: DB 14          ADDB   $14
-7F88: 2C 25          BGE    $7FAF
-7F8A: 7E 70 7E       JMP    $707E
-7F8D: 70 7E 70       NEG    $7E70
-7F90: 7E 70 7E       JMP    $707E
-7F93: 70 7E 70       NEG    $7E70
-7F96: 7E 70 7E       JMP    $707E
-7F99: 70 7E 70       NEG    $7E70
-7F9C: 7E 70 7E       JMP    $707E
-7F9F: 70 7E 70       NEG    $7E70
-7FA2: 7E 70 7E       JMP    $707E
-7FA5: 70 7E 70       NEG    $7E70
-7FA8: 7E 70 7E       JMP    $707E
-7FAB: 70 7E 70       NEG    $7E70
-7FAE: 7E 70 7F       JMP    $707F
-7FB1: BE 7E 70       LDX    $7E70
-7FB4: 7E 70 7F       JMP    $707F
-7FB7: B8 F4 FC       EORA   $F4FC
-7FBA: 00 18          NEG    $18
-7FBC: 08 08          ASL    $08
-7FBE: F6 FD 00       LDB    $FD00
-7FC1: 0F 05          CLR    $05
-7FC3: 16 7F D6       LBRA   $FF9C
-7FC6: 7E 70 7E       JMP    $707E
-7FC9: 70 7E 70       NEG    $7E70
-7FCC: 7E 70 7E       JMP    $707E
-7FCF: 70 7E 70       NEG    $7E70
-7FD2: 7E 70 7E       JMP    $707E
-7FD5: 70 FC FC       NEG    $FCFC
-7FD8: FC 08 08       LDD    $0808
-7FDB: 08 DC          ASL    $DC
+
+
 7FDD: 96 36          LDA    $36
 7FDF: D6 38          LDB    $38
 7FE1: 10 83 03 01    CMPD   #$0301
