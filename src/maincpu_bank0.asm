@@ -1,3 +1,6 @@
+; bank 0, active when 0 is written in 3808
+; only a few vectors, then hopefully no direct jumps
+; from the main code
 4000: 7E 44 49       JMP    $4449
 4003: 7E 46 E0       JMP    $46E0
 4006: 7E 45 D7       JMP    $45D7
@@ -8,14 +11,15 @@
 4015: 7E 46 A3       JMP    $46A3
 4018: 7E 44 CD       JMP    $44CD
 401B: 7E 42 D3       JMP    $42D3
+
 401E: 34 7E          PSHS   U,Y,X,DP,D
 4020: 4F             CLRA
 4021: 1F 8B          TFR    A,DP
 4023: A6 84          LDA    ,X
 4025: 84 0F          ANDA   #$0F
 4027: 48             ASLA
-4028: 10 8E 40 30    LDY    #table_4030
-402C: AD B6          JSR    [A,Y]
+4028: 10 8E 40 30    LDY   #table_4030
+402C: AD B6          JSR    [A,Y]        ; [jump_table]
 402E: 35 FE          PULS   D,DP,X,Y,U,PC
 
 403A: 34 7E          PSHS   U,Y,X,DP,D
@@ -1048,10 +1052,10 @@
 49BA: BD FE 23       JSR    $FE23
 49BD: 20 EF          BRA    $49AE
 49BF: 39             RTS
-49C0: 8E 49 CA       LDX    #table_49CA
+49C0: 8E 49 CA       LDX   #table_49ca
 49C3: F6 0A F6       LDB    $0AF6
 49C6: 58             ASLB
-49C7: AD 95          JSR    [B,X]
+49C7: AD 95          JSR    [B,X]        ; [jump_table]
 49C9: 39             RTS
 
 49CE: B6 0A F5       LDA    $0AF5
@@ -1271,7 +1275,7 @@
 4DE0: 84 C0          ANDA   #$C0
 4DE2: 81 C0          CMPA   #$C0
 4DE4: 27 08          BEQ    $4DEE
-4DE6: 8E 4D EF       LDX    #table_4DEF
+4DE6: 8E 4D EF       LDX   #table_4def
 4DE9: 96 36          LDA    $36
 4DEB: 48             ASLA
 4DEC: AD 96          JSR    [A,X]	; [jump_table]
@@ -1357,7 +1361,7 @@
 4EAD: F6 0A 56       LDB    $0A56
 4EB0: C1 04          CMPB   #$04
 4EB2: 26 08          BNE    $4EBC
-4EB4: 8E 4E BD       LDX    #table_4EBD
+4EB4: 8E 4E BD       LDX   #table_4ebd
 4EB7: D6 36          LDB    $36
 4EB9: 58             ASLB
 4EBA: AD 95          JSR    [B,X]		; [jump_table]
@@ -1595,7 +1599,7 @@
 521D: 86 80          LDA    #$80
 521F: B7 0A FB       STA    $0AFB
 5222: 39             RTS
-5223: 8E 52 2D       LDX    #table_522D
+5223: 8E 52 2D       LDX   #table_522d
 5226: F6 0A FC       LDB    $0AFC
 5229: 58             ASLB
 522A: AD 95          JSR    [B,X]	; [jump_table]
@@ -1859,7 +1863,7 @@
 5576: 2A 09          BPL    $5581
 5578: B6 0A F2       LDA    $0AF2
 557B: 48             ASLA
-557C: 8E 55 82       LDX    #table_5582
+557C: 8E 55 82       LDX   #table_5582
 557F: AD 96          JSR    [A,X]		; [jump_table]
 5581: 39             RTS
 
@@ -2362,10 +2366,10 @@
 5CB5: BD 5C D5       JSR    $5CD5
 5CB8: BD 5C EC       JSR    $5CEC
 5CBB: 24 09          BCC    $5CC6
-5CBD: 8E 5C C7       LDX    #table_5CC7
+5CBD: 8E 5C C7       LDX   #table_5cc7
 5CC0: B6 0A EE       LDA    $0AEE
 5CC3: 48             ASLA
-5CC4: AD 96          JSR    [A,X]
+5CC4: AD 96          JSR    [A,X]        ; [jump_table]
 5CC6: 39             RTS
 
 5CD8: 84 F8          ANDA   #$F8
@@ -4147,8 +4151,8 @@
 7B40: A6 A8 17       LDA    $17,Y
 7B43: 84 1F          ANDA   #$1F
 7B45: 48             ASLA
-7B46: 10 8E 7B 4E    LDY    #table_7B4E
-7B4A: AD B6          JSR    [A,Y]
+7B46: 10 8E 7B 4E    LDY   #table_7b4e
+7B4A: AD B6          JSR    [A,Y]        ; [jump_table]
 7B4C: 35 B0          PULS   X,Y,PC
 
 7B6E: 86 06          LDA    #$06
@@ -4482,3 +4486,57 @@
 7FF7: 7E 4E 80       JMP    $4E80
 7FFA: F6 0A 56       LDB    $0A56
 7FFD: 7E 4E 79       JMP    $4E79
+table_4030:
+	dc.w	$403a	; $4030
+	dc.w	$4073	; $4032
+	dc.w	$40b2	; $4034
+	dc.w	$40b2	; $4036
+	dc.w	$411a	; $4038
+table_49ca:
+	dc.w	$49ce	; $49ca
+	dc.w	$4a08	; $49cc
+table_4def:
+	dc.w	$4df7	; $4def
+	dc.w	$4e04	; $4df1
+	dc.w	$4e0e	; $4df3
+	dc.w	$4e18	; $4df5
+table_4ebd:
+	dc.w	$4ec5	; $4ebd
+	dc.w	$4eda	; $4ebf
+	dc.w	$4f36	; $4ec1
+	dc.w	$4f6b	; $4ec3
+table_522d:
+	dc.w	$5237	; $522d
+	dc.w	$5340	; $522f
+	dc.w	$537b	; $5231
+	dc.w	$538f	; $5233
+	dc.w	$539f	; $5235
+table_5582:
+	dc.w	$5588	; $5582
+	dc.w	$559b	; $5584
+	dc.w	$55b1	; $5586
+table_5cc7:
+	dc.w	$5cfb	; $5cc7
+	dc.w	$5e12	; $5cc9
+	dc.w	$5e05	; $5ccb
+	dc.w	$5e47	; $5ccd
+	dc.w	$5e98	; $5ccf
+	dc.w	$5eae	; $5cd1
+	dc.w	$5eec	; $5cd3
+table_7b4e:
+	dc.w	$7b6e	; $7b4e
+	dc.w	$7c99	; $7b50
+	dc.w	$7c99	; $7b52
+	dc.w	$7b77	; $7b54
+	dc.w	$7b80	; $7b56
+	dc.w	$7b89	; $7b58
+	dc.w	$7bb4	; $7b5a
+	dc.w	$7bc9	; $7b5c
+	dc.w	$7c99	; $7b5e
+	dc.w	$7bd9	; $7b60
+	dc.w	$7c99	; $7b62
+	dc.w	$7bef	; $7b64
+	dc.w	$7c99	; $7b66
+	dc.w	$7c99	; $7b68
+	dc.w	$7c05	; $7b6a
+	dc.w	$7c66	; $7b6c

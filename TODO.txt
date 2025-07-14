@@ -13,3 +13,5 @@
   level changes & load new tilesets
 - improve 6309 converter
 - convert subcpu???
+
+monitor bank switch: wpset 3808,1,W,,{printf "bankk %d",A >> 6;g}

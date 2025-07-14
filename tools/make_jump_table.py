@@ -16,7 +16,7 @@ def process(asm_file,rom_file,offset,end_address):
 
     # first pass: add "jump_table" tag
     for i,line in enumerate(asm_lines):
-        if "[A," in line and ("JMP" in line or "JSR" in line):
+        if ("[A," in line or "[B," in line) and ("JMP" in line or "JSR" in line):
             if "[jump_table]" in line:
                 pass
             else:
@@ -62,4 +62,5 @@ def process(asm_file,rom_file,offset,end_address):
         f.writelines(asm_lines)
 
 #proces(asm_file = pathlib.Path("../src/maincpu_8000.asm"),"../assets/mame/maincpu_8000.bin",offset=0x800)
-process(pathlib.Path("../src/maincpu_bank1.asm"),"../assets/mame/maincpu_bank1.bin",offset=0x4000,end_address=0x8000)
+#process(pathlib.Path("../src/maincpu_bank1.asm"),"../assets/mame/maincpu_bank1.bin",offset=0x4000,end_address=0x8000)
+process(pathlib.Path("../src/maincpu_bank0.asm"),"../assets/mame/maincpu_bank0.bin",offset=0x4000,end_address=0x8000)

@@ -10891,7 +10891,7 @@ E627: BD E7 AB       JSR    $E7AB
 E62A: AF 6E          STX    $E,S
 E62C: A7 E8 10       STA    $10,S
 E62F: A6 E8 10       LDA    $10,S
-E632: BD E8 FB       JSR    $E8FB
+E632: BD E8 FB       JSR    set_bank_e8fb
 E635: AE 6E          LDX    $E,S
 E637: EC 84          LDD    ,X
 E639: AE 6C          LDX    $C,S
@@ -10941,7 +10941,7 @@ E69B: B6 0A 48       LDA    $0A48
 E69E: B7 0A 61       STA    $0A61
 E6A1: 32 E8 12       LEAS   $12,S
 E6A4: 35 02          PULS   A
-E6A6: BD E8 FB       JSR    $E8FB
+E6A6: BD E8 FB       JSR    set_bank_e8fb
 E6A9: 39             RTS
 E6AA: 96 3A          LDA    bank_switch_copy_3a
 E6AC: 34 02          PSHS   A
@@ -10990,7 +10990,7 @@ E714: BD E7 AB       JSR    $E7AB
 E717: AF 6E          STX    $E,S
 E719: A7 E8 10       STA    $10,S
 E71C: A6 E8 10       LDA    $10,S
-E71F: BD E8 FB       JSR    $E8FB
+E71F: BD E8 FB       JSR    set_bank_e8fb
 E722: AE 6E          LDX    $E,S
 E724: EC 84          LDD    ,X
 E726: AE 6C          LDX    $C,S
@@ -11041,7 +11041,7 @@ E78B: B6 0A 4B       LDA    $0A4B
 E78E: B7 0A 64       STA    $0A64
 E791: 32 E8 12       LEAS   $12,S
 E794: 35 02          PULS   A
-E796: BD E8 FB       JSR    $E8FB
+E796: BD E8 FB       JSR    set_bank_e8fb
 E799: 39             RTS
 E79A: BD E8 72       JSR    $E872
 E79D: 8E EA FA       LDX    #$EAFA
@@ -11097,7 +11097,7 @@ E7FB: 32 7D          LEAS   -$3,S
 E7FD: A7 E4          STA    ,S
 E7FF: E7 61          STB    $1,S
 E801: BD E8 A4       JSR    $E8A4
-E804: BD E8 FB       JSR    $E8FB
+E804: BD E8 FB       JSR    set_bank_e8fb
 E807: A6 E4          LDA    ,S
 E809: 48             ASLA
 E80A: 5F             CLRB
@@ -11112,7 +11112,7 @@ E81B: 26 F5          BNE    $E812
 E81D: 32 63          LEAS   $3,S
 E81F: 35 02          PULS   A
 E821: 97 3A          STA    bank_switch_copy_3a
-E823: BD E8 FB       JSR    $E8FB
+E823: BD E8 FB       JSR    set_bank_e8fb
 E826: 35 B6          PULS   D,X,Y,PC
 E828: 34 30          PSHS   Y,X
 E82A: 32 7A          LEAS   -$6,S
@@ -11209,7 +11209,7 @@ E8D0: AF E4          STX    ,S
 E8D2: 10 AF 62       STY    $2,S
 E8D5: BD E8 A4       JSR    $E8A4
 E8D8: 10 AF 64       STY    $4,S
-E8DB: BD E8 FB       JSR    $E8FB
+E8DB: BD E8 FB       JSR    set_bank_e8fb
 E8DE: A6 61          LDA    $1,S
 E8E0: 44             LSRA
 E8E1: 44             LSRA
@@ -11225,16 +11225,19 @@ E8EF: 3D             MUL
 E8F0: E3 64          ADDD   $4,S
 E8F2: 32 66          LEAS   $6,S
 E8F4: 35 02          PULS   A
-E8F6: BD E8 FB       JSR    $E8FB
+E8F6: BD E8 FB       JSR    set_bank_e8fb
 E8F9: 35 B0          PULS   X,Y,PC
+
+set_bank_e8fb:
 E8FB: 84 E0          ANDA   #$E0
 E8FD: 34 02          PSHS   A
 E8FF: 96 3A          LDA    bank_switch_copy_3a
 E901: 84 1F          ANDA   #$1F
-E903: AA E0          ORA    ,S+
+E903: AA E0          ORA    ,S+		; change bank, not the rest
 E905: 97 3A          STA    bank_switch_copy_3a
 E907: B7 38 08       STA     bankswitch_3808
 E90A: 39             RTS
+
 E90B: B6 0E 71       LDA    $0E71
 E90E: 85 40          BITA   #$40
 E910: 27 0B          BEQ    $E91D
@@ -11827,6 +11830,7 @@ FB3B: 9A 3A          ORA    bank_switch_copy_3a
 FB3D: 97 3A          STA    bank_switch_copy_3a
 FB3F: B7 38 08       STA     bankswitch_3808
 FB42: 35 82          PULS   A,PC
+
 FB44: BD FB 24       JSR    $FB24
 FB47: BD 40 03       JSR    $4003
 FB4A: BD FB 34       JSR    $FB34
