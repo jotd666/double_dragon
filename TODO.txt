@@ -4,14 +4,19 @@
   wrap those calls with a macro to redirect calls or check
   for proper bank
 - at first try to link without bank ROMs
-- FD06 discover entry
 
 - assemble banked roms alone bank 1
 - bank 0: resolve jump tables
+- convert subcpu
+
 - play with palette write wpoint
 - palette writes can be useful to detect 
   level changes & load new tilesets
-- improve 6309 converter
-- convert subcpu???
 
+bank 0:
+  pshu
+  pulu
+  leas
+  save cc: PUSH_SR, save dp: move to d6 + save
+  
 monitor bank switch: wpset 3808,1,W,,{printf "bankk %d",A >> 6;g}
