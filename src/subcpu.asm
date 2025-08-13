@@ -8,12 +8,12 @@ C006: 3B       rti
 C007: 3B       rti  
 C008: 3B       rti  
 boot_c009:
-C009: 8E 01 3F lds  #$013F
+C009: 8E 01 3F lds  #$013F		; set stack
 C00C: 86 FF    lda  #$FF
 C00E: 97 05    sta  $05
 C010: 97 16    sta  $16
 C012: 86 10    lda  #$10
-C014: 06       tap  
+C014: 06       tap  			; interrupt handling
 C015: 7F 00 66 clr  $0066
 C018: 7F 00 65 clr  $0065
 C01B: 96 65    lda  $65
@@ -24,7 +24,7 @@ C023: 86 01    lda  #$01
 C025: 9A 65    ora  $65
 C027: 97 65    sta  $65
 C029: 97 17    sta  $17
-C02B: 7E C0 2B jmp  $C02B
+C02B: 7E C0 2B jmp  $C02B		; infinite loop
 irq_c02e:
 C02E: 7D 00 66 tst  $0066
 C031: 26 03    bne  $C036

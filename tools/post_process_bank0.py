@@ -1,20 +1,8 @@
 from shared import *
 
-# post-conversion automatic patches, allowing not to change the asm file by hand
-
-
-
-input_dict = {"system_1680":"read_system_inputs",
-"in0_1681":"read_inputs_1",
-"in1_1682":"read_inputs_2",
-"audio_register_w_1500":"sound_start",
-"sh_irqtrigger_w_1481":"",
-}
-
-
 
 # various dirty but at least automatic patches applying on the specific track and field code
-with open(source_dir / "conv.s") as f:
+with open(source_dir / "conv_bank_0.s") as f:
     lines = list(f)
 
     for i,line in enumerate(lines):
@@ -48,47 +36,8 @@ with open(source_dir / "conv.s") as f:
 
         line = re.sub(tablere,subt,line)
 
-        if "dsw1_1683" in line and "lda" in line:
-            line = change_instruction("jbsr\tosd_read_dsw_1",lines,i)
-        elif "dsw2_1600" in line and "lda" in line:
-            line = change_instruction("jbsr\tosd_read_dsw_2",lines,i)
-
         if "multiply_ab" in line and "MAKE_D" in lines[i+1]:
             lines[i+1] = ""
-##        if "tfr" in line and "POP_SR" in lines[i+1] and "PUSH_SR" in lines[i-1]:
-##            # we don't need to save SR in this game when a TFR is done
-##            lines[i-1] = ""
-##            lines[i+1] = ""
-##        if "rox" in line and "POP_SR" in lines[i-1] and "PUSH_SR" in lines[i-3]:
-##            # we don't need to save SR as roxx uses X flag
-##            lines[i-3] = ""
-##            lines[i-1] = ""
-
-
-
-
-        elif "flip_screen_set_1080" in line:
-            line = remove_instruction(lines,i)
-            remove_continuing_lines(lines,i)
-
-        elif "irq_mask_w_1487" in line:
-            # check next line
-            next_line = lines[i+1]
-            if "clr" in next_line:
-                line = change_instruction("jbsr\tosd_disable_interrupts",lines,i)
-            else:
-                line = change_instruction("jbsr\tosd_enable_interrupts",lines,i)
-                lines[i-1] = remove_instruction(lines,i-1)
-
-        if "GET_ADDRESS" in line:
-            val = line.split()[1]
-            osd_call = input_dict.get(val)
-            if osd_call is not None:
-                if osd_call:
-                    line = change_instruction(f"jbsr\tosd_{osd_call}",lines,i)
-                else:
-                    line = remove_instruction(lines,i)
-                lines[i+1] = remove_instruction(lines,i+1)
 
 
         elif "unsupported instruction rti" in line:
@@ -111,12 +60,12 @@ with open(source_dir / "conv.s") as f:
 
 
 
-with open(source_dir / "data.inc","w") as fw:
+with open(source_dir / "data_bank_0.inc","w") as fw:
     fw.writelines(equates)
 
-with open(source_dir / "double_dragon.68k","w") as fw:
+with open(source_dir / "maincpu_bank_0.68k","w") as fw:
     fw.write("""\t.include "double_dragon.inc"
-.include "data.inc"
+.include "databank_0.inc"
 \t.global\tirq_44f5
 \t.global\treset_4000
 """)

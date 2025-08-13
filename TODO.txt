@@ -17,6 +17,7 @@ bank 0:
   pshu
   pulu
   leas
+  tap  transfer a to CCR (interrupt?)
   save cc: PUSH_SR, save dp: move to d6 + save
   
 monitor bank switch: wpset 3808,1,W,,{printf "bankk %d",A >> 6;g}

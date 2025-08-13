@@ -33,8 +33,8 @@ def process(asm_file,rom_file,offset,end_address):
                 other_line = asm_lines[j]
                 if loadr in other_line:
                     start,dest = other_line.rsplit(None,maxsplit=1)
-                    if "table" in dest:
-                        break
+
+                    break
             if dest:
                 if "table_" in dest:
                     # already processed, re-process
