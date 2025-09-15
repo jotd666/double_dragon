@@ -41,7 +41,7 @@
 	.macro	ABX
 	moveq	#0,d6
 	move.b	d1,d6
-	add.w	d1,d2
+	add.w	d6,d2
 	.endm
 
 	.macro	MAKE_D
