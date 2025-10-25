@@ -817,19 +817,8 @@
 471F: A6 A5          LDA    B,Y
 4721: 32 65          LEAS   $5,S
 4723: 35 B4          PULS   B,X,Y,PC
-4725: 00 20          NEG    $20
-4727: 40             NEGA
-4728: 20 80          BRA    $46AA
-472A: 60 40          NEG    $0,U
-472C: 60 00          NEG    $0,X
-472E: E0 C0          SUBB   ,U+
-4730: E0 80          SUBB   ,X+
-4732: A0 C0          SUBA   ,U+
-4734: A0 34          SUBA   -$C,Y
-4736: 66 32          ROR    -$E,Y
-4738: 7F EE 88       CLR    $EE88
-473B: 2D A6          BLT    $46E3
-473D: 02 84 7F       AIM    #$84;$7F
+
+; not reached?
 4740: 81 7F          CMPA   #$7F
 4742: 10 27 00 7F    LBEQ   $47C5
 4746: 10 8E 02 81    LDY    #$0281
