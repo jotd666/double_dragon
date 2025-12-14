@@ -11,8 +11,16 @@ input_dict = {"system_1680":"read_system_inputs",
 "sh_irqtrigger_w_1481":"",
 }
 
+def get_line_address(line):
+    try:
+        toks = line.split("|")
+        address = toks[1].strip(" [$").split(":")[0]
+        return int(address,16)
+    except (ValueError,IndexError):
+        return None
 
 
+#
 # various dirty but at least automatic patches applying on the specific track and field code
 with open(source_dir / "conv.s") as f:
     lines = list(f)
@@ -47,6 +55,35 @@ with open(source_dir / "conv.s") as f:
 
 
         line = re.sub(tablere,subt,line)
+
+        address = get_line_address(line)
+
+        if address in {0xa583}:
+            lines[i+1] = remove_error(lines[i+1])
+
+        if "review stray bcc/bcs test" in line:
+            # check if it's not jbsr+jcc
+            if "jbsr" in lines[i-2]:
+                line = remove_error(line)       # jbsr+jcc test
+
+
+        if address == 0xe65e:
+            line = "\tPUSH_SR\n"+line
+        elif address == 0xe660:
+            line = "\tPOP_SR\n"+line
+            lines[i+1] = remove_error(lines[i+1])
+        elif address == 0x91fa:
+            line = remove_instruction(lines,i)
+            lines[i+1] = remove_error(lines[i+1])
+        elif address in {0x8007,0x8051,0x8A65}:
+            # remove CC stuff (interrupt)
+            line = remove_error(lines[i])
+        elif address in {0xe1ab,0xe3a6}:
+            # push to U => push to stack
+            line = change_instruction("move.w\td2,-(sp)",lines,i)
+        elif address in {0xe1b7,0xe3bc}:
+            # pull from U => pull from stack
+            line = change_instruction("move.w\t(sp)+,d2",lines,i)
 
         if "dsw1_1683" in line and "lda" in line:
             line = change_instruction("jbsr\tosd_read_dsw_1",lines,i)
@@ -114,7 +151,7 @@ with open(source_dir / "conv.s") as f:
 with open(source_dir / "data.inc","w") as fw:
     fw.writelines(equates)
 
-with open(source_dir / "double_dragon.68k","w") as fw:
+with open(source_dir / "maincpu_8000.68k","w") as fw:
     fw.write("""\t.include "double_dragon.inc"
 .include "data.inc"
 \t.global\tirq_44f5

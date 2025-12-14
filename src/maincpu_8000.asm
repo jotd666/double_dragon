@@ -1252,31 +1252,7 @@ scroll_y_lo_380a = $380a
 8B52: 84 0C          ANDA   #$0C
 8B54: A7 88 34       STA    $34,X
 8B57: 35 FE          PULS   D,DP,X,Y,U,PC
-8B59: 8B CD          ADDA   #$CD
-8B5B: A6 F4          LDA    [,S]
-8B5D: 9C 17          CMPX   $17
-8B5F: 9C 8E          CMPX   $8E
-8B61: 9C E0          CMPX   $E0
-8B63: 91 AF          CMPA   $AF
-8B65: 92 93          SBCA   $93
-8B67: 94 17          ANDA   $17
-8B69: 94 17          ANDA   $17
-8B6B: A3 FA          SUBD   [F,S]
-8B6D: 9E AF          LDX    $AF
-8B6F: A3 1C          SUBD   -$4,X
-8B71: A3 C6          SUBD   A,U
-8B73: 9E 14          LDX    $14
-8B75: 8B CD          ADDA   #$CD
-8B77: A6 43          LDA    $3,U
-8B79: A3 C6          SUBD   A,U
-8B7B: A6 43          LDA    $3,U
-8B7D: A3 C6          SUBD   A,U
-8B7F: A3 C6          SUBD   A,U
-8B81: A3 C6          SUBD   A,U
-8B83: A3 C6          SUBD   A,U
-8B85: A4 3D          ANDA   -$3,Y
-8B87: A3 C6          SUBD   A,U
-8B89: A4 A3          ANDA   ,--Y
+
 8B8B: 34 7E          PSHS   U,Y,X,DP,D
 8B8D: 17 73 29       LBSR   $FEB9
 8B90: 1F 89          TFR    A,B
@@ -1719,7 +1695,7 @@ table_8C21:
 91F3: 2A 09          BPL    $91FE
 91F5: 86 00          LDA    #$00
 91F7: E6 88 1F       LDB    $1F,X
-91FA: 24 02          BCC    $91FE
+91FA: 24 02          BCC    $91FE	; probably never branches
 91FC: 86 10          LDA    #$10
 91FE: E6 88 1F       LDB    $1F,X
 9201: 54             LSRB
@@ -3551,16 +3527,7 @@ A3A9: A6 A6          LDA    A,Y
 A3AB: BD FE B6       JSR    $FEB6
 A3AE: BD FE 80       JSR    $FE80
 A3B1: 39             RTS
-A3B2: 0C 7F          INC    $7F
-A3B4: 7F 07 0E       CLR    $070E
-A3B7: 07 07          ASR    $07
-A3B9: 97 97          STA    $97
-A3BB: 88 88          EORA   #$88
-A3BD: 88 88          EORA   #$88
-A3BF: 88 88          EORA   #$88
-A3C1: 88 88          EORA   #$88
-A3C3: 91 88          CMPA   $88
-A3C5: 88 86          EORA   #$86
+
 A3C7: 7F A7 02       CLR    $A702
 A3CA: 10 AE 88 2D    LDY    $2D,X
 A3CE: A6 A8 1B       LDA    $1B,Y
@@ -4702,7 +4669,7 @@ AEF0: BD B0 D0       JSR    $B0D0
 AEF3: BD B0 FE       JSR    $B0FE            
 AEF6: 24 03          BCC    $AEFB            
 AEF8: BD B0 F1       JSR    $B0F1            
-AEFB: 39             RTS                                                 39
+AEFB: 39             RTS
 
 AEFC: 10 8E AF 22    LDY    #$AF22
 AF00: 96 36          LDA    $36
@@ -5926,10 +5893,7 @@ BC23: BD FC 8F       JSR    $FC8F
 BC26: 39             RTS
 
 
-BC50: FC 82 BD       LDD    $82BD
-BC53: 40             NEGA
-BC54: 81 BD          CMPA   #$BD
-BC56: FC 8F 39       LDD    $8F39
+
 BC59: BD FC 82       JSR    $FC82
 BC5C: BD 40 66       JSR    $4066
 BC5F: BD FC 8F       JSR    $FC8F
@@ -9690,32 +9654,7 @@ FFD9: BD FF 9C       JSR    $FF9C
 FFDC: 39             RTS
 FFDD: 39             RTS
 
-table_8b59:
-	dc.w	$8bcd	; $8b59
-	dc.w	$a6f4	; $8b5b
-	dc.w	$9c17	; $8b5d
-	dc.w	$9c8e	; $8b5f
-	dc.w	$9ce0	; $8b61
-	dc.w	$91af	; $8b63
-	dc.w	$9293	; $8b65
-	dc.w	$9417	; $8b67
-	dc.w	$9417	; $8b69
-	dc.w	$a3fa	; $8b6b
-	dc.w	$9eaf	; $8b6d
-	dc.w	$a31c	; $8b6f
-	dc.w	$a3c6	; $8b71
-	dc.w	$9e14	; $8b73
-	dc.w	$8bcd	; $8b75
-	dc.w	$a643	; $8b77
-	dc.w	$a3c6	; $8b79
-	dc.w	$a643	; $8b7b
-	dc.w	$a3c6	; $8b7d
-	dc.w	$a3c6	; $8b7f
-	dc.w	$a3c6	; $8b81
-	dc.w	$a3c6	; $8b83
-	dc.w	$a43d	; $8b85
-	dc.w	$a3c6	; $8b87
-	dc.w	$a4a3	; $8b89
+
 
 table_aed1:
 	dc.w	$aed9	; $aed1
@@ -9788,6 +9727,7 @@ table_8b59:
 	dc.w	$a43d	; $8b85
 	dc.w	$a3c6	; $8b87
 	dc.w	$a4a3	; $8b89
+		
 table_b4ab:
 	dc.w	$b4b7	; $b4ab
 	dc.w	$b4bc	; $b4ad

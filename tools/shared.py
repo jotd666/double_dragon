@@ -14,6 +14,12 @@ def remove_continuing_lines(lines,i):
         else:
             break
 
+def remove_error(line):
+    if "ERROR" in line:
+        return ""
+    else:
+        raise Exception(f"No ERROR to remove in {line}")
+
 def change_instruction(code,lines,i):
     line = lines[i]
     toks = line.split("|")
