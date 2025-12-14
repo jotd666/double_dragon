@@ -2490,9 +2490,7 @@
 5DF8: 86 07          LDA    #$07
 5DFA: BD 63 94       JSR    $6394
 5DFD: 35 B6          PULS   D,X,Y,PC
-5DFF: 07 E6          ASR    $E6
-5E01: 07 EC          ASR    $EC
-5E03: 07 E0          ASR    $E0
+
 5E05: B6 0E 16       LDA    $0E16
 5E08: 84 C7          ANDA   #$C7
 5E0A: 8A 10          ORA    #$10
