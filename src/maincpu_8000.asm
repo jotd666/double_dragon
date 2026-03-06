@@ -36,6 +36,80 @@
 ;	m_subcpu->set_input_line(INPUT_LINE_HALT, data & 0x10 ? ASSERT_LINE : CLEAR_LINE);
 ;	m_mainbank->set_entry((data & 0xe0) >> 5);
 ;}
+;	PORT_START("P1")
+;	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT ) PORT_8WAY
+;	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT ) PORT_8WAY
+;	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_JOYSTICK_UP ) PORT_8WAY
+;	PORT_BIT( 0x08, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN ) PORT_8WAY
+;	PORT_BIT( 0x10, IP_ACTIVE_LOW, IPT_BUTTON1 )
+;	PORT_BIT( 0x20, IP_ACTIVE_LOW, IPT_BUTTON2 )
+;	PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_START1 )
+;	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_START2 )
+;
+;	PORT_START("P2")
+;	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT ) PORT_8WAY PORT_PLAYER(2)
+;	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT ) PORT_8WAY PORT_PLAYER(2)
+;	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_JOYSTICK_UP ) PORT_8WAY PORT_PLAYER(2)
+;	PORT_BIT( 0x08, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN ) PORT_8WAY PORT_PLAYER(2)
+;	PORT_BIT( 0x10, IP_ACTIVE_LOW, IPT_BUTTON1 ) PORT_PLAYER(2)
+;	PORT_BIT( 0x20, IP_ACTIVE_LOW, IPT_BUTTON2 ) PORT_PLAYER(2)
+;	PORT_BIT( 0x40, IP_ACTIVE_LOW, IPT_COIN1 )
+;	PORT_BIT( 0x80, IP_ACTIVE_LOW, IPT_COIN2 )
+;
+;	PORT_START("DSW0")
+;	PORT_DIPNAME( 0x07, 0x07, DEF_STR( Coin_A ) ) PORT_DIPLOCATION("SW1:1,2,3")
+;	PORT_DIPSETTING(    0x00, DEF_STR( 4C_1C ) )
+;	PORT_DIPSETTING(    0x01, DEF_STR( 3C_1C ) )
+;	PORT_DIPSETTING(    0x02, DEF_STR( 2C_1C ) )
+;	PORT_DIPSETTING(    0x07, DEF_STR( 1C_1C ) )
+;	PORT_DIPSETTING(    0x06, DEF_STR( 1C_2C ) )
+;	PORT_DIPSETTING(    0x05, DEF_STR( 1C_3C ) )
+;	PORT_DIPSETTING(    0x04, DEF_STR( 1C_4C ) )
+;	PORT_DIPSETTING(    0x03, DEF_STR( 1C_5C ) )
+;	PORT_DIPNAME( 0x38, 0x38, DEF_STR( Coin_B ) ) PORT_DIPLOCATION("SW1:4,5,6")
+;	PORT_DIPSETTING(    0x00, DEF_STR( 4C_1C ) )
+;	PORT_DIPSETTING(    0x08, DEF_STR( 3C_1C ) )
+;	PORT_DIPSETTING(    0x10, DEF_STR( 2C_1C ) )
+;	PORT_DIPSETTING(    0x38, DEF_STR( 1C_1C ) )
+;	PORT_DIPSETTING(    0x30, DEF_STR( 1C_2C ) )
+;	PORT_DIPSETTING(    0x28, DEF_STR( 1C_3C ) )
+;	PORT_DIPSETTING(    0x20, DEF_STR( 1C_4C ) )
+;	PORT_DIPSETTING(    0x18, DEF_STR( 1C_5C ) )
+;	PORT_DIPNAME( 0x40, 0x40, DEF_STR( Cabinet ) ) PORT_DIPLOCATION("SW1:7")
+;	PORT_DIPSETTING(    0x40, DEF_STR( Upright ) )
+;	PORT_DIPSETTING(    0x00, DEF_STR( Cocktail ) )
+;	PORT_DIPNAME( 0x80, 0x80, DEF_STR( Flip_Screen ) ) PORT_DIPLOCATION("SW1:8")
+;	PORT_DIPSETTING(    0x80, DEF_STR( Off ) )
+;	PORT_DIPSETTING(    0x00, DEF_STR( On ) )
+;
+;	PORT_START("DSW1")
+;	PORT_DIPNAME( 0x03, 0x03, DEF_STR( Difficulty ) ) PORT_DIPLOCATION("SW2:1,2")
+;	PORT_DIPSETTING(    0x01, DEF_STR( Easy ) )
+;	PORT_DIPSETTING(    0x03, DEF_STR( Medium ) )
+;	PORT_DIPSETTING(    0x02, DEF_STR( Hard ) )
+;	PORT_DIPSETTING(    0x00, DEF_STR( Hardest ) )
+;	PORT_DIPNAME( 0x04, 0x04, DEF_STR( Demo_Sounds ) ) PORT_DIPLOCATION("SW2:3")
+;	PORT_DIPSETTING(    0x00, DEF_STR( Off ) )
+;	PORT_DIPSETTING(    0x04, DEF_STR( On ) )
+;	PORT_DIPUNUSED_DIPLOC( 0x08, IP_ACTIVE_LOW, "SW2:4" )
+;	PORT_DIPNAME( 0x30, 0x30, DEF_STR( Bonus_Life ) ) PORT_DIPLOCATION("SW2:5,6")
+;	PORT_DIPSETTING(    0x10, "20k" )
+;	PORT_DIPSETTING(    0x00, "40k" )
+;	PORT_DIPSETTING(    0x30, "30k and every 60k" )
+;	PORT_DIPSETTING(    0x20, "40k and every 80k" )
+;	PORT_DIPNAME( 0xc0, 0xc0, DEF_STR( Lives ) ) PORT_DIPLOCATION("SW2:7,8")
+;	PORT_DIPSETTING(    0xc0, "2" )
+;	PORT_DIPSETTING(    0x80, "3" )
+;	PORT_DIPSETTING(    0x40, "4" )
+;	PORT_DIPSETTING(    0x00, "Infinite (Cheat)")
+;
+;	PORT_START("EXTRA")
+;	PORT_BIT( 0x01, IP_ACTIVE_LOW, IPT_SERVICE1 )
+;	PORT_BIT( 0x02, IP_ACTIVE_LOW, IPT_BUTTON3 )
+;	PORT_BIT( 0x04, IP_ACTIVE_LOW, IPT_BUTTON3 ) PORT_PLAYER(2)
+;	PORT_BIT( 0x08, IP_ACTIVE_HIGH, IPT_CUSTOM ) PORT_VBLANK("screen")
+;	PORT_BIT( 0x10, IP_ACTIVE_LOW, IPT_CUSTOM ) PORT_READ_LINE_MEMBER(ddragon_state, subcpu_bus_free_r)
+;	PORT_BIT( 0xe0, IP_ACTIVE_HIGH, IPT_UNUSED )
 
 bank_switch_copy_3a = $3a
 
@@ -53,6 +127,7 @@ firq_ack_380c = $380c
 scroll_x_lo_3809 = $3809
 scroll_y_lo_380a = $380a
 
+reset_8000:
 8000: 4F             CLRA
 8001: B7 0E 71       STA    $0E71
 8004: B7 38 08       STA     bankswitch_3808
@@ -86,6 +161,9 @@ scroll_y_lo_380a = $380a
 804E: BD FC 8F       JSR    $FC8F
 8051: 1C AF          ANDCC  #$AF
 8053: 7E 80 BA       JMP    $80BA
+
+; called once out of 16 times vs fast irq
+irq_8056:
 8056: 4F             CLRA
 8057: 1F 8B          TFR    A,DP
 8059: F6 0E 71       LDB    $0E71
@@ -113,6 +191,8 @@ scroll_y_lo_380a = $380a
 808C: 97 22          STA    $22
 808E: B7 38 0B       STA    nmi_ack_380b
 8091: 3B             RTI
+
+firq_8092:
 8092: 34 7F          PSHS   U,Y,X,DP,D,CC
 8094: 4F             CLRA
 8095: 1F 8B          TFR    A,DP
@@ -4319,8 +4399,7 @@ AB92: 35 C0          PULS   U,PC
 AB94: 86 00          LDA    #$00
 AB96: A7 88 1B       STA    $1B,X
 AB99: 35 C0          PULS   U,PC
-AB9B: 00 FF          NEG    $FF
-AB9D: 00 00          NEG    $00
+
 
 ABAD: FC 8F 39       LDD    $8F39
 ABB0: 34 40          PSHS   U
@@ -5351,13 +5430,8 @@ B62E: 26 05          BNE    $B635
 B630: 86 80          LDA    #$80
 B632: 17 48 81       LBSR   $FEB6
 B635: 39             RTS
-B636: AC AD AE 84    CMPX   $64BE,PCR
-B63A: 84 84          ANDA   #$84
-B63C: 84 84          ANDA   #$84
-B63E: 08 08          ASL    $08
-B640: 08 FF          ASL    $FF
-B642: FF FF FF       STU    $FFFF
-B645: FF 34 7E       STU    $347E
+
+B646: 34 7E          PSHS   U,Y,X,DP,D                                   
 B648: 5F             CLRB
 B649: 8E 05 08       LDX    #$0508
 B64C: 17 00 16       LBSR   $B665
@@ -5370,6 +5444,7 @@ B65E: 5C             INCB
 B65F: C1 03          CMPB   #$03
 B661: 25 E9          BCS    $B64C
 B663: 35 FE          PULS   D,DP,X,Y,U,PC
+
 B665: 34 7E          PSHS   U,Y,X,DP,D
 B667: A6 88 31       LDA    $31,X
 B66A: 2B 27          BMI    $B693
@@ -6167,7 +6242,6 @@ BF3A: 39             RTS
 BF41: 10 8E BF 64    LDY    #$BF64
 BF45: E6 88 18       LDB    $18,X
 BF48: A6 A5          LDA    B,Y
-BF48: A6 A5          LDA    B,Y
 BF4A: A7 02          STA    $2,X
 BF4C: 6C 88 19       INC    $19,X
 BF4F: 10 8E BF 68    LDY    #$BF68
@@ -6626,7 +6700,7 @@ C401: 25 05          BCS    $C408
 C403: 86 05          LDA    #$05
 C405: A7 88 1B       STA    $1B,X
 C408: 39             RTS
-C409: 00 01          NEG    $01
+
 C40C: 10 8E C4 2F    LDY    #$C42F
 C410: E6 88 18       LDB    $18,X
 C413: A6 A5          LDA    B,Y
@@ -6669,7 +6743,7 @@ C469: 25 06          BCS    $C471
 C46B: 6F 88 19       CLR    $19,X
 C46E: 6C 88 18       INC    $18,X
 C471: 39             RTS
-C472: 04 01          LSR    $01
+
 
 C478: 10 8E C4 9B    LDY    #$C49B           
 C47C: E6 88 18       LDB    $18,X
@@ -6699,7 +6773,7 @@ C4BB: 6F 88 19       CLR    $19,X
 C4BE: 6C 88 18       INC    $18,X
 C4C1: 39             RTS
 
-C4C6:  34 7E         PSHS   U,Y,X,DP,D  
+C4C6: 34 7E          PSHS   U,Y,X,DP,D  
 C4C8: 17 00 0B       LBSR   $C4D6
 C4CB: 17 06 5C       LBSR   $CB2A
 C4CE: 17 00 9A       LBSR   $C56B
@@ -9731,8 +9805,18 @@ table_8b59:
 table_b4ab:
 	dc.w	$b4b7	; $b4ab
 	dc.w	$b4bc	; $b4ad
+	dc.w	$0	; $b4af
+	dc.w	$0	; $b4b1
+	dc.w	$b4e7	; $b4b3
+	dc.w	$b4ff	; $b4b5
+
+	
 table_b5aa:
 	dc.w	$b5b6	; $b5aa
+	dc.w	$0	    ; $b5ac
+	dc.w	$b5ca	; $b5ae
+	dc.w	$b607	; $b5b0
+
 table_ba1d:
 	dc.w	$ba25	; $ba1d
 	dc.w	$ba31	; $ba1f
@@ -9740,6 +9824,35 @@ table_ba1d:
 	dc.w	$ba5b	; $ba23
 
 table_badd:
+     dc.w	$f9c4 
+	 dc.w	$fe40
+	 dc.w	$fe43 
+	 dc.w	$fe46 
+	 dc.w	$fe49
+	 dc.w	$fe4c 
+	 dc.w	$f9ce
+	 dc.w	$fe5e
+     dc.w	$fe5b
+	 dc.w	$fe55
+	 dc.w	$fe4f 
+	 dc.w	$fe52
+	 dc.w	$fe55
+	 dc.w	$fe58 
+	 dc.w	$fe55 
+	 dc.w	$fe55
+     dc.w	$f9d8
+	 dc.w	$f9e2 
+	 dc.w	$bb22 
+	 dc.w	$fd4e 
+	 dc.w	$fd58
+	 dc.w	$fd62 
+	 dc.w	$fe61
+	 dc.w	$bb2c
+     dc.w	$fe67 
+	 dc.w	$bb36 
+	 dc.w	$bb6e 
+	 dc.w	$bb78
+
 table_bbec:
 	dc.w	$bc63	; $bbec
 	dc.w	$bc14	; $bbee
@@ -9763,6 +9876,27 @@ table_bbec:
 	dc.w	$bc58	; $bc12
 
 table_bc27:
+	dc.w	$401e 
+	dc.w	$401e 
+	dc.w	$4021 
+	dc.w	$4021 
+	dc.w	$4021 
+	dc.w	$4021 
+	dc.w	$4021
+	dc.w	$4021
+	dc.w	$40cc
+	dc.w	$4036
+	dc.w	$402a
+	dc.w	$402d
+	dc.w	$4030
+	dc.w	$4033
+	dc.w	$4033 
+	dc.w	$4027
+	dc.w	$403f
+	dc.w	$4042 
+	dc.w	$4072
+	dc.w	$40ae 
+
 table_bc8d:
 	dc.w	$bcb6	; $bc8d
 	dc.w	$bcc1	; $bc8f

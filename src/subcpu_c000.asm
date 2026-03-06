@@ -1,4 +1,6 @@
-; looks like sound cpu
+;	map(0x8000, 0x81ff).ram().share(m_comram);
+
+; aux. cpu to help main cpu
 C000: 3B       rti  
 C001: 3B       rti  
 C002: 3B       rti  
@@ -25,7 +27,9 @@ C023: 86 01    lda  #$01
 C025: 9A 65    ora  $65
 C027: 97 65    sta  $65
 C029: 97 17    sta  $17
-C02B: 7E C0 2B jmp  $C02B		; infinite loop
+C02B: 7E C0 2B jmp  $C02B		; infinite loop, wait for main cpu orders
+
+; triggered when sprites need displaying
 irq_c02e:
 C02E: 7D 00 66 tst  $0066
 C031: 26 03    bne  $C036

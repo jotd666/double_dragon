@@ -58,6 +58,14 @@ with open(source_dir / "conv.s") as f:
 
         address = get_line_address(line)
 
+        if "check explicit S usage" in line or "review stack set from register" in line:
+            # remove the errors. Game seems to use a clean automatic variables allocation
+            line = ""
+        elif "review pshu instruction" in line or "review pulu instruction" in line:
+            # remove the errors. this is to save variables in alt stack while S is used
+            # but on 68000 we use native stack for this, and target stack for S variables
+            line = ""
+
         if address in {0xa583}:
             lines[i+1] = remove_error(lines[i+1])
 
@@ -75,7 +83,7 @@ with open(source_dir / "conv.s") as f:
         elif address == 0x91fa:
             line = remove_instruction(lines,i)
             lines[i+1] = remove_error(lines[i+1])
-        elif address in {0x8007,0x8051,0x8A65}:
+        elif address in {0x8051,0x8A65}:
             # remove CC stuff (interrupt)
             line = remove_error(lines[i])
         elif address in {0xe1ab,0xe3a6}:
@@ -152,9 +160,9 @@ with open(source_dir / "data.inc","w") as fw:
     fw.writelines(equates)
 
 with open(source_dir / "maincpu_8000.68k","w") as fw:
-    fw.write("""\t.include "double_dragon.inc"
-.include "data.inc"
-\t.global\tirq_44f5
-\t.global\treset_4000
+    fw.write("""\t.include "data.inc"
+\t.global\tirq_8056
+\t.global\tfirq_8092
+\t.global\treset_8000
 """)
     fw.writelines(lines)
