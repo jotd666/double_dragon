@@ -3,6 +3,10 @@ import re,pathlib
 # post-conversion automatic patches, allowing not to change the asm file by hand
 tablere = re.compile("move.w\t#(\w*table_....),d(.)")
 jmpre = re.compile("(j..)\s+\[a,(.)\]")
+dreg_dict = {'a':'d0','b':'d1'}
+areg_dict = {'x':'a2','y':'a3','u':'a4'}
+
+jtre = re.compile("#jump_table_(\w+)")
 
 def remove_instruction(lines,i):
     return change_instruction("",lines,i)
@@ -34,6 +38,38 @@ def remove_code(pattern,lines,i):
         lines[i] = remove_instruction(lines,i)
         remove_continuing_lines(lines,i)
     return lines[i]
+
+def process_jump_table(line):
+    m = jtre.search(line)
+    if m:
+        # move.w  #jump_table...,dX => lea jump_table...,aX works as X ranges from 2 to 4
+        # in debug mode, leave register address
+        line2 = line.replace("jump_table_","0x")
+        line = f"""\t.ifndef\tRELEASE
+{line2}\t.endif
+""" + line.replace("move.w\t#","lea\t").replace(",d",",a")
+
+    if "indirect j" in line:
+        # grab original code in comments, dirty but works as long as converter
+        # presents it like this
+        comment = line.split('|')[1]
+        nb_entries = ""
+        m = re.search("\[nb_entries=(\d+)",comment)
+        if m:
+            nb_entries = m.group(1)
+
+        orig_inst = line.split(":")[1].split("]")[0].replace('[','')
+        # parse code: Jxx [R1,R2], R1 = A or B, R2 = X,Y,U
+        toks = orig_inst.split()
+
+        dreg,areg = toks[1].split(",")
+
+        areg = areg_dict[areg]
+        line = remove_error(line)
+        macro = f"{toks[0].upper()}_{dreg.upper()}_INDEXED"
+        line = f"""\t{macro}\t{areg},{nb_entries}  |{comment}
+"""
+    return line
 
 def subt(m):
     tn = m.group(1)

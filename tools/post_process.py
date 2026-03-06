@@ -57,6 +57,7 @@ with open(source_dir / "conv.s") as f:
         line = re.sub(tablere,subt,line)
 
         address = get_line_address(line)
+        line = process_jump_table(line)
 
         if "check explicit S usage" in line or "review stack set from register" in line:
             # remove the errors. Game seems to use a clean automatic variables allocation
@@ -142,13 +143,7 @@ with open(source_dir / "conv.s") as f:
             line = remove_instruction(lines,i)
 ##        elif "unsupported instruction andcc" in line:
 ##            line = change_instruction("CLR_XC_FLAGS",lines,i)
-        elif "jump_table" in line:
-            m = jmpre.search(line)
-            if m:
-                inst = m.group(1).upper()
-                reg = {"x":"A2","y":"A3","u":"A4"}[m.group(2)]
-                rest = re.sub(".*\"","",line)
-                line = f"\t{inst}_A_INDEXED\t{reg}{rest}"
+
         if "ERROR" in line:
             print(line,end="")
         lines[i] = line
