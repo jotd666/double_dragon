@@ -25,6 +25,7 @@ process_main = False
 process_bank_0 = False
 process_bank_1 = True
 process_bank_2 = False
+process_bank_4 = True
 
 #
 # various dirty but at least automatic patches applying on the specific DD code
@@ -263,8 +264,8 @@ if process_bank_1:
     \t.global\tlb2_4000
     """)
         fw.writelines(lines)
-if process_bank_2:
-    with open(source_dir / "conv_bank_2.s") as f:
+if process_bank_4:
+    with open(source_dir / "conv_bank_4.s") as f:
         lines = [line for line in f if not explicit_stack_usage(line)]
 
         for i,line in enumerate(lines):
@@ -281,10 +282,10 @@ if process_bank_2:
             # specific file patches
             if address == 0x4361:
                 # fix abusive alternate direct jump
-                line = change_instruction("jra\tlb2_4470",lines,i)
+                line = change_instruction("jra\tlb4_4470",lines,i)
             elif address == 0X435e:
                 # fix abusive alternate direct jump
-                line = change_instruction("jra\tlb2_442f",lines,i)
+                line = change_instruction("jra\tlb4_442f",lines,i)
 
             elif address in [0x446e,0x442d]:
                 # remove useless jra to next instruction
@@ -295,9 +296,9 @@ if process_bank_2:
             # replace current line
             lines[i] = line
 
-    with open(source_dir / "maincpu_bank_2_4000.68k","w") as fw:
+    with open(source_dir / "maincpu_bank_4_4000.68k","w") as fw:
         fw.write("""\t.include "data.inc"
-    \t.global\tlb2_4000
+    \t.global\tlb4_4000
     """)
         fw.writelines(lines)
 

@@ -13,6 +13,8 @@
 - palette writes can be useful to detect 
   level changes & load new tilesets
 
+clarify bank numbers & switches check source code w to 3808
+
 bank 0:
   pshu
   pulu
@@ -29,5 +31,5 @@ bank 0:
  	xxx_W_TO_REG	a0,d2                         	| [$5bd5: pulu   x,y]
 =>  xxx_W_TO_REG_PREDEC
 
-monitor bank switch: wpset 3808:maincpu,1,W,,{printf "bank %d",A >> 6;g}
-force bank switch: fill 3808:maincpu,1,banknum<<6
+monitor bank switch: wpset 3808:maincpu,1,W,,{printf "bank %d",(wpdata & 0xe0) >> 5;g}
+force bank switch: fill 3808:maincpu,1,bankno << 5
