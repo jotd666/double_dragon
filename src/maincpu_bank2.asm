@@ -1,3 +1,4 @@
+lb2_4000:
 4000: 34 7E          PSHS   U,Y,X,DP,D
 4002: CE 0B 4A       LDU    #$0B4A
 4005: 86 0B          LDA    #$0B
@@ -355,21 +356,24 @@
 4307: 27 0D          BEQ    $4316
 4309: BD 43 43       JSR    $4343
 430C: 20 08          BRA    $4316
-430E: 8E 43 17       LDX    #$4317
+430E: 8E 43 17       LDX    #table_4317
 4311: D6 59          LDB    $59
 4313: 58             ASLB
-4314: AD 95          JSR    [B,X]
+4314: AD 95          JSR    [B,X]   ; [indirect_jump] [nb_entries=9]
 4316: 39             RTS
-4317: 43             COMA
-4318: 43             COMA
-4319: 43             COMA
-431A: 63 43          COM    $3,U
-431C: FD 44 06       STD    $4406
-431F: 44             LSRA
-4320: 27 44          BEQ    $4366
-4322: 2F 44          BLE    $4368
-4324: 68 44          ASL    $4,U
-4326: 70 44 91       NEG    $4491
+
+table_4317:
+	dc.w $4343 
+	dc.w $4363 
+	dc.w $43fd 
+	dc.w $4406 
+	dc.w $4427 
+	dc.w $442f 
+	dc.w $4468 
+	dc.w $4470
+	dc.w $4491 
+
+
 4329: 8E 43 3E       LDX    #$433E
 432C: A6 29          LDA    $9,Y
 432E: 84 0F          ANDA   #$0F
@@ -382,12 +386,21 @@
 433C: 5F             CLRB
 433D: 39             RTS
 
+4343: 8E 44 06       LDX    #$4406
+4346: 96 69          LDA    $69
+4348: 91 6A          CMPA   $6A
+434A: 23 05          BLS    $4351
+434C: 8E 43 63       LDX    #$4363
+434F: 96 6A          LDA    $6A
+4351: 91 6B          CMPA   $6B
+4353: 23 05          BLS    $435A
 4355: 8E 44 70       LDX    #$4470
 4358: 96 6B          LDA    $6B
 435A: 91 6C          CMPA   $6C
 435C: 23 03          BLS    $4361
 435E: 8E 44 2F       LDX    #$442F
-4361: 6E 84          JMP    ,X		; [indirect_jump]
+4361: 6E 84          JMP    ,X		; [direct_jump]
+
 4363: 4F             CLRA
 4364: D6 6A          LDB    $6A
 4366: C1 FF          CMPB   #$FF
@@ -454,6 +467,12 @@
 43E8: DD 52          STD    $52
 43EA: 39             RTS
 
+43FD: 96 69          LDA    $69
+43FF: 91 6A          CMPA   $6A
+4401: 25 03          BCS    $4406
+4403: 7E 43 63       JMP    $4363
+
+4406: 4F             CLRA
 4407: D6 69          LDB    $69
 4409: C1 FF          CMPB   #$FF
 440B: 26 03          BNE    $4410
@@ -523,6 +542,7 @@
 448C: 97 4B          STA    $4B
 448E: 0C 70          INC    $70
 4490: 39             RTS
+
 4491: 96 6B          LDA    $6B
 4493: 91 6A          CMPA   $6A
 4495: 25 D9          BCS    $4470

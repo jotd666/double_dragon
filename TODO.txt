@@ -20,4 +20,5 @@ bank 0:
   tap  transfer a to CCR (interrupt?)
   save cc: PUSH_SR, save dp: move to d6 + save
   
-monitor bank switch: wpset 3808,1,W,,{printf "bankk %d",A >> 6;g}
+monitor bank switch: wpset 3808:maincpu,1,W,,{printf "bank %d",A >> 6;g}
+force bank switch: fill 3808:maincpu,1,banknum<<6

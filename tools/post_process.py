@@ -11,6 +11,8 @@ input_dict = {"system_1680":"read_system_inputs",
 "sh_irqtrigger_w_1481":"",
 }
 
+def explicit_stack_usage(line):
+    return "check explicit S usage" in line or "review stack set from register" in line
 def get_line_address(line):
     try:
         toks = line.split("|")
@@ -59,7 +61,7 @@ with open(source_dir / "conv.s") as f:
         address = get_line_address(line)
         line = process_jump_table(line)
 
-        if "check explicit S usage" in line or "review stack set from register" in line:
+        if explicit_stack_usage(line):
             # remove the errors. Game seems to use a clean automatic variables allocation
             line = ""
         elif "review pshu instruction" in line or "review pulu instruction" in line:
@@ -159,5 +161,46 @@ with open(source_dir / "maincpu_8000.68k","w") as fw:
 \t.global\tirq_8056
 \t.global\tfirq_8092
 \t.global\treset_8000
+""")
+    fw.writelines(lines)
+
+
+with open(source_dir / "conv_bank_2.s") as f:
+    lines = list(f)
+
+    for i,line in enumerate(lines):
+        if " = " in line:
+            equates.append(line)
+            line = ""
+
+        line = re.sub(tablere,subt,line)
+
+        address = get_line_address(line)
+        line = process_jump_table(line)
+
+        if explicit_stack_usage(line):
+            # remove the errors. Game seems to use a clean automatic variables allocation
+            line = ""
+
+
+        if address == 0x4361:
+            # fix abusive alternate direct jump
+            line = change_instruction("jra\tlb2_4470",lines,i)
+        elif address == 0X435e:
+            # fix abusive alternate direct jump
+            line = change_instruction("jra\tlb2_442f",lines,i)
+
+        elif address in [0x446e,0x442d]:
+            # remove useless jra to next instruction
+            line = remove_instruction(lines,i)
+        elif address == 0x452b:
+            # temp illegal
+            line = '\tBREAKPOINT "figure it out!!"\n'
+        ### replace current line
+        lines[i] = line
+
+with open(source_dir / "maincpu_bank_2_4000.68k","w") as fw:
+    fw.write("""\t.include "data.inc"
+\t.global\tlb2_4000
 """)
     fw.writelines(lines)
