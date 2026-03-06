@@ -155,8 +155,6 @@ if process_main:
 
 
 
-    with open(source_dir / "data.inc","w") as fw:
-        fw.writelines(equates)
 
     with open(source_dir / "maincpu_8000.68k","w") as fw:
         fw.write("""\t.include "data.inc"
@@ -224,6 +222,47 @@ if process_bank_0:
     """)
         fw.writelines(lines)
 
+if process_bank_1:
+    with open(source_dir / "conv_bank_1.s") as f:
+        lines = [line for line in f if not explicit_stack_usage(line)]
+
+        for i,line in enumerate(lines):
+            if " = " in line:
+                equates.append(line)
+                line = ""
+
+            line = re.sub(tablere,subt,line)
+
+            address = get_line_address(line)
+            line = process_jump_table(line)
+
+
+            # specific file patches
+            if address in {0x5301} and "GET_REG_ADDRESS" in line:
+                # okay to pshu/pulu in all cases (except fake instructions so thanks review flags!!!)
+                lines[i-1] = remove_error(lines[i-1])
+            elif address == 0x5bb3:
+                lines[i+1] = remove_error(lines[i+1])
+            elif address == 0x60fc and "GET_REG_ADDRESS" in line:
+                # okay to pshu
+                lines[i-1] = ""  # useless MAKE_D
+                lines[i-2] = remove_error(lines[i-2])
+            elif address == 0x6ccf:
+                # jcs => jra as jcc was handled above and C is not supposed to change
+                line = change_instruction("jra\tlb1_6d15",lines,i)
+                lines[i+1] = remove_error(lines[i+1])
+            elif address == 0x6113:
+                lines[i+2] = remove_error(lines[i+2])
+                # swap lines to preserve comparison result
+                lines[i+1],lines[i+3] = lines[i+3],lines[i+1]
+            # replace current line
+            lines[i] = line
+
+    with open(source_dir / "maincpu_bank_1_4000.68k","w") as fw:
+        fw.write("""\t.include "data.inc"
+    \t.global\tlb2_4000
+    """)
+        fw.writelines(lines)
 if process_bank_2:
     with open(source_dir / "conv_bank_2.s") as f:
         lines = [line for line in f if not explicit_stack_usage(line)]
@@ -261,3 +300,7 @@ if process_bank_2:
     \t.global\tlb2_4000
     """)
         fw.writelines(lines)
+
+
+with open(source_dir / "data.inc","w") as fw:
+    fw.writelines(equates)
