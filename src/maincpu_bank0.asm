@@ -19,7 +19,7 @@
 4025: 84 0F          ANDA   #$0F
 4027: 48             ASLA
 4028: 10 8E 40 30    LDY   #table_4030
-402C: AD B6          JSR    [A,Y]        ; [jump_table]
+402C: AD B6          JSR    [A,Y]        ; [indirect_jump] [nb_entries=5]
 402E: 35 FE          PULS   D,DP,X,Y,U,PC
 
 403A: 34 7E          PSHS   U,Y,X,DP,D
@@ -1055,7 +1055,7 @@
 49C0: 8E 49 CA       LDX   #table_49ca
 49C3: F6 0A F6       LDB    $0AF6
 49C6: 58             ASLB
-49C7: AD 95          JSR    [B,X]        ; [jump_table]
+49C7: AD 95          JSR    [B,X]        ; [indirect_jump] [nb_entries=2]
 49C9: 39             RTS
 
 49CE: B6 0A F5       LDA    $0AF5
@@ -1113,7 +1113,7 @@
 
 4A58: BD 4A 97       JSR    $4A97
 4A5B: BD 4A A5       JSR    $4AA5
-4A5F: BD 4A B7       JSR    $4AB7
+4A5E: BD 4A B7       JSR    $4AB7
 4A61: BD 4A 7E       JSR    $4A7E
 4A64: BD 4A C7       JSR    $4AC7
 4A67: BD 4A E4       JSR    $4AE4
@@ -1278,7 +1278,7 @@
 4DE6: 8E 4D EF       LDX   #table_4def
 4DE9: 96 36          LDA    $36
 4DEB: 48             ASLA
-4DEC: AD 96          JSR    [A,X]	; [jump_table]
+4DEC: AD 96          JSR    [A,X]	; [indirect_jump] [nb_entries=4]
 4DEE: 39             RTS
 
 
@@ -1364,7 +1364,7 @@
 4EB4: 8E 4E BD       LDX   #table_4ebd
 4EB7: D6 36          LDB    $36
 4EB9: 58             ASLB
-4EBA: AD 95          JSR    [B,X]		; [jump_table]
+4EBA: AD 95          JSR    [B,X]		; [indirect_jump] [nb_entries=4]
 4EBC: 39             RTS
 
 4EC7: 5F             CLRB
@@ -1602,7 +1602,7 @@
 5223: 8E 52 2D       LDX   #table_522d
 5226: F6 0A FC       LDB    $0AFC
 5229: 58             ASLB
-522A: AD 95          JSR    [B,X]	; [jump_table]
+522A: AD 95          JSR    [B,X]	; [indirect_jump] [nb_entries=5]
 522C: 39             RTS
 
 5237: B6 0A FD       LDA    $0AFD          
@@ -1864,7 +1864,7 @@
 5578: B6 0A F2       LDA    $0AF2
 557B: 48             ASLA
 557C: 8E 55 82       LDX   #table_5582
-557F: AD 96          JSR    [A,X]		; [jump_table]
+557F: AD 96          JSR    [A,X]		; [indirect_jump]  [nb_entries=3]
 5581: 39             RTS
 
 5588: B6 0A EC       LDA    $0AEC
@@ -2369,7 +2369,7 @@
 5CBD: 8E 5C C7       LDX   #table_5cc7
 5CC0: B6 0A EE       LDA    $0AEE
 5CC3: 48             ASLA
-5CC4: AD 96          JSR    [A,X]        ; [jump_table]
+5CC4: AD 96          JSR    [A,X]        ; [indirect_jump]  [nb_entries=7]
 5CC6: 39             RTS
 
 5CD8: 84 F8          ANDA   #$F8
@@ -2444,8 +2444,8 @@
 5D86: A6 86          LDA    A,X
 5D88: 35 90          PULS   X,PC
 
-5D91: 36 B6          PSHU   PC,Y,X,D
-5D93: 0A F3          DEC    $F3
+5D90: 34 36          PSHS   Y,X,D                                      
+5D92: B6 0A F3       LDA    $0AF3                                      
 5D95: 48             ASLA
 5D96: 8E 0A F5       LDX    #$0AF5
 5D99: AE 86          LDX    A,X
@@ -3535,8 +3535,7 @@
 6A73: 32 62          LEAS   $2,S
 6A75: 39             RTS
 
-6A99: 04 B6          LSR    $B6
-6A9B: 0A 75          DEC    $75
+6A9A: B6 0A 75       LDA    $0A75                                     
 6A9D: B1 0A 82       CMPA   $0A82
 6AA0: 10 27 02 BD    LBEQ   $6D61
 6AA4: BE 0A 76       LDX    $0A76
@@ -4150,7 +4149,7 @@
 7B43: 84 1F          ANDA   #$1F
 7B45: 48             ASLA
 7B46: 10 8E 7B 4E    LDY   #table_7b4e
-7B4A: AD B6          JSR    [A,Y]        ; [jump_table]
+7B4A: AD B6          JSR    [A,Y]        ; [indirect_jump]  [nb_entries=16]
 7B4C: 35 B0          PULS   X,Y,PC
 
 7B6E: 86 06          LDA    #$06
@@ -4468,7 +4467,7 @@
 7E2B: 20 02          BRA    $7E2F
 7E2D: 1C FE          ANDCC  #$FE
 7E2F: 39             RTS
-7E30: 7E 50 7E       JMP    $507E
+
 
 
 7FDD: 96 36          LDA    $36
