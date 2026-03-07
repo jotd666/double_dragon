@@ -241,6 +241,7 @@ jump_table_6cdc:
 6E34: A7 88 45       STA    $45,X
 6E37: 35 FE          PULS   D,DP,X,Y,U,PC
 
+6E49: 17 00 0E       LBSR   $6E5A
 6E4C: 17 01 2F       LBSR   $6F7E
 6E4F: 86 FF          LDA    #$FF
 6E51: 17 8F CF       LBSR   $FE23
@@ -339,6 +340,8 @@ jump_table_6cdc:
 6F9E: 97 23          STA    $23
 6FA0: 39             RTS
 
+6FBF: 34 7E          PSHS   U,Y,X,DP,D
+6FC1: C6 0F          LDB    #$0F
 6FC3: 8E 07 5B       LDX    #$075B
 6FC6: A6 84          LDA    ,X
 6FC8: 10 2B 00 38    LBMI   $7004
@@ -772,6 +775,9 @@ jump_table_7290:
 7383: A7 88 1B       STA    $1B,X
 7386: 39             RTS
 
+
+7393: 86 01          LDA    #$01
+7395: A7 02          STA    $2,X
 7397: EC 08          LDD    $8,X
 7399: 10 83 01 00    CMPD   #$0100
 739D: 24 06          BCC    $73A5
@@ -1133,3 +1139,11 @@ jump_table_748f:
 76BB: A6 86          LDA    A,X
 76BD: 35 10          PULS   X
 76BF: 39             RTS
+
+7E5D: D6 26          LDB    $26
+7E5F: 26 07          BNE    $7E68
+7E61: F6 38 04       LDB    $3804
+7E64: C4 04          ANDB   #$04
+7E66: 27 03          BEQ    $7E6B
+7E68: B7 38 0E       STA    $380E
+7E6B: 39             RTS

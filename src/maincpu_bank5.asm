@@ -208,12 +208,7 @@ jump_table_42bf:
 437F: A7 88 1C       STA    $1C,X
 4382: 39             RTS
 
-4383: FF 0C 03       STU    $0C03
-4386: 03 04          COM    $04
-4388: 04 FF          LSR    $FF
-438A: 03 FF          COM    $FF
-438C: FF 03 A6       STU    $03A6
-438F: 88 21          EORA   #$21
+438E: A6 88 21       LDA    $21,X
 4391: 26 2B          BNE    $43BE
 4393: A6 01          LDA    $1,X
 4395: 81 04          CMPA   #$04
@@ -502,6 +497,8 @@ jump_table_42bf:
 4EF4: 1C FE          ANDCC  #$FE
 4EF6: 35 C0          PULS   U,PC
 
+510F: 34 76          PSHS   U,Y,X,D
+5111: 32 7F          LEAS   -$1,S
 5113: 10 BE 0E 4B    LDY    $0E4B
 5117: A6 88 13       LDA    $13,X
 511A: 84 20          ANDA   #$20
@@ -604,6 +601,8 @@ jump_table_42bf:
 5233: A6 A6          LDA    A,Y
 5235: 35 BC          PULS   B,DP,X,Y,PC
 
+5277: A6 02          LDA    $2,X
+5279: 84 7F          ANDA   #$7F
 527B: 81 7F          CMPA   #$7F
 527D: 27 51          BEQ    $52D0
 527F: A6 88 37       LDA    $37,X
@@ -688,7 +687,7 @@ jump_table_42bf:
 5375: A7 88 37       STA    $37,X
 5378: 39             RTS
 
-
+5391: 32 7C          LEAS   -$4,S
 5393: EC 08          LDD    $8,X
 5395: E3 06          ADDD   $6,X
 5397: ED E4          STD    ,S
@@ -823,6 +822,8 @@ jump_table_5435:
 54C7: 32 61          LEAS   $1,S
 54C9: 39             RTS
 
+54E6: 32 7F          LEAS   -$1,S
+54E8: 6F E4          CLR    ,S
 54EA: DC 3C          LDD    $3C
 54EC: 10 83 0D B6    CMPD   #$0DB6
 54F0: 25 28          BCS    $551A
@@ -893,6 +894,8 @@ jump_table_5435:
 559B: ED 08          STD    $8,X
 559D: 32 61          LEAS   $1,S
 559F: 39             RTS
+
+55A8: 39             RTS
 
 55A9: 34 40          PSHS   U
 55AB: 96 29          LDA    $29
@@ -1161,7 +1164,7 @@ jump_table_5435:
 5804: 32 6F          LEAS   $F,S
 5806: 35 FE          PULS   D,DP,X,Y,U,PC
 
-
+580E: 34 6E          PSHS   U,Y,DP,D
 5810: 32 7F          LEAS   -$1,S
 5812: 8E 07 5B       LDX    #$075B
 5815: 6F E4          CLR    ,S
@@ -1251,7 +1254,11 @@ jump_table_5839:
 58D4: 32 64          LEAS   $4,S
 58D6: 39             RTS
 
-5911: 8E 0E 1F       LDX    #$0E1F
+5907: 96 36          LDA    $36
+5909: 81 03          CMPA   #$03
+590B: 26 0B          BNE    $5918
+590D: B6 0E 1E       LDA    $0E1E
+5910: 10 8E 0E 1F    LDY    #$0E1F
 5914: E6 A6          LDB    A,Y
 5916: 2B 01          BMI    $5919
 5918: 39             RTS
@@ -1283,7 +1290,8 @@ jump_table_5839:
 594F: 32 61          LEAS   $1,S
 5951: 39             RTS
 
-59E4: 17 2B 05       LBSR   $84EC
+59E2: B6 0E 17       LDA    $0E17
+59E5: 2B 05          BMI    $59EC
 59E7: 85 40          BITA   #$40
 59E9: 26 13          BNE    $59FE
 59EB: 39             RTS
@@ -1322,6 +1330,9 @@ jump_table_5839:
 5A37: BD 5B E6       JSR    $5BE6
 5A3A: 39             RTS
 
+5A4B: 96 36          LDA    $36
+5A4D: 81 01          CMPA   #$01
+5A4F: 26 3A          BNE    $5A8B
 5A51: 96 38          LDA    $38
 5A53: 27 36          BEQ    $5A8B
 5A55: DC 3C          LDD    $3C
@@ -1367,6 +1378,7 @@ jump_table_5839:
 5ABF: 6F 88 1B       CLR    $1B,X
 5AC2: 39             RTS
 
+5ACB: 96 36          LDA    $36
 5ACD: 81 01          CMPA   #$01
 5ACF: 26 11          BNE    $5AE2
 5AD1: 96 38          LDA    $38
@@ -1541,7 +1553,7 @@ jump_table_5839:
 5C97: BF 0E 53       STX    $0E53
 5C9A: 39             RTS
 
-5CA4: 8E 5C AF       LDX    #jump_table_5caf
+5CA3: 10 8E 5C AF    LDY    #jump_table_5caf
 5CA7: A6 88 1B       LDA    $1B,X
 5CAA: 84 7F          ANDA   #$7F
 5CAC: 48             ASLA
@@ -1555,8 +1567,7 @@ jump_table_5caf:
 	 dc.w	$5D97
  
 
-5CB8: 97 B6          STA    $B6
-5CBA: 0A EC          DEC    $EC
+5CB9: B6 0A EC       LDA    $0AEC
 5CBC: 84 04          ANDA   #$04
 5CBE: 27 05          BEQ    $5CC5
 5CC0: 86 01          LDA    #$01
@@ -1684,6 +1695,8 @@ jump_table_5caf:
 5DDD: 6F 84          CLR    ,X
 5DDF: 39             RTS
 
+5DE3: 39             RTS
+5DE4: 6A 88 19       DEC    $19,X
 5DE7: 26 3A          BNE    $5E23
 5DE9: 10 8E 5E 2A    LDY    #$5E2A
 5DED: 6C 88 18       INC    $18,X
@@ -1710,6 +1723,7 @@ jump_table_5caf:
 5E20: A7 88 19       STA    $19,X
 5E23: 39             RTS
 
+5E2E: 6A 88 19       DEC    $19,X
 5E31: 26 2E          BNE    $5E61
 5E33: 6C 88 18       INC    $18,X
 5E36: A6 88 18       LDA    $18,X
@@ -1762,6 +1776,7 @@ jump_table_5caf:
 5EB3: E7 88 19       STB    $19,X
 5EB6: 39             RTS
 
+5EBB: B6 0E 16       LDA    $0E16
 5EBE: 1F 89          TFR    A,B
 5EC0: 84 20          ANDA   #$20
 5EC2: 26 2F          BNE    $5EF3
@@ -1904,7 +1919,8 @@ jump_table_5f4f:
 5FFA: 6F 88 1B       CLR    $1B,X
 5FFD: 39             RTS
 
-6007: 7F 32 71       CLR    $3271
+6006: 34 7F          PSHS   U,Y,X,DP,D,CC
+6008: 32 71          LEAS   -$F,S
 600A: 1F 43          TFR    S,U
 600C: A7 47          STA    $7,U
 600E: 84 3F          ANDA   #$3F
@@ -3503,6 +3519,7 @@ jump_table_5f4f:
 7258: BD 72 5E       JSR    $725E
 725B: 39             RTS
 
+725E: 34 40          PSHS   U
 7260: 32 7C          LEAS   -$4,S
 7262: A7 E4          STA    ,S
 7264: 86 04          LDA    #$04
@@ -3648,7 +3665,7 @@ jump_table_72a9:
 73AB: 35 B6          PULS   D,X,Y,PC
 
 
-753C: 88 3F          EORA   #$3F
+753B: 6A 88 3F       DEC    $3F,X
 753E: 27 1B          BEQ    $755B
 7540: 6F 0E          CLR    $E,X
 7542: B6 0E 49       LDA    $0E49
@@ -3839,9 +3856,7 @@ jump_table_72a9:
 76F3: 86 00          LDA    #$00
 76F5: A7 88 1B       STA    $1B,X
 76F8: 35 C0          PULS   U,PC
-76FA: 2C 2D          BGE    $7729
-76FC: 2E 03          BGT    $7701
-76FE: 03 08          COM    $08
+
 7700: 34 40          PSHS   U
 7702: CE 77 49       LDU    #$7749
 7705: 96 36          LDA    $36

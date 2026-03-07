@@ -104,6 +104,10 @@ def process_file(input_radix,output_radix,f_handle_line,global_symbols,out_heade
                 equates.add(line)
                 line = ""
 
+            if "[6309_instruction]" in line:
+                line = change_instruction("illegal",lines,i)  # TEMP TEMP we'll see when we reach that
+            if "[bogus]" in line:
+                line = change_instruction("illegal",lines,i)  # trace just in case we hit it
             if is_bank:
                 # replace prefixes by normal prefixes, add to returned globals if range not in bank address
                 # (easy to cheat with regex bank address 4xxx-7xxx)

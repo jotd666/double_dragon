@@ -1,4 +1,3 @@
-lb2_4000:
 4000: 34 7E          PSHS   U,Y,X,DP,D
 4002: CE 0B 4A       LDU    #$0B4A
 4005: 86 0B          LDA    #$0B
@@ -73,6 +72,8 @@ lb2_4000:
 40A3: 97 59          STA    $59
 40A5: 39             RTS
 
+40AF: C6 01          LDB    #$01
+40B1: D7 58          STB    $58
 40B3: BD 40 E6       JSR    $40E6
 40B6: 4D             TSTA
 40B7: 27 24          BEQ    $40DD
@@ -135,6 +136,8 @@ lb2_4000:
 412D: 86 FF          LDA    #$FF
 412F: 39             RTS
 
+4154: DC 60          LDD    $60
+4156: D3 5E          ADDD   $5E
 4158: C6 80          LDB    #$80
 415A: 3D             MUL
 415B: 34 06          PSHS   D
@@ -588,7 +591,7 @@ table_4317:
 44E4: A7 C5          STA    B,U
 44E6: 39             RTS
 
-4508: 07 5B          ASR    $5B
+4507: 8E 07 5B       LDX    #$075B
 450A: 9F 56          STX    $56
 450C: C6 10          LDB    #$10
 450E: 34 04          PSHS   B
@@ -672,6 +675,8 @@ table_4317:
 45B5: BD 45 46       JSR    $4546
 45B8: 39             RTS
 
+45CF: 34 16          PSHS   X,D
+45D1: AE 64          LDX    $4,S
 45D3: CC 25 32       LDD    #$2532
 45D6: FD 21 D0       STD    $21D0
 45D9: F7 21 D2       STB    $21D2
@@ -762,7 +767,7 @@ table_4317:
 4683: 86 40          LDA    #$40
 4685: 3D             MUL
 4686: 10 AE 64       LDY    $4,S
-4689: BD 48 B0       JSR    $48B0
+4689: BD 48 B0       JSR    $48B0		; [bogus]
 468C: ED 64          STD    $4,S
 468E: 10 8E 46 9E    LDY    #$469E
 4692: 96 00          LDA    $00
@@ -917,13 +922,7 @@ table_4317:
 47E2: 67 0F          ASR    $F,X
 47E4: 66 88 10       ROR    $10,X
 47E7: 39             RTS
-47E8: A6 0F          LDA    $F,X
-47EA: 2B 0A          BMI    $47F6
-47EC: 81 01          CMPA   #$01
-47EE: 24 12          BCC    $4802
-47F0: CC 01 00       LDD    #$0100
-47F3: ED 0F          STD    $F,X
-47F5: 39             RTS
+
 
 
 7D9F: AF B6          STX    [A,Y]

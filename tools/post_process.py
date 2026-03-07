@@ -13,12 +13,12 @@ input_dict = {"system_1680":"read_system_inputs",
 
 
 process_main = True
-process_bank_0 = True
-process_bank_1 = True
+process_bank_0 = 1
+process_bank_1 = 1
 
-process_bank_3 = True
-process_bank_4 = True
-process_bank_5 = True
+process_bank_3 = 1
+process_bank_4 = 1
+process_bank_5 = 1
 
 def f_handle_bank0_line(address,lines,i):
     line = lines[i]
@@ -78,6 +78,9 @@ def f_handle_bank1_line(address,lines,i):
         lines[i+2] = remove_error(lines[i+2])
         # swap lines to preserve comparison result
         lines[i+1],lines[i+3] = lines[i+3],lines[i+1]
+    elif address == 0x5ba0:
+        lines[i+2] = remove_error(lines[i+2])
+
     lines[i] = line
 
 
@@ -142,6 +145,14 @@ def f_handle_main_line(address,lines,i):
     elif address == 0xe660:
         line = "\tPOP_SR\n"+line
         lines[i+1] = remove_error(lines[i+1])
+    elif address == 0xA91D:
+        # fix double jump table
+        line = change_instruction("lea\ttable_of_jump_tables_a92d,a3",lines,i)
+    elif address in {0xA921,0xafd5}:
+        line = "\tand.w\t#0xFF,d0\n\tadd.w\td0,d0\n"+change_instruction("move.l\t(a3,d0.w),a3",lines,i)
+    elif address == 0xafd1:
+        # fix double jump table
+        line = change_instruction("lea\ttable_of_jump_tables_afe1,a3",lines,i)
     elif address == 0x91fa:
         line = remove_instruction(lines,i)
         lines[i+1] = remove_error(lines[i+1])
@@ -230,7 +241,7 @@ if process_bank_5:
     process_bank_file(5)
 
 if process_main:
-    out_header = "l_ffff:\n\tillegal\n"
+    out_header = "l_ffff:\n\tillegal\nl_0000:\nillegal\n"
     process_file("conv","maincpu_8000",f_handle_main_line,["irq_8056","firq_8092","reset_8000"]+sorted(main_globals))
 
 

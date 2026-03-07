@@ -57,29 +57,28 @@
 40A5: 7E 64 AA    JMP    $64AA
 40A8: 7E 64 AB    JMP    $64AB
 40AB: 7E 64 CD    JMP    $64CD
-40AE: 7E 5D DC    JMP    $5DDC
-40B1: 7E 72 9C    JMP    $729C
-40B4: 7E 72 9D    JMP    $729D
+40AE: 7E 5D DC    JMP    $5DDC	    ; [bogus]
+40B1: 7E 72 9C    JMP    $729C	    ; [bogus]
+40B4: 7E 72 9D    JMP    $729D      ; [bogus]
 40B7: 7E 6D 63    JMP    $6D63
 40BA: 7E 6D D2    JMP    $6DD2
 40BD: 7E 6E 59    JMP    $6E59
 40C0: 7E 43 C3    JMP    $43C3
-40C3: 7E 73 5E    JMP    $735E
-40C6: 7E 75 39    JMP    $7539
-40C9: 7E 75 5F    JMP    $755F
-40CC: 7E 75 9C    JMP    $759C
+40C3: 7E 73 5E    JMP    $735E      ; [bogus]
+40C6: 7E 75 39    JMP    $7539		; [bogus]
+40C9: 7E 75 5F    JMP    $755F      ; [bogus]
+40CC: 7E 75 9C    JMP    $759C      ; [bogus]
 40CF: 7E 66 CC    JMP    $66CC
-40D2: 7E 77 57    JMP    $7757
-40D5: 7E 76 74    JMP    $7674
-40D8: 7E 76 2F    JMP    $762F
-40DB: 7E 75 A9    JMP    $75A9
-40DE: 7E 75 EC    JMP    $75EC
-40E1: 7E 76 B2    JMP    $76B2
-40E4: 7E 76 FE    JMP    $76FE
+40D2: 7E 77 57    JMP    $7757		; [bogus]
+40D5: 7E 76 74    JMP    $7674		; [bogus]
+40D8: 7E 76 2F    JMP    $762F		; [bogus]
+40DB: 7E 75 A9    JMP    $75A9      ; [bogus]
+40DE: 7E 75 EC    JMP    $75EC      ; [bogus]
+40E1: 7E 76 B2    JMP    $76B2      ; [bogus]
+40E4: 7E 76 FE    JMP    $76FE      ; [bogus]
 
-40FF: 00 34       NEG    $34
-4101: 26 10       BNE    $4113
-4103: 8E 03 81    LDX    #$0381
+4100: 34 26       PSHS   Y,D
+4102: 10 8E 03 81 LDY    #$0381
 4106: B6 03 A1    LDA    $03A1
 4109: 81 20       CMPA   #$20
 410B: 24 0F       BCC    $411C
@@ -279,6 +278,11 @@
 42C9: 1C FE       ANDCC  #$FE
 42CB: 35 B0       PULS   X,Y,PC
 
+42D1: 34 76       PSHS   U,Y,X,D
+42D3: 10 8E 43 0F LDY    #$430F
+42D7: A6 88 1B    LDA    $1B,X
+42DA: 2B 0E       BMI    $42EA
+42DC: BD FE 64    JSR    $FE64
 42DF: A6 A0       LDA    ,Y+
 42E1: AA 03       ORA    $3,X
 42E3: A7 02       STA    $2,X
@@ -304,7 +308,7 @@
 
 430F: 39          RTS
 
-4314: 88 4B       EORA   #$4B
+4313: A6 88 4B    LDA    $4B,X
 4316: 27 01       BEQ    $4319
 4318: 39          RTS
 4319: BD FB 8A    JSR    $FB8A
@@ -373,7 +377,13 @@
 43AD: AD B6       JSR    [A,Y]		; [indirect_jump] [nb_entries=16]
 43AF: 39          RTS
 
-
+43C3: B6 48 B6    LDA    $48B6
+43C6: 48          ASLA
+43C7: BA 48 E8    ORA    $48E8
+43CA: 4A          DECA
+43CB: 0E 4A       JMP    $4A   ; [bogus]
+43CD: 0E 4A       JMP    $4A   ; [bogus]
+43CF: 7A 00 06    DEC    >$0006
 43D2: 07 07       ASR    $07
 43D4: 07 08       ASR    $08
 43D6: A6 88 39    LDA    $39,X
@@ -686,10 +696,8 @@
 4695: E7 03       STB    $3,X
 4697: BD 5D FC    JSR    $5DFC
 469A: 39          RTS
-469B: 40          NEGA
-469C: C0 00       SUBB   #$00
-469E: 80 10       SUBA   #$10
-46A0: BE 0E 4B    LDX    $0E4B
+
+469F: 10 BE 0E 4B LDY    $0E4B
 46A3: A6 A8 1B    LDA    $1B,Y
 46A6: 84 3F       ANDA   #$3F
 46A8: 81 00       CMPA   #$00
@@ -1023,6 +1031,7 @@
 49C0: 32 63       LEAS   $3,S
 49C2: 39          RTS
 
+49C9: 34 66       PSHS   U,Y,D
 49CB: A6 88 21    LDA    $21,X
 49CE: 27 2B       BEQ    $49FB
 49D0: 81 07       CMPA   #$07
@@ -1088,6 +1097,7 @@
 4A72: BD FB 9E    JSR    $FB9E
 4A75: 39          RTS
 
+4A7A: 32 7E       LEAS   -$2,S
 4A7C: 86 40       LDA    #$40
 4A7E: 97 00       STA    $00
 4A80: EC 04       LDD    $4,X
@@ -1221,8 +1231,8 @@
 4BC6: 26 E7       BNE    $4BAF
 4BC8: 20 E1       BRA    $4BAB
 
-4C12: 4D          TSTA
-4C13: 1D          SEX
+4C0E: 34 7E       PSHS   U,Y,X,DP,D
+4C10: 10 8E 4D 1D LDY    #$4D1D
 4C14: A6 88 4E    LDA    $4E,X
 4C17: 1F 89       TFR    A,B
 4C19: 48          ASLA
@@ -1345,7 +1355,7 @@
 4D18: 6F 88 4B    CLR    $4B,X
 4D1B: 35 FE       PULS   D,DP,X,Y,U,PC
 
-
+4D90: 34 7E       PSHS   U,Y,X,DP,D
 4D92: 6F 03       CLR    $3,X
 4D94: 96 36       LDA    $36
 4D96: 81 01       CMPA   #$01
@@ -1556,10 +1566,8 @@
 4F73: A6 A4       LDA    ,Y
 4F75: A7 03       STA    $3,X
 4F77: 7E 4E A8    JMP    $4EA8
-4F7A: 40          NEGA
-4F7B: 00 C0       NEG    $C0
-4F7D: 80 6A       SUBA   #$6A
-4F7F: 88 19       EORA   #$19
+
+4F7E: 6A 88 19    DEC    $19,X
 4F81: 10 26 00 77 LBNE   $4FFC
 4F85: CE 0B 31    LDU    #$0B31
 4F88: EC 04       LDD    $4,X
@@ -1635,7 +1643,7 @@
 5031: 7E 4F B7    JMP    $4FB7
 
 
-5062: 8E 50 A5    LDX    #$50A5
+5061: 10 8E 50 A5 LDY    #$50A5
 5065: A6 88 1B    LDA    $1B,X
 5068: 85 40       BITA   #$40
 506A: 26 2E       BNE    $509A
@@ -1698,10 +1706,7 @@
 50EE: 8A C1       ORA    #$C1
 50F0: A7 84       STA    ,X
 50F2: 39          RTS
-50F3: 17 84 17    LBSR   $D50D
-50F6: D0 17       SUBB   $17
-50F8: 84 18       ANDA   #$18
-50FA: CE 18 CE    LDU    #$18CE
+
 50FD: A6 88 1E    LDA    $1E,X
 5100: 2B 12       BMI    $5114
 5102: 8A 80       ORA    #$80
@@ -1728,11 +1733,12 @@
 5136: A6 A6       LDA    A,Y
 5138: A7 0D       STA    $D,X
 513A: 35 A6       PULS   D,Y,PC
-513C: 40          NEGA
-513D: C0 A6       SUBB   #$A6
-513F: 0D 88       TST    $88
-5141: 80 A7       SUBA   #$A7
-5143: 0D 39       TST    $39
+
+513E: A6 0D       LDA    $D,X
+5140: 88 80       EORA   #$80
+5142: A7 0D       STA    $D,X
+5144: 39          RTS
+
 5145: 32 7F       LEAS   -$1,S
 5147: 6F E4       CLR    ,S
 5149: EC 06       LDD    $6,X
@@ -2760,7 +2766,15 @@
 5AC8: 1C FE       ANDCC  #$FE
 5ACA: 35 FE       PULS   D,DP,X,Y,U,PC
 
-
+5B07: 32 7C       LEAS   -$4,S
+5B09: A6 88 21    LDA    $21,X
+5B0C: 81 03       CMPA   #$03
+5B0E: 25 0A       BCS    $5B1A
+5B10: 81 04       CMPA   #$04
+5B12: 27 06       BEQ    $5B1A
+5B14: 81 06       CMPA   #$06
+5B16: 10 26 00 66 LBNE   $5B80
+5B1A: 96 51       LDA    $51
 5B1C: 84 06       ANDA   #$06
 5B1E: 26 60       BNE    $5B80
 5B20: 10 BE 0E 4B LDY    $0E4B
@@ -2806,6 +2820,19 @@
 5B7B: 32 64       LEAS   $4,S
 5B7D: 1A 01       ORCC   #$01
 5B7F: 39          RTS
+
+5B80: 32 64       LEAS   $4,S
+5B82: 1C FE       ANDCC  #$FE
+5B84: 39          RTS
+
+5B90: 34 76       PSHS   U,Y,X,D
+5B92: FE 0E 4B    LDU    $0E4B
+5B95: B6 0E 4A    LDA    $0E4A
+5B98: 84 01       ANDA   #$01
+5B9A: 10 8E 5B A4 LDY    #$5BA4
+5B9E: E6 43       LDB    $3,U
+5BA0: E1 A6       CMPB   A,Y
+5BA2: 35 F6       PULS   D,X,Y,U,PC
 
 5BA4: 80 00       SUBA   #$00
 5BA6: B6 0E 4A    LDA    $0E4A
@@ -3045,6 +3072,7 @@
 5DD3: 81 06       CMPA   #$06
 5DD5: 26 9A       BNE    $5D71
 5DD7: 7E 5D 02    JMP    $5D02
+
 5DDA: B6 0B 4A    LDA    $0B4A
 5DDD: 81 05       CMPA   #$05
 5DDF: 26 90       BNE    $5D71
@@ -3373,11 +3401,11 @@
 60F3: A7 0E       STA    $E,X
 60F5: 32 6F       LEAS   $F,S
 60F7: 35 C0       PULS   U,PC
-60F9: 40          NEGA
-60FA: C0 34       SUBB   #$34
-60FC: 36 32       PSHU   Y,X,A
-60FE: 7F BD FB    CLR    $BDFB
-6101: 76 84 0F    ROR    $840F
+
+60FB: 34 36       PSHS   Y,X,D
+60FD: 32 7F       LEAS   -$1,S
+60FF: BD FB 76    JSR    $FB76
+6102: 84 0F       ANDA   #$0F
 6104: A7 E4       STA    ,S
 6106: A6 88 1F    LDA    $1F,X
 6109: 84 F0       ANDA   #$F0
@@ -3482,6 +3510,8 @@
 6237: 32 64       LEAS   $4,S
 6239: 39          RTS
 
+6246: 32 7F       LEAS   -$1,S
+6248: 8E 07 5B    LDX    #$075B
 624B: 86 05       LDA    #$05
 624D: A7 E4       STA    ,S
 624F: 86 80       LDA    #$80
@@ -3533,8 +3563,7 @@
 62B5: 32 61       LEAS   $1,S
 62B7: 39          RTS
 
-62C7: 80 A6       SUBA   #$A6
-62C9: 88 1B       EORA   #$1B
+62C8: A6 88 1B    LDA    $1B,X
 62CB: 2B 21       BMI    $62EE
 62CD: BD FE 64    JSR    $FE64
 62D0: A6 A4       LDA    ,Y
@@ -3606,10 +3635,8 @@
 6366: A7 88 47    STA    $47,X
 6369: 6F 88 17    CLR    $17,X
 636C: 20 BB       BRA    $6329
-636E: FF FF FF    STU    $FFFF
-6371: 00 FF       NEG    $FF
-6373: 00 00       NEG    $00
-6375: FF 34 36    STU    $3436
+
+6376: 34 36       PSHS   Y,X,D
 6378: B6 0B 22    LDA    $0B22
 637B: 81 03       CMPA   #$03
 637D: 24 5C       BCC    $63DB
@@ -3806,8 +3833,7 @@
 6542: A6 88 5C    LDA    $5C,X
 6545: A7 A4       STA    ,Y
 6547: 39          RTS
-6548: 48          ASLA
-6549: 20 F6       BRA    $6541
+
 654B: 8E 19 5A    LDX    #$195A
 654E: E6 A0       LDB    ,Y+
 6550: C1 FF       CMPB   #$FF
@@ -3817,7 +3843,7 @@
 6558: BD 65 8D    JSR    $658D
 655B: 7F 0E 63    CLR    $0E63
 655E: 86 9F       LDA    #$9F
-6560: BD 5F FF    JSR    $5FFF
+6560: BD 5F FF    JSR    $5FFF		; [bogus]
 6563: 35 B6       PULS   D,X,Y,PC
 6565: 70 70 90    NEG    $7090
 6568: 90 30       SUBA   $30
@@ -3831,7 +3857,7 @@
 657C: 8A 80       ORA    #$80
 657E: B7 0E 63    STA    $0E63
 6581: 86 1F       LDA    #$1F
-6583: BD 5F FF    JSR    $5FFF
+6583: BD 5F FF    JSR    $5FFF		; [bogus]
 6586: B6 0E 5F    LDA    $0E5F
 6589: 10 26 00 3D LBNE   $65CA
 658D: B6 0E 5E    LDA    $0E5E
@@ -3918,6 +3944,12 @@
 663F: FD 1F 70    STD    $1F70
 6642: 35 90       PULS   X,PC
 
+6666: B6 03 C1    LDA    $03C1
+6669: 97 00       STA    $00
+666B: 86 C0       LDA    #$C0
+666D: 97 03       STA    $03
+666F: CC 1F 4A    LDD    #$1F4A
+6672: DD 01       STD    $01
 6674: BD 66 89    JSR    $6689
 6677: B6 04 1F    LDA    $041F
 667A: 97 00       STA    $00
@@ -3963,6 +3995,7 @@
 66C7: 80 0A       SUBA   #$0A
 66C9: 2A F3       BPL    $66BE
 66CB: 39          RTS
+
 66CC: 34 02       PSHS   A
 66CE: 10 AE 88 2D LDY    $2D,X
 66D2: A6 A8 1F    LDA    $1F,Y
@@ -3989,7 +4022,7 @@
 6703: E6 A8 17    LDB    $17,Y
 6706: C1 09       CMPB   #$09
 6708: 26 03       BNE    $670D
-670A: BD 75 5F    JSR    $755F
+670A: BD 75 5F    JSR    $755F		; [bogus]
 670D: 85 02       BITA   #$02
 670F: 27 1F       BEQ    $6730
 6711: 32 7E       LEAS   -$2,S
@@ -4023,7 +4056,7 @@
 6751: E6 C8 17    LDB    $17,U
 6754: C1 09       CMPB   #$09
 6756: 26 03       BNE    $675B
-6758: BD 75 5F    JSR    $755F
+6758: BD 75 5F    JSR    $755F		; [bogus]
 675B: 85 02       BITA   #$02
 675D: 26 54       BNE    $67B3
 675F: A6 88 43    LDA    $43,X
