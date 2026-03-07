@@ -31,5 +31,6 @@ bank 0:
  	xxx_W_TO_REG	a0,d2                         	| [$5bd5: pulu   x,y]
 =>  xxx_W_TO_REG_PREDEC
 
+banks 0-5 are non-empty
 monitor bank switch: wpset 3808:maincpu,1,W,,{printf "bank %d",(wpdata & 0xe0) >> 5;g}
-force bank switch: fill 3808:maincpu,1,bankno << 5
+force bank switch: fill 3808:maincpu,1,bankno<<5

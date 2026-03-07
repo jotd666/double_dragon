@@ -110,6 +110,16 @@
 ;	PORT_BIT( 0x08, IP_ACTIVE_HIGH, IPT_CUSTOM ) PORT_VBLANK("screen")
 ;	PORT_BIT( 0x10, IP_ACTIVE_LOW, IPT_CUSTOM ) PORT_READ_LINE_MEMBER(ddragon_state, subcpu_bus_free_r)
 ;	PORT_BIT( 0xe0, IP_ACTIVE_HIGH, IPT_UNUSED )
+;
+; there are 8 possible banks (to access them from MAME debugger, ex: "fill 3808:maincpu,1,2<<5" for bank 2 )
+; bank 0 contains code
+; bank 1 contains code
+; bank 2 does not contain code
+; bank 3 contains code
+; bank 4 contains code
+; bank 5 contains code
+; bank 6 is empty
+; bank 7 is empty
 
 bank_switch_copy_3a = $3a
 

@@ -82,9 +82,70 @@ def subt(m):
 \tlea\t{tn},a{rn}"""
     return rval
 
+def explicit_stack_usage(line):
+    return "check explicit S usage" in line or "review stack set from register" in line
+def get_line_address(line):
+    try:
+        toks = line.split("|")
+        address = toks[1].strip(" [$").split(":")[0]
+        return int(address,16)
+    except (ValueError,IndexError):
+        return None
+
+def process_file(input_radix,output_radix,f_handle_line,out_header):
+    with open(source_dir / f"{input_radix}.s") as f:
+        lines = [line for line in f if not explicit_stack_usage(line)]
+
+        for i,line in enumerate(lines):
+            # first the generic part
+            if " = " in line:
+                equates.add(line)
+                line = ""
+
+            # pre-add video_address tag if we find a store instruction to an explicit 3000-3FFF address
+            if store_to_video.search(line):
+                line = line.rstrip() + " [video_address]\n"
+
+            if "[video_address" in line:
+                # give me the original instruction
+                line = line.replace("_ADDRESS","_UNCHECKED_ADDRESS")
+                # if it's a write, insert a "VIDEO_DIRTY" macro after the write
+                for j in range(i+1,len(lines)):
+                    next_line = lines[j]
+                    if "[...]" not in next_line:
+                        break
+                    if ",(a0)" in next_line or "clr" in next_line or "MOVE_W_FROM_REG" in next_line:
+                        if any(x in next_line for x in ["address_word","MOVE_W_FROM_REG"]):
+                            lines[j] = next_line+"\tVIDEO_WORD_DIRTY | [...]\n"
+                        else:
+                            lines[j] = next_line+"\tVIDEO_BYTE_DIRTY | [...]\n"
+                        break
+
+
+            line = re.sub(tablere,subt,line)
+
+            address = get_line_address(line)
+            line = process_jump_table(line)
+
+            lines[i] = line
+
+            # now the specific part
+            f_handle_line(address,lines,i)
+
+        # make the line number correct
+        lines = "".join(lines).splitlines(True)
+        for i,line in enumerate(lines,out_header.count("\n")+1):
+            if "ERROR" in line:
+                print(i,line,end="")
+
+    with open(source_dir / f"{output_radix}.68k","w") as fw:
+        fw.write(out_header)
+        fw.writelines(lines)
+
+
 store_to_video = re.compile("GET_ADDRESS\s+0x2")
 
-equates = []
+equates = set()
 
 this_dir = pathlib.Path(__file__).absolute().parent
 
