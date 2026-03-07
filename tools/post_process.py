@@ -227,18 +227,18 @@ def process_bank_file(bankno,global_symbols=[],out_header=""):
 # various dirty but at least automatic patches applying on the specific DD code
 
 if process_bank_0:
-    process_bank_file(0)
+    process_bank_file(0,global_symbols=['lb0_41bf', 'lb0_41c9', 'lb0_41d6', 'lb0_41e3', 'lb0_41f0', 'lb0_4213', 'lb0_42b4', 'lb0_44cd', 'lb0_49a0'])
 
 if process_bank_1:
     process_bank_file(1)
 if process_bank_3:
-    process_bank_file(3)
+    process_bank_file(3,global_symbols=["lb3_6c00"])
 
 if process_bank_4:
-    process_bank_file(4)
+    process_bank_file(4,global_symbols=["lb4_7803"])
 
 if process_bank_5:
-    process_bank_file(5)
+    process_bank_file(5,global_symbols=["lb5_4045"])
 
 if process_main:
     out_header = "l_ffff:\n\tillegal\nl_0000:\nillegal\n"

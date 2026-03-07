@@ -9,7 +9,7 @@
 400F: 7E 47 DB       JMP    $47DB
 4012: 7E 45 B1       JMP    $45B1
 4015: 7E 46 A3       JMP    $46A3
-4018: 7E 44 CD       JMP    $44CD
+4018: 7E 44 CD       JMP    lb0_44cd
 401B: 7E 42 D3       JMP    $42D3
 
 401E: 34 7E          PSHS   U,Y,X,DP,D
@@ -212,17 +212,20 @@
 41B3: 32 68          LEAS   $8,S
 41B5: 35 B6          PULS   D,X,Y,PC
 
+lb0_41bf:
 41BF: 34 31          PSHS   Y,X,CC
 41C1: 6F 80          CLR    ,X+
 41C3: 31 3F          LEAY   -$1,Y
 41C5: 26 FA          BNE    $41C1
 41C7: 35 B1          PULS   CC,X,Y,PC
 
+lb0_41c9:
 41C9: 34 31          PSHS   Y,X,CC
 41CB: 8E 00 20       LDX    #$0020
 41CE: 10 8E 0E 53    LDY    #$0E53
 41D2: 8D EB          BSR    $41BF
 41D4: 35 B1          PULS   CC,X,Y,PC
+lb0_41d6:
 41D6: 34 31          PSHS   Y,X,CC
 41D8: 8E 30 00       LDX    #$3000
 41DB: 10 8E 08 00    LDY    #$0800
@@ -233,6 +236,7 @@
 41E8: 10 8E 08 00    LDY    #$0800
 41EC: 8D D1          BSR    $41BF
 41EE: 35 B1          PULS   CC,X,Y,PC
+lb0_41f0:
 41F0: 34 57          PSHS   U,X,D,CC
 41F2: 1F 98          TFR    B,A
 41F4: F0 21 FD       SUBB   $21FD
@@ -250,12 +254,13 @@
 420E: 5A             DECB
 420F: 26 F9          BNE    $420A
 4211: 35 D7          PULS   CC,D,X,U,PC
+lb0_4213:
 4213: 34 77          PSHS   U,Y,X,D,CC
 4215: 7F 21 FD       CLR    $21FD
 4218: 7F 03 A1       CLR    $03A1
 421B: 7F 03 A2       CLR    $03A2
 421E: C6 4C          LDB    #$4C
-4220: 8D CE          BSR    $41F0
+4220: 8D CE          BSR    lb0_41f0
 4222: CC 01 80       LDD    #$0180
 4225: 8E 28 00       LDX    #$2800
 4228: 6F 80          CLR    ,X+
@@ -324,6 +329,8 @@
 42AE: 0A 56          DEC    $56
 42B0: 26 E6          BNE    $4298
 42B2: 35 B7          PULS   CC,D,X,Y,PC
+
+lb0_42b4:
 42B4: 34 07          PSHS   D,CC
 42B6: B6 38 03       LDA    $3803
 42B9: 43             COMA
@@ -423,7 +430,7 @@
 4383: A7 88 48       STA    $48,X
 4386: 6C 88 4D       INC    $4D,X
 4389: 86 04          LDA    #$04
-438B: BD 44 CD       JSR    $44CD
+438B: BD 44 CD       JSR    lb0_44cd
 438E: BD FA 70       JSR    $FA70
 4391: 96 25          LDA    $25
 4393: A0 88 4B       SUBA   $4B,X
@@ -505,6 +512,7 @@
 44C4: 10 83 04 00    CMPD   #$0400
 44C8: 25 DA          BCS    $44A4
 44CA: 7E 44 CA       JMP    $44CA
+lb0_44cd:
 44CD: D6 26          LDB    $26
 44CF: 26 07          BNE    $44D8
 44D1: F6 38 04       LDB    $3804
@@ -1054,6 +1062,7 @@
 4998: 8E 00 00       LDX    #$0000
 499B: 10 8E 00 00    LDY    #$0000
 499F: 39             RTS
+lb0_49a0:
 49A0: 7F 0A F5       CLR    $0AF5
 49A3: 7F 0A F6       CLR    $0AF6
 49A6: BD 4A 58       JSR    $4A58
@@ -1327,7 +1336,7 @@
 4E3A: 10 83 19 60    CMPD   #$1960
 4E3E: 25 0A          BCS    $4E4A
 4E40: 86 01          LDA    #$01
-4E42: BD 44 CD       JSR    $44CD
+4E42: BD 44 CD       JSR    lb0_44cd
 4E45: 86 80          LDA    #$80
 4E47: B7 0B 21       STA    $0B21
 4E4A: 39             RTS
@@ -1922,7 +1931,7 @@ jump_table_50c0:
 5556: 81 07          CMPA   #$07
 5558: 22 18          BHI    $5572
 555A: 86 03          LDA    #$03
-555C: BD 44 CD       JSR    $44CD
+555C: BD 44 CD       JSR    lb0_44cd
 555F: 86 80          LDA    #$80
 5561: B7 0A EC       STA    $0AEC
 5564: 7F 0A ED       CLR    $0AED
@@ -3250,7 +3259,7 @@ jump_table_50c0:
 64D4: B7 09 F2       STA    $09F2
 64D7: 7C 09 EF       INC    $09EF
 64DA: 86 03          LDA    #$03
-64DC: BD 44 CD       JSR    $44CD
+64DC: BD 44 CD       JSR    lb0_44cd
 64DF: 39             RTS
 64E0: B6 09 F2       LDA    $09F2
 64E3: 85 01          BITA   #$01
@@ -3948,7 +3957,7 @@ jump_table_50c0:
 6DED: 7E FD E2       JMP    $FDE2
 6DF0: 39             RTS
 6DF1: 86 80          LDA    #$80
-6DF3: BD 44 CD       JSR    $44CD
+6DF3: BD 44 CD       JSR    lb0_44cd
 6DF6: 39             RTS
 6DF7: 10 8E 6E 57    LDY    #$6E57
 6DFB: BE 0A 76       LDX    $0A76
@@ -3958,7 +3967,7 @@ jump_table_50c0:
 6E05: A6 A6          LDA    A,Y
 6E07: 81 00          CMPA   #$00
 6E09: 27 03          BEQ    $6E0E
-6E0B: BD 44 CD       JSR    $44CD
+6E0B: BD 44 CD       JSR    lb0_44cd
 6E0E: 39             RTS
 6E0F: B6 0A 75       LDA    $0A75
 6E12: 81 01          CMPA   #$01
@@ -4416,7 +4425,7 @@ jump_table_50c0:
 7D03: 86 01          LDA    #$01
 7D05: A7 A8 1B       STA    $1B,Y
 7D08: 86 90          LDA    #$90
-7D0A: BD 44 CD       JSR    $44CD
+7D0A: BD 44 CD       JSR    lb0_44cd
 7D0D: 1A 01          ORCC   #$01
 7D0F: 20 02          BRA    $7D13
 7D11: 1C FE          ANDCC  #$FE

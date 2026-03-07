@@ -5,69 +5,64 @@
 
 import pathlib,re
 
-labels = """84ec
-d50d
-f900
-f90a
-f914
-f91e
-f928
-f932
-f93c
-f946
-fa00
-fa70
-fa80
-fab8
-fb00
-fb44
-fb4e
-fb58
-fb62
-fb6c
-fb76
-fb8a
-fb94
-fb9e
-fba8
-fc00
-fc0a
-fc1e
-fc50
-fc78
-fdc8
-fde2
-fe20
-fe23
-fe30
-fe33
-fe36
-fe64
-ff10
-ffab
-ffb5
-ffc9
-ffd3
+labels = """lb0_41c9
+lb0_41bf
+lb0_41e3
+lb0_41bf
+lb0_41d6
+lb0_41bf
+lb0_4213
+lb0_41f0
+lb0_42b4
+lb0_42b4
+lb3_6c00
+lb0_41c9
+lb0_41bf
+lb0_44cd
+lb0_42b4
+lb0_41d6
+lb0_41bf
+lb0_4213
+lb0_41f0
+lb0_41e3
+lb0_41bf
+lb0_49a0
+lb4_7803
+lb4_7803
+lb4_7803
+lb4_7803
+lb4_7803
+lb4_7803
+lb5_4045
+lb5_4045
+lb5_4045
+lb5_4045
 """.split()
-labels = {int(x,16) for x in labels}
-
-lab_re = re.compile("l_(\w+)")
+labels = set(labels)
+print(sorted(labels))
+dddd
 offset_re = re.compile("^([0-9A-F]{4}):")
 
-def process(asm_file):
+def process(asm_file,bank_number):
+
     with open(asm_file) as f:
         asm_lines = f.readlines()
 
+    if bank_number==-1:
+        prefix = "l_"
+    else:
+        prefix = f"lb{bank_number}_"
 
+    lab_re = re.compile(f"{prefix}(\w+)")
     for i,line in enumerate(asm_lines):
         m = offset_re.match(line)
         if m:
-            computed_offset = int(m.group(1),16)
+            computed_offset = f"{prefix}{m.group(1)}"
             if computed_offset in labels:
-                if asm_lines[i-1].startswith("l_"):
+                if asm_lines[i-1].startswith(prefix):
                     pass
                 else:
-                    asm_lines[i-1] += f"l_{computed_offset:04x}:\n"
+                    asm_lines[i-1] += f"{computed_offset}:\n"
 
     with open(asm_file.stem + "_new.asm","w") as f:
         f.writelines(asm_lines)

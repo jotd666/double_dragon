@@ -1,4 +1,3 @@
-; write $20 in $3808 to get that bank
 4000: 7E 41 00    JMP    $4100
 4003: 7E 41 1E    JMP    $411E
 4006: 7E 5C 88    JMP    $5C88

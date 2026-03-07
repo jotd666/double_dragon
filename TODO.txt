@@ -4,7 +4,7 @@
   wrap those calls with a macro to redirect calls or check
   for proper bank
 - at first try to link without bank ROMs
-
+- variadic gas macro to jump/jsr to bank symbol ex: JSR_BANK  4089,1,3,5
 - assemble banked roms alone bank 1
 - bank 0: resolve jump tables
 - convert subcpu

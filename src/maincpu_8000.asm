@@ -167,7 +167,7 @@ reset_8000:
 8043: 86 20          LDA    #$20
 8045: BD B7 56       JSR    $B756
 8048: BD FF 4A       JSR    $FF4A
-804B: BD 6C 00       JSR    $6C00
+804B: BD 6C 00       JSR    lb3_6c00
 804E: BD FC 8F       JSR    $FC8F
 8051: 1C AF          ANDCC  #$AF
 8053: 7E 80 BA       JMP    $80BA
@@ -9107,7 +9107,7 @@ FA3B: BD 40 4B       JSR    $404B
 FA3E: BD FD B2       JSR    $FDB2
 FA41: 39             RTS
 FA42: BD FD A0       JSR    $FDA0
-FA45: BD 40 45       JSR    $4045
+FA45: BD 40 45       JSR    lb5_4045
 FA48: BD FD B2       JSR    $FDB2
 FA4B: 39             RTS
 FA4C: BD FD A0       JSR    $FDA0
@@ -9183,8 +9183,8 @@ FAF4: BD FC 8F       JSR    $FC8F
 FAF7: 39             RTS
 FAF8: 7E 40 1B       JMP    $401B
 
-FB00: 96 3A          LDA    $3A
-FB02: B7 0E 45       STA    $0E45
+FB00: 96 3A          LDA    bank_switch_copy_3a
+FB02: B7 0E 45       STA    bank_register_copy_0e45
 FB05: 84 1F          ANDA   #$1F
 FB07: 8A 80          ORA    #$80
 FB09: 97 3A          STA    bank_switch_copy_3a
@@ -9193,7 +9193,7 @@ FB0E: BD 40 00       JSR    $4000
 FB11: 96 3A          LDA    bank_switch_copy_3a
 FB13: 84 1F          ANDA   #$1F
 FB15: 97 3A          STA    bank_switch_copy_3a
-FB17: B6 0E 45       LDA    $0E45
+FB17: B6 0E 45       LDA    bank_register_copy_0e45
 FB1A: 84 E0          ANDA   #$E0
 FB1C: 9A 3A          ORA    bank_switch_copy_3a
 FB1E: 97 3A          STA    bank_switch_copy_3a
@@ -9335,9 +9335,10 @@ FC4B: B7 38 08       STA    bankswitch_3808
 FC4E: 35 82          PULS   A,PC
 l_fc50:
 FC50: BD FC 82       JSR    $FC82
-FC53: BD 40 45       JSR    $4045
+FC53: BD 40 45       JSR    lb5_4045
 FC56: BD FC 8F       JSR    $FC8F
 FC59: 39             RTS
+
 FC5A: BD FC 82       JSR    $FC82
 FC5D: BD 40 48       JSR    $4048
 FC60: BD FC 8F       JSR    $FC8F
@@ -9453,6 +9454,7 @@ FD7A: BD FC 82       JSR    $FC82
 FD7D: BD 40 3C       JSR    $403C
 FD80: BD FC 8F       JSR    $FC8F
 FD83: 39             RTS
+
 FD84: 96 3A          LDA    bank_switch_copy_3a
 FD86: 8A 80          ORA    #$80
 FD88: 97 3A          STA    bank_switch_copy_3a
@@ -9542,18 +9544,18 @@ FE89: 7E 44 DC       JMP    $44DC
 FE8C: 7E 48 B1       JMP    $48B1
 FE8F: 7E 46 E0       JMP    $46E0
 FE92: 7E 48 EB       JMP    $48EB
-FE95: 7E 41 C9       JMP    $41C9
-FE98: 7E 41 E3       JMP    $41E3
-FE9B: 7E 41 D6       JMP    $41D6
-FE9E: 7E 42 13       JMP    $4213
-FEA1: 7E 42 B4       JMP    $42B4
+FE95: 7E 41 C9       JMP    lb0_41c9
+FE98: 7E 41 E3       JMP    lb0_41e3
+FE9B: 7E 41 D6       JMP    lb0_41d6
+FE9E: 7E 42 13       JMP    lb0_4213
+FEA1: 7E 42 B4       JMP    lb0_42b4
 FEA4: 7E 42 31       JMP    $4231
 FEA7: 7E 45 66       JMP    $4566
-FEAA: 7E 41 BF       JMP    $41BF
-FEAD: 7E 41 F0       JMP    $41F0
+FEAA: 7E 41 BF       JMP    lb0_41bf
+FEAD: 7E 41 F0       JMP    lb0_41f0
 FEB0: 7E FC 50       JMP    $FC50
 FEB3: 7E FC 78       JMP    $FC78
-FEB6: 7E 44 CD       JMP    $44CD
+FEB6: 7E 44 CD       JMP    lb0_44cd
 FEB9: 7E 44 49       JMP    $4449
 FEBC: 7E 47 36       JMP    $4736
 FEBF: 7E 45 D7       JMP    $45D7
@@ -9575,7 +9577,7 @@ FEEC: 7E 4E 4B       JMP    $4E4B
 FEEF: 7E 4E 76       JMP    $4E76
 FEF2: 7E 4F 80       JMP    $4F80
 FEF5: 7E 4D DD       JMP    $4DDD
-FEF8: 7E 49 A0       JMP    $49A0
+FEF8: 7E 49 A0       JMP    lb0_49a0
 FEFB: 7E 46 A3       JMP    $46A3
 FEFE: 7E FF C9       JMP    $FFC9
 FF01: 7E 42 42       JMP    $4242
@@ -9655,7 +9657,7 @@ FFB1: BD FC 8F       JSR    $FC8F
 FFB4: 39             RTS
 l_ffb5:
 FFB5: BD FF 80       JSR    $FF80
-FFB8: BD 78 03       JSR    $7803
+FFB8: BD 78 03       JSR    lb4_7803
 FFBB: BD FC 8F       JSR    $FC8F
 FFBE: 39             RTS
 FFBF: BD FF 80       JSR    $FF80
@@ -9664,7 +9666,7 @@ FFC5: BD FC 8F       JSR    $FC8F
 FFC8: 39             RTS
 l_ffc9:
 FFC9: BD FF 8D       JSR    $FF8D
-FFCC: BD 40 45       JSR    $4045
+FFCC: BD 40 45       JSR    lb5_4045
 FFCF: BD FF 9C       JSR    $FF9C
 FFD2: 39             RTS
 l_ffd3:
