@@ -12,13 +12,13 @@ input_dict = {"system_1680":"read_system_inputs",
 }
 
 
-process_main = False
-process_bank_0 = False
-process_bank_1 = False
-process_bank_2 = False
+process_main = True
+process_bank_0 = True
+process_bank_1 = True
+
 process_bank_3 = True
-process_bank_4 = False
-process_bank_5 = False
+process_bank_4 = True
+process_bank_5 = True
 
 def f_handle_bank0_line(address,lines,i):
     line = lines[i]
@@ -230,6 +230,7 @@ if process_bank_5:
     process_bank_file(5)
 
 if process_main:
+    out_header = "l_ffff:\n\tillegal\n"
     process_file("conv","maincpu_8000",f_handle_main_line,["irq_8056","firq_8092","reset_8000"]+sorted(main_globals))
 
 
