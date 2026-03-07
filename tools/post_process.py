@@ -16,9 +16,9 @@ process_main = False
 process_bank_0 = False
 process_bank_1 = False
 process_bank_2 = False
-process_bank_3 = False
+process_bank_3 = True
 process_bank_4 = False
-process_bank_5 = True
+process_bank_5 = False
 
 def f_handle_bank0_line(address,lines,i):
     line = lines[i]
@@ -83,6 +83,12 @@ def f_handle_bank1_line(address,lines,i):
 
 def f_handle_bank3_line(address,lines,i):
     line = lines[i]
+    if address == 0x6c9a:
+        line = remove_instruction(lines,i)  # useless cmp
+        lines[i+2] = remove_error(lines[i+2])
+        # we removed the cmp, and optimizer removed the load for  $47,x
+        # make up for this and gain a few cycles
+        lines[i+3] = change_instruction("move.b\td0,(2,a0)",lines,i+3)
     lines[i] = line
 
 def f_handle_bank4_line(address,lines,i):
@@ -199,38 +205,32 @@ def f_handle_main_line(address,lines,i):
 
     lines[i] = line
 
+bankfuncs = [f_handle_bank0_line,f_handle_bank1_line,None,f_handle_bank3_line,f_handle_bank4_line,f_handle_bank5_line]
 
+main_globals = set()
 
+def process_bank_file(bankno,global_symbols=[],out_header=""):
+    main_globals.update(process_file(f"conv_bank_{bankno}",f"maincpu_bank_{bankno}_4000",
+                        bankfuncs[bankno],global_symbols,out_header,is_bank=True))
 
 # various dirty but at least automatic patches applying on the specific DD code
-if process_main:
-    process_file("conv","maincpu_8000",f_handle_main_line,"""\t.include "data.inc"
-    \t.global\tirq_8056
-    \t.global\tfirq_8092
-    \t.global\treset_8000
-    """)
-
 
 if process_bank_0:
-    process_file("conv_bank_0","maincpu_bank_0_4000",f_handle_bank0_line,"""\t.include "data.inc"
-    \t.global\tlb0_4000
-    """)
-
+    process_bank_file(0)
 
 if process_bank_1:
-    process_file("conv_bank_1","maincpu_bank_1_4000",f_handle_bank1_line,"""\t.include "data.inc"
-    \t.global\tlb1_4000
-    """)
+    process_bank_file(1)
+if process_bank_3:
+    process_bank_file(3)
 
 if process_bank_4:
-    process_file("conv_bank_4","maincpu_bank_4_4000",f_handle_bank4_line,"""\t.include "data.inc"
-    \t.global\tlb4_4000
-    """)
+    process_bank_file(4)
 
 if process_bank_5:
-    process_file("conv_bank_5","maincpu_bank_5_4000",f_handle_bank5_line,"""\t.include "data.inc"
-    \t.global\tlb5_4000
-    """)
+    process_bank_file(5)
+
+if process_main:
+    process_file("conv","maincpu_8000",f_handle_main_line,["irq_8056","firq_8092","reset_8000"]+sorted(main_globals))
 
 
 with open(source_dir / "data.inc","w") as fw:

@@ -658,6 +658,7 @@ firq_8092:
 84E5: 19             DAA
 84E6: A7 88 48       STA    $48,X
 84E9: BD FC AA       JSR    $FCAA
+l_84ec:
 84EC: 6F 88 4C       CLR    $4C,X
 84EF: FC 0E 5D       LDD    $0E5D
 84F2: 26 03          BNE    $84F7
@@ -9000,6 +9001,7 @@ F93C: BD FC 28       JSR    $FC28
 F93F: BD 40 90       JSR    $4090
 F942: BD FC 3A       JSR    $FC3A
 F945: 39             RTS
+l_f946:
 F946: BD FB 24       JSR    $FB24
 F949: BD 40 1B       JSR    $401B
 F94C: BD FB 34       JSR    $FB34
@@ -9062,6 +9064,9 @@ F9E5: BD 40 27       JSR    $4027
 F9E8: BD BB 4D       JSR    $BB4D
 F9EB: 39             RTS
 
+l_fa00:
+FA00: BD FC 28       JSR    $FC28                                      
+FA03: BD 40 57       JSR    $4057  ; [bank_3]                                    
 FA06: BD FC 3A       JSR    $FC3A
 FA09: 39             RTS
 
@@ -9263,6 +9268,9 @@ FBF5: BD 40 C0       JSR    $40C0
 FBF8: BD FC 8F       JSR    $FC8F
 FBFB: 39             RTS
 
+l_fc00:
+FC00: BD FD A0       JSR    $FDA0                                      
+FC03: BD 40 39       JSR    $4039                                      
 FC06: BD FD B2       JSR    $FDB2
 FC09: 39             RTS
 FC0A: BD FC 28       JSR    $FC28
@@ -9437,6 +9445,8 @@ FDBF: 9A 3A          ORA    bank_switch_copy_3a
 FDC1: 97 3A          STA    bank_switch_copy_3a
 FDC3: B7 38 08       STA     bankswitch_3808
 FDC6: 35 83          PULS   CC,A,PC
+
+l_fdc8:
 FDC8: 96 3A          LDA    bank_switch_copy_3a
 FDCA: 84 1F          ANDA   #$1F
 FDCC: 8A 60          ORA    #$60
@@ -9463,6 +9473,7 @@ FDFC: 7E E9 0B       JMP    $E90B
 FDFF: 7E E9 65       JMP    $E965
 
 FE20: 7E 90 4B       JMP    $904B
+l_fe23:
 FE23: 7E B7 56       JMP    $B756
 
 FE36: 7E EE 3E       JMP    $EE3E
@@ -9474,6 +9485,7 @@ FE58: 7E 9E 14       JMP    $9E14
 FE5B: 7E A9 00       JMP    $A900
 FE5E: 7E A9 00       JMP    $A900
 FE61: 7E A4 3D       JMP    $A43D
+l_fe64:
 FE64: 7E A5 29       JMP    $A529
 FE67: 7E A4 A3       JMP    $A4A3
 

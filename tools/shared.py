@@ -82,6 +82,7 @@ def subt(m):
 \tlea\t{tn},a{rn}"""
     return rval
 
+
 def explicit_stack_usage(line):
     return "check explicit S usage" in line or "review stack set from register" in line
 def get_line_address(line):
@@ -92,7 +93,8 @@ def get_line_address(line):
     except (ValueError,IndexError):
         return None
 
-def process_file(input_radix,output_radix,f_handle_line,out_header):
+def process_file(input_radix,output_radix,f_handle_line,global_symbols,out_header="",is_bank=False):
+    main_globals = set()
     with open(source_dir / f"{input_radix}.s") as f:
         lines = [line for line in f if not explicit_stack_usage(line)]
 
@@ -101,6 +103,17 @@ def process_file(input_radix,output_radix,f_handle_line,out_header):
             if " = " in line:
                 equates.add(line)
                 line = ""
+
+            if is_bank:
+                # replace prefixes by normal prefixes, add to returned globals if range not in bank address
+                # (easy to cheat with regex bank address 4xxx-7xxx)
+                m = re.search("(lb\d_)([012389abcdef]...)",line,flags=re.I)
+                if m:
+                    prefix,offset = m.groups()
+                    go = f"l_{offset}"
+                    lo = f"{prefix}{offset}"
+                    main_globals.add(go)
+                    line = line.replace(lo,go)
 
             # pre-add video_address tag if we find a store instruction to an explicit 3000-3FFF address
             if store_to_video.search(line):
@@ -134,14 +147,17 @@ def process_file(input_radix,output_radix,f_handle_line,out_header):
 
         # make the line number correct
         lines = "".join(lines).splitlines(True)
-        for i,line in enumerate(lines,out_header.count("\n")+1):
+        for i,line in enumerate(lines,out_header.count("\n")+2+len(global_symbols)):
             if "ERROR" in line:
                 print(i,line,end="")
 
     with open(source_dir / f"{output_radix}.68k","w") as fw:
+        fw.write('\t.include\t"data.inc"\n')
         fw.write(out_header)
+        for g in global_symbols:
+            fw.write(f"\t.global\t{g}\n")
         fw.writelines(lines)
-
+    return main_globals
 
 store_to_video = re.compile("GET_ADDRESS\s+0x2")
 
