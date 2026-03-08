@@ -1,26 +1,27 @@
 
-lb3_6c00:
+lb3_6c00:		; [global]
 6C00: 7E 6F 8C       JMP    $6F8C
-lb3_6c03:
+lb3_6c03:		; [global]
 6C03: 7E 6C 22       JMP    $6C22
-lb3_6c06:
+lb3_6c06:		; [global]
 6C06: 7E 6C 21       JMP    $6C21
-lb3_6c09:
+lb3_6c09:		; [global]
 6C09: 7E 6C 21       JMP    $6C21
-lb3_6c0c:
+lb3_6c0c:		; [global]
 6C0C: 7E 6C 21       JMP    $6C21
-lb3_6c0f:
+lb3_6c0f:		; [global]
 6C0F: 7E 70 0C       JMP    $700C
-lb3_6c12:
+lb3_6c12:		; [global]
 6C12: 7E 6F BF       JMP    $6FBF
-lb3_6c15:
+lb3_6c15:		; [global]
 6C15: 7E 71 5E       JMP    $715E
-lb3_6c18:
+lb3_6c18:		; [global]
 6C18: 7E 74 E7       JMP    $74E7
-lb3_6c1b:
+lb3_6c1b:		; [global]
 6C1B: 7E 75 2B       JMP    $752B
-lb3_6c1e:
+lb3_6c1e:		; [global]
 6C1E: 7E 6E 49       JMP    $6E49
+
 6C21: 39             RTS
 6C22: A6 88 4C       LDA    $4C,X
 6C25: 84 20          ANDA   #$20

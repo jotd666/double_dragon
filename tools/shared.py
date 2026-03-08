@@ -103,6 +103,9 @@ def process_file(input_radix,output_radix,f_handle_line,global_symbols,out_heade
             if " = " in line:
                 equates.add(line)
                 line = ""
+            if "[global]" in line:
+                label = line.split(":")[0]
+                global_symbols.append(label)
 
             if "[6309_instruction]" in line:
                 line = change_instruction("illegal",lines,i)  # TEMP TEMP we'll see when we reach that

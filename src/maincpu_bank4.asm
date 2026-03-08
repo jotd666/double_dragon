@@ -1,3 +1,4 @@
+lb4_4000:   ; [global]
 4000: 34 7E          PSHS   U,Y,X,DP,D
 4002: CE 0B 4A       LDU    #$0B4A
 4005: 86 0B          LDA    #$0B
@@ -923,15 +924,114 @@ table_4317:
 47E4: 66 88 10       ROR    $10,X
 47E7: 39             RTS
 
+lb4_7800:  ; [global]
+7800: 7E 78 0C       JMP    $780C
+lb4_7803:  ; [global]
+7803: 7E 7B BE       JMP    $7BBE
+lb4_7806:  ; [global]
+7806: 7E 7B BE       JMP    $7BBE
+lb4_7809:  ; [global]
+7809: 7E 7D 9D       JMP    $7D9D
+780C: B6 0B 03       LDA    $0B03
+780F: 85 80          BITA   #$80
+7811: 2A 1C          BPL    $782F
+7813: B6 0B 11       LDA    $0B11
+7816: 85 01          BITA   #$01
+7818: 26 15          BNE    $782F
+781A: 85 80          BITA   #$80
+781C: 26 0E          BNE    $782C
+781E: 7F 0B 12       CLR    $0B12
+7821: 7F 0B 13       CLR    $0B13
+7824: B6 0B 11       LDA    $0B11
+7827: 8A 80          ORA    #$80
+7829: B7 0B 11       STA    $0B11
+782C: BD 78 30       JSR    $7830
+782F: 39             RTS
+7830: 7C 0B 12       INC    $0B12
+7833: B6 0B 12       LDA    $0B12
+7836: 81 20          CMPA   #$20
+7838: 26 4C          BNE    $7886
+783A: 7F 0B 12       CLR    $0B12
+783D: 7C 0B 13       INC    $0B13
+7840: B6 0B 13       LDA    $0B13
+7843: 81 06          CMPA   #$06
+7845: 25 12          BCS    $7859
+7847: B6 0B 11       LDA    $0B11
+784A: 8A 01          ORA    #$01
+784C: B7 0B 11       STA    $0B11
+784F: B6 0B 03       LDA    $0B03
+7852: 8A 40          ORA    #$40
+7854: B7 0B 03       STA    $0B03
+7857: 20 2D          BRA    $7886
+7859: 8E 78 92       LDX    #$7892
+785C: F6 0B 13       LDB    $0B13
+785F: 58             ASLB
+7860: AE 85          LDX    B,X
+7862: 10 8E 78 87    LDY    #$7887
+7866: A6 A0          LDA    ,Y+
+7868: 97 00          STA    $00
+786A: EC A1          LDD    ,Y++
+786C: 34 20          PSHS   Y
+786E: 1F 02          TFR    D,Y
+7870: 86 10          LDA    #$10
+7872: 97 01          STA    $01
+7874: EC 81          LDD    ,X++
+7876: E7 A9 02 00    STB    $0200,Y
+787A: A7 A0          STA    ,Y+
+787C: 0A 01          DEC    $01
+787E: 26 F4          BNE    $7874
+7880: 35 20          PULS   Y
+7882: 0A 00          DEC    $00
+7884: 26 E4          BNE    $786A
+7886: 39             RTS
 
+lb4_7bb4:  ; [global]
+7BBE: 8E 7C 05       LDX    #$7C05
+7BC1: F6 0A F8       LDB    $0AF8
+7BC4: 58             ASLB
+7BC5: AE 85          LDX    B,X
+7BC7: 10 8E 10 10    LDY    #$1010
+7BCB: EC 81          LDD    ,X++
+7BCD: E7 A9 02 00    STB    $0200,Y
+7BD1: 58             ASLB
+7BD2: 49             ROLA
+7BD3: 58             ASLB
+7BD4: 49             ROLA
+7BD5: 58             ASLB
+7BD6: 49             ROLA
+7BD7: 58             ASLB
+7BD8: 49             ROLA
+7BD9: A7 A0          STA    ,Y+
+7BDB: 10 8C 10 20    CMPY   #$1020
+7BDF: 26 EA          BNE    $7BCB
+7BE1: 8E 7C 11       LDX    #$7C11
+7BE4: F6 0A F8       LDB    $0AF8
+7BE7: 58             ASLB
+7BE8: AE 85          LDX    B,X
+7BEA: 10 8E 10 70    LDY    #$1070
+7BEE: EC 81          LDD    ,X++
+7BF0: E7 A9 02 00    STB    $0200,Y
+7BF4: 58             ASLB
+7BF5: 49             ROLA
+7BF6: 58             ASLB
+7BF7: 49             ROLA
+7BF8: 58             ASLB
+7BF9: 49             ROLA
+7BFA: 58             ASLB
+7BFB: 49             ROLA
+7BFC: A7 A0          STA    ,Y+
+7BFE: 10 8C 10 80    CMPY   #$1080
+7C02: 26 EA          BNE    $7BEE
+7C04: 39             RTS
 
-7D9F: AF B6          STX    [A,Y]
-7DA1: 0A BC          DEC    $BC
+7D9D: BD 7D AF       JSR    $7DAF
+7DA0: B6 0A BC       LDA    $0ABC
 7DA3: 2A 09          BPL    $7DAE
 7DA5: BD 7D E3       JSR    $7DE3
 7DA8: BD 7E 14       JSR    $7E14
 7DAB: BD 7E 3B       JSR    $7E3B
 7DAE: 39             RTS
+
 
 7DAF: DC 3C          LDD    $3C
 7DB1: 10 83 15 00    CMPD   #$1500
