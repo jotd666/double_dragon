@@ -196,7 +196,10 @@ def process_file(input_radix,output_radix,f_handle_line,global_symbols,out_heade
         fw.writelines(lines)
     return main_globals
 
-store_to_video = re.compile("GET_ADDRESS\s+0x2")
+#    map(0x1800, 0x1fff).ram().w(FUNC(ddragon_state::fgvideoram_w)).share(m_fgvideoram);
+#    map(0x3000, 0x37ff).ram().w(FUNC(ddragon_state::bgvideoram_w)).share(m_bgvideoram);
+
+store_to_video = re.compile("GET_ADDRESS\s+0x((3[0-7])|(1[8-F]))",flags=re.I)
 
 equates = set()
 

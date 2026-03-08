@@ -4,11 +4,10 @@ from shared import *
 
 
 
-input_dict = {"system_1680":"read_system_inputs",
-"in0_1681":"read_inputs_1",
-"in1_1682":"read_inputs_2",
-"audio_register_w_1500":"sound_start",
-"sh_irqtrigger_w_1481":"",
+input_dict = {"bankswitch_3808":"set_bank",
+"irq_ack_380d":"",
+"nmi_ack_380b":"",
+"firq_ack_380c":"",
 }
 
 
@@ -221,7 +220,7 @@ bankfuncs = [f_handle_bank0_line,f_handle_bank1_line,None,f_handle_bank3_line,f_
 main_globals = set()
 
 def process_bank_file(bankno,global_symbols=[],out_header=""):
-    main_globals.update(process_file(f"conv_bank_{bankno}",f"maincpu_bank_{bankno}_4000",
+    main_globals.update(process_file(f"conv_bank_{bankno}",f"maincpu_bank{bankno}_code_4000",
                         bankfuncs[bankno],global_symbols,out_header,is_bank=True))
 
 # various dirty but at least automatic patches applying on the specific DD code

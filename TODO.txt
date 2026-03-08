@@ -1,19 +1,11 @@
-- log writes to 3808 bank switching
-- finalize jump tables
-- by default, seems that all JSR 4xxx jump to bank 1 vectors
-  wrap those calls with a macro to redirect calls or check
-  for proper bank
-- at first try to link without bank ROMs
-- variadic gas macro to jump/jsr to bank symbol ex: JSR_BANK  4089,1,3,5
-- assemble banked roms alone bank 1
-- bank 0: resolve jump tables
+- wire special addresses
+- check what firq does (vs irq) on MAME : nullify it
 - convert subcpu
 
 - play with palette write wpoint
 - palette writes can be useful to detect 
   level changes & load new tilesets
 
-clarify bank numbers & switches check source code w to 3808
 
 bank 0:
   pshu

@@ -125,8 +125,9 @@
 
 bank_switch_copy_3a = $3a
 
+bank_address_4000 = $4000
 port_1_3800 = $3800
-port_2_3800 = $3801
+port_2_3801 = $3801
 extra_3802 = $3802
 dsw_0_3803 = $3803
 dsw_1_3804 = $3804
@@ -141,6 +142,9 @@ scroll_y_lo_380a = $380a
 previous_bank_register_0e43 = $e43
 previous_bank_register_0e44 = $e44
 previous_bank_register_0e45 = $e45
+
+bg_tiles_address_3000 = $3000
+fg_tiles_address_1800 = $1800
 
 reset_8000:     ; [global]
 8000: 4F             CLRA
@@ -1151,7 +1155,7 @@ l_84ec:
 8990: 32 7E          LEAS   -$2,S
 8992: B6 0E 71       LDA    $0E71
 8995: B7 0E 72       STA    $0E72
-8998: B6 38 01       LDA    port_1_3801
+8998: B6 38 01       LDA    port_2_3801
 899B: 43             COMA
 899C: F6 38 02       LDB    extra_3802
 899F: 53             COMB
@@ -1178,7 +1182,7 @@ l_84ec:
 89D1: 10 27 00 A3    LBEQ   $8A78
 89D5: 17 00 A9       LBSR   $8A81
 89D8: 10 27 00 9C    LBEQ   $8A78
-89DC: B6 38 01       LDA    port_1_3801
+89DC: B6 38 01       LDA    port_2_3801
 89DF: 43             COMA
 89E0: F6 38 02       LDB    extra_3802
 89E3: 53             COMB
@@ -1260,7 +1264,7 @@ l_84ec:
 8A84: 30 1F          LEAX   -$1,X
 8A86: 8C 00 00       CMPX   #$0000
 8A89: 26 F9          BNE    $8A84
-8A8B: B6 38 01       LDA    port_1_3801
+8A8B: B6 38 01       LDA    port_2_3801
 8A8E: 43             COMA
 8A8F: F6 38 02       LDB    extra_3802
 8A92: 53             COMB
@@ -5517,7 +5521,7 @@ B820: 84 1F          ANDA   #$1F
 B822: 97 3A          STA    bank_switch_copy_3a
 B824: 0F 00          CLR    $00
 B826: 0F 01          CLR    $01
-B828: 8E 40 00       LDX    #$4000
+B828: 8E 40 00       LDX    #bank_address_4000
 B82B: 96 3A          LDA    bank_switch_copy_3a
 B82D: B7 38 08       STA    bankswitch_3808
 B830: A6 80          LDA    ,X+
@@ -7980,7 +7984,7 @@ E2F3: EC 88 38       LDD    $38,X
 E2F6: ED 22          STD    $2,Y
 E2F8: 10 83 C0 00    CMPD   #$C000
 E2FC: 24 0B          BCC    $E309
-E2FE: 10 83 40 00    CMPD   #$4000
+E2FE: 10 83 40 00    CMPD   #bank_address_4000
 E302: 23 0A          BLS    $E30E
 E304: CC 00 00       LDD    #$0000
 E307: 20 08          BRA    $E311
@@ -8612,7 +8616,7 @@ E8AE: 34 02          PSHS   A
 E8B0: 1F 98          TFR    B,A
 E8B2: 48             ASLA
 E8B3: 5F             CLRB
-E8B4: C3 40 00       ADDD   #$4000
+E8B4: C3 40 00       ADDD   #bank_address_4000
 E8B7: 1F 02          TFR    D,Y
 E8B9: 35 02          PULS   A
 E8BB: 35 90          PULS   X,PC
