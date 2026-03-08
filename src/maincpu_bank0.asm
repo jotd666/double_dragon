@@ -1,15 +1,25 @@
 ; bank 0, active when 0 is written in 3808
 ; only a few vectors, then hopefully no direct jumps
 ; from the main code
+lb0_4000:
 4000: 7E 44 49       JMP    $4449
+lb0_4003:
 4003: 7E 46 E0       JMP    $46E0
+lb0_4006:
 4006: 7E 45 D7       JMP    $45D7
+lb0_4009:
 4009: 7E 40 1E       JMP    $401E
+lb0_400c:
 400C: 7E 48 04       JMP    $4804
+lb0_400f:
 400F: 7E 47 DB       JMP    $47DB
+lb0_4012:
 4012: 7E 45 B1       JMP    $45B1
+lb0_4015:
 4015: 7E 46 A3       JMP    $46A3
+lb0_4018:
 4018: 7E 44 CD       JMP    lb0_44cd
+lb0_401b:
 401B: 7E 42 D3       JMP    $42D3
 
 401E: 34 7E          PSHS   U,Y,X,DP,D

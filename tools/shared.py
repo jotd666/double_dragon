@@ -5,7 +5,7 @@ tablere = re.compile("move.w\t#(\w*table_....),d(.)")
 jmpre = re.compile("(j..)\s+\[a,(.)\]")
 dreg_dict = {'a':'d0','b':'d1'}
 areg_dict = {'x':'a2','y':'a3','u':'a4'}
-
+bank_re = re.compile("\|.*\[banks=([^\]]*)]")
 jtre = re.compile("#jump_table_(\w+)")
 
 def remove_instruction(lines,i):
@@ -118,6 +118,36 @@ def process_file(input_radix,output_radix,f_handle_line,global_symbols,out_heade
                     lo = f"{prefix}{offset}"
                     main_globals.add(go)
                     line = line.replace(lo,go)
+            else:
+                m = bank_re.search(line)
+                if m:
+                    banks=m.group(1).split(",")
+                    banks = [int(x) for x in banks if x]
+                    # change the JSR/JMP by a Jxx_BANK: that solves the unsatified symbols
+                    # and directs to the proper bank according to current bank
+                    toks = line.split("|")
+                    insts = toks[0].split()
+                    inst = "SR" if insts[0]=="jbsr" else "MP"
+                    operand = insts[1]
+
+                    bank_array = ["0"]*6
+                    for b in banks:
+                        bank_array[b] = "1"
+                    bank_slots = ",".join(bank_array)
+
+                    if operand.startswith("l_"):
+                        # anonymous operand
+                        address = int(operand.split("_")[1],16)
+                        if len(banks)==1:
+                            # only 1 bank: no need for switch, just change label by proper lbx_
+                            new_operand = f"bl{banks[0]}_{address:04x}"
+                            line = line.replace(operand,new_operand)
+                        else:
+                            toks[0] = f"\tJ{inst}_BANK\t{address:04x},{bank_slots}\t"
+                            line = "|".join(toks)
+                    else:
+                        # is it useful to name those addresses? a comment would do
+                        raise Exception(f"unsupported named bank address {operand}")
 
             # pre-add video_address tag if we find a store instruction to an explicit 3000-3FFF address
             if store_to_video.search(line):

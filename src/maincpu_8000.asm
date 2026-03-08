@@ -120,6 +120,8 @@
 ; bank 5 contains code
 ; bank 6 is empty
 ; bank 7 is empty
+;
+; the [banks=0,1,4] tag indicates which known banks are accessed in this jump
 
 bank_switch_copy_3a = $3a
 
@@ -167,7 +169,7 @@ reset_8000:
 8043: 86 20          LDA    #$20
 8045: BD B7 56       JSR    $B756
 8048: BD FF 4A       JSR    $FF4A
-804B: BD 6C 00       JSR    lb3_6c00
+804B: BD 6C 00       JSR    $6C00  ; [banks=3]
 804E: BD FC 8F       JSR    $FC8F
 8051: 1C AF          ANDCC  #$AF
 8053: 7E 80 BA       JMP    $80BA
@@ -477,7 +479,7 @@ firq_8092:
 8313: BD FC 5A       JSR    $FC5A
 8316: BD FC BE       JSR    $FCBE
 8319: BD FC 82       JSR    $FC82
-831C: BD 40 5A       JSR    $405A		; [bank_1]
+831C: BD 40 5A       JSR    $405A		 ; [banks=1,5]
 831F: BD FC 8F       JSR    $FC8F
 8322: B6 03 EE       LDA    $03EE
 8325: 84 5F          ANDA   #$5F
@@ -531,7 +533,7 @@ firq_8092:
 83AB: BD FC C8       JSR    $FCC8
 83AE: BD B7 CA       JSR    $B7CA
 83B1: BD FC 82       JSR    $FC82
-83B4: BD 40 5D       JSR    $405D		; [bank_1]
+83B4: BD 40 5D       JSR    $405D		 ; [banks=5]
 83B7: BD FC 8F       JSR    $FC8F
 83BA: BD FF 01       JSR    $FF01
 83BD: BD FF 5E       JSR    $FF5E
@@ -606,7 +608,7 @@ firq_8092:
 8468: 8A 60          ORA    #$60
 846A: B7 38 08       STA    bankswitch_3808
 846D: 97 3A          STA    bank_switch_copy_3a
-846F: BD 6C 1E       JSR    $6C1E
+846F: BD 6C 1E       JSR    $6C1E ; [banks=3,5]
 8472: 96 3A          LDA    bank_switch_copy_3a
 8474: 84 1F          ANDA   #$1F
 8476: B7 38 08       STA    bankswitch_3808
@@ -902,7 +904,7 @@ l_84ec:
 8744: A4 A5          ANDA   B,Y
 8746: 97 29          STA    $29
 8748: BD FD A0       JSR    $FDA0
-874B: BD 40 99       JSR    $4099		; [bank_1]
+874B: BD 40 99       JSR    $4099		 ; [banks=1,4]
 874E: 34 01          PSHS   CC
 8750: BD FD B2       JSR    $FDB2
 8753: 35 01          PULS   CC
@@ -1460,9 +1462,9 @@ l_84ec:
 8CDC: A7 2C          STA    $C,Y
 8CDE: BD FE 80       JSR    $FE80
 8CE1: BD FD A0       JSR    $FDA0
-8CE4: BD 40 8A       JSR    $408A	; [bank_1]
-8CE7: BD 40 A8       JSR    $40A8	; [bank_1]
-8CEA: BD 40 AB       JSR    $40AB	; [bank_1]
+8CE4: BD 40 8A       JSR    $408A	 ; [banks=0,1,4]
+8CE7: BD 40 A8       JSR    $40A8	 ; [banks=0,1]
+8CEA: BD 40 AB       JSR    $40AB	 ; [banks=1]
 8CED: BD FD B2       JSR    $FDB2
 8CF0: EC 04          LDD    $4,X
 8CF2: ED 26          STD    $6,Y
@@ -1623,7 +1625,7 @@ l_84ec:
 8E70: 7E FA 4C       JMP    $FA4C
 
 8E7C: BD FD A0       JSR    $FDA0
-8E7F: BD 40 90       JSR    $4090
+8E7F: BD 40 90       JSR    $4090 ; [banks=0,1,4,5]
 8E82: 34 01          PSHS   CC
 8E84: BD FD B2       JSR    $FDB2
 8E87: 35 81          PULS   CC,PC
@@ -2044,7 +2046,7 @@ l_84ec:
 94DC: 39             RTS
 
 94E9: BD FC 82       JSR    $FC82
-94EC: BD 40 78       JSR    $4078
+94EC: BD 40 78       JSR    $4078 ; [banks=1,5]
 94EF: BD FC 8F       JSR    $FC8F
 94F2: 39             RTS
 
@@ -2522,7 +2524,7 @@ l_84ec:
 9962: BD 9E 7B       JSR    $9E7B
 9965: 35 C0          PULS   U,PC
 9967: BD FD A0       JSR    $FDA0
-996A: BD 40 78       JSR    $4078	; [bank_1]
+996A: BD 40 78       JSR    $4078	 ; [banks=1,5]
 996D: BD FD B2       JSR    $FDB2
 9970: 39             RTS
 9971: 34 40          PSHS   U
@@ -2979,7 +2981,7 @@ l_84ec:
 9DC5: 86 07          LDA    #$07
 9DC7: 20 11          BRA    $9DDA
 9DC9: BD FD A0       JSR    $FDA0
-9DCC: BD 40 5A       JSR    $405A		; [bank_1]
+9DCC: BD 40 5A       JSR    $405A		 ; [banks=1,5]
 9DCF: 34 01          PSHS   CC
 9DD1: BD FD B2       JSR    $FDB2
 9DD4: 35 01          PULS   CC
@@ -3495,7 +3497,7 @@ A30A: E3 04          ADDD   $4,X
 A30C: ED 04          STD    $4,X
 A30E: 39             RTS
 A30F: BD FD A0       JSR    $FDA0
-A312: BD 40 5D       JSR    $405D		; [bank_1]
+A312: BD 40 5D       JSR    $405D		 ; [banks=5]
 A315: 34 01          PSHS   CC
 A317: BD FD B2       JSR    $FDB2
 A31A: 35 81          PULS   CC,PC
@@ -3720,7 +3722,7 @@ A545: 6C 88 1D       INC    $1D,X
 A548: 39             RTS
 A549: 34 02          PSHS   A
 A54B: BD FC 82       JSR    $FC82
-A54E: BD 40 CF       JSR    $40CF	; [bank_1]
+A54E: BD 40 CF       JSR    $40CF	 ; [banks=4,5]
 A551: BD FC 8F       JSR    $FC8F
 A554: 35 82          PULS   A,PC
 A556: A6 88 15       LDA    $15,X
@@ -4034,25 +4036,25 @@ A86F: 35 F6          PULS   D,X,Y,U,PC
 
 
 A8C9: BD FD A0       JSR    $FDA0
-A8CC: BD 40 30       JSR    $4030	; [bank_1]
+A8CC: BD 40 30       JSR    $4030	 ; [banks=1,4,5]
 A8CF: 34 01          PSHS   CC
 A8D1: BD FD B2       JSR    $FDB2
 A8D4: 35 81          PULS   CC,PC
 A8D6: BD FD A0       JSR    $FDA0
-A8D9: BD 40 6C       JSR    $406C	; [bank_1]
+A8D9: BD 40 6C       JSR    $406C	 ; [banks=1,4,5]
 A8DC: BD FD B2       JSR    $FDB2
 A8DF: 35 F6          PULS   D,X,Y,U,PC
 A8E1: BD FC 82       JSR    $FC82
-A8E4: BD 40 60       JSR    $4060	; [bank_1]
+A8E4: BD 40 60       JSR    $4060	 ; [banks=4,5]
 A8E7: BD FC 8F       JSR    $FC8F
 A8EA: 39             RTS
 A8EB: BD FD A0       JSR    $FDA0
-A8EE: BD 40 A2       JSR    $40A2	; [bank_1]
+A8EE: BD 40 A2       JSR    $40A2	 ; [banks=0,5]
 A8F1: BD FD B2       JSR    $FDB2
 A8F4: 35 F6          PULS   D,X,Y,U,PC
 
 A8F6: BD FC 82       JSR    $FC82
-A8F9: BD 40 BA       JSR    $40BA	; [bank_1]
+A8F9: BD 40 BA       JSR    $40BA	 ; [banks=0,5]
 A8FC: BD FC 8F       JSR    $FC8F
 A8FF: 39             RTS
 A900: A6 88 1B       LDA    $1B,X
@@ -4178,15 +4180,15 @@ AACE: 86 00          LDA    #$00
 AAD0: A7 88 1B       STA    $1B,X
 AAD3: 39             RTS
 AAD4: BD FC 82       JSR    $FC82
-AAD7: BD 40 DB       JSR    $40DB		; [bank_1]
+AAD7: BD 40 DB       JSR    $40DB		 ; [banks=4]
 AADA: BD FC 8F       JSR    $FC8F
 AADD: 39             RTS
 AADE: BD FC 82       JSR    $FC82
-AAE1: BD 40 DE       JSR    $40DE		; [bank_1]
+AAE1: BD 40 DE       JSR    $40DE		 ; [banks=]
 AAE4: BD FC 8F       JSR    $FC8F
 AAE7: 39             RTS
 AAE8: BD FC 82       JSR    $FC82
-AAEB: BD 40 D8       JSR    $40D8	; [bank_1]
+AAEB: BD 40 D8       JSR    $40D8	 ; [banks=]
 AAEE: BD FC 8F       JSR    $FC8F
 AAF1: 39             RTS
 AAF2: 34 40          PSHS   U
@@ -4260,7 +4262,7 @@ AB96: A7 88 1B       STA    $1B,X
 AB99: 35 C0          PULS   U,PC
 
 ABA6: BD FC 82       JSR    $FC82
-ABA9: BD 40 D5       JSR    $40D5
+ABA9: BD 40 D5       JSR    $40D5 ; [banks=]
 ABAC: BD FC 8F       JSR    $FC8F
 ABAF: 39             RTS
 
@@ -4531,7 +4533,7 @@ AE2D: A7 23          STA    $3,Y
 AE2F: 39             RTS
 
 AE38: BD FC 82       JSR    $FC82
-AE3B: BD 40 E1       JSR    $40E1	; [bank_1]
+AE3B: BD 40 E1       JSR    $40E1	 ; [banks=4,5]
 AE3E: BD FC 8F       JSR    $FC8F
 AE41: 39             RTS
 AE42: 34 40          PSHS   U
@@ -4574,20 +4576,20 @@ AE93: A7 88 1B       STA    $1B,X
 AE96: 35 C0          PULS   U,PC
 
 AEA0: BD FC 82       JSR    $FC82
-AEA3: BD 40 E4       JSR    $40E4
+AEA3: BD 40 E4       JSR    $40E4 ; [banks=5]
 AEA6: BD FC 8F       JSR    $FC8F
 AEA9: 39             RTS
 
 AEAA: BD FC 82       JSR    $FC82
-AEAD: BD 40 E7       JSR    $40E7
+AEAD: BD 40 E7       JSR    $40E7 ; [banks=]
 AEB0: BD FC 8F       JSR    $FC8F
 AEB3: 39             RTS
 AEB4: BD FC 82       JSR    $FC82
-AEB7: BD 40 D2       JSR    $40D2
+AEB7: BD 40 D2       JSR    $40D2 ; [banks=0]
 AEBA: BD FC 8F       JSR    $FC8F
 AEBD: 39             RTS
 AEBE: BD FC 82       JSR    $FC82
-AEC1: BD 40 B4       JSR    $40B4
+AEC1: BD 40 B4       JSR    $40B4 ; [banks=0]
 AEC4: BD FC 8F       JSR    $FC8F
 AEC7: 96 36          LDA    $36
 AEC9: 10 8E AE D1    LDY   #jump_table_aed1
@@ -4956,7 +4958,7 @@ B231: BA 0E 2E       ORA    $0E2E
 B234: B7 0E 2E       STA    $0E2E
 B237: 39             RTS
 B238: BD FD A0       JSR    $FDA0
-B23B: BD 40 57       JSR    $4057
+B23B: BD 40 57       JSR    $4057 ; [banks=5]
 B23E: BD FD B2       JSR    $FDB2
 B241: 39             RTS
 B242: 10 8E B2 63    LDY    #$B263
@@ -4986,7 +4988,7 @@ B340: 0C 2A          INC    $2A
 B342: BD B3 46       JSR    $B346
 B345: 39             RTS
 B346: BD FD A0       JSR    $FDA0
-B349: BD 40 7B       JSR    $407B
+B349: BD 40 7B       JSR    $407B ; [banks=1,5]
 B34C: BD FD B2       JSR    $FDB2
 B34F: 39             RTS
 B350: 8E 03 A2       LDX    #$03A2
@@ -5056,12 +5058,12 @@ B3DA: B7 0E 30       STA    $0E30
 B3DD: 39             RTS
 
 B3EC: BD FD A0       JSR    $FDA0
-B3EF: BD 40 87       JSR    $4087
+B3EF: BD 40 87       JSR    $4087 ; [banks=1]
 B3F2: BD FD B2       JSR    $FDB2
 B3F5: 39             RTS
 
 B3F6: BD FD A0       JSR    $FDA0
-B3F9: BD 40 8D       JSR    $408D
+B3F9: BD 40 8D       JSR    $408D ; [banks=1,5]
 B3FC: BD FD B2       JSR    $FDB2
 B3FF: 39             RTS
 B400: 34 7E          PSHS   U,Y,X,DP,D
@@ -5442,14 +5444,14 @@ B78A: 96 3A          LDA    bank_switch_copy_3a
 B78C: 8A 60          ORA    #$60
 B78E: 97 3A          STA    bank_switch_copy_3a
 B790: B7 38 08       STA    bankswitch_3808
-B793: BD 6C 0F       JSR    $6C0F
+B793: BD 6C 0F       JSR    $6C0F ; [banks=5]
 B796: BD FC 8F       JSR    $FC8F
 B799: 39             RTS
 B79A: 96 3A          LDA    bank_switch_copy_3a
 B79C: 8A 60          ORA    #$60
 B79E: 97 3A          STA    bank_switch_copy_3a
 B7A0: B7 38 08       STA    bankswitch_3808
-B7A3: BD 6C 15       JSR    $6C15
+B7A3: BD 6C 15       JSR    $6C15 ; [banks=0,5]
 B7A6: 34 01          PSHS   CC
 B7A8: BD FC 8F       JSR    $FC8F
 B7AB: 35 81          PULS   CC,PC
@@ -5457,11 +5459,11 @@ B7AD: 96 3A          LDA    bank_switch_copy_3a
 B7AF: 8A 60          ORA    #$60
 B7B1: 97 3A          STA    bank_switch_copy_3a
 B7B3: B7 38 08       STA    bankswitch_3808
-B7B6: BD 6C 18       JSR    $6C18
+B7B6: BD 6C 18       JSR    $6C18 ; [banks=]
 B7B9: BD FC 8F       JSR    $FC8F
 B7BC: 39             RTS
 B7BD: BD FC 82       JSR    $FC82
-B7C0: BD 40 AB       JSR    $40AB
+B7C0: BD 40 AB       JSR    $40AB ; [banks=1]
 B7C3: 34 01          PSHS   CC
 B7C5: BD FC 8F       JSR    $FC8F
 B7C8: 35 81          PULS   CC,PC
@@ -5469,14 +5471,14 @@ B7CA: 96 3A          LDA    bank_switch_copy_3a
 B7CC: 8A 60          ORA    #$60
 B7CE: 97 3A          STA    bank_switch_copy_3a
 B7D0: B7 38 08       STA    bankswitch_3808
-B7D3: BD 6C 1B       JSR    $6C1B
+B7D3: BD 6C 1B       JSR    $6C1B ; [banks=0,3,5]
 B7D6: 96 3A          LDA    bank_switch_copy_3a
 B7D8: 84 1F          ANDA   #$1F
 B7DA: 97 3A          STA    bank_switch_copy_3a
 B7DC: B7 38 08       STA    bankswitch_3808
 B7DF: 39             RTS
 B7E0: BD FC 82       JSR    $FC82
-B7E3: BD 40 C6       JSR    $40C6
+B7E3: BD 40 C6       JSR    $40C6 ; [banks=0,5]
 B7E6: 34 01          PSHS   CC
 B7E8: BD FC 8F       JSR    $FC8F
 B7EB: 35 81          PULS   CC,PC
@@ -5707,7 +5709,7 @@ BA95: 10 25 FF 35    LBCS   $B9CE
 BA99: BD F9 7E       JSR    $F97E
 BA9C: 39             RTS
 BA9D: BD BB 40       JSR    $BB40
-BAA0: BD 40 75       JSR    $4075
+BAA0: BD 40 75       JSR    $4075 ; [banks=0,1,4]
 BAA3: BD BB 4D       JSR    $BB4D
 BAA6: 39             RTS
 BAA7: A6 84          LDA    ,X
@@ -5735,20 +5737,20 @@ BAD9: BD F9 88       JSR    $F988
 BADC: 39             RTS
 
 BB15: BD BB 40       JSR    $BB40
-BB18: BD 40 36       JSR    $4036
+BB18: BD 40 36       JSR    $4036 ; [banks=1,4]
 BB1B: 34 01          PSHS   CC
 BB1D: BD BB 4D       JSR    $BB4D
 BB20: 35 81          PULS   CC,PC
 BB22: BD BB 40       JSR    $BB40
-BB25: BD 40 2A       JSR    $402A
+BB25: BD 40 2A       JSR    $402A ; [banks=4,5]
 BB28: BD BB 4D       JSR    $BB4D
 BB2B: 39             RTS
 BB2C: BD BB 40       JSR    $BB40
-BB2F: BD 40 2D       JSR    $402D
+BB2F: BD 40 2D       JSR    $402D ; [banks=1]
 BB32: BD BB 4D       JSR    $BB4D
 BB35: 39             RTS
 BB36: BD BB 40       JSR    $BB40
-BB39: BD 40 33       JSR    $4033
+BB39: BD 40 33       JSR    $4033 ; [banks=]
 BB3C: BD BB 4D       JSR    $BB4D
 BB3F: 39             RTS
 
@@ -5765,19 +5767,19 @@ BB53: 97 3A          STA    bank_switch_copy_3a
 BB55: B7 38 08       STA    bankswitch_3808
 BB58: 35 83          PULS   CC,A,PC
 BB5A: BD BB 40       JSR    $BB40
-BB5D: BD 40 72       JSR    $4072
+BB5D: BD 40 72       JSR    $4072 ; [banks=]
 BB60: BD BB 4D       JSR    $BB4D
 BB63: 39             RTS
 BB64: BD BB 40       JSR    $BB40
-BB67: BD 40 7E       JSR    $407E
+BB67: BD 40 7E       JSR    $407E ; [banks=0]
 BB6A: BD BB 4D       JSR    $BB4D
 BB6D: 39             RTS
 BB6E: BD BB 40       JSR    $BB40
-BB71: BD 40 81       JSR    $4081
+BB71: BD 40 81       JSR    $4081 ; [banks=5]
 BB74: BD BB 4D       JSR    $BB4D
 BB77: 39             RTS
 BB78: BD BB 40       JSR    $BB40
-BB7B: BD 40 84       JSR    $4084
+BB7B: BD 40 84       JSR    $4084 ; [banks=0,5]
 BB7E: BD BB 4D       JSR    $BB4D
 BB81: 39             RTS
 BB82: 32 7F          LEAS   -$1,S
@@ -5838,12 +5840,12 @@ BC23: BD FC 8F       JSR    $FC8F
 BC26: 39             RTS
 
 BC4F: BD FC 82       JSR    $FC82
-BC52: BD 40 81       JSR    $4081
+BC52: BD 40 81       JSR    $4081 ; [banks=5]
 BC55: BD FC 8F       JSR    $FC8F
 BC58: 39             RTS
 
 BC59: BD FC 82       JSR    $FC82
-BC5C: BD 40 66       JSR    $4066
+BC5C: BD 40 66       JSR    $4066 ; [banks=5]
 BC5F: BD FC 8F       JSR    $FC8F
 BC62: 39             RTS
 BC63: 34 7E          PSHS   U,Y,X,DP,D
@@ -8980,158 +8982,158 @@ EED3: 35 94          PULS   B,X,PC
 
 l_f900:
 F900: BD FC 28       JSR    $FC28                                      
-F903: BD 40 96       JSR    $4096                                      
+F903: BD 40 96       JSR    $4096 ; [banks=0,5]
 F906: BD FC 3A       JSR    $FC3A                                      
 F909: 39             RTS                                               
 l_f90a:
 F90A: BD FC 28       JSR    $FC28
-F90D: BD 40 99       JSR    $4099
+F90D: BD 40 99       JSR    $4099 ; [banks=1,4]
 F910: BD FC 3A       JSR    $FC3A
 F913: 39             RTS
 l_f914:
 F914: BD FC 28       JSR    $FC28
-F917: BD 40 9C       JSR    $409C
+F917: BD 40 9C       JSR    $409C ; [banks=0,1,5]
 F91A: BD FC 3A       JSR    $FC3A
 F91D: 39             RTS
 l_f91e:
 F91E: BD FC 28       JSR    $FC28
-F921: BD 40 84       JSR    $4084
+F921: BD 40 84       JSR    $4084 ; [banks=0,5]
 F924: BD FC 3A       JSR    $FC3A
 F927: 39             RTS
 l_f928:
 F928: BD FC 28       JSR    $FC28
-F92B: BD 40 87       JSR    $4087
+F92B: BD 40 87       JSR    $4087 ; [banks=1]
 F92E: BD FC 3A       JSR    $FC3A
 F931: 39             RTS
 l_f932:
 F932: BD FC 28       JSR    $FC28
-F935: BD 40 7B       JSR    $407B
+F935: BD 40 7B       JSR    $407B ; [banks=1,5]
 F938: BD FC 3A       JSR    $FC3A
 F93B: 39             RTS
 l_f93c:
 F93C: BD FC 28       JSR    $FC28
-F93F: BD 40 90       JSR    $4090
+F93F: BD 40 90       JSR    $4090 ; [banks=0,1,4,5]
 F942: BD FC 3A       JSR    $FC3A
 F945: 39             RTS
 l_f946:
 F946: BD FB 24       JSR    $FB24
-F949: BD 40 1B       JSR    $401B
+F949: BD 40 1B       JSR    $401B ; [banks=0,1,4,5]
 F94C: BD FB 34       JSR    $FB34
 F94F: 39             RTS
 F950: BD FC 28       JSR    $FC28
-F953: BD 40 7E       JSR    $407E
+F953: BD 40 7E       JSR    $407E ; [banks=0]
 F956: BD FC 3A       JSR    $FC3A
 F959: 39             RTS
 
 F960: BD FC 82       JSR    $FC82
-F963: BD 40 69       JSR    $4069
+F963: BD 40 69       JSR    $4069 ; [banks=4,5]
 F966: BD FC 8F       JSR    $FC8F
 F969: 39             RTS
 F96A: BD FC 82       JSR    $FC82
-F96D: BD 40 6F       JSR    $406F
+F96D: BD 40 6F       JSR    $406F ; [banks=4,5]
 F970: BD FC 8F       JSR    $FC8F
 F973: 39             RTS
 F974: BD FC 82       JSR    $FC82
-F977: BD 40 8A       JSR    $408A
+F977: BD 40 8A       JSR    $408A ; [banks=0,1,4]
 F97A: BD FC 8F       JSR    $FC8F
 F97D: 39             RTS
 F97E: BD FC 82       JSR    $FC82
-F981: BD 40 8D       JSR    $408D
+F981: BD 40 8D       JSR    $408D ; [banks=1,5]
 F984: BD FC 8F       JSR    $FC8F
 F987: 39             RTS
 F988: BD BB 40       JSR    $BB40
-F98B: BD 40 12       JSR    $4012
+F98B: BD 40 12       JSR    $4012 ; [banks=0,1]
 F98E: BD BB 4D       JSR    $BB4D
 F991: 39             RTS
 F992: BD FC 82       JSR    $FC82
-F995: BD 40 63       JSR    $4063
+F995: BD 40 63       JSR    $4063 ; [banks=5]
 F998: BD FC 8F       JSR    $FC8F
 F99B: 39             RTS
 F99C: BD BB 40       JSR    $BB40
-F99F: BD 40 15       JSR    $4015
+F99F: BD 40 15       JSR    $4015 ; [banks=1,4,5]
 F9A2: BD BB 4D       JSR    $BB4D
 F9A5: 39             RTS
 F9A6: BD FC 82       JSR    $FC82
-F9A9: BD 40 9F       JSR    $409F
+F9A9: BD 40 9F       JSR    $409F ; [banks=4,5]
 F9AC: BD FC 8F       JSR    $FC8F
 F9AF: 39             RTS
 F9B0: BD BB 40       JSR    $BB40
-F9B3: BD 40 18       JSR    $4018
+F9B3: BD 40 18       JSR    $4018 ; [banks=1,5]
 F9B6: BD BB 4D       JSR    $BB4D
 F9B9: 39             RTS
 F9BA: BD BB 40       JSR    $BB40
-F9BD: BD 40 1B       JSR    $401B
+F9BD: BD 40 1B       JSR    $401B ; [banks=0,1,4,5]
 F9C0: BD BB 4D       JSR    $BB4D
 F9C3: 39             RTS
 F9C4: BD BB 40       JSR    $BB40
-F9C7: BD 40 1E       JSR    $401E
+F9C7: BD 40 1E       JSR    $401E ; [banks=0,1,4]
 F9CA: BD BB 4D       JSR    $BB4D
 F9CD: 39             RTS
 F9CE: BD BB 40       JSR    $BB40
-F9D1: BD 40 21       JSR    $4021
+F9D1: BD 40 21       JSR    $4021 ; [banks=0]
 F9D4: BD BB 4D       JSR    $BB4D
 F9D7: 39             RTS
 F9D8: BD BB 40       JSR    $BB40
-F9DB: BD 40 24       JSR    $4024
+F9DB: BD 40 24       JSR    $4024 ; [banks=1,4]
 F9DE: BD BB 4D       JSR    $BB4D
 F9E1: 39             RTS
 F9E2: BD BB 40       JSR    $BB40
-F9E5: BD 40 27       JSR    $4027
+F9E5: BD 40 27       JSR    $4027 ; [banks=0,1]
 F9E8: BD BB 4D       JSR    $BB4D
 F9EB: 39             RTS
 
 l_fa00:
 FA00: BD FC 28       JSR    $FC28                                      
-FA03: BD 40 57       JSR    $4057  ; [bank_3]                                    
+FA03: BD 40 57       JSR    $4057   ; [banks=5]
 FA06: BD FC 3A       JSR    $FC3A
 FA09: 39             RTS
 
 FA10: BD FD A0       JSR    $FDA0
-FA13: BD 40 3C       JSR    $403C
+FA13: BD 40 3C       JSR    $403C ; [banks=5]
 FA16: BD FD B2       JSR    $FDB2
 FA19: 39             RTS
 FA1A: BD FD A0       JSR    $FDA0
-FA1D: BD 40 54       JSR    $4054
+FA1D: BD 40 54       JSR    $4054 ; [banks=1,5]
 FA20: BD FD B2       JSR    $FDB2
 FA23: 39             RTS
 FA24: BD FD A0       JSR    $FDA0
-FA27: BD 40 51       JSR    $4051
+FA27: BD 40 51       JSR    $4051 ; [banks=1,4,5]
 FA2A: BD FD B2       JSR    $FDB2
 FA2D: 39             RTS
 FA2E: BD FD A0       JSR    $FDA0
-FA31: BD 40 4E       JSR    $404E
+FA31: BD 40 4E       JSR    $404E ; [banks=1,4]
 FA34: BD FD B2       JSR    $FDB2
 FA37: 39             RTS
 FA38: BD FD A0       JSR    $FDA0
-FA3B: BD 40 4B       JSR    $404B
+FA3B: BD 40 4B       JSR    $404B ; [banks=4]
 FA3E: BD FD B2       JSR    $FDB2
 FA41: 39             RTS
 FA42: BD FD A0       JSR    $FDA0
-FA45: BD 40 45       JSR    lb5_4045
+FA45: BD 40 45       JSR    $4045 ; [banks=5]
 FA48: BD FD B2       JSR    $FDB2
 FA4B: 39             RTS
 FA4C: BD FD A0       JSR    $FDA0
-FA4F: BD 40 48       JSR    $4048
+FA4F: BD 40 48       JSR    $4048 ; [banks=5]
 FA52: BD FD B2       JSR    $FDB2
 FA55: 39             RTS
 FA56: BD FC 82       JSR    $FC82
-FA59: BD 40 1B       JSR    $401B
+FA59: BD 40 1B       JSR    $401B ; [banks=0,1,4,5]
 FA5C: BD FC 8F       JSR    $FC8F
 FA5F: 39             RTS
 FA60: BD FD A0       JSR    $FDA0
-FA63: BD 40 3F       JSR    $403F
+FA63: BD 40 3F       JSR    $403F ; [banks=1]
 FA66: BD FD B2       JSR    $FDB2
 FA69: 39             RTS
 
 l_fa70:
 FA70: BD FC 82       JSR    $FC82
-FA73: BD 40 5A       JSR    $405A
+FA73: BD 40 5A       JSR    $405A ; [banks=1,5]
 FA76: BD FC 8F       JSR    $FC8F
 FA79: 39             RTS
 
 l_fa80:
 FA80: BD FA 8A       JSR    $FA8A
-FA83: BD 78 00       JSR    $7800
+FA83: BD 78 00       JSR    $7800 ; [banks=]
 FA86: BD FF 9C       JSR    $FF9C
 FA89: 39             RTS
 FA8A: 34 02          PSHS   A
@@ -9166,22 +9168,22 @@ FACA: 97 3A          STA    bank_switch_copy_3a
 FACC: B7 38 08       STA    bankswitch_3808
 FACF: 39             RTS
 FAD0: BD FD A0       JSR    $FDA0
-FAD3: BD 40 42       JSR    $4042
+FAD3: BD 40 42       JSR    $4042 ; [banks=1,4]
 FAD6: BD FD B2       JSR    $FDB2
 FAD9: 39             RTS
 FADA: BD FC 82       JSR    $FC82
-FADD: BD 40 93       JSR    $4093
+FADD: BD 40 93       JSR    $4093 ; [banks=]
 FAE0: BD FC 8F       JSR    $FC8F
 FAE3: 39             RTS
 FAE4: BD FC 82       JSR    $FC82
-FAE7: BD 40 5A       JSR    $405A
+FAE7: BD 40 5A       JSR    $405A ; [banks=1,5]
 FAEA: BD FC 8F       JSR    $FC8F
 FAED: 39             RTS
 FAEE: BD FC 82       JSR    $FC82
-FAF1: BD 40 C3       JSR    $40C3
+FAF1: BD 40 C3       JSR    $40C3 ; [banks=5]
 FAF4: BD FC 8F       JSR    $FC8F
 FAF7: 39             RTS
-FAF8: 7E 40 1B       JMP    $401B
+FAF8: 7E 40 1B       JMP    $401B ; [banks=0,1,4,5]
 
 FB00: 96 3A          LDA    bank_switch_copy_3a
 FB02: B7 0E 45       STA    bank_register_copy_0e45
@@ -9189,7 +9191,7 @@ FB05: 84 1F          ANDA   #$1F
 FB07: 8A 80          ORA    #$80
 FB09: 97 3A          STA    bank_switch_copy_3a
 FB0B: B7 38 08       STA    bankswitch_3808
-FB0E: BD 40 00       JSR    $4000
+FB0E: BD 40 00       JSR    $4000 ; [banks=1,4]
 FB11: 96 3A          LDA    bank_switch_copy_3a
 FB13: 84 1F          ANDA   #$1F
 FB15: 97 3A          STA    bank_switch_copy_3a
@@ -9216,103 +9218,103 @@ FB42: 35 82          PULS   A,PC
 
 l_fb44:
 FB44: BD FB 24       JSR    $FB24
-FB47: BD 40 03       JSR    $4003
+FB47: BD 40 03       JSR    $4003 ; [banks=0,1]
 FB4A: BD FB 34       JSR    $FB34
 FB4D: 39             RTS
 l_fb4e:
 FB4E: BD FB 24       JSR    $FB24
-FB51: BD 40 06       JSR    $4006
+FB51: BD 40 06       JSR    $4006 ; [banks=0,1,5]
 FB54: BD FB 34       JSR    $FB34
 FB57: 39             RTS
 l_fb58:
 FB58: BD FB 24       JSR    $FB24
-FB5B: BD 40 09       JSR    $4009
+FB5B: BD 40 09       JSR    $4009 ; [banks=0,1,4,5]
 FB5E: BD FB 34       JSR    $FB34
 FB61: 39             RTS
 l_fb62:
 FB62: BD FB 24       JSR    $FB24
-FB65: BD 40 0C       JSR    $400C
+FB65: BD 40 0C       JSR    $400C ; [banks=0,1,5]
 FB68: BD FB 34       JSR    $FB34
 FB6B: 39             RTS
 l_fb6c:
 FB6C: BD FB 24       JSR    $FB24
-FB6F: BD 40 0F       JSR    $400F
+FB6F: BD 40 0F       JSR    $400F ; [banks=0,1,4,5]
 FB72: BD FB 34       JSR    $FB34
 FB75: 39             RTS
 l_fb76:
 FB76: BD FB 24       JSR    $FB24
-FB79: BD 40 12       JSR    $4012
+FB79: BD 40 12       JSR    $4012 ; [banks=0,1]
 FB7C: BD FB 34       JSR    $FB34
 FB7F: 39             RTS
 FB80: BD FB 24       JSR    $FB24
-FB83: BD 40 15       JSR    $4015
+FB83: BD 40 15       JSR    $4015 ; [banks=1,4,5]
 FB86: BD FB 34       JSR    $FB34
 FB89: 39             RTS
 l_fb8a:
 FB8A: BD FC 28       JSR    $FC28
-FB8D: BD 40 06       JSR    $4006
+FB8D: BD 40 06       JSR    $4006 ; [banks=0,1,5]
 FB90: BD FC 3A       JSR    $FC3A
 FB93: 39             RTS
 l_fb94:
 FB94: BD FC 28       JSR    $FC28
-FB97: BD 40 09       JSR    $4009
+FB97: BD 40 09       JSR    $4009 ; [banks=0,1,4,5]
 FB9A: BD FC 3A       JSR    $FC3A
 FB9D: 39             RTS
 l_fb9e:
 FB9E: BD FC 28       JSR    $FC28
-FBA1: BD 40 6C       JSR    $406C
+FBA1: BD 40 6C       JSR    $406C ; [banks=1,4,5]
 FBA4: BD FC 3A       JSR    $FC3A
 FBA7: 39             RTS
 l_fba8:
 FBA8: BD FC 28       JSR    $FC28
-FBAB: BD 40 A2       JSR    $40A2
+FBAB: BD 40 A2       JSR    $40A2 ; [banks=0,5]
 FBAE: BD FC 3A       JSR    $FC3A
 FBB1: 39             RTS
 
 
 FBC0: BD BB 40       JSR    $BB40
-FBC3: BD 40 06       JSR    $4006
+FBC3: BD 40 06       JSR    $4006 ; [banks=0,1,5]
 FBC6: BD BB 4D       JSR    $BB4D
 FBC9: 39             RTS
 
 FBCA: BD BB 40       JSR    $BB40
-FBCD: BD 40 09       JSR    $4009
+FBCD: BD 40 09       JSR    $4009 ; [banks=0,1,4,5]
 FBD0: BD BB 4D       JSR    $BB4D
 FBD3: 39             RTS
 FBD4: BD BB 40       JSR    $BB40
-FBD7: BD 40 0C       JSR    $400C
+FBD7: BD 40 0C       JSR    $400C ; [banks=0,1,5]
 FBDA: BD BB 4D       JSR    $BB4D
 FBDD: 39             RTS
 FBDE: BD BB 40       JSR    $BB40
-FBE1: BD 40 0F       JSR    $400F
+FBE1: BD 40 0F       JSR    $400F ; [banks=0,1,4,5]
 FBE4: BD BB 4D       JSR    $BB4D
 FBE7: 39             RTS
 FBE8: BD BB 40       JSR    $BB40
-FBEB: BD 40 6F       JSR    $406F
+FBEB: BD 40 6F       JSR    $406F ; [banks=4,5]
 FBEE: BD BB 4D       JSR    $BB4D
 FBF1: 39             RTS
 FBF2: BD FC 82       JSR    $FC82
-FBF5: BD 40 C0       JSR    $40C0
+FBF5: BD 40 C0       JSR    $40C0 ; [banks=0]
 FBF8: BD FC 8F       JSR    $FC8F
 FBFB: 39             RTS
 
 l_fc00:
 FC00: BD FD A0       JSR    $FDA0                                      
-FC03: BD 40 39       JSR    $4039                                      
+FC03: BD 40 39       JSR    $4039 ; [banks=1,5]
 FC06: BD FD B2       JSR    $FDB2
 FC09: 39             RTS
 l_fc0a:
 FC0A: BD FC 28       JSR    $FC28
-FC0D: BD 40 0C       JSR    $400C
+FC0D: BD 40 0C       JSR    $400C ; [banks=0,1,5]
 FC10: BD FC 3A       JSR    $FC3A
 FC13: 39             RTS
 FC14: BD FC 28       JSR    $FC28
-FC17: BD 40 90       JSR    $4090
+FC17: BD 40 90       JSR    $4090 ; [banks=0,1,4,5]
 FC1A: BD FC 3A       JSR    $FC3A
 FC1D: 39             RTS
 l_fc1e:
 FC1E: BD FC 28       JSR    $FC28
-FC21: BD 40 0F       JSR    $400F
+FC21: BD 40 0F       JSR    $400F ; [banks=0,1,4,5]
 FC24: BD FC 3A       JSR    $FC3A
 FC27: 39             RTS
 FC28: 34 02          PSHS   A
@@ -9335,25 +9337,25 @@ FC4B: B7 38 08       STA    bankswitch_3808
 FC4E: 35 82          PULS   A,PC
 l_fc50:
 FC50: BD FC 82       JSR    $FC82
-FC53: BD 40 45       JSR    lb5_4045
+FC53: BD 40 45       JSR    $4045 ; [banks=5]
 FC56: BD FC 8F       JSR    $FC8F
 FC59: 39             RTS
 
 FC5A: BD FC 82       JSR    $FC82
-FC5D: BD 40 48       JSR    $4048
+FC5D: BD 40 48       JSR    $4048 ; [banks=5]
 FC60: BD FC 8F       JSR    $FC8F
 FC63: 39             RTS
 FC64: BD FC 82       JSR    $FC82
-FC67: BD 40 4B       JSR    $404B
+FC67: BD 40 4B       JSR    $404B ; [banks=4]
 FC6A: BD FC 8F       JSR    $FC8F
 FC6D: 39             RTS
 FC6E: BD FC 82       JSR    $FC82
-FC71: BD 40 4E       JSR    $404E
+FC71: BD 40 4E       JSR    $404E ; [banks=1,4]
 FC74: BD FC 8F       JSR    $FC8F
 FC77: 39             RTS
 l_fc78:
 FC78: BD FC 82       JSR    $FC82
-FC7B: BD 40 57       JSR    $4057
+FC7B: BD 40 57       JSR    $4057 ; [banks=5]
 FC7E: BD FC 8F       JSR    $FC8F
 FC81: 39             RTS
 FC82: 34 02          PSHS   A
@@ -9373,19 +9375,19 @@ FC9A: 35 82          PULS   A,PC
 FCA6: BD FC 8F       JSR    $FC8F
 FCA9: 39             RTS
 FCAA: BD FC 82       JSR    $FC82
-FCAD: BD 40 18       JSR    $4018
+FCAD: BD 40 18       JSR    $4018 ; [banks=1,5]
 FCB0: BD FC 8F       JSR    $FC8F
 FCB3: 39             RTS
 FCB4: BD FC 82       JSR    $FC82
-FCB7: BD 40 15       JSR    $4015
+FCB7: BD 40 15       JSR    $4015 ; [banks=1,4,5]
 FCBA: BD FC 8F       JSR    $FC8F
 FCBD: 39             RTS
 FCBE: BD FC 82       JSR    $FC82
-FCC1: BD 40 51       JSR    $4051
+FCC1: BD 40 51       JSR    $4051 ; [banks=1,4,5]
 FCC4: BD FC 8F       JSR    $FC8F
 FCC7: 39             RTS
 FCC8: BD FC 82       JSR    $FC82
-FCCB: BD 40 54       JSR    $4054
+FCCB: BD 40 54       JSR    $4054 ; [banks=1,5]
 FCCE: BD FC 8F       JSR    $FC8F
 FCD1: 39             RTS
 FCD2: BD E1 A1       JSR    $E1A1
@@ -9419,39 +9421,39 @@ FD18: 96 36          LDA    $36
 FD1A: 81 03          CMPA   #$03
 FD1C: 26 09          BNE    $FD27
 FD1E: BD FC 82       JSR    $FC82
-FD21: BD 40 AB       JSR    $40AB
+FD21: BD 40 AB       JSR    $40AB ; [banks=1]
 FD24: BD FC 8F       JSR    $FC8F
 FD27: 39             RTS
 
 
 FD39: 39             RTS
 FD3A: BD FC 82       JSR    $FC82
-FD3D: BD 40 B7       JSR    $40B7
+FD3D: BD 40 B7       JSR    $40B7 ; [banks=4]
 FD40: BD FC 8F       JSR    $FC8F
 FD43: 39             RTS
 FD44: BD FC 82       JSR    $FC82
-FD47: BD 40 BD       JSR    $40BD
+FD47: BD 40 BD       JSR    $40BD ; [banks=]
 FD4A: BD FC 8F       JSR    $FC8F
 FD4D: 39             RTS
 FD4E: BD BB 40       JSR    $BB40
-FD51: BD 40 63       JSR    $4063
+FD51: BD 40 63       JSR    $4063 ; [banks=5]
 FD54: BD BB 4D       JSR    $BB4D
 FD57: 39             RTS
 FD58: BD BB 40       JSR    $BB40
-FD5B: BD 40 66       JSR    $4066
+FD5B: BD 40 66       JSR    $4066 ; [banks=5]
 FD5E: BD BB 4D       JSR    $BB4D
 FD61: 39             RTS
 FD62: BD BB 40       JSR    $BB40
-FD65: BD 40 69       JSR    $4069
+FD65: BD 40 69       JSR    $4069 ; [banks=4,5]
 FD68: BD BB 4D       JSR    $BB4D
 FD6B: 39             RTS
 
 FD70: BD FC 82       JSR    $FC82
-FD73: BD 40 39       JSR    $4039
+FD73: BD 40 39       JSR    $4039 ; [banks=1,5]
 FD76: BD FC 8F       JSR    $FC8F
 FD79: 39             RTS
 FD7A: BD FC 82       JSR    $FC82
-FD7D: BD 40 3C       JSR    $403C
+FD7D: BD 40 3C       JSR    $403C ; [banks=5]
 FD80: BD FC 8F       JSR    $FC8F
 FD83: 39             RTS
 
@@ -9459,7 +9461,7 @@ FD84: 96 3A          LDA    bank_switch_copy_3a
 FD86: 8A 80          ORA    #$80
 FD88: 97 3A          STA    bank_switch_copy_3a
 FD8A: B7 38 08       STA    bankswitch_3808
-FD8D: BD 40 00       JSR    $4000
+FD8D: BD 40 00       JSR    $4000 ; [banks=1,4]
 FD90: BD FC 8F       JSR    $FC8F
 FD93: 39             RTS
 
@@ -9488,7 +9490,7 @@ FDCA: 84 1F          ANDA   #$1F
 FDCC: 8A 60          ORA    #$60
 FDCE: 97 3A          STA    bank_switch_copy_3a
 FDD0: B7 38 08       STA    bankswitch_3808
-FDD3: BD 6C 12       JSR    $6C12
+FDD3: BD 6C 12       JSR    $6C12 ; [banks=]
 FDD6: 96 3A          LDA    bank_switch_copy_3a
 FDD8: 84 1F          ANDA   #$1F
 FDDA: 8A A0          ORA    #$A0
@@ -9537,59 +9539,59 @@ FE61: 7E A4 3D       JMP    $A43D
 l_fe64:
 FE64: 7E A5 29       JMP    $A529
 FE67: 7E A4 A3       JMP    $A4A3
-FE80: 7E 40 1E       JMP    $401E
-FE83: 7E 46 52       JMP    $4652
-FE86: 7E 45 B1       JMP    $45B1
-FE89: 7E 44 DC       JMP    $44DC
-FE8C: 7E 48 B1       JMP    $48B1
-FE8F: 7E 46 E0       JMP    $46E0
-FE92: 7E 48 EB       JMP    $48EB
-FE95: 7E 41 C9       JMP    lb0_41c9
-FE98: 7E 41 E3       JMP    lb0_41e3
-FE9B: 7E 41 D6       JMP    lb0_41d6
-FE9E: 7E 42 13       JMP    lb0_4213
-FEA1: 7E 42 B4       JMP    lb0_42b4
-FEA4: 7E 42 31       JMP    $4231
-FEA7: 7E 45 66       JMP    $4566
-FEAA: 7E 41 BF       JMP    lb0_41bf
-FEAD: 7E 41 F0       JMP    lb0_41f0
+FE80: 7E 40 1E       JMP    $401E ; [banks=0,1,4]
+FE83: 7E 46 52       JMP    $4652 ; [banks=]
+FE86: 7E 45 B1       JMP    $45B1 ; [banks=0]
+FE89: 7E 44 DC       JMP    $44DC ; [banks=0,1,4]
+FE8C: 7E 48 B1       JMP    $48B1 ; [banks=]
+FE8F: 7E 46 E0       JMP    $46E0 ; [banks=0]
+FE92: 7E 48 EB       JMP    $48EB ; [banks=]
+FE95: 7E 41 C9       JMP    $41C9
+FE98: 7E 41 E3       JMP    $41E3
+FE9B: 7E 41 D6       JMP    $41D6
+FE9E: 7E 42 13       JMP    $4213
+FEA1: 7E 42 B4       JMP    $42B4
+FEA4: 7E 42 31       JMP    $4231 ; [banks=0,4]
+FEA7: 7E 45 66       JMP    $4566 ; [banks=0]
+FEAA: 7E 41 BF       JMP    $41BF
+FEAD: 7E 41 F0       JMP    $41F0
 FEB0: 7E FC 50       JMP    $FC50
 FEB3: 7E FC 78       JMP    $FC78
-FEB6: 7E 44 CD       JMP    lb0_44cd
-FEB9: 7E 44 49       JMP    $4449
-FEBC: 7E 47 36       JMP    $4736
-FEBF: 7E 45 D7       JMP    $45D7
-FEC2: 7E 47 DB       JMP    $47DB
-FEC5: 7E 68 1B       JMP    $681B
-FEC8: 7E 6D 64       JMP    $6D64
-FECB: 7E 47 E3       JMP    $47E3
-FECE: 7E 47 E9       JMP    $47E9
-FED1: 7E 48 04       JMP    $4804
-FED4: 7E 67 5D       JMP    $675D
-FED7: 7E 5F 85       JMP    $5F85
-FEDA: 7E 5B 1F       JMP    $5B1F
-FEDD: 7E 58 8F       JMP    $588F
-FEE0: 7E 5C 93       JMP    $5C93
-FEE3: 7E 4A 6B       JMP    $4A6B
-FEE6: 7E 51 E5       JMP    $51E5
-FEE9: 7E 4D 9D       JMP    $4D9D
-FEEC: 7E 4E 4B       JMP    $4E4B
-FEEF: 7E 4E 76       JMP    $4E76
-FEF2: 7E 4F 80       JMP    $4F80
-FEF5: 7E 4D DD       JMP    $4DDD
-FEF8: 7E 49 A0       JMP    lb0_49a0
-FEFB: 7E 46 A3       JMP    $46A3
+FEB6: 7E 44 CD       JMP    $44CD
+FEB9: 7E 44 49       JMP    $4449 ; [banks=0,1,4]
+FEBC: 7E 47 36       JMP    $4736 ; [banks=1]
+FEBF: 7E 45 D7       JMP    $45D7 ; [banks=0]
+FEC2: 7E 47 DB       JMP    $47DB ; [banks=0,1]
+FEC5: 7E 68 1B       JMP    $681B ; [banks=0]
+FEC8: 7E 6D 64       JMP    $6D64 ; [banks=5]
+FECB: 7E 47 E3       JMP    $47E3 ; [banks=1]
+FECE: 7E 47 E9       JMP    $47E9 ; [banks=1]
+FED1: 7E 48 04       JMP    $4804 ; [banks=0]
+FED4: 7E 67 5D       JMP    $675D ; [banks=0,5]
+FED7: 7E 5F 85       JMP    $5F85 ; [banks=0]
+FEDA: 7E 5B 1F       JMP    $5B1F ; [banks=0]
+FEDD: 7E 58 8F       JMP    $588F ; [banks=0,1]
+FEE0: 7E 5C 93       JMP    $5C93 ; [banks=]
+FEE3: 7E 4A 6B       JMP    $4A6B ; [banks=0]
+FEE6: 7E 51 E5       JMP    $51E5 ; [banks=0,1]
+FEE9: 7E 4D 9D       JMP    $4D9D ; [banks=0]
+FEEC: 7E 4E 4B       JMP    $4E4B ; [banks=0]
+FEEF: 7E 4E 76       JMP    $4E76 ; [banks=0]
+FEF2: 7E 4F 80       JMP    $4F80 ; [banks=0]
+FEF5: 7E 4D DD       JMP    $4DDD ; [banks=0,5]
+FEF8: 7E 49 A0       JMP    $49A0
+FEFB: 7E 46 A3       JMP    $46A3 ; [banks=0,1]
 FEFE: 7E FF C9       JMP    $FFC9
-FF01: 7E 42 42       JMP    $4242
-FF04: 7E 48 8C       JMP    $488C
+FF01: 7E 42 42       JMP    $4242 ; [banks=0,1,4]
+FF04: 7E 48 8C       JMP    $488C ; [banks=]
 
 l_ff10:
 FF10: BD FD A0       JSR    $FDA0
-FF13: BD 40 00       JSR    $4000
+FF13: BD 40 00       JSR    $4000 ; [banks=1,4]
 FF16: BD FD B2       JSR    $FDB2
 FF19: 39             RTS
 FF1A: BD FD A0       JSR    $FDA0
-FF1D: BD 40 03       JSR    $4003
+FF1D: BD 40 03       JSR    $4003 ; [banks=0,1]
 FF20: BD FD B2       JSR    $FDB2
 FF23: 39             RTS
 FF24: 34 02          PSHS   A
@@ -9615,11 +9617,11 @@ FF4E: 97 3A          STA    bank_switch_copy_3a
 FF50: B7 38 08       STA    bankswitch_3808
 FF53: 39             RTS
 FF54: BD FF 4A       JSR    $FF4A
-FF57: BD 6C 03       JSR    $6C03
+FF57: BD 6C 03       JSR    $6C03 ; [banks=3,5]
 FF5A: BD FC 8F       JSR    $FC8F
 FF5D: 39             RTS
 FF5E: BD FC 82       JSR    $FC82
-FF61: BD 40 A5       JSR    $40A5
+FF61: BD 40 A5       JSR    $40A5 ; [banks=4,5]
 FF64: 20 F4          BRA    $FF5A
 
 FF68: 7D 09 F2       TST    $09F2
@@ -9652,26 +9654,26 @@ FFA6: B7 38 08       STA    bankswitch_3808
 FFA9: 35 82          PULS   A,PC
 l_ffab:
 FFAB: BD FF 80       JSR    $FF80
-FFAE: BD 78 09       JSR    $7809
+FFAE: BD 78 09       JSR    $7809 ; [banks=]
 FFB1: BD FC 8F       JSR    $FC8F
 FFB4: 39             RTS
 l_ffb5:
 FFB5: BD FF 80       JSR    $FF80
-FFB8: BD 78 03       JSR    lb4_7803
+FFB8: BD 78 03       JSR    $7803 ; [banks=4]
 FFBB: BD FC 8F       JSR    $FC8F
 FFBE: 39             RTS
 FFBF: BD FF 80       JSR    $FF80
-FFC2: BD 78 06       JSR    $7806
+FFC2: BD 78 06       JSR    $7806 ; [banks=]
 FFC5: BD FC 8F       JSR    $FC8F
 FFC8: 39             RTS
 l_ffc9:
 FFC9: BD FF 8D       JSR    $FF8D
-FFCC: BD 40 45       JSR    lb5_4045
+FFCC: BD 40 45       JSR    $4045 ; [banks=5]
 FFCF: BD FF 9C       JSR    $FF9C
 FFD2: 39             RTS
 l_ffd3:
 FFD3: BD FC 8F       JSR    $FC8F
-FFD6: BD 40 00       JSR    $4000
+FFD6: BD 40 00       JSR    $4000 ; [banks=1,4]
 FFD9: BD FF 9C       JSR    $FF9C
 FFDC: 39             RTS
 FFDD: 39             RTS
@@ -9873,27 +9875,28 @@ jump_table_bbec:
 	dc.w	$bc58	; $bc10
 	dc.w	$bc58	; $bc12
 
+; it can be bank 1 or bank 5, only those banks have so many vectors. debugging shows it's bank 5 (reached at section 2 of level 1)
 jump_table_bc27:
-	dc.w	$401e 
-	dc.w	$401e 
-	dc.w	$4021 
-	dc.w	$4021 
-	dc.w	$4021 
-	dc.w	$4021 
-	dc.w	$4021
-	dc.w	$4021
-	dc.w	$40cc
-	dc.w	$4036
-	dc.w	$402a
-	dc.w	$402d
-	dc.w	$4030
-	dc.w	$4033
-	dc.w	$4033 
-	dc.w	$4027
-	dc.w	$403f
-	dc.w	$4042 
-	dc.w	$4072
-	dc.w	$40ae 
+	dc.w	lb5_401e 
+	dc.w	lb5_401e 
+	dc.w	lb5_4021 
+	dc.w	lb5_4021 
+	dc.w	lb5_4021 
+	dc.w	lb5_4021 
+	dc.w	lb5_4021
+	dc.w	lb5_4021
+	dc.w	lb5_40cc
+	dc.w	lb5_4036
+	dc.w	lb5_402a
+	dc.w	lb5_402d
+	dc.w	lb5_4030
+	dc.w	lb5_4033
+	dc.w	lb5_4033 
+	dc.w	lb5_4027
+	dc.w	lb5_403f
+	dc.w	lb5_4042 
+	dc.w	lb5_4072
+	dc.w	lb1_40ae 
 
 jump_table_bc8d:
 	dc.w	$bcb6	; $bc8d
