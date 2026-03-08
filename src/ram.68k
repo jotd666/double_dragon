@@ -40,7 +40,7 @@ ram_buffer:
 rom_bank:
 	.skip	0x4000
 rom_buffer:
-	.skip	0x10000-0x4000
+	.skip	0x10000-ROM_START
 	.else
 dev_ram_buffer:
 	.skip	0x20000

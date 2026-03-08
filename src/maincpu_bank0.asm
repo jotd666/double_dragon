@@ -223,9 +223,11 @@ lb0_401e:   ; [global]
 41B3: 32 68          LEAS   $8,S
 41B5: 35 B6          PULS   D,X,Y,PC
 
+; clear memory
+clear_memory_41bf:
 lb0_41bf:   ; [global]
 41BF: 34 31          PSHS   Y,X,CC
-41C1: 6F 80          CLR    ,X+
+41C1: 6F 80          CLR    ,X+			; [unchecked_address]
 41C3: 31 3F          LEAY   -$1,Y
 41C5: 26 FA          BNE    $41C1
 41C7: 35 B1          PULS   CC,X,Y,PC
@@ -234,19 +236,19 @@ lb0_41c9:   ; [global]
 41C9: 34 31          PSHS   Y,X,CC
 41CB: 8E 00 20       LDX    #$0020
 41CE: 10 8E 0E 53    LDY    #$0E53
-41D2: 8D EB          BSR    $41BF
+41D2: 8D EB          BSR    clear_memory_41bf
 41D4: 35 B1          PULS   CC,X,Y,PC
 lb0_41d6:   ; [global]
 41D6: 34 31          PSHS   Y,X,CC
-41D8: 8E 30 00       LDX    #$3000
+41D8: 8E 30 00       LDX    #bg_tiles_address_3000
 41DB: 10 8E 08 00    LDY    #$0800
-41DF: 8D DE          BSR    $41BF
+41DF: 8D DE          BSR    clear_memory_41bf
 41E1: 35 B1          PULS   CC,X,Y,PC
 lb0_41e3:   ; [global]
 41E3: 34 31          PSHS   Y,X,CC
-41E5: 8E 18 00       LDX    #$1800
+41E5: 8E 18 00       LDX    #fg_tiles_address_1800
 41E8: 10 8E 08 00    LDY    #$0800
-41EC: 8D D1          BSR    $41BF
+41EC: 8D D1          BSR    clear_memory_41bf
 41EE: 35 B1          PULS   CC,X,Y,PC
 lb0_41f0:   ; [global]
 41F0: 34 57          PSHS   U,X,D,CC
@@ -348,7 +350,7 @@ lb0_4242:   ; [global]
 
 lb0_42b4:   ; [global]
 42B4: 34 07          PSHS   D,CC
-42B6: B6 38 03       LDA    $3803
+42B6: B6 38 03       LDA    dsw_0_3803
 42B9: 43             COMA
 42BA: C6 01          LDB    #$01
 42BC: 85 40          BITA   #$40
@@ -359,10 +361,11 @@ lb0_42b4:   ; [global]
 42C6: C8 01          EORB   #$01
 42C8: 58             ASLB
 42C9: 58             ASLB
-42CA: DA 3A          ORB    $3A
-42CC: D7 3A          STB    $3A
-42CE: F7 38 08       STB    $3808
+42CA: DA 3A          ORB    bank_switch_copy_3a
+42CC: D7 3A          STB    bank_switch_copy_3a
+42CE: F7 38 08       STB    bankswitch_3808
 42D1: 35 87          PULS   CC,D,PC
+
 42D3: 34 77          PSHS   U,Y,X,D,CC
 42D5: D6 26          LDB    $26
 42D7: 10 27 00 D6    LBEQ   $43B1
@@ -1219,10 +1222,10 @@ lb0_4a6b:    ; [global]
 4AA5: C6 00          LDB    #$00
 4AA7: F7 38 09       STB    $3809
 4AAA: F7 38 0A       STB    $380A
-4AAD: 96 3A          LDA    $3A
+4AAD: 96 3A          LDA    bank_switch_copy_3a
 4AAF: 84 FC          ANDA   #$FC
-4AB1: 97 3A          STA    $3A
-4AB3: B7 38 08       STA    $3808
+4AB1: 97 3A          STA    bank_switch_copy_3a
+4AB3: B7 38 08       STA    bankswitch_3808
 4AB6: 39             RTS
 4AB7: 86 04          LDA    #$04
 4AB9: 97 4B          STA    $4B
@@ -1449,7 +1452,6 @@ lb0_4e76:    ; [global]
 4EBC: 39             RTS
 
 4EC5: FC 0A 5F       LDQ    $0A5F 	; [6309_instruction]
-4EC7: 5F             CLRB
 4EC8: 10 83 05 00    CMPD   #$0500
 4ECC: 24 08          BCC    $4ED6
 4ECE: CC 01 00       LDD    #$0100

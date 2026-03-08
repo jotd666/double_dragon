@@ -166,11 +166,12 @@ lb1_40e4:      ; [global]
 4117: 8B 02       ADDA   #$02
 4119: B7 03 A1    STA    $03A1
 411C: 35 A6       PULS   D,Y,PC
+
 411E: 34 40       PSHS   U
-4120: 96 3A       LDA    $3A
+4120: 96 3A       LDA    bank_switch_copy_3a
 4122: 8A 10       ORA    #$10
-4124: 97 3A       STA    $3A
-4126: B7 38 08    STA    $3808
+4124: 97 3A       STA    bank_switch_copy_3a
+4126: B7 38 08    STA    bankswitch_3808
 4129: B6 38 02    LDA    $3802
 412C: 84 10       ANDA   #$10
 412E: 26 F9       BNE    $4129
@@ -261,10 +262,10 @@ lb1_40e4:      ; [global]
 41EA: 10 25 FF 66 LBCS   $4154
 41EE: 1E 03       EXG    D,U
 41F0: F7 20 00    STB    $2000
-41F3: 96 3A       LDA    $3A
+41F3: 96 3A       LDA    bank_switch_copy_3a
 41F5: 84 EF       ANDA   #$EF
-41F7: 97 3A       STA    $3A
-41F9: B7 38 08    STA    $3808
+41F7: 97 3A       STA    bank_switch_copy_3a
+41F9: B7 38 08    STA    bankswitch_3808
 41FC: B6 38 02    LDA    $3802
 41FF: 84 10       ANDA   #$10
 4201: 27 F9       BEQ    $41FC
@@ -2493,7 +2494,7 @@ lb1_40e4:      ; [global]
 57A9: 86 FF       LDA    #$FF
 57AB: 97 02       STA    $02
 57AD: 96 02       LDA    $02
-57AF: A7 88 3A    STA    $3A,X
+57AF: A7 88 3A    STA    bank_switch_copy_3a,X
 57B2: DC 03       LDD    $03
 57B4: 0D 03       TST    $03
 57B6: 27 04       BEQ    $57BC
@@ -2953,7 +2954,7 @@ lb1_40e4:      ; [global]
 5BFB: 20 BC       BRA    $5BB9
 5BFD: CC 03 A2    LDD    #$03A2
 5C00: FD 0E 4B    STD    $0E4B
-5C03: A6 88 3A    LDA    $3A,X
+5C03: A6 88 3A    LDA    bank_switch_copy_3a,X
 5C06: B7 0E 48    STA    $0E48
 5C09: A6 88 3B    LDA    $3B,X
 5C0C: B7 0E 49    STA    $0E49
@@ -4902,7 +4903,7 @@ lb1_40e4:      ; [global]
 6ECD: 10 A3 04    CMPD   $4,X
 6ED0: 24 F6       BCC    $6EC8
 6ED2: 7E 6E 73    JMP    $6E73
-6ED5: A6 88 3A    LDA    $3A,X
+6ED5: A6 88 3A    LDA    bank_switch_copy_3a,X
 6ED8: 81 40       CMPA   #$40
 6EDA: 24 27       BCC    $6F03
 6EDC: 1F 89       TFR    A,B

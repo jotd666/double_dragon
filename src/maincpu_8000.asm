@@ -149,20 +149,20 @@ fg_tiles_address_1800 = $1800
 reset_8000:     ; [global]
 8000: 4F             CLRA
 8001: B7 0E 71       STA    $0E71
-8004: B7 38 08       STA    bankswitch_3808
-8007: 1A 50          ORCC   #$50
+8004: B7 38 08       STA    bankswitch_3808		; set bank 0
+8007: 1A 50          ORCC   #$50				; disable interrupts
 8009: B7 38 0D       STA    irq_ack_380d
 800C: B7 38 0B       STA    nmi_ack_380b
 800F: B7 38 0C       STA    firq_ack_380c
 8012: 4F             CLRA
 8013: 1F 8B          TFR    A,DP
-8015: CE 0E FF       LDU    #$0EFF
-8018: 10 CE 0F FF    LDS    #$0FFF
+8015: CE 0E FF       LDU    #$0EFF		; set U stack
+8018: 10 CE 0F FF    LDS    #$0FFF		; set S stack
 801C: BD FE 95       JSR    $FE95
-801F: BD FE 98       JSR    $FE98
-8022: BD FE 9B       JSR    $FE9B
+801F: BD FE 98       JSR    clear_fg_screen_fe98
+8022: BD FE 9B       JSR    clear_bg_screen_fe9b
 8025: BD FE 9E       JSR    $FE9E
-8028: BD FE A1       JSR    $FEA1
+8028: BD FE A1       JSR    set_screen_orientation_fea1
 802B: BD FD F0       JSR    $FDF0
 802E: 1C EF          ANDCC  #$EF
 8030: 96 3A          LDA    bank_switch_copy_3a
@@ -174,7 +174,7 @@ reset_8000:     ; [global]
 803D: B7 38 08       STA    bankswitch_3808
 8040: 7E B7 ED       JMP    $B7ED
 8043: 86 20          LDA    #$20
-8045: BD B7 56       JSR    $B756
+8045: BD B7 56       JSR    vbl_delay_b756
 8048: BD FF 4A       JSR    switch_to_bank_3_ff4a
 804B: BD 6C 00       JSR    $6C00  ; [banks=3]
 804E: BD FC 8F       JSR    switch_to_bank_0_fc8f
@@ -264,10 +264,10 @@ firq_8092:   ; [global]
 80F7: 0F 29          CLR    $29
 80F9: 7F 03 EE       CLR    $03EE
 80FC: 7F 04 4C       CLR    $044C
-80FF: BD FE A1       JSR    $FEA1
-8102: BD FE 9B       JSR    $FE9B
+80FF: BD FE A1       JSR    set_screen_orientation_fea1
+8102: BD FE 9B       JSR    clear_bg_screen_fe9b
 8105: BD FE 9E       JSR    $FE9E
-8108: BD FE 98       JSR    $FE98
+8108: BD FE 98       JSR    clear_fg_screen_fe98
 810B: 0F 36          CLR    $36
 810D: 0F 38          CLR    $38
 810F: 0F 37          CLR    $37
@@ -281,22 +281,22 @@ firq_8092:   ; [global]
 8124: 86 07          LDA    #$07
 8126: BD FE B0       JSR    $FEB0
 8129: 86 18          LDA    #$18
-812B: BD B7 56       JSR    $B756
+812B: BD B7 56       JSR    vbl_delay_b756
 812E: 86 87          LDA    #$87
 8130: BD FE B0       JSR    $FEB0
 8133: 86 08          LDA    #$08
-8135: BD B7 56       JSR    $B756
+8135: BD B7 56       JSR    vbl_delay_b756
 8138: 7A 0E 2D       DEC    $0E2D
 813B: 26 E7          BNE    $8124
 813D: 86 FF          LDA    #$FF
-813F: BD B7 56       JSR    $B756
+813F: BD B7 56       JSR    vbl_delay_b756
 8142: 86 20          LDA    #$20
-8144: BD B7 56       JSR    $B756
-8147: BD FE 9B       JSR    $FE9B
-814A: BD FE 98       JSR    $FE98
+8144: BD B7 56       JSR    vbl_delay_b756
+8147: BD FE 9B       JSR    clear_bg_screen_fe9b
+814A: BD FE 98       JSR    clear_fg_screen_fe98
 814D: BD FE 9E       JSR    $FE9E
 8150: 86 01          LDA    #$01
-8152: BD B7 56       JSR    $B756
+8152: BD B7 56       JSR    vbl_delay_b756
 8155: 16 00 BD       LBRA   $8215
 8158: 86 FF          LDA    #$FF
 815A: B7 38 0E       STA    sound_irq_380e
@@ -308,13 +308,13 @@ firq_8092:   ; [global]
 8167: 7F 03 EE       CLR    $03EE
 816A: 7F 04 4C       CLR    $044C
 816D: 0F 29          CLR    $29
-816F: BD FE A1       JSR    $FEA1
-8172: BD FE 9B       JSR    $FE9B
+816F: BD FE A1       JSR    set_screen_orientation_fea1
+8172: BD FE 9B       JSR    clear_bg_screen_fe9b
 8175: BD FE 9E       JSR    $FE9E
 8178: 0F 36          CLR    $36
 817A: BD FD F0       JSR    $FDF0
 817D: BD FD F3       JSR    $FDF3
-8180: BD FE 98       JSR    $FE98
+8180: BD FE 98       JSR    clear_fg_screen_fe98
 8183: BD FE E3       JSR    $FEE3
 8186: 86 FF          LDA    #$FF
 8188: B7 38 0E       STA    sound_irq_380e
@@ -355,7 +355,7 @@ firq_8092:   ; [global]
 81D8: BD FE B0       JSR    $FEB0
 81DB: BD 84 45       JSR    $8445
 81DE: 86 01          LDA    #$01
-81E0: BD B7 56       JSR    $B756
+81E0: BD B7 56       JSR    vbl_delay_b756
 81E3: F6 38 00       LDB    port_1_3800
 81E6: 53             COMB
 81E7: C4 C0          ANDB   #$C0
@@ -447,9 +447,9 @@ firq_8092:   ; [global]
 82AB: 10 8E 00 20    LDY    #$0020
 82AF: BD FE AA       JSR    $FEAA
 82B2: BD FE 9E       JSR    $FE9E
-82B5: BD FE 98       JSR    $FE98
-82B8: BD FE 9B       JSR    $FE9B
-82BB: BD FE A1       JSR    $FEA1
+82B5: BD FE 98       JSR    clear_fg_screen_fe98
+82B8: BD FE 9B       JSR    clear_bg_screen_fe9b
+82BB: BD FE A1       JSR    set_screen_orientation_fea1
 82BE: 35 06          PULS   D
 82C0: B7 03 EA       STA    $03EA
 82C3: F7 04 48       STB    $0448
@@ -464,7 +464,7 @@ firq_8092:   ; [global]
 82DC: B6 03 EA       LDA    $03EA
 82DF: F6 04 48       LDB    $0448
 82E2: 34 06          PSHS   D
-82E4: BD FE 9B       JSR    $FE9B
+82E4: BD FE 9B       JSR    clear_bg_screen_fe9b
 82E7: 8E 03 A2       LDX    #$03A2
 82EA: 10 8E 0A CF    LDY    #$0ACF
 82EE: BD FE AA       JSR    $FEAA
@@ -606,8 +606,8 @@ firq_8092:   ; [global]
 8450: 7F 0E 71       CLR    $0E71
 8453: 86 FF          LDA    #$FF
 8455: B7 38 0E       STA    sound_irq_380e
-8458: BD FE 98       JSR    $FE98
-845B: BD FE 9B       JSR    $FE9B
+8458: BD FE 98       JSR    clear_fg_screen_fe98
+845B: BD FE 9B       JSR    clear_bg_screen_fe9b
 845E: BD FE 9E       JSR    $FE9E
 8461: 86 FE          LDA    #$FE
 8463: B7 38 0E       STA    sound_irq_380e
@@ -750,7 +750,7 @@ l_84ec:
 85AB: 86 14          LDA    #$14
 85AD: BD FE B0       JSR    $FEB0
 85B0: 86 40          LDA    #$40
-85B2: BD B7 56       JSR    $B756
+85B2: BD B7 56       JSR    vbl_delay_b756
 85B5: 1F 98          TFR    B,A
 85B7: 8A 80          ORA    #$80
 85B9: BD FE B0       JSR    $FEB0
@@ -844,7 +844,7 @@ l_84ec:
 8693: 84 7F          ANDA   #$7F
 8695: B7 0E 71       STA    $0E71
 8698: 86 80          LDA    #$80
-869A: BD B7 56       JSR    $B756
+869A: BD B7 56       JSR    vbl_delay_b756
 869D: 86 8F          LDA    #$8F
 869F: BD FE B0       JSR    $FEB0
 86A2: 20 03          BRA    $86A7
@@ -1074,7 +1074,7 @@ l_84ec:
 88C8: 86 0A          LDA    #$0A
 88CA: BD FE B0       JSR    $FEB0
 88CD: 86 80          LDA    #$80
-88CF: BD B7 56       JSR    $B756
+88CF: BD B7 56       JSR    vbl_delay_b756
 88D2: 86 8B          LDA    #$8B
 88D4: BD FE B0       JSR    $FEB0
 88D7: 86 8C          LDA    #$8C
@@ -1100,13 +1100,13 @@ l_84ec:
 8908: B6 04 00       LDA    $0400
 890B: 2B 24          BMI    $8931
 890D: 86 01          LDA    #$01
-890F: BD B7 56       JSR    $B756
+890F: BD B7 56       JSR    vbl_delay_b756
 8912: FC 0E 4D       LDD    $0E4D
 8915: 83 00 01       SUBD   #$0001
 8918: FD 0E 4D       STD    $0E4D
 891B: 26 CF          BNE    $88EC
-891D: BD FE 9B       JSR    $FE9B
-8920: BD FE 98       JSR    $FE98
+891D: BD FE 9B       JSR    clear_bg_screen_fe9b
+8920: BD FE 98       JSR    clear_fg_screen_fe98
 8923: BD FE 9E       JSR    $FE9E
 8926: 0D 21          TST    $21
 8928: 10 26 F8 2C    LBNE   $8158
@@ -1250,7 +1250,7 @@ l_84ec:
 8A63: 0C 26          INC    $26
 8A65: 1C AF          ANDCC  #$AF
 8A67: 86 01          LDA    #$01
-8A69: BD B7 56       JSR    $B756
+8A69: BD B7 56       JSR    vbl_delay_b756
 8A6C: 96 3A          LDA    bank_switch_copy_3a
 8A6E: 84 1F          ANDA   #$1F
 8A70: 97 3A          STA    bank_switch_copy_3a
@@ -5422,33 +5422,45 @@ B74F: 25 F8          BCS    $B749
 B751: 86 00          LDA    #$00
 B753: 97 4B          STA    $4B
 B755: 39             RTS
+
+vbl_delay_b756:
 B756: 34 04          PSHS   B
-B758: 8D 1B          BSR    $B775
-B75A: 8D 11          BSR    $B76D
+B758: 8D 1B          BSR    wait_vbl_off_b775
+B75A: 8D 11          BSR    wait_vbl_on_b76d
 B75C: 4A             DECA
 B75D: 26 F9          BNE    $B758
 B75F: 35 84          PULS   B,PC
+
+vbl_delay_b761:
 B761: 34 76          PSHS   U,Y,X,D
-B763: 8D 10          BSR    $B775
-B765: 8D 06          BSR    $B76D
+B763: 8D 10          BSR    wait_vbl_off_b775
+B765: 8D 06          BSR    wait_vbl_on_b76d
 B767: 6A E4          DEC    ,S
 B769: 26 F8          BNE    $B763
 B76B: 35 F6          PULS   D,X,Y,U,PC
+
+wait_vbl_on_b76d:
 B76D: F6 38 02       LDB    extra_3802
 B770: C4 08          ANDB   #$08
-B772: 26 F9          BNE    $B76D
+B772: 26 F9          BNE    wait_vbl_on_b76d
 B774: 39             RTS
+
+wait_vbl_off_b775:
 B775: F6 38 02       LDB    extra_3802
 B778: C4 08          ANDB   #$08
-B77A: 27 F9          BEQ    $B775
+B77A: 27 F9          BEQ    wait_vbl_off_b775
 B77C: 39             RTS
+
 B77D: 0D 53          TST    $53
 B77F: 26 FC          BNE    $B77D
 B781: 39             RTS
+
+vbl_sync_b782:
 B782: 34 04          PSHS   B
-B784: 8D EF          BSR    $B775
-B786: 8D E5          BSR    $B76D
+B784: 8D EF          BSR    wait_vbl_off_b775
+B786: 8D E5          BSR    wait_vbl_on_b76d
 B788: 35 84          PULS   B,PC
+
 B78A: 96 3A          LDA    bank_switch_copy_3a
 B78C: 8A 60          ORA    #$60		; bank=3
 B78E: 97 3A          STA    bank_switch_copy_3a
@@ -5464,8 +5476,8 @@ B7A0: B7 38 08       STA    bankswitch_3808
 B7A3: BD 6C 15       JSR    $6C15 ; [banks=3]
 B7A6: 34 01          PSHS   CC
 B7A8: BD FC 8F       JSR    switch_to_bank_0_fc8f
-
 B7AB: 35 81          PULS   CC,PC
+
 B7AD: 96 3A          LDA    bank_switch_copy_3a
 B7AF: 8A 60          ORA    #$60    ; bank=3
 B7B1: 97 3A          STA    bank_switch_copy_3a
@@ -5478,6 +5490,7 @@ B7C0: BD 40 AB       JSR    $40AB ; [banks=5]
 B7C3: 34 01          PSHS   CC
 B7C5: BD FC 8F       JSR    switch_to_bank_0_fc8f
 B7C8: 35 81          PULS   CC,PC
+
 B7CA: 96 3A          LDA    bank_switch_copy_3a
 B7CC: 8A 60          ORA    #$60	; bank=3
 B7CE: 97 3A          STA    bank_switch_copy_3a
@@ -5488,6 +5501,7 @@ B7D8: 84 1F          ANDA   #$1F
 B7DA: 97 3A          STA    bank_switch_copy_3a
 B7DC: B7 38 08       STA    bankswitch_3808
 B7DF: 39             RTS
+
 B7E0: BD FC 82       JSR    switch_to_bank_5_fc82
 B7E3: BD 40 C6       JSR    $40C6 ; [banks=5]
 B7E6: 34 01          PSHS   CC
@@ -5513,18 +5527,19 @@ B80E: 20 02          BRA    $B812
 B810: C6 01          LDB    #$01
 B812: 86 00          LDA    #$00
 B814: DF 3A          STU    bank_switch_copy_3a
-B816: BD FE A1       JSR    $FEA1
-B819: BD B8 EA       JSR    $B8EA
+B816: BD FE A1       JSR    set_screen_orientation_fea1
+B819: BD B8 EA       JSR    write_diagnostic_message_b8ea
 B81C: 0F 02          CLR    $02
 B81E: 96 3A          LDA    bank_switch_copy_3a
 B820: 84 1F          ANDA   #$1F
 B822: 97 3A          STA    bank_switch_copy_3a
 B824: 0F 00          CLR    $00
 B826: 0F 01          CLR    $01
+; checksum of banks
 B828: 8E 40 00       LDX    #bank_address_4000
 B82B: 96 3A          LDA    bank_switch_copy_3a
 B82D: B7 38 08       STA    bankswitch_3808
-B830: A6 80          LDA    ,X+
+B830: A6 80          LDA    ,X+		; [bank_address]
 B832: 9B 00          ADDA   $00
 B834: 97 00          STA    $00
 B836: 8C 80 00       CMPX   #$8000
@@ -5546,10 +5561,11 @@ B857: 20 02          BRA    $B85B
 B859: C6 00          LDB    #$00
 B85B: 0C 02          INC    $02
 B85D: 96 02          LDA    $02
-B85F: BD B8 EA       JSR    $B8EA
+B85F: BD B8 EA       JSR    write_diagnostic_message_b8ea
 B862: 96 02          LDA    $02
 B864: 81 03          CMPA   #$03
 B866: 26 BC          BNE    $B824
+; checksumming ROM
 B868: 8E 80 00       LDX    #$8000
 B86B: 0F 00          CLR    $00
 B86D: A6 80          LDA    ,X+
@@ -5564,7 +5580,7 @@ B880: A1 23          CMPA   $3,Y
 B882: 27 02          BEQ    $B886
 B884: C6 01          LDB    #$01
 B886: 86 04          LDA    #$04
-B888: BD B8 EA       JSR    $B8EA
+B888: BD B8 EA       JSR    write_diagnostic_message_b8ea
 B88B: 7F 0E 3E       CLR    $0E3E
 B88E: 96 3A          LDA    bank_switch_copy_3a
 B890: 8A 10          ORA    #$10
@@ -5589,13 +5605,13 @@ B8BC: 81 84          CMPA   #$84
 B8BE: 27 0A          BEQ    $B8CA
 B8C0: 86 05          LDA    #$05
 B8C2: C6 01          LDB    #$01
-B8C4: BD B8 EA       JSR    $B8EA
+B8C4: BD B8 EA       JSR    write_diagnostic_message_b8ea
 B8C7: 7E B8 C7       JMP    $B8C7
 B8CA: 86 05          LDA    #$05
 B8CC: C6 00          LDB    #$00
-B8CE: BD B8 EA       JSR    $B8EA
+B8CE: BD B8 EA       JSR    write_diagnostic_message_b8ea
 B8D1: 86 80          LDA    #$80
-B8D3: BD B7 56       JSR    $B756
+B8D3: BD B7 56       JSR    vbl_delay_b756
 B8D6: CE 0E FF       LDU    #$0EFF
 B8D9: 96 3A          LDA    bank_switch_copy_3a
 B8DB: 84 1F          ANDA   #$1F
@@ -5603,9 +5619,11 @@ B8DD: 97 3A          STA    bank_switch_copy_3a
 B8DF: B7 38 08       STA    bankswitch_3808
 B8E2: 7E 80 43       JMP    $8043
 
+; < A: message index
+write_diagnostic_message_b8ea:
 B8EA: D7 0E          STB    $0E
 B8EC: 97 0F          STA    $0F
-B8EE: 10 8E B9 2A    LDY    #$B92A
+B8EE: 10 8E B9 2A    LDY    #$B92A		; message/address table
 B8F2: 48             ASLA
 B8F3: 10 AE A6       LDY    A,Y
 B8F6: AE A1          LDX    ,Y++
@@ -5613,7 +5631,7 @@ B8F8: E6 A0          LDB    ,Y+
 B8FA: 27 08          BEQ    $B904
 B8FC: 86 04          LDA    #$04
 B8FE: C0 20          SUBB   #$20
-B900: ED 81          STD    ,X++
+B900: ED 81          STD    ,X++	; [video_address_word]
 B902: 20 F4          BRA    $B8F8
 B904: 8E 1A 30       LDX    #$1A30
 B907: 96 0F          LDA    $0F
@@ -5629,7 +5647,7 @@ B91D: E6 A0          LDB    ,Y+
 B91F: 27 08          BEQ    $B929
 B921: 86 04          LDA    #$04
 B923: C0 20          SUBB   #$20
-B925: ED 81          STD    ,X++
+B925: ED 81          STD    ,X++		; [video_address_word]
 B927: 20 F4          BRA    $B91D
 B929: 39             RTS
 
@@ -7740,7 +7758,7 @@ jump_table_e089:
 	dc.w	$e09d
 	dc.w	$e097
 
-E091: BD FE 9B       JSR    $FE9B
+E091: BD FE 9B       JSR    clear_bg_screen_fe9b
 E094: BD E0 E8       JSR    $E0E8
 E097: BD E0 A1       JSR    $E0A1
 E09A: BD E0 BC       JSR    $E0BC
@@ -9559,7 +9577,7 @@ FDFF: 7E E9 65       JMP    $E965
 l_fe20:
 FE20: 7E 90 4B       JMP    $904B
 l_fe23:
-FE23: 7E B7 56       JMP    $B756
+FE23: 7E B7 56       JMP    vbl_delay_b756
 
 l_fe30:
 FE30: 7E E8 28       JMP    $E828                                      
@@ -9592,9 +9610,12 @@ FE8C: 7E 48 B1       JMP    $48B1 ; [banks=0]
 FE8F: 7E 46 E0       JMP    $46E0 ; [banks=0]
 FE92: 7E 48 EB       JMP    $48EB ; [banks=0]
 FE95: 7E 41 C9       JMP    $41C9 ; [banks=0]
+clear_fg_screen_fe98:
 FE98: 7E 41 E3       JMP    $41E3 ; [banks=0]
+clear_bg_screen_fe9b:
 FE9B: 7E 41 D6       JMP    $41D6 ; [banks=0]
 FE9E: 7E 42 13       JMP    $4213 ; [banks=0]
+set_screen_orientation_fea1:
 FEA1: 7E 42 B4       JMP    $42B4 ; [banks=0]
 FEA4: 7E 42 31       JMP    $4231 ; [banks=0]
 FEA7: 7E 45 66       JMP    $4566 ; [banks=0]

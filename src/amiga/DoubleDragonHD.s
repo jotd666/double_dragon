@@ -5,12 +5,9 @@
 
 ;CHIP_ONLY
 
-	IFD	CD32_SLAVE
-EXPMEM = 0
-	ELSE
-EXPMEM = $200000
-	ENDC
-CHIPSIZE = $1E0000
+
+CHIPSIZE = $200000
+EXPMEM = $400000
 
 _base	SLAVE_HEADER					; ws_security + ws_id
 	dc.w	17					; ws_version (was 10)
@@ -38,16 +35,13 @@ _config
 	dc.b	"C1:X:invincible:0;"
 	dc.b	"C1:X:infinite lives:1;"
 	dc.b	"C1:X:infinite time:2;"
-	dc.b	"C1:X:start on second loop:3;"
 	dc.b	"C1:X:cheat keys:4;"
 	dc.b	"C2:X:50 Hz update:0;"
-	;dc.b	"C2:X:skip intro/map sequence:1;"   ; for quick testing purposes, not for operational use
-	dc.b	"C2:X:no level music:2;"
-	dc.b	"C2:X:service mode:3;"
+
 
 	dc.b	"C3:L:difficulty level:easy,normal,difficult,very difficult;"
 	dc.b	"C4:L:lives:3,4,5,7;"
-	dc.b	"C5:L:start level:graveyard,town,cave,bridge,tower 1,tower 2,boss;"
+	;dc.b	"C5:L:start level:graveyard,town,cave,bridge,tower 1,tower 2,boss;"
 	dc.b	0
 
 	IFD BARFLY

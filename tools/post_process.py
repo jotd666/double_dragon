@@ -4,13 +4,6 @@ from shared import *
 
 
 
-input_dict = {"bankswitch_3808":"set_bank",
-"irq_ack_380d":"",
-"nmi_ack_380b":"",
-"firq_ack_380c":"",
-}
-
-
 process_main = True
 process_bank_0 = 1
 process_bank_1 = 1
@@ -144,6 +137,8 @@ def f_handle_main_line(address,lines,i):
     elif address == 0xe660:
         line = "\tPOP_SR\n"+line
         lines[i+1] = remove_error(lines[i+1])
+    elif address == 0xB8AC:
+        line = remove_instruction(lines,i)
     elif address == 0xA91D:
         # fix double jump table
         line = change_instruction("lea\ttable_of_jump_tables_a92d,a3",lines,i)
@@ -164,7 +159,22 @@ def f_handle_main_line(address,lines,i):
     elif address in {0xe1b7,0xe3bc}:
         # pull from U => pull from stack
         line = change_instruction("move.w\t(sp)+,d2",lines,i)
-
+    elif address == 0xb775:
+        line = change_instruction("rts",lines,i)  # do nothing
+    elif address == 0xb76d:
+        line = """    GET_ADDRESS    extra_3802                     | [$b76d: ldb    extra_3802]
+    bset.b    #3,(a0)     | start not set (high)
+    * now wait for vbl to clear the bit
+0:
+    btst.b    #3,(a0)
+    jne    0b                       | [$b772: bne    wait_vbl_on_b76d]
+    rts                                        | [$b774: rts]
+"""
+    elif address == 0xeeb0:
+        line = change_instruction("jbsr\tosd_wait_vblank_interrupt",lines,i)
+        lines[i+1] = remove_instruction(lines,i+1)
+        lines[i+2] = remove_instruction(lines,i+2)
+        lines[i+3] = remove_instruction(lines,i+3)
     if "dsw1_1683" in line and "lda" in line:
         line = change_instruction("jbsr\tosd_read_dsw_1",lines,i)
     elif "dsw2_1600" in line and "lda" in line:
@@ -197,15 +207,7 @@ def f_handle_main_line(address,lines,i):
             line = change_instruction("jbsr\tosd_enable_interrupts",lines,i)
             lines[i-1] = remove_instruction(lines,i-1)
 
-    if "GET_ADDRESS" in line:
-        val = line.split()[1]
-        osd_call = input_dict.get(val)
-        if osd_call is not None:
-            if osd_call:
-                line = change_instruction(f"jbsr\tosd_{osd_call}",lines,i)
-            else:
-                line = remove_instruction(lines,i)
-            lines[i+1] = remove_instruction(lines,i+1)
+
 
 
     elif "unsupported instruction rti" in line:

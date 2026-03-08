@@ -8,6 +8,15 @@ areg_dict = {'x':'a2','y':'a3','u':'a4'}
 bank_re = re.compile("\|.*\[banks=([^\]]*)]")
 jtre = re.compile("#jump_table_(\w+)")
 
+
+
+input_dict = {"bankswitch_3808":"set_bank",
+"irq_ack_380d":"",
+"nmi_ack_380b":"",
+"firq_ack_380c":"",
+}
+
+
 def remove_instruction(lines,i):
     return change_instruction("",lines,i)
 
@@ -82,6 +91,19 @@ def subt(m):
 \tlea\t{tn},a{rn}"""
     return rval
 
+def handle_bank(line):
+    # pre-add video_address tag if we find a store instruction to an explicit 3000-3FFF address
+    if store_to_video.search(line):
+        line = line.rstrip() + " [video_address]\n"
+    # pre-add bank_address tag if we find a read instruction to an explicit 4000-5FFF address
+    if access_bank.search(line):
+        line = line.rstrip() + " [bank_address]\n"
+
+    if "[bank_address" in line:
+        # give me the original instruction
+        line = line.replace("_ADDRESS","_BANK_ADDRESS")
+
+    return line
 
 def explicit_stack_usage(line):
     return "check explicit S usage" in line or "review stack set from register" in line
@@ -106,6 +128,8 @@ def process_file(input_radix,output_radix,f_handle_line,global_symbols,out_heade
             if "[global]" in line:
                 label = line.split(":")[0]
                 global_symbols.append(label)
+
+            line = handle_bank(line)
 
             if "[6309_instruction]" in line:
                 line = change_instruction("illegal",lines,i)  # TEMP TEMP we'll see when we reach that
@@ -156,7 +180,10 @@ def process_file(input_radix,output_radix,f_handle_line,global_symbols,out_heade
             if store_to_video.search(line):
                 line = line.rstrip() + " [video_address]\n"
 
-            if "[video_address" in line:
+            if "[unchecked_address" in line:
+                # give me the original instruction
+                line = line.replace("_ADDRESS","_UNCHECKED_ADDRESS")
+            elif "[video_address" in line:
                 # give me the original instruction
                 line = line.replace("_ADDRESS","_UNCHECKED_ADDRESS")
                 # if it's a write, insert a "VIDEO_DIRTY" macro after the write
@@ -171,7 +198,19 @@ def process_file(input_radix,output_radix,f_handle_line,global_symbols,out_heade
                             lines[j] = next_line+"\tVIDEO_BYTE_DIRTY | [...]\n"
                         break
 
-
+            if "GET_ADDRESS" in line:
+                val = line.split()[1]
+                osd_call = input_dict.get(val)
+                if osd_call is not None:
+                    if osd_call:
+                        if " stb " in line:
+                            exg = "\texg\td0,d1\n"
+                        else:
+                            exg = ""
+                        line = exg+change_instruction(f"jbsr\tosd_{osd_call}",lines,i)+exg
+                    else:
+                        line = remove_instruction(lines,i)
+                    lines[i+1] = remove_instruction(lines,i+1)
             line = re.sub(tablere,subt,line)
 
             address = get_line_address(line)
@@ -200,6 +239,7 @@ def process_file(input_radix,output_radix,f_handle_line,global_symbols,out_heade
 #    map(0x3000, 0x37ff).ram().w(FUNC(ddragon_state::bgvideoram_w)).share(m_bgvideoram);
 
 store_to_video = re.compile("GET_ADDRESS\s+0x((3[0-7])|(1[8-F]))",flags=re.I)
+access_bank = re.compile("GET_ADDRESS\s+0x[4-7]\w\w\w",flags=re.I)
 
 equates = set()
 

@@ -1049,10 +1049,10 @@ jump_table_748f:
 75DD: 86 00          LDA    #$00
 75DF: B7 38 09       STA    $3809
 75E2: B7 38 0A       STA    $380A
-75E5: 96 3A          LDA    $3A
+75E5: 96 3A          LDA    bank_switch_copy_3a
 75E7: 84 FC          ANDA   #$FC
-75E9: 97 3A          STA    $3A
-75EB: B7 38 08       STA    $3808
+75E9: 97 3A          STA    bank_switch_copy_3a
+75EB: B7 38 08       STA    bankswitch_3808
 75EE: CC 01 10       LDD    #$0110
 75F1: FD 0B 00       STD    $0B00
 75F4: 39             RTS
@@ -1072,20 +1072,20 @@ jump_table_748f:
 7619: FD 0B 00       STD    $0B00
 761C: BD 76 5A       JSR    $765A
 761F: 39             RTS
-7620: 96 3A          LDA    $3A
+7620: 96 3A          LDA    bank_switch_copy_3a
 7622: 84 FC          ANDA   #$FC
-7624: 97 3A          STA    $3A
+7624: 97 3A          STA    bank_switch_copy_3a
 7626: FC 0A 62       LDD    $0A62
 7629: 84 01          ANDA   #$01
 762B: 48             ASLA
-762C: 9A 3A          ORA    $3A
-762E: 97 3A          STA    $3A
-7630: B7 38 08       STA    $3808
+762C: 9A 3A          ORA    bank_switch_copy_3a
+762E: 97 3A          STA    bank_switch_copy_3a
+7630: B7 38 08       STA    bankswitch_3808
 7633: F7 38 0A       STB    $380A
 7636: 39             RTS
 7637: CC 00 00       LDD    #$0000
 763A: 8E 18 00       LDX    #$1800
-763D: ED 81          STD    ,X++
+763D: ED 81          STD    ,X++		; [video_address_word]
 763F: 8C 38 00       CMPX   #$3800
 7642: 26 F9          BNE    $763D
 7644: CC 01 00       LDD    #$0100

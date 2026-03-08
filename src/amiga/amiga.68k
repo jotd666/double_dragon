@@ -268,8 +268,8 @@ osd_enter_\@:
 	.global		_dosbase
 	.global		cheat_used
 * osd layer		
+	.global	osd_wait_vblank_interrupt
 	.global osd_enable_interrupts
-	.global osd_black_colors
 	.global osd_disable_interrupts
 	.global osd_set_tile_palette
 	.global osd_no_continue_hook
@@ -302,7 +302,8 @@ osd_enter_\@:
 	.global	osd_dump_logs
 	.global	osd_log_cpu
 	.global	osd_cpu_logging_control
-		
+	
+	
 	.global	current_rom_bank
 	
 	.include	"ReadJoypad.i"
@@ -793,22 +794,15 @@ demo_game:
 
 	* enable interrupts. Game doesn't use them
 	* but relies on vbl sync flags
-	jbsr	cpu_init		| zero most registers
-	moveq	#0,d5			| D5 too
 	
 	jbsr	cache_fg_tiles_address
 	jbsr	cache_bg_tiles_address
 
-	* load level 1 music
-	.ifeq	OPT_CD32_VERSION
-	lea		level_12_music,a0
-	.else
-	lea		cd32_music,a0
-	.endif
-	move.l	a0,current_music_name
-	lea		module_buffer,a1
-	move.l	#BIGGEST_MUSIC_SIZE,d0
-	jbsr	load_file
+*	lea		level_12_music,a0
+*	move.l	a0,current_music_name
+*	lea		module_buffer,a1
+*	move.l	#BIGGEST_MUSIC_SIZE,d0
+*	jbsr	load_file
 	
 
 	* create mirror parts for common sprites
@@ -816,6 +810,9 @@ demo_game:
 	move.l	#mirror_buffer,mirror_buffer_ptr
 
 	jbsr	mirror_common_sprites
+
+	jbsr	cpu_init		| zero most registers
+	moveq	#0,d5			| D5 too
 	moveq	#0,d0
 	jbsr	osd_set_bank
 	GET_MEMORY_START_AND_DP	
@@ -1421,23 +1418,9 @@ level3_interrupt:
 	btst	#5,d0
 	jeq		1f
 
-	* music
-	tst.b	_mt_E8Trigger
-	jeq		0f
-	cmp.b	#2,_mt_E8Trigger
-	jeq		777f
-	* trigger: map/level start music ended: time to start level music
-	* if queued
-	clr.b	_mt_E8Trigger
-	clr.b	wait_for_map_music_end
-	tst.b	play_level_1_tune_after_music_stop
-	jeq		0f
-	clr.b	play_level_1_tune_after_music_stop
-	move.w	#LEVEL12_TUNE_SND,d0
-	jbsr	osd_sound_start
-	jra		0f
-777:
-	clr.b	_mt_E8Trigger
+	* vblank
+	GET_MEMORY_START_IN_A6
+	bclr	#3,(extra_3802,a6)
 
 	tst.b	detect_controllers
 	jeq	0f
@@ -1895,37 +1878,10 @@ blit_background:
 	rts
 
 
-*void gng_state::draw_sprites(bitmap_ind16 &bitmap, const rectangle &cliprect)
-*{
-*	uint8_t *buffered_spriteram = m_spriteram->buffer();
-*	gfx_element *gfx = m_gfxdecode->gfx(2);
-*
-*	for (int offs = m_spriteram->bytes() - 4; offs >= 0; offs -= 4)
-*	{
-*		uint8_t attributes = buffered_spriteram[offs + 1];
-*		int sx = buffered_spriteram[offs + 3] - 0x100 * (attributes & 0x01);
-*		int sy = buffered_spriteram[offs + 2];
-*		int flipx = attributes & 0x04;
-*		int flipy = attributes & 0x08;
-*
-*		if (flip_screen())
-*		{
-*			sx = 240 - sx;
-*			sy = 240 - sy;
-*			flipx = !flipx;
-*			flipy = !flipy;
-*		}
-*
-*		gfx->transpen(bitmap,cliprect,
-*				buffered_spriteram[offs] + ((attributes << 2) & 0x300),
-*				(attributes >> 4) & 3,
-*				flipx, flipy,
-*				sx + 128, sy + 6, 15);
-*	}
-*}
 
 really_update_sprites:
-
+	rts
+	
 	***********************
 	* erase previous BOBs *
 	***********************
@@ -3117,9 +3073,27 @@ generate_row_table:
 	rts
 	.endif
 
+* works if interrupts enabled or disabled
+osd_wait_vblank_interrupt:
+	btst	#5,_custom+intenar+1
+	jne		1f
+0:
+	btst	#5,_custom+intreqr+1
+	jeq		0b
+	* ack afterwards
+	move.w	_custom+intreqr,d0
+	bclr	#5,d0
+	move.w	d0,_custom+intreq
+	rts
+1:
+	* with interrupts enabled, different handling, collaborate with vblank
+	* to read the extra bit 3. First set it, then wait for vblank to clear it
+	bset	#3,(extra_3802,a6)
+2:
+	btst	#3,(extra_3802,a6)
+	jne		2b
+	rts
 	
-	
-
 * 60Hz VBLANK interrupt (also keyboard)
 * only called at bootup, not from interrupts (at least!!)
 osd_enable_interrupts:
@@ -3147,33 +3121,38 @@ osd_disable_interrupts:
 
 	
 * set bank
-* < D0.B bank 0-4
+* < D0.B bank & other screen attributes & scroll (what a mess)
 * > A1 bank pointer minus 0x4000
 osd_set_bank:
+	movem.l	d0/d1/a0,-(a7)
 	* make sure D5 is not used there!
-	cmp.b	current_rom_bank,d0
+	move.b	d0,d1
+	lsr.b	#5,d1
+	and.b	#3,d1
+	cmp.b	current_rom_bank,d1
 	jeq		1f
-	movem.l	d0/a0,-(a7)
-	move.b	d0,current_rom_bank
-	and.w	#0xFF,d0
+	
+	move.b	d1,current_rom_bank
+	and.w	#0xFF,d1
 	.ifndef	RELEASE
-	cmp.b	#5,d0
-	jcs		0f
-	BREAKPOINT	"illegal bank index"
+	cmp.b	#8,d1
+	jcs		0f 
+	BREAKPOINT	"illegal bank indexn check D1"
 0:
+	cmp.b	#6,d1
+	jcc		1f			| banks 6 & 7 are empty: do nothing
 	.endif
 	lea		bank_table,a0
 	.ifdef	NO68020
-	add.w	d0,d0
-	add.w	d0,d0
-	move.l	(a0,d0.w),a1
+	add.w	d1,d1
+	add.w	d1,d1
+	move.l	(a0,d1.w),a1
 	.else
-	move.l	(a0,d0.w*4),a1
+	move.l	(a0,d1.w*4),a1
 	.endif
 	move.l	a1,bank_base
-	
-	movem.l	(a7)+,d0/a0
 1:
+	movem.l	(a7)+,d0/d1/a0
 	rts
 
 	
@@ -3784,15 +3763,7 @@ update_fg_tile:
 	move.b	d1,d3	| attribute + tile msbits
 	and.w	#0xF,d3	| clut
 	
-	* if weapon frame is written, install palette change branch
-	cmp.w	#0x34E,d7
-	jne		0f
-	lea		osd_lower_palette_switch,a0
-	move.w	#copjmp2,(a0)
-	cmp.b	#0xA0,d0
-	jne		0f
-	move.w	#COPPER_NOP,(a0)		| activate weapon & frame palette
-0:
+
 	lea		fg_tile_address_table,a1
 	.ifdef	NO68020
 	add.w	d7,d7
@@ -4962,19 +4933,21 @@ osd_log_cpu:
 *	jcs		0f
 *	BREAKPOINT	"target stack is not in RAM"
 *0:
+	move.w	(4,a7),last_declared_bank
 	move.w	(6,a7),last_known_m6809_pc
 	
 	move.w	last_known_m6809_pc,0x100
+	move.w	last_declared_bank,0x102
 	
-	move.l	a6,-(a7)
+	movem.l	d1/a6,-(a7)
 	* check if cpu log is enabled
 	tst.b	cpu_log_enable
 	jeq		445f
 	COLOR0_FLASH	0x0F0
 
 	move.l	log_ptr,a6
-	move.w	(10,a7),(a6)+	| the PC
-	move.l	d1,-(a7)
+	move.w	last_known_m6809_pc,(a6)+	| the PC
+	move.w	last_declared_bank,(a6)+	| the PC
 	rol.w	#8,d1
 	move.b	d0,d1
 	rol.w	#8,d1   | make D, make sure that not too many diffs
@@ -4991,9 +4964,18 @@ osd_log_cpu:
 	jbsr	osd_dump_logs
 	illegal
 444:
-	move.l	(a7)+,d1
+
 445:
-	move.l	(a7)+,a6
+	* check that bank and code match
+	move.b	last_declared_bank+1,d1
+	jmi	446f			| ignore
+	cmp.b	current_rom_bank,d1
+	jeq		446f
+	move.w	last_known_m6809_pc,d1
+	move.w	last_declared_bank,a6
+	BREAKPOINT	"code/data bank mismatch, PC in D1, last declared bank in a6.W"
+446:
+	movem.l	(a7)+,a6/d1
 	OSD_EXIT
 	rts
 
@@ -5138,6 +5120,8 @@ music_tick:
 	.word	0
 last_known_m6809_pc:
 	.word	0xFFFF
+last_declared_bank:
+	.word	0xFFFF
 last_bankswitch_pc:
 	.word	0xFFFF
 music_duration:
@@ -5166,33 +5150,11 @@ difficulty_table:
 	.byte	4	| difficult
 	.byte	6	| very difficult
 	
-level_12_music:
-	.asciz	"GnG_Stage_1-2.mod"
-level_34_music:
-	.asciz	"GnG_Stage_3-4.mod"
-level_56_music:
-	.asciz	"GnG_Stage_5-6.mod"
-level_7_music:
-	.asciz	"GnG_Stage_7-END.mod"
-first_place_music:
-	.asciz	"first_place.mod"
-first_place_jingle_music:
-	.asciz	"jingle_first_place.mod"
-second_place_music:
-	.asciz	"second_place.mod"
-second_place_jingle_music:
-	.asciz	"jingle_second_place.mod"
+
 
 	
 	.align	2
-current_level_music_table:	
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
-	.word	0
+
 	
 
 bg_tile_xy2address_cache:

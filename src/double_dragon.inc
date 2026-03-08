@@ -465,7 +465,7 @@ end_\@:
 
 	.macro	GET_SELECT_ADDRESS_FUNC
 	* checks address, slower but can auto-select rom, ram or bank
-	cmp.w	#0x6000,a0
+	cmp.l	#ROM_START,a0
 	jcc		1f
 	cmp.w	#0x4000,a0
 	jcs		1f
@@ -649,8 +649,8 @@ get_address:
 	BREAKPOINT	"accessing bg videoram 0x3000-0x3800, PC in D6"
 	jra		0f
 1:
-	cmp.w	#0x8000,a0
-	jcc		0f		| above 0x6000: ROM: OK
+	cmp.l	#ROM_START,a0
+	jcc		0f		| above 0x8000: ROM: OK
 	* make it simple: ignore most read/writes
 	* palette: ignored
 	* sound: ignored
@@ -669,14 +669,14 @@ get_address:
 	BREAKPOINT	"accessing bankswitch 0x3808 address, PC in D6"
 	jra		0f
 1:
-
+0:
 	GET_UNCHECKED_ADDRESS_FUNC
 	rts
 
 get_bank_address:
 	cmp.w	#0x4000,a0
 	jcs		0f			| lower than 0x4000: error
-	cmp.l	#0x8000,a0
+	cmp.l	#ROM_START,a0
 	jcs		1f			| lower than 0x6000: OK
 0:
 	jbsr	osd_get_last_known_pc
@@ -704,18 +704,20 @@ get_bank_address:
 
 	
 	* to trace at some virtual PCs, insert this macro
-	.macro	LOG_REGS	the_pc
+	.macro	LOG_REGS	the_pc,the_bank
 	move.w	sr,-(a7)
 	move.w	#0x\the_pc,-(a7)
-	move.w	#0,-(a7)
+	move.w	#\the_bank,-(a7)
 	jbsr	osd_log_cpu
 	addq.w	#4,a7
 	move.w	(a7)+,sr
 	.endm
+	
 	.macro	LOG_REGS_QUICK	the_pc
 	move.w	sr,-(a7)
 
 	move.w	#0x\the_pc,0x100
+	move.w	#\the_bank,0x104
 
 	move.w	(a7)+,sr
 	.endm
