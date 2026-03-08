@@ -1,14 +1,25 @@
 
+lb3_6c00:
 6C00: 7E 6F 8C       JMP    $6F8C
+lb3_6c03:
 6C03: 7E 6C 22       JMP    $6C22
+lb3_6c06:
 6C06: 7E 6C 21       JMP    $6C21
+lb3_6c09:
 6C09: 7E 6C 21       JMP    $6C21
+lb3_6c0c:
 6C0C: 7E 6C 21       JMP    $6C21
+lb3_6c0f:
 6C0F: 7E 70 0C       JMP    $700C
+lb3_6c12:
 6C12: 7E 6F BF       JMP    $6FBF
+lb3_6c15:
 6C15: 7E 71 5E       JMP    $715E
+lb3_6c18:
 6C18: 7E 74 E7       JMP    $74E7
+lb3_6c1b:
 6C1B: 7E 75 2B       JMP    $752B
+lb3_6c1e:
 6C1E: 7E 6E 49       JMP    $6E49
 6C21: 39             RTS
 6C22: A6 88 4C       LDA    $4C,X

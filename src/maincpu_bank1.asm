@@ -1,79 +1,156 @@
+lb1_4000:
 4000: 7E 41 00    JMP    $4100
+lb1_4003:
 4003: 7E 41 1E    JMP    $411E
+lb1_4006:
 4006: 7E 5C 88    JMP    $5C88
+lb1_4009:
 4009: 7E 5C EE    JMP    $5CEE
+lb1_400c:
 400C: 7E 5D D0    JMP    $5DD0
+lb1_400f:
 400F: 7E 5D DA    JMP    $5DDA
+lb1_4012:
 4012: 7E 5E 19    JMP    $5E19
+lb1_4015:
 4015: 7E 56 F5    JMP    $56F5
+lb1_4018:
 4018: 7E 57 F6    JMP    $57F6
+lb1_401b:
 401B: 7E 51 9C    JMP    $519C
+lb1_401e:
 401E: 7E 43 13    JMP    $4313
+lb1_4021:
 4021: 7E 4A F7    JMP    $4AF7
+lb1_4024:
 4024: 7E 4B 7B    JMP    $4B7B
+lb1_4027:
 4027: 7E 4C 0E    JMP    $4C0E
+lb1_402a:
 402A: 7E 4D 90    JMP    $4D90
+lb1_402d:
 402D: 7E 50 61    JMP    $5061
+lb1_4030:
 4030: 7E 5E DE    JMP    $5EDE
+lb1_4033:
 4033: 7E 54 FF    JMP    $54FF
+lb1_4036:
 4036: 7E 5E 91    JMP    $5E91
+lb1_4039:
 4039: 7E 5B 90    JMP    $5B90
+lb1_403c:
 403C: 7E 51 3E    JMP    $513E
+lb1_403f:
 403F: 7E 51 2B    JMP    $512B
+lb1_4042:
 4042: 7E 44 66    JMP    $4466
+lb1_4045:
 4045: 7E 4F 7E    JMP    $4F7E
+lb1_4048:
 4048: 7E 4F FD    JMP    $4FFD
+lb1_404b:
 404B: 7E 4E 4B    JMP    $4E4B
+lb1_404e:
 404E: 7E 53 0A    JMP    $530A
+lb1_4051:
 4051: 7E 52 9F    JMP    $529F
+lb1_4054:
 4054: 7E 51 71    JMP    $5171
+lb1_4057:
 4057: 7E 5E 55    JMP    $5E55
+lb1_405a:
 405A: 7E 5F 90    JMP    $5F90
+lb1_405d:
 405D: 7E 60 FB    JMP    $60FB
+lb1_4060:
 4060: 7E 61 69    JMP    $6169
+lb1_4063:
 4063: 7E 50 A7    JMP    $50A7
+lb1_4066:
 4066: 7E 50 A7    JMP    $50A7
+lb1_4069:
 4069: 7E 50 A7    JMP    $50A7
+lb1_406c:
 406C: 7E 42 0B    JMP    $420B
+lb1_406f:
 406F: 7E 61 BA    JMP    $61BA
+lb1_4072:
 4072: 7E 61 D4    JMP    $61D4
+lb1_4075:
 4075: 7E 5B FD    JMP    $5BFD
+lb1_4078:
 4078: 7E 5C 32    JMP    $5C32
+lb1_407b:
 407B: 7E 61 D5    JMP    $61D5
+lb1_407e:
 407E: 7E 63 76    JMP    $6376
+lb1_4081:
 4081: 7E 63 DD    JMP    $63DD
+lb1_4084:
 4084: 7E 64 11    JMP    $6411
+lb1_4087:
 4087: 7E 62 46    JMP    $6246
+lb1_408a:
 408A: 7E 64 86    JMP    $6486
+lb1_408d:
 408D: 7E 62 81    JMP    $6281
+lb1_4090:
 4090: 7E 63 0D    JMP    $630D
+lb1_4093:
 4093: 7E 64 AA    JMP    $64AA
+lb1_4096:
 4096: 7E 64 AA    JMP    $64AA
+lb1_4099:
 4099: 7E 42 79    JMP    $4279
+lb1_409c:
 409C: 7E 65 01    JMP    $6501
+lb1_409f:
 409F: 7E 65 26    JMP    $6526
+lb1_40a2:
 40A2: 7E 42 D1    JMP    $42D1
+lb1_40a5:
 40A5: 7E 64 AA    JMP    $64AA
+lb1_40a8:
 40A8: 7E 64 AB    JMP    $64AB
+lb1_40ab:
 40AB: 7E 64 CD    JMP    $64CD
+lb1_40ae:
 40AE: 7E 5D DC    JMP    $5DDC	    ; [bogus]
+lb1_40b1:
 40B1: 7E 72 9C    JMP    $729C	    ; [bogus]
+lb1_40b4:
 40B4: 7E 72 9D    JMP    $729D      ; [bogus]
+lb1_40b7:
 40B7: 7E 6D 63    JMP    $6D63
+lb1_40ba:
 40BA: 7E 6D D2    JMP    $6DD2
+lb1_40bd:
 40BD: 7E 6E 59    JMP    $6E59
+lb1_40c0:
 40C0: 7E 43 C3    JMP    $43C3
+lb1_40c3:
 40C3: 7E 73 5E    JMP    $735E      ; [bogus]
+lb1_40c6:
 40C6: 7E 75 39    JMP    $7539		; [bogus]
+lb1_40c9:
 40C9: 7E 75 5F    JMP    $755F      ; [bogus]
+lb1_40cc:
 40CC: 7E 75 9C    JMP    $759C      ; [bogus]
+lb1_40cf:
 40CF: 7E 66 CC    JMP    $66CC
+lb1_40d2:
 40D2: 7E 77 57    JMP    $7757		; [bogus]
+lb1_40d5:
 40D5: 7E 76 74    JMP    $7674		; [bogus]
+lb1_40d8:
 40D8: 7E 76 2F    JMP    $762F		; [bogus]
+lb1_40db:
 40DB: 7E 75 A9    JMP    $75A9      ; [bogus]
+lb1_40de:
 40DE: 7E 75 EC    JMP    $75EC      ; [bogus]
+lb1_40e1:
 40E1: 7E 76 B2    JMP    $76B2      ; [bogus]
+lb1_40e4:
 40E4: 7E 76 FE    JMP    $76FE      ; [bogus]
 
 4100: 34 26       PSHS   Y,D

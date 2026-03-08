@@ -140,7 +140,7 @@ def process_file(input_radix,output_radix,f_handle_line,global_symbols,out_heade
                         address = int(operand.split("_")[1],16)
                         if len(banks)==1:
                             # only 1 bank: no need for switch, just change label by proper lbx_
-                            new_operand = f"bl{banks[0]}_{address:04x}"
+                            new_operand = f"lb{banks[0]}_{address:04x}"
                             line = line.replace(operand,new_operand)
                         else:
                             toks[0] = f"\tJ{inst}_BANK\t{address:04x},{bank_slots}\t"

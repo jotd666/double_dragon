@@ -634,6 +634,8 @@ lb0_44cd:
 45AA: 7A 0D E1       DEC    $0DE1
 45AD: 20 D9          BRA    $4588
 45AF: 35 F6          PULS   D,X,Y,U,PC
+
+lb0_45b1:
 45B1: 34 0C          PSHS   DP,B
 45B3: 4F             CLRA
 45B4: 1F 8B          TFR    A,DP
@@ -654,6 +656,8 @@ lb0_44cd:
 45D1: 97 46          STA    $46
 45D3: 99 45          ADCA   $45
 45D5: 35 8C          PULS   B,DP,PC
+
+lb0_45d7:
 45D7: 34 7E          PSHS   U,Y,X,DP,D
 45D9: 10 9E 00       LDY    $00
 45DC: 0F 00          CLR    $00
@@ -778,6 +782,8 @@ lb0_44cd:
 46DA: 10 A3 62       CMPD   $2,S
 46DD: 32 64          LEAS   $4,S
 46DF: 39             RTS
+
+lb_46e0:
 46E0: 34 34          PSHS   Y,X,B
 46E2: 32 7B          LEAS   -$5,S
 46E4: BD 45 D7       JSR    $45D7
@@ -908,6 +914,8 @@ lb0_44cd:
 47FE: CC FF 00       LDD    #$FF00
 4801: ED 0F          STD    $F,X
 4803: 39             RTS
+
+lb0_4804:
 4804: 34 7E          PSHS   U,Y,X,DP,D
 4806: 97 00          STA    $00
 4808: D6 00          LDB    $00
@@ -1153,6 +1161,7 @@ lb0_49a0:
 4A67: BD 4A E4       JSR    $4AE4
 4A6A: 39             RTS
 
+lb0_4a6b:
 4A6B: BD 4A 97       JSR    $4A97
 4A6E: BD 4A A5       JSR    $4AA5
 4A71: BD 4A B7       JSR    $4AB7
@@ -1350,6 +1359,8 @@ lb0_49a0:
 4E45: 86 80          LDA    #$80
 4E47: B7 0B 21       STA    $0B21
 4E4A: 39             RTS
+
+lb0_4e4b:
 4E4B: 7D 0A 54       TST    $0A54
 4E4E: 27 25          BEQ    $4E75
 4E50: 7F 0A 54       CLR    $0A54
