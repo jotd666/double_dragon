@@ -17,12 +17,12 @@ used_sprite_cluts_file = this_dir / "used_sprite_cluts.json"
 fg_used_tile_cluts_file = this_dir / "fg_used_tile_cluts.json"
 used_graphics_dir = this_dir / "used_graphics"
 
-SPRITE_NB_TILES = 0x400
+SPRITE_NB_TILES = 0x1000
 FG_NB_TILES = 0x400
-FG_NB_CLUTS = 16
-BG_NB_TILES = 0x400
-BG_NB_CLUTS = 8
-SPRITE_NB_CLUTS = 4
+FG_NB_CLUTS = 8
+BG_NB_TILES = 0x800
+BG_NB_CLUTS = 16
+SPRITE_NB_CLUTS = 16
 
 
 def palette_pad(palette,pad_nb):
@@ -91,23 +91,10 @@ group_sprite_quadruplets = sr4(0x2C0,0x300)
 
 # tiles that represent lives and weapon: not alphanumeric
 
-weapon_layout = lambda x:{x,x+1,x+0x10,x+0x11}
 
-weapons = [
-0x82, # torch
-0x80, # lance
-0x88, # axe
-0x86, # shield
-0x84, # sword
-]
 
-lower_osd_tiles = {
-0x8A,0x8B,  # lives upper
-0x9A,0x9B,  # lives lower
-} | sr(0xA0,0xD4)
+lower_osd_tiles = {}
 
-for w in weapons:
-    lower_osd_tiles.update(weapon_layout(w))
 
 def add_tile(table,index,cluts=[0],merge_cluts=True):
     if isinstance(index,range):

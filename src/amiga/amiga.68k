@@ -75,7 +75,7 @@ SCORE_FILE_SIZE = 90
 
 LOG_BUFFER_SIZE = 0x100000
 
-FG_TILE_NB_CLUTS_POW = 4
+FG_TILE_NB_CLUTS_POW = 3
 FG_TILE_NB_CLUTS = 1<<FG_TILE_NB_CLUTS_POW
 FG_TILE_COUNT = 0x400
 
@@ -105,7 +105,6 @@ NTSC_Y_SHIFT = 12
 AGA_X_SHIFT = 0x37
 
 FG_SCREEN_TILE_ADDRESS = 0x1800
-FG_SCREEN_COLOR_ADDRESS = 0x1C00
 BG_SCREEN_TILE_ADDRESS = 0x3000
 BG_SCREEN_COLOR_ADDRESS = 0x3400
 SPRITE_ADDRESS = 0x2800
@@ -820,6 +819,8 @@ demo_game:
 	
 
 mirror_common_sprites:
+	rts
+	
 	lea		shared_bob_table,a0
 	move.w	#0x3FF,d7
 0:
@@ -1651,8 +1652,8 @@ level1_interrupt:
 23:
 	.ifne	OPT_ENABLE_LOGGING
 	jbsr	log_used_fg_tiles
-	jbsr	log_used_bg_tiles
-	jbsr	log_used_sprites
+	*jbsr	log_used_bg_tiles
+	*jbsr	log_used_sprites
 	.endif
 3:
     movem.l (a7)+,d0-d7/a0-a6
@@ -3163,6 +3164,26 @@ osd_video_word_dirty:
 	subq	#1,a0
 	rts
 	
+*TILE_GET_INFO_MEMBER(ddragon_state::get_bg_tile_info)
+*{
+*	tile_index <<= 1;
+*	uint8_t const attr = m_bgvideoram[tile_index];
+*	tileinfo.set(2,
+*			m_bgvideoram[tile_index | 1] | ((attr & 0x07) << 8),
+*			(attr >> 3) & 0x07,
+*			TILE_FLIPYX((attr & 0xc0) >> 6));
+*}
+*
+*TILE_GET_INFO_MEMBER(ddragon_state::get_fg_tile_info)
+*{
+*	tile_index <<= 1;
+*	uint8_t const attr = m_fgvideoram[tile_index];
+*	tileinfo.set(0,
+*			m_fgvideoram[tile_index | 1] | ((attr & 0x07) << 8),
+*			attr >> 5,
+*			0);
+*}
+	
 * a0=screen address (preserved)
 * a6=ram base
 * should preserve all registers
@@ -3200,28 +3221,11 @@ osd_video_byte_dirty:
 	cmp.w	#BG_SCREEN_TILE_ADDRESS-FG_SCREEN_TILE_ADDRESS,d7
 	jcc		bg_tile
 	
-	and.w	#0x3FF,d7
+	and.w	#0x7FF,d7
 
 	lea		(FG_SCREEN_TILE_ADDRESS,a6),a0
-	move.b	(a0,d7.w),d0
-	lea		(FG_SCREEN_COLOR_ADDRESS,a6),a0
 	move.b	(a0,d7.w),d1
-
-	* special case to get proper shield color
-	cmp.w	#0x1F9,d7
-	jne		0f
-	* special location where the shield is
-	* when the message appears if you kill level 6 bosses without it
-	
-	cmp.b	#0x86,d0
-	jne		1f
-	* shield is here: make palette change earlier
-	move.w	#COPPER_NOP,weapon_palette_wait
-	jra		0f
-1:
-	* shield is not here: palette change at the bottom
-	move.w	weapon_palette_wait_value,weapon_palette_wait
-0:
+	move.b	(1,a0,d7.w),d0
 
 	jbsr	update_fg_tile
 
@@ -3231,7 +3235,7 @@ osd_w_videoram_out:
 	rts	
 	
 bg_tile:
-	and.w	#0x3FF,d7
+	and.w	#0x7FF,d7
 	
 	* we need to see if the tile is on screen considering X scolling
 	* positions. Compute first X & last X coord visible
@@ -3706,23 +3710,24 @@ cache_fg_tiles_address:
 	move.b	d0,(a0)+		| store offset
 	move.b	d1,(a0)+		| store offset
 
-	addq.w	#1,d7
-	cmp.w	#0x400,d7
+	addq.w	#2,d7
+	cmp.w	#0x800,d7
 	jne		0b
 	rts
 
 
-* < D7: 0-0x400
+* < D7: 0-0x800 (even)
 * > D0/D1: coords 
 compute_fg_tile_xy:
 	moveq	#0,d0
-	move.b	d7,d0
+	move.w	d7,d6
+	lsr.w	#1,d6
+	move.b	d6,d0
 	
-	and.b	#0x1F,d0	| x
-	move.w	d7,d1
+	and.b	#0x3F,d0	| x
+	move.w	d6,d1
 	lsr.w	#5,d1		| Y
-	and.b	#0x1F,d1	| Y
-	subq	#2,d1		| 2 first rows aren't visible
+	subq	#1,d1		| 1 first row isn't visible
 	lsl.w	#3,d1		| times 8
 	rts
 
@@ -3743,7 +3748,7 @@ compute_fg_tile_xy:
 
 
 
-* < D7: 0-0x400 offset
+* < D7: 0-0x800 offset
 * < D0: tile code
 * < D1: tile attribute
 
@@ -3754,23 +3759,19 @@ update_fg_tile:
 	rts
 0:
 	moveq	#0,d2
-	moveq	#0,d3
 	move.b	d0,d2	| code
 	move.b	d1,d3	| attribute + tile msbits
-	and.w	#0xC0,d3
-	lsl.w	#2,d3
+	and.w	#0x7,d3
+	lsl.w	#8,d3
 	add.w	d3,d2	| extended tile code
+	and.w	#0x3FF,d2
+	moveq	#0,d3
 	move.b	d1,d3	| attribute + tile msbits
-	and.w	#0xF,d3	| clut
+	lsr.b	#5,d3	| clut
 	
 
 	lea		fg_tile_address_table,a1
-	.ifdef	NO68020
-	add.w	d7,d7
 	move.w	(a1,d7.w),d0
-	.else
-	move.w	(a1,d7.w*2),d0
-	.endif
 	moveq	#0,d1
 	move.b	d0,d1
 	rol.w	#8,d0
@@ -3800,9 +3801,6 @@ update_fg_tile:
 	* now get source data
 	lea		fg_character_table,a0
 	
-
-20:
-
 	* updating bitplanes
 
 	.ifdef	MC68020
@@ -4201,16 +4199,13 @@ level2_interrupt:
 	rte
 	
 	
-*TILE_GET_INFO_MEMBER(vball_state::get_bg_tile_info)
-*{
-*	uint8_t code = m_videoram[tile_index];
-*	uint8_t attr = m_attribram[tile_index];
-*	tileinfo.set(0,
-*			code + ((attr & 0x1f) << 8) + (m_gfxset << 8),
-*			(attr >> 5) & 0x7,
-*			0);
-*}
 
+
+*	uint8_t const attr = m_fgvideoram[tile_index];
+*	tileinfo.set(0,
+*			m_fgvideoram[tile_index | 1] | ((attr & 0x07) << 8),
+*			attr >> 5,
+*			0);
 
 	.ifne	OPT_ENABLE_LOGGING
 log_used_fg_tiles:
@@ -4219,11 +4214,35 @@ log_used_fg_tiles:
 
 	GET_MEMORY_START_IN_A6
 	lea		(FG_SCREEN_TILE_ADDRESS,a6),a5
-	lea		(FG_SCREEN_COLOR_ADDRESS,a6),a4
+
 	lea		fg_tile_log_table,a0
 	move	#(1<<FG_TILE_NB_CLUTS_POW)-1,d4		| clut mask
 	move	#FG_TILE_NB_CLUTS_POW,d5		| nb clut pow
-	jra		log_any_tiles
+	move.w	#0x7FE,d7
+0:
+	moveq	#0,d1
+	moveq	#0,d0
+	move.b	(a5,d7.w),d1	| tile attribute
+	move.b	(1,a5,d7.w),d0	| tile code
+
+	moveq	#0,d2
+	move.b	d0,d2	| code
+	move.b	d1,d3	| attribute + tile msbits
+	and.w	#0x7,d3
+	lsl.w	#8,d3
+	add.w	d3,d2	| extended tile code
+	and.w	#0x3FF,d2	| we have to mask it!
+	moveq	#0,d3
+	move.b	d1,d3	| attribute + tile msbits
+	lsr.b	#5,d3
+	
+	lsl.w	d5,d2
+	add.w	d3,d2
+	st.b	(a0,d2.w)
+20:
+	subq	#2,d7
+	jpl		0b
+	rts
 	
 log_used_bg_tiles:
 	* scan the whole screen, see what was updated
@@ -4236,18 +4255,8 @@ log_used_bg_tiles:
 	move	#(1<<BG_TILE_NB_CLUTS_POW)-1,d4		| clut mask
 	move	#BG_TILE_NB_CLUTS_POW,d5		| nb clut pow
 
-log_any_tiles:
 	move.w	#0x800-1,d7
 0:
-	tst.b	must_mirror_y_tiles
-	jne		1f
-	* if Y is > 0x10 don't log (that will be trash from previous level)
-	move.w	d7,d0
-	and.w	#0x1F,d0
-	cmp.w	#0x10,d0
-	jcs		1f
-	sub.w	#0x10,d7		| skip 10 rows
-1:
 	moveq	#0,d1
 	moveq	#0,d0
 	move.b	(a5,d7.w),d0	| tile code
@@ -5402,7 +5411,7 @@ bg_character_table_buffer:
 	.skip	BG_TILE_FILE_MAX_SIZE
 	
 fg_tile_address_table:
-	.skip	0x400*2
+	.skip	0x800
 
 
 	
