@@ -3221,7 +3221,7 @@ osd_video_byte_dirty:
 	cmp.w	#BG_SCREEN_TILE_ADDRESS-FG_SCREEN_TILE_ADDRESS,d7
 	jcc		bg_tile
 	
-	and.w	#0x7FF,d7
+	and.w	#0x7FE,d7
 
 	lea		(FG_SCREEN_TILE_ADDRESS,a6),a0
 	move.b	(a0,d7.w),d1
@@ -3748,7 +3748,7 @@ compute_fg_tile_xy:
 
 
 
-* < D7: 0-0x800 offset
+* < D7: 0-0x800 offset (even!)
 * < D0: tile code
 * < D1: tile attribute
 
@@ -3764,7 +3764,7 @@ update_fg_tile:
 	and.w	#0x7,d3
 	lsl.w	#8,d3
 	add.w	d3,d2	| extended tile code
-	and.w	#0x3FF,d2
+	and.w	#0x3FF,d2	| else can go above 0x3FF, there's a stray bit
 	moveq	#0,d3
 	move.b	d1,d3	| attribute + tile msbits
 	lsr.b	#5,d3	| clut
@@ -3776,6 +3776,7 @@ update_fg_tile:
 	move.b	d0,d1
 	rol.w	#8,d0
 	and.w	#0xFF,d0
+
 	
 	* select which destination sprites (0-3)
 	move.w	d0,d4
@@ -3795,6 +3796,7 @@ update_fg_tile:
 	move.l	(a1),a1
 	exg		a1,a2
 	* add offset to destination
+	
 	add.w	d1,a2
 	add.w	d1,a1
 	
