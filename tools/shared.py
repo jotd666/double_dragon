@@ -122,7 +122,8 @@ def process_file(input_radix,output_radix,f_handle_line,global_symbols,out_heade
 
         for i,line in enumerate(lines):
             # first the generic part
-            if " = " in line:
+
+            if re.match("\w+\s*=\s*\w",line):
                 equates.add(line)
                 line = ""
             if "[global]" in line:
@@ -224,7 +225,7 @@ def process_file(input_radix,output_radix,f_handle_line,global_symbols,out_heade
         # make the line number correct
         lines = "".join(lines).splitlines(True)
         for i,line in enumerate(lines,out_header.count("\n")+2+len(global_symbols)):
-            if "ERROR" in line:
+            if line.lstrip().startswith("ERROR"):
                 print(i,line,end="")
 
     with open(source_dir / f"{output_radix}.68k","w") as fw:

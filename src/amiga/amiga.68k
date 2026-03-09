@@ -1365,7 +1365,7 @@ install_bank_0:
 	movem.l	a0/a1/d0,-(a7)
 	lea	maincpu_bank0,a0
 	lea		(bank_address_4000,a6),a1
-	move.w	#0x7FF,d0
+	move.w	#0xFFF,d0		| 16Kb
 0:
 	move.l	(a0)+,(a1)+
 	dbf		d0,0b
@@ -3129,16 +3129,15 @@ osd_set_bank:
 	* make sure D5 is not used there!
 	move.b	d0,d1
 	lsr.b	#5,d1
-	and.b	#3,d1
+	and.w	#7,d1
 	cmp.b	current_rom_bank,d1
 	jeq		1f
 	
 	move.b	d1,current_rom_bank
-	and.w	#0xFF,d1
 	.ifndef	RELEASE
 	cmp.b	#8,d1
 	jcs		0f 
-	BREAKPOINT	"illegal bank indexn check D1"
+	BREAKPOINT	"illegal bank index check D1"
 0:
 	cmp.b	#6,d1
 	jcc		1f			| banks 6 & 7 are empty: do nothing

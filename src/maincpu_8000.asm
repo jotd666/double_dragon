@@ -172,7 +172,7 @@ reset_8000:     ; [global]
 8039: 8A 08          ORA    #$08
 803B: 97 3A          STA    bank_switch_copy_3a
 803D: B7 38 08       STA    bankswitch_3808
-8040: 7E B7 ED       JMP    $B7ED
+8040: 7E B7 ED       JMP    memory_check_b7ed
 8043: 86 20          LDA    #$20
 8045: BD B7 56       JSR    vbl_delay_b756
 8048: BD FF 4A       JSR    switch_to_bank_3_ff4a
@@ -1279,14 +1279,17 @@ l_84ec:
 8AAE: B7 03 C1       STA    $03C1
 8AB1: B7 04 1F       STA    $041F
 8AB4: 39             RTS
+
 8AB5: 96 3A          LDA    bank_switch_copy_3a
 8AB7: 8A 10          ORA    #$10
 8AB9: 97 3A          STA    bank_switch_copy_3a
 8ABB: B7 38 08       STA    bankswitch_3808
+; wait for subcpu reply
 8ABE: B6 38 02       LDA    extra_3802
 8AC1: 84 10          ANDA   #$10
 8AC3: 26 F9          BNE    $8ABE
 8AC5: 39             RTS
+
 8AC6: 34 7E          PSHS   U,Y,X,DP,D
 8AC8: 5F             CLRB
 8AC9: 1F 9B          TFR    B,DP
@@ -5508,34 +5511,36 @@ B7E6: 34 01          PSHS   CC
 B7E8: BD FC 8F       JSR    switch_to_bank_0_fc8f
 B7EB: 35 81          PULS   CC,PC
 
+memory_check_b7ed:
+; start with WORK RAM 0000-1000
 B7ED: DE 3A          LDU    bank_switch_copy_3a
 B7EF: 8E 00 00       LDX    #$0000
-B7F2: 10 8E B8 E5    LDY    #$B8E5
+B7F2: 10 8E B8 E5    LDY    #$B8E5	; random part of ROM as source (not zeroes!)
 B7F6: C6 03          LDB    #$03
 B7F8: A6 A5          LDA    B,Y
 B7FA: A7 84          STA    ,X
 B7FC: A6 84          LDA    ,X
-B7FE: A1 A5          CMPA   B,Y
+B7FE: A1 A5          CMPA   B,Y		; compare to see if same value
 B800: 26 0E          BNE    $B810
 B802: 5A             DECB
 B803: 2A F3          BPL    $B7F8
 B805: 30 01          LEAX   $1,X
 B807: 8C 10 00       CMPX   #$1000
 B80A: 26 EA          BNE    $B7F6
-B80C: C6 00          LDB    #$00
+B80C: C6 00          LDB    #$00		; no RAM error
 B80E: 20 02          BRA    $B812
-B810: C6 01          LDB    #$01
+B810: C6 01          LDB    #$01		; RAM error
 B812: 86 00          LDA    #$00
 B814: DF 3A          STU    bank_switch_copy_3a
 B816: BD FE A1       JSR    set_screen_orientation_fea1
-B819: BD B8 EA       JSR    write_diagnostic_message_b8ea
+B819: BD B8 EA       JSR    write_diagnostic_message_b8ea	; "WORK RAM OK"
 B81C: 0F 02          CLR    $02
 B81E: 96 3A          LDA    bank_switch_copy_3a
 B820: 84 1F          ANDA   #$1F
 B822: 97 3A          STA    bank_switch_copy_3a
-B824: 0F 00          CLR    $00
+B824: 0F 00          CLR    $00		; checksum for 2 banks (1 rom = 2 banks)
 B826: 0F 01          CLR    $01
-; checksum of banks
+; checksum of banks, loop 3 times (ROM 1-3 in diag screen, 2 banks per ROM)
 B828: 8E 40 00       LDX    #bank_address_4000
 B82B: 96 3A          LDA    bank_switch_copy_3a
 B82D: B7 38 08       STA    bankswitch_3808
@@ -5546,26 +5551,26 @@ B836: 8C 80 00       CMPX   #$8000
 B839: 26 F5          BNE    $B830
 B83B: 0C 01          INC    $01
 B83D: 96 3A          LDA    bank_switch_copy_3a
-B83F: 8B 20          ADDA   #$20
+B83F: 8B 20          ADDA   #$20		; next bank
 B841: 97 3A          STA    bank_switch_copy_3a
 B843: 96 01          LDA    $01
-B845: 81 02          CMPA   #$02
+B845: 81 02          CMPA   #$02	
 B847: 26 DF          BNE    $B828
-B849: 10 8E FF E0    LDY    #$FFE0
+B849: 10 8E FF E0    LDY    #$FFE0		; contains 3 checksum bytes 5E, 26, 00
 B84D: D6 02          LDB    $02
 B84F: 96 00          LDA    $00
 B851: A1 A5          CMPA   B,Y
 B853: 27 04          BEQ    $B859
-B855: C6 01          LDB    #$01
+B855: C6 01          LDB    #$01		; checksum error
 B857: 20 02          BRA    $B85B
-B859: C6 00          LDB    #$00
+B859: C6 00          LDB    #$00		; no error
 B85B: 0C 02          INC    $02
 B85D: 96 02          LDA    $02
 B85F: BD B8 EA       JSR    write_diagnostic_message_b8ea
 B862: 96 02          LDA    $02
 B864: 81 03          CMPA   #$03
 B866: 26 BC          BNE    $B824
-; checksumming ROM
+; checksumming main ROM (ROM 4 in diag screen)
 B868: 8E 80 00       LDX    #$8000
 B86B: 0F 00          CLR    $00
 B86D: A6 80          LDA    ,X+
@@ -5578,7 +5583,7 @@ B87A: 10 8E FF E0    LDY    #$FFE0
 B87E: 96 00          LDA    $00
 B880: A1 23          CMPA   $3,Y
 B882: 27 02          BEQ    $B886
-B884: C6 01          LDB    #$01
+B884: C6 01          LDB    #$01		; error in main ROM (ROM 4)
 B886: 86 04          LDA    #$04
 B888: BD B8 EA       JSR    write_diagnostic_message_b8ea
 B88B: 7F 0E 3E       CLR    $0E3E
@@ -5586,6 +5591,7 @@ B88E: 96 3A          LDA    bank_switch_copy_3a
 B890: 8A 10          ORA    #$10
 B892: 97 3A          STA    bank_switch_copy_3a
 B894: B7 38 08       STA    bankswitch_3808
+; now the subcpu ROM
 B897: B6 38 02       LDA    extra_3802
 B89A: 84 10          ANDA   #$10
 B89C: 26 F9          BNE    $B897
@@ -5600,7 +5606,7 @@ B8AE: B7 38 0F       STA    sub_irq_380f
 B8B1: 7D 0E 3E       TST    $0E3E
 B8B4: 27 FB          BEQ    $B8B1
 B8B6: BD 8A B5       JSR    $8AB5
-B8B9: B6 20 00       LDA    $2000
+B8B9: B6 20 00       LDA    $2000		; check value that subcpu has put there
 B8BC: 81 84          CMPA   #$84
 B8BE: 27 0A          BEQ    $B8CA
 B8C0: 86 05          LDA    #$05
@@ -5620,6 +5626,7 @@ B8DF: B7 38 08       STA    bankswitch_3808
 B8E2: 7E 80 43       JMP    $8043
 
 ; < A: message index
+; < B: 0 if OK, 1 if ERROR
 write_diagnostic_message_b8ea:
 B8EA: D7 0E          STB    $0E
 B8EC: 97 0F          STA    $0F
@@ -8993,6 +9000,7 @@ EEA8: 32 61          LEAS   $1,S
 EEAA: 35 C0          PULS   U,PC
 EEAC: 34 14          PSHS   X,B
 EEAE: 32 7D          LEAS   -$3,S
+; vblank wait
 EEB0: B6 38 02       LDA    extra_3802
 EEB3: 84 08          ANDA   #$08
 EEB5: 27 F9          BEQ    $EEB0

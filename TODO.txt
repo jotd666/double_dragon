@@ -1,8 +1,7 @@
-- fix foreground layout, tile logging to display diagnostic message
-  (we'll remove the diagnostics later if possible)
+- convert subcpu (else: no sprites): make it work connect irq with cpu irq, connect comram
+  simulate or remove sync (end of subcpu interrupt should set/clear the flag 0x10 in EXTRA)
 - wire special addresses
 - check what firq does (vs irq) on MAME : nullify it
-- convert subcpu (else: no sprites)
 
 - play with palette write wpoint
 - palette writes can be useful to detect 

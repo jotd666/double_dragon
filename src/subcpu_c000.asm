@@ -1,5 +1,7 @@
 ;	map(0x8000, 0x81ff).ram().share(m_comram);
 
+irq_already_called_0066 = $66
+
 ; aux. cpu to help main cpu
 C000: 3B       rti  
 C001: 3B       rti  
@@ -17,7 +19,7 @@ C00E: 97 05    sta  $05
 C010: 97 16    sta  $16
 C012: 86 10    lda  #$10
 C014: 06       tap  			; interrupt handling
-C015: 7F 00 66 clr  $0066
+C015: 7F 00 66 clr  irq_already_called_0066
 C018: 7F 00 65 clr  $0065
 C01B: 96 65    lda  $65
 C01D: 84 FE    anda #$FE
@@ -31,9 +33,10 @@ C02B: 7E C0 2B jmp  $C02B		; infinite loop, wait for main cpu orders
 
 ; triggered when sprites need displaying
 irq_c02e:
-C02E: 7D 00 66 tst  $0066
+C02E: 7D 00 66 tst  irq_already_called_0066
 C031: 26 03    bne  $C036
-C033: 7E C0 58 jmp  $C058
+; first time IRQ is called it checksums the memory
+C033: 7E C0 58 jmp  rom_checksum_c058
 C036: BD C0 6C jsr  $C06C
 C039: 96 65    lda  $65
 C03B: 84 FD    anda #$FD
@@ -52,6 +55,7 @@ C053: 97 65    sta  $65
 C055: 97 17    sta  $17
 C057: 3B       rti
 
+rom_checksum_c058:
 C058: CE C0 00 ldx  #$C000
 C05B: A6 00    lda  $00,x
 C05D: 08       inx  
@@ -59,8 +63,9 @@ C05E: AB 00    adda $00,x
 C060: 08       inx  
 C061: 26 FB    bne  $C05E
 C063: B7 80 00 sta  $8000
-C066: 7C 00 66 inc  $0066
-C069: 7E C0 39 jmp  $C039
+C066: 7C 00 66 inc  irq_already_called_0066
+C069: 7E C0 39 jmp  irq_end_c039
+
 C06C: BD C0 A8 jsr  $C0A8
 C06F: CE 80 01 ldx  #$8001
 C072: 86 01    lda  #$01
