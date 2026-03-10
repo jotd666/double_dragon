@@ -38,6 +38,7 @@ C031: 26 03    bne  $C036
 ; first time IRQ is called it checksums the memory
 C033: 7E C0 58 jmp  rom_checksum_c058
 C036: BD C0 6C jsr  $C06C
+irq_end_c039:
 C039: 96 65    lda  $65
 C03B: 84 FD    anda #$FD
 C03D: 97 65    sta  $65
@@ -62,7 +63,7 @@ C05D: 08       inx
 C05E: AB 00    adda $00,x
 C060: 08       inx  
 C061: 26 FB    bne  $C05E
-C063: B7 80 00 sta  $8000
+C063: B7 80 00 sta  $8000		; write the result of the checksum here so maincpu can collect it
 C066: 7C 00 66 inc  irq_already_called_0066
 C069: 7E C0 39 jmp  irq_end_c039
 

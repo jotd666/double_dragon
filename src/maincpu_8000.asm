@@ -122,6 +122,16 @@
 ; bank 7 is empty
 ;
 ; the [banks=0,1,4] tag indicates which known banks are accessed in this jump
+;
+; interrupt vectors:
+; FFF0H to FFF1H 	Reserved by Motorola                     $FFFF
+; FFF2H to FFF3H 	SWI3 instruction interrupt vector        $80B9 (not used, RTI)
+; FFF4H to FFF5H 	SWI2 instruction interrupt vector        $80B9 (not used, RTI)
+; FFF6H to FFF7H 	Fast hardware int. vector (FIRQ)         $8092 freq 0.7ms only to check for inserted coins
+; FFF8H to FFF9H 	Hardware interrupt vector (IRQ)          $80B0 freq 1/30s (29ms)
+; FFFAH to FFFBH 	SWI instruction interrupt vector         $80B9 (not used, RTI)
+; FFFCH to FFFDH 	Non-maskable interrupt vector (NMI)      $8056 freq 1/60s (15ms)
+; FFFEH to FFFFH 	Reset vector                             $8000
 
 bank_switch_copy_3a = $3a
 
@@ -142,9 +152,12 @@ scroll_y_lo_380a = $380a
 previous_bank_register_0e43 = $e43
 previous_bank_register_0e44 = $e44
 previous_bank_register_0e45 = $e45
+sync_flag_0e3e = $e3e
 
 bg_tiles_address_3000 = $3000
 fg_tiles_address_1800 = $1800
+nb_credits_0021 = $21
+interrupt_status_22 = $22
 
 reset_8000:     ; [global]
 8000: 4F             CLRA
@@ -181,18 +194,17 @@ reset_8000:     ; [global]
 8051: 1C AF          ANDCC  #$AF
 8053: 7E 80 BA       JMP    $80BA
 
-; called once out of 16 times vs fast irq
-irq_8056:   ; [global]
+nmi_8056:   ; [global]
 8056: 4F             CLRA
 8057: 1F 8B          TFR    A,DP
 8059: F6 0E 71       LDB    $0E71
 805C: 2A 30          BPL    $808E
-805E: 96 22          LDA    $22
+805E: 96 22          LDA    interrupt_status_22
 8060: 2B 2C          BMI    $808E
 8062: 8A 80          ORA    #$80
-8064: 97 22          STA    $22
+8064: 97 22          STA    interrupt_status_22
 8066: 0C 2F          INC    $2F
-8068: 96 22          LDA    $22
+8068: 96 22          LDA    interrupt_status_22
 806A: 84 01          ANDA   #$01
 806C: 27 1A          BEQ    $8088
 806E: BD FD FC       JSR    $FDFC
@@ -201,37 +213,47 @@ irq_8056:   ; [global]
 8077: BD FE A7       JSR    $FEA7
 807A: BD FD F3       JSR    $FDF3
 807D: BD FF 34       JSR    $FF34
-8080: 96 22          LDA    $22
+8080: 96 22          LDA    interrupt_status_22
 8082: 8A 02          ORA    #$02
-8084: 97 22          STA    $22
+8084: 97 22          STA    interrupt_status_22
 8086: 0F 2F          CLR    $2F
-8088: 96 22          LDA    $22
+8088: 96 22          LDA    interrupt_status_22
 808A: 84 7F          ANDA   #$7F
-808C: 97 22          STA    $22
-808E: B7 38 0B       STA    nmi_ack_380b
+808C: 97 22          STA    interrupt_status_22
+808E: B7 38 0B       STA    nmi_ack_380b		; ack our interrupt
 8091: 3B             RTI
+
+; only useful to check for coins. Disable it (bpset 8094,,{PC=$80AA;g} and
+; everything works except the insert coin buttons
+; called every 0.7ms this is probably to be sure not to miss any coins
 
 firq_8092:   ; [global]
 8092: 34 7F          PSHS   U,Y,X,DP,D,CC
 8094: 4F             CLRA
 8095: 1F 8B          TFR    A,DP
-8097: 96 22          LDA    $22
+8097: 96 22          LDA    interrupt_status_22
 8099: 85 20          BITA   #$20
 809B: 26 0D          BNE    $80AA
 809D: 8A 20          ORA    #$20
-809F: 97 22          STA    $22
-80A1: BD 89 90       JSR    $8990
-80A4: 96 22          LDA    $22
+809F: 97 22          STA    interrupt_status_22
+80A1: BD 89 90       JSR    check_for_coin_inserted_8990
+80A4: 96 22          LDA    interrupt_status_22
 80A6: 84 DF          ANDA   #$DF
-80A8: 97 22          STA    $22
-80AA: B7 38 0C       STA    firq_ack_380c
+80A8: 97 22          STA    interrupt_status_22
+80AA: B7 38 0C       STA    firq_ack_380c		; ack our interrupt
 80AD: 35 7F          PULS   CC,D,DP,X,Y,U
 80AF: 3B             RTI
+
+irq_80b0:   ; [global]
 80B0: 86 01          LDA    #$01
-80B2: B7 0E 3E       STA    $0E3E
-80B5: B7 38 0D       STA    irq_ack_380d
+80B2: B7 0E 3E       STA    sync_flag_0e3e		; set sync flag
+80B5: B7 38 0D       STA    irq_ack_380d		; ack our interrupt
 80B8: 3B             RTI
+
+; this is not used
+swi_interrupt:
 80B9: 3B             RTI
+
 80BA: 86 FF          LDA    #$FF
 80BC: B7 38 0E       STA    sound_irq_380e
 80BF: C6 FF          LDB    #$FF
@@ -341,7 +363,7 @@ firq_8092:   ; [global]
 81BD: 20 1C          BRA    $81DB
 81BF: 86 03          LDA    #$03
 81C1: 34 04          PSHS   B
-81C3: D6 21          LDB    $21
+81C3: D6 21          LDB    nb_credits_0021
 81C5: 5A             DECB
 81C6: 27 01          BEQ    $81C9
 81C8: 4C             INCA
@@ -368,20 +390,20 @@ firq_8092:   ; [global]
 81F5: 20 17          BRA    $820E
 81F7: C1 80          CMPB   #$80
 81F9: 26 8B          BNE    $8186
-81FB: D6 21          LDB    $21
+81FB: D6 21          LDB    nb_credits_0021
 81FD: C1 02          CMPB   #$02
 81FF: 25 85          BCS    $8186
 8201: 96 29          LDA    $29
 8203: 8A 83          ORA    #$83
 8205: 97 29          STA    $29
-8207: 96 21          LDA    $21
+8207: 96 21          LDA    nb_credits_0021
 8209: 8B 99          ADDA   #$99
 820B: 19             DAA
-820C: 97 21          STA    $21
-820E: 96 21          LDA    $21
+820C: 97 21          STA    nb_credits_0021
+820E: 96 21          LDA    nb_credits_0021
 8210: 8B 99          ADDA   #$99
 8212: 19             DAA
-8213: 97 21          STA    $21
+8213: 97 21          STA    nb_credits_0021
 8215: 96 26          LDA    $26
 8217: 26 04          BNE    $821D
 8219: 86 83          LDA    #$83
@@ -525,8 +547,8 @@ firq_8092:   ; [global]
 8381: 8A 80          ORA    #$80
 8383: B7 0E 71       STA    $0E71
 8386: 7F 0E 52       CLR    $0E52
-8389: 7F 0E 3E       CLR    $0E3E
-838C: 0F 22          CLR    $22
+8389: 7F 0E 3E       CLR    sync_flag_0e3e
+838C: 0F 22          CLR    interrupt_status_22
 838E: F6 21 FD       LDB    $21FD
 8391: 34 04          PSHS   B
 8393: BD FF 1A       JSR    $FF1A
@@ -552,16 +574,16 @@ firq_8092:   ; [global]
 83CD: 26 06          BNE    $83D5
 83CF: BD B7 8A       JSR    $B78A
 83D2: BD B7 AD       JSR    $B7AD
-83D5: B6 0E 3E       LDA    $0E3E
+83D5: B6 0E 3E       LDA    sync_flag_0e3e
 83D8: 27 FB          BEQ    $83D5
 83DA: BD 8A B5       JSR    $8AB5
 83DD: 35 04          PULS   B
 83DF: BD FE AD       JSR    $FEAD
-83E2: 96 22          LDA    $22
+83E2: 96 22          LDA    interrupt_status_22
 83E4: 8A 01          ORA    #$01
-83E6: 97 22          STA    $22
+83E6: 97 22          STA    interrupt_status_22
 83E8: 7F 38 0B       CLR    nmi_ack_380b
-83EB: 96 22          LDA    $22
+83EB: 96 22          LDA    interrupt_status_22
 83ED: 84 02          ANDA   #$02
 83EF: 27 FA          BEQ    $83EB
 83F1: 0C 51          INC    $51
@@ -681,8 +703,8 @@ l_84ec:
 8506: B6 0E 71       LDA    $0E71
 8509: 8A 80          ORA    #$80
 850B: B7 0E 71       STA    $0E71
-850E: 7F 0E 3E       CLR    $0E3E
-8511: 0F 22          CLR    $22
+850E: 7F 0E 3E       CLR    sync_flag_0e3e
+8511: 0F 22          CLR    interrupt_status_22
 8513: F6 21 FD       LDB    $21FD
 8516: 34 04          PSHS   B
 8518: BD FF 1A       JSR    $FF1A
@@ -692,16 +714,16 @@ l_84ec:
 8524: BD FE AD       JSR    $FEAD
 8527: BD FD F9       JSR    $FDF9
 852A: BD 84 45       JSR    $8445
-852D: B6 0E 3E       LDA    $0E3E
+852D: B6 0E 3E       LDA    sync_flag_0e3e
 8530: 27 FB          BEQ    $852D
 8532: BD 8A B5       JSR    $8AB5
 8535: 35 04          PULS   B
 8537: BD FE AD       JSR    $FEAD
-853A: 96 22          LDA    $22
+853A: 96 22          LDA    interrupt_status_22
 853C: 8A 01          ORA    #$01
-853E: 97 22          STA    $22
+853E: 97 22          STA    interrupt_status_22
 8540: 7F 38 0B       CLR    nmi_ack_380b
-8543: 96 22          LDA    $22
+8543: 96 22          LDA    interrupt_status_22
 8545: 84 02          ANDA   #$02
 8547: 27 FA          BEQ    $8543
 8549: 0C 51          INC    $51
@@ -783,8 +805,8 @@ l_84ec:
 85FC: B6 0E 71       LDA    $0E71
 85FF: 8A 80          ORA    #$80
 8601: B7 0E 71       STA    $0E71
-8604: 7F 0E 3E       CLR    $0E3E
-8607: 0F 22          CLR    $22
+8604: 7F 0E 3E       CLR    sync_flag_0e3e
+8607: 0F 22          CLR    interrupt_status_22
 8609: F6 21 FD       LDB    $21FD
 860C: 34 04          PSHS   B
 860E: BD FF 1A       JSR    $FF1A
@@ -803,16 +825,16 @@ l_84ec:
 862F: BD FD F9       JSR    $FDF9
 8632: BD B7 AD       JSR    $B7AD
 8635: BD 86 EC       JSR    $86EC
-8638: B6 0E 3E       LDA    $0E3E
+8638: B6 0E 3E       LDA    sync_flag_0e3e
 863B: 27 FB          BEQ    $8638
 863D: BD 8A B5       JSR    $8AB5
 8640: 35 04          PULS   B
 8642: BD FE AD       JSR    $FEAD
-8645: 96 22          LDA    $22
+8645: 96 22          LDA    interrupt_status_22
 8647: 8A 01          ORA    #$01
-8649: 97 22          STA    $22
+8649: 97 22          STA    interrupt_status_22
 864B: 7F 38 0B       CLR    nmi_ack_380b
-864E: 96 22          LDA    $22
+864E: 96 22          LDA    interrupt_status_22
 8650: 84 02          ANDA   #$02
 8652: 27 FA          BEQ    $864E
 8654: B6 0E 2D       LDA    $0E2D
@@ -856,7 +878,7 @@ l_84ec:
 86B1: 26 0F          BNE    $86C2
 86B3: 7F 09 F2       CLR    $09F2
 86B6: 7F 0E 71       CLR    $0E71
-86B9: 0D 21          TST    $21
+86B9: 0D 21          TST    nb_credits_0021
 86BB: 10 26 FA 99    LBNE   $8158
 86BF: 7E 80 BA       JMP    $80BA
 86C2: 81 03          CMPA   #$03
@@ -920,7 +942,7 @@ l_84ec:
 875A: BD 87 5F       JSR    $875F
 875D: 35 F6          PULS   D,X,Y,U,PC
 875F: 34 36          PSHS   Y,X,D
-8761: 0D 21          TST    $21
+8761: 0D 21          TST    nb_credits_0021
 8763: 27 68          BEQ    $87CD
 8765: F6 38 00       LDB    port_1_3800
 8768: 53             COMB
@@ -933,10 +955,10 @@ l_84ec:
 8775: 27 04          BEQ    $877B
 8777: C1 40          CMPB   #$40
 8779: 27 52          BEQ    $87CD
-877B: 96 21          LDA    $21
+877B: 96 21          LDA    nb_credits_0021
 877D: 8B 99          ADDA   #$99
 877F: 19             DAA
-8780: 97 21          STA    $21
+8780: 97 21          STA    nb_credits_0021
 8782: 96 2A          LDA    $2A
 8784: 97 00          STA    $00
 8786: BD 82 6F       JSR    $826F
@@ -985,7 +1007,7 @@ l_84ec:
 87F7: 2B 0A          BMI    $8803
 87F9: 31 26          LEAY   $6,Y
 87FB: 5F             CLRB
-87FC: 0D 21          TST    $21
+87FC: 0D 21          TST    nb_credits_0021
 87FE: 26 01          BNE    $8801
 8800: 5C             INCB
 8801: 20 18          BRA    $881B
@@ -999,7 +1021,7 @@ l_84ec:
 8811: EB 61          ADDB   $1,S
 8813: 4D             TSTA
 8814: 27 05          BEQ    $881B
-8816: 0D 21          TST    $21
+8816: 0D 21          TST    nb_credits_0021
 8818: 27 01          BEQ    $881B
 881A: 5C             INCB
 881B: A6 A5          LDA    B,Y
@@ -1108,7 +1130,7 @@ l_84ec:
 891D: BD FE 9B       JSR    clear_bg_screen_fe9b
 8920: BD FE 98       JSR    clear_fg_screen_fe98
 8923: BD FE 9E       JSR    $FE9E
-8926: 0D 21          TST    $21
+8926: 0D 21          TST    nb_credits_0021
 8928: 10 26 F8 2C    LBNE   $8158
 892C: 0F 26          CLR    $26
 892E: 7E 80 BA       JMP    $80BA
@@ -1152,6 +1174,8 @@ l_84ec:
 898A: BD FE B3       JSR    $FEB3
 898D: 32 62          LEAS   $2,S
 898F: 39             RTS
+
+check_for_coin_inserted_8990:
 8990: 32 7E          LEAS   -$2,S
 8992: B6 0E 71       LDA    $0E71
 8995: B7 0E 72       STA    $0E72
@@ -1222,12 +1246,12 @@ l_84ec:
 8A22: A6 E4          LDA    ,S
 8A24: 6F A6          CLR    A,Y
 8A26: 8E 8A A0       LDX    #$8AA0
-8A29: 96 21          LDA    $21
+8A29: 96 21          LDA    nb_credits_0021
 8A2B: AB 85          ADDA   B,X
 8A2D: 19             DAA
 8A2E: 24 02          BCC    $8A32
 8A30: 86 99          LDA    #$99
-8A32: 97 21          STA    $21
+8A32: 97 21          STA    nb_credits_0021
 8A34: B6 0B 03       LDA    $0B03
 8A37: 2B 15          BMI    $8A4E
 8A39: 96 3A          LDA    bank_switch_copy_3a
@@ -1246,7 +1270,7 @@ l_84ec:
 8A59: 7F 0E 71       CLR    $0E71
 8A5C: 7F 38 0D       CLR    irq_ack_380d
 8A5F: 86 44          LDA    #$44
-8A61: 97 22          STA    $22
+8A61: 97 22          STA    interrupt_status_22
 8A63: 0C 26          INC    $26
 8A65: 1C AF          ANDCC  #$AF
 8A67: 86 01          LDA    #$01
@@ -1307,7 +1331,7 @@ l_84ec:
 8AE3: BD A8 E1       JSR    $A8E1
 8AE6: BD FD 18       JSR    $FD18
 8AE9: BD FE D4       JSR    $FED4
-8AEC: A6 88 21       LDA    $21,X
+8AEC: A6 88 21       LDA    nb_credits_0021,X
 8AEF: 27 08          BEQ    $8AF9
 8AF1: 10 AE 88 41    LDY    $41,X
 8AF5: A6 03          LDA    $3,X
@@ -1395,7 +1419,7 @@ l_84ec:
 8BF1: AA 03          ORA    $3,X
 8BF3: A7 02          STA    $2,X
 8BF5: 6F 88 37       CLR    $37,X
-8BF8: A6 88 21       LDA    $21,X
+8BF8: A6 88 21       LDA    nb_credits_0021,X
 8BFB: 81 08          CMPA   #$08
 8BFD: 24 0E          BCC    $8C0D
 8BFF: 10 8E 8C 19    LDY    #$8C19
@@ -1427,7 +1451,7 @@ l_84ec:
 8C57: E6 A6          LDB    A,Y
 8C59: EB 88 18       ADDB   $18,X
 8C5C: 10 8E 8C 19    LDY    #$8C19
-8C60: A6 88 21       LDA    $21,X
+8C60: A6 88 21       LDA    nb_credits_0021,X
 8C63: 81 08          CMPA   #$08
 8C65: 24 06          BCC    $8C6D
 8C67: A6 A6          LDA    A,Y
@@ -1565,7 +1589,7 @@ l_84ec:
 8DBD: C3 00 C0       ADDD   #$00C0
 8DC0: 10 B3 0B 4E    CMPD   $0B4E
 8DC4: 25 57          BCS    $8E1D
-8DC6: A6 88 21       LDA    $21,X
+8DC6: A6 88 21       LDA    nb_credits_0021,X
 8DC9: 81 03          CMPA   #$03
 8DCB: 25 08          BCS    $8DD5
 8DCD: 81 04          CMPA   #$04
@@ -1663,7 +1687,7 @@ l_84ec:
 8EBB: 10 26 00 3D    LBNE   $8EFC
 8EBF: 5A             DECB
 8EC0: 10 8E 8F 24    LDY    #$8F24
-8EC4: A6 88 21       LDA    $21,X
+8EC4: A6 88 21       LDA    nb_credits_0021,X
 8EC7: 48             ASLA
 8EC8: 10 AE A6       LDY    A,Y
 8ECB: 58             ASLB
@@ -1730,7 +1754,7 @@ l_84ec:
 9028: 49             ROLA
 9029: 49             ROLA
 902A: 84 01          ANDA   #$01
-902C: A7 88 22       STA    $22,X
+902C: A7 88 22       STA    interrupt_status_22,X
 902F: 39             RTS
 
 904B: 34 7E          PSHS   U,Y,X,DP,D
@@ -1751,7 +1775,7 @@ l_84ec:
 91AF: A6 88 1B       LDA    $1B,X
 91B2: 10 2B 00 72    LBMI   $9228
 91B6: BD A5 29       JSR    $A529
-91B9: A6 88 22       LDA    $22,X
+91B9: A6 88 22       LDA    interrupt_status_22,X
 91BC: 10 8E 92 83    LDY    #$9283
 91C0: A6 A6          LDA    A,Y
 91C2: A8 03          EORA   $3,X
@@ -1847,7 +1871,7 @@ l_84ec:
 92A0: BD A5 29       JSR    $A529
 92A3: BD FA 1A       JSR    $FA1A
 92A6: 10 AE 88 2D    LDY    $2D,X
-92AA: A6 A8 21       LDA    $21,Y
+92AA: A6 A8 21       LDA    nb_credits_0021,Y
 92AD: 27 0E          BEQ    $92BD
 92AF: 34 10          PSHS   X
 92B1: 1F 21          TFR    Y,X
@@ -2407,7 +2431,7 @@ l_84ec:
 9838: A6 88 1B       LDA    $1B,X
 983B: 10 2B 00 3E    LBMI   $987D
 983F: BD A5 29       JSR    $A529
-9842: A6 88 21       LDA    $21,X
+9842: A6 88 21       LDA    nb_credits_0021,X
 9845: 10 27 00 9C    LBEQ   $98E5
 9849: A6 88 34       LDA    $34,X
 984C: 8A 10          ORA    #$10
@@ -2428,7 +2452,7 @@ l_84ec:
 986B: A6 01          LDA    $1,X
 986D: 81 02          CMPA   #$02
 986F: 25 0C          BCS    $987D
-9871: A6 88 21       LDA    $21,X
+9871: A6 88 21       LDA    nb_credits_0021,X
 9874: 81 01          CMPA   #$01
 9876: 26 05          BNE    $987D
 9878: 86 06          LDA    #$06
@@ -2441,7 +2465,7 @@ l_84ec:
 988A: 24 59          BCC    $98E5
 988C: 81 03          CMPA   #$03
 988E: 26 10          BNE    $98A0
-9890: E6 88 21       LDB    $21,X
+9890: E6 88 21       LDB    nb_credits_0021,X
 9893: C1 01          CMPB   #$01
 9895: 26 09          BNE    $98A0
 9897: 34 02          PSHS   A
@@ -2500,7 +2524,7 @@ l_84ec:
 990E: 10 8E 99 2C    LDY    #$992C
 9912: A6 88 1B       LDA    $1B,X
 9915: 10 2B FF 64    LBMI   $987D
-9919: A6 88 21       LDA    $21,X
+9919: A6 88 21       LDA    nb_credits_0021,X
 991C: 10 27 FF C5    LBEQ   $98E5
 9920: BD A5 29       JSR    $A529
 9923: A6 03          LDA    $3,X
@@ -2519,7 +2543,7 @@ l_84ec:
 9940: CE 07 5B       LDU    #$075B
 9943: A6 C4          LDA    ,U
 9945: 2A 0A          BPL    $9951
-9947: 33 C8 21       LEAU   $21,U
+9947: 33 C8 21       LEAU   nb_credits_0021,U
 994A: 5C             INCB
 994B: C1 10          CMPB   #$10
 994D: 25 F4          BCS    $9943
@@ -2538,7 +2562,7 @@ l_84ec:
 996D: BD FD B2       JSR    $FDB2
 9970: 39             RTS
 9971: 34 40          PSHS   U
-9973: A6 88 21       LDA    $21,X
+9973: A6 88 21       LDA    nb_credits_0021,X
 9976: 10 27 00 51    LBEQ   $99CB
 997A: 81 07          CMPA   #$07
 997C: 26 05          BNE    $9983
@@ -2587,7 +2611,7 @@ l_84ec:
 99DC: 35 C0          PULS   U,PC
 
 99E6: 34 40          PSHS   U
-99E8: A6 88 21       LDA    $21,X
+99E8: A6 88 21       LDA    nb_credits_0021,X
 99EB: 10 27 FF DC    LBEQ   $99CB
 99EF: 81 07          CMPA   #$07
 99F1: 26 1E          BNE    $9A11
@@ -2613,7 +2637,7 @@ l_84ec:
 9A26: A6 88 1B       LDA    $1B,X
 9A29: 2B 46          BMI    $9A71
 9A2B: BD A5 29       JSR    $A529
-9A2E: A6 88 21       LDA    $21,X
+9A2E: A6 88 21       LDA    nb_credits_0021,X
 9A31: 27 43          BEQ    $9A76
 9A33: 86 52          LDA    #$52
 9A35: AA 03          ORA    $3,X
@@ -2700,7 +2724,7 @@ l_84ec:
 9AF7: 86 7F          LDA    #$7F
 9AF9: A7 22          STA    $2,Y
 9AFB: 86 06          LDA    #$06
-9AFD: A7 A8 22       STA    $22,Y
+9AFD: A7 A8 22       STA    interrupt_status_22,Y
 9B00: 86 04          LDA    #$04
 9B02: BD A5 49       JSR    $A549
 9B05: A6 03          LDA    $3,X
@@ -2774,7 +2798,7 @@ l_84ec:
 9BAF: 86 01          LDA    #$01
 9BB1: A7 C8 1B       STA    $1B,U
 9BB4: 86 00          LDA    #$00
-9BB6: A7 C8 22       STA    $22,U
+9BB6: A7 C8 22       STA    interrupt_status_22,U
 9BB9: A6 88 16       LDA    $16,X
 9BBC: 84 F9          ANDA   #$F9
 9BBE: A7 88 16       STA    $16,X
@@ -2822,7 +2846,7 @@ l_84ec:
 9C2C: 86 06          LDA    #$06
 9C2E: A7 88 19       STA    $19,X
 9C31: 10 8E 8C 19    LDY    #$8C19
-9C35: A6 88 21       LDA    $21,X
+9C35: A6 88 21       LDA    nb_credits_0021,X
 9C38: 81 07          CMPA   #$07
 9C3A: 24 0C          BCC    $9C48
 9C3C: A6 A6          LDA    A,Y
@@ -2859,7 +2883,7 @@ l_84ec:
 9C8E: 34 40          PSHS   U
 9C90: A6 88 1B       LDA    $1B,X
 9C93: 2B 32          BMI    $9CC7
-9C95: A6 88 21       LDA    $21,X
+9C95: A6 88 21       LDA    nb_credits_0021,X
 9C98: 27 08          BEQ    $9CA2
 9C9A: BD 99 67       JSR    $9967
 9C9D: 86 01          LDA    #$01
@@ -2932,7 +2956,7 @@ l_84ec:
 9D3F: B6 09 F2       LDA    $09F2
 9D42: 2B 0A          BMI    $9D4E
 9D44: 86 08          LDA    #$08
-9D46: A7 88 22       STA    $22,X
+9D46: A7 88 22       STA    interrupt_status_22,X
 9D49: 86 01          LDA    #$01
 9D4B: 7E 9D DA       JMP    $9DDA
 9D4E: A6 88 3A       LDA    bank_switch_copy_3a,X
@@ -3044,7 +3068,7 @@ l_84ec:
 9E6F: 39             RTS
 9E70: CC 00 00       LDD    #$0000
 9E73: ED 88 41       STD    $41,X
-9E76: A7 88 21       STA    $21,X
+9E76: A7 88 21       STA    nb_credits_0021,X
 9E79: 20 EF          BRA    $9E6A
 9E7B: 10 AE 88 41    LDY    $41,X
 9E7F: A6 A4          LDA    ,Y
@@ -3058,7 +3082,7 @@ l_84ec:
 9E93: A6 A8 17       LDA    $17,Y
 9E96: 10 8E 9E A0    LDY    #$9EA0
 9E9A: A6 A6          LDA    A,Y
-9E9C: A7 88 21       STA    $21,X
+9E9C: A7 88 21       STA    nb_credits_0021,X
 9E9F: 39             RTS
 
 9EAF: 10 AE 88 2D    LDY    $2D,X
@@ -3072,14 +3096,14 @@ l_84ec:
 9EC2: A6 88 1B       LDA    $1B,X
 9EC5: 2B 56          BMI    $9F1D
 9EC7: BD A5 29       JSR    $A529
-9ECA: A6 88 21       LDA    $21,X
+9ECA: A6 88 21       LDA    nb_credits_0021,X
 9ECD: 27 08          BEQ    $9ED7
 9ECF: BD 99 67       JSR    $9967
 9ED2: 86 01          LDA    #$01
 9ED4: A7 A8 1B       STA    $1B,Y
 9ED7: 10 AE 88 2D    LDY    $2D,X
 9EDB: 34 30          PSHS   Y,X
-9EDD: A6 A8 21       LDA    $21,Y
+9EDD: A6 A8 21       LDA    nb_credits_0021,Y
 9EE0: 27 0A          BEQ    $9EEC
 9EE2: 1F 21          TFR    Y,X
 9EE4: BD 99 67       JSR    $9967
@@ -3097,7 +3121,7 @@ l_84ec:
 9F02: 84 7F          ANDA   #$7F
 9F04: 26 17          BNE    $9F1D
 9F06: 86 FF          LDA    #$FF
-9F08: A7 88 22       STA    $22,X
+9F08: A7 88 22       STA    interrupt_status_22,X
 9F0B: 6F 88 25       CLR    $25,X
 9F0E: 6F 88 30       CLR    $30,X
 9F11: A6 01          LDA    $1,X
@@ -3135,7 +3159,7 @@ l_84ec:
 9F5F: A7 02          STA    $2,X
 9F61: A7 22          STA    $2,Y
 9F63: 20 13          BRA    $9F78
-9F65: A6 88 22       LDA    $22,X
+9F65: A6 88 22       LDA    interrupt_status_22,X
 9F68: 10 2A 02 A8    LBPL   $A214
 9F6C: A6 88 2F       LDA    $2F,X
 9F6F: 84 7F          ANDA   #$7F
@@ -3352,7 +3376,7 @@ A155: 20 23          BRA    $A17A
 A157: 86 01          LDA    #$01
 A159: A7 C8 1B       STA    $1B,U
 A15C: 86 05          LDA    #$05
-A15E: A7 C8 22       STA    $22,U
+A15E: A7 C8 22       STA    interrupt_status_22,U
 A161: 86 00          LDA    #$00
 A163: A7 88 1B       STA    $1B,X
 A166: 86 7F          LDA    #$7F
@@ -3445,7 +3469,7 @@ A237: 25 21          BCS    $A25A
 A239: 86 01          LDA    #$01
 A23B: A7 88 1B       STA    $1B,X
 A23E: 86 04          LDA    #$04
-A240: A7 88 22       STA    $22,X
+A240: A7 88 22       STA    interrupt_status_22,X
 A243: 86 7F          LDA    #$7F
 A245: A7 02          STA    $2,X
 A247: 10 AE 88 2D    LDY    $2D,X
@@ -3456,7 +3480,7 @@ A253: 84 F9          ANDA   #$F9
 A255: A7 88 16       STA    $16,X
 A258: 35 C0          PULS   U,PC
 A25A: 86 FF          LDA    #$FF
-A25C: A7 88 22       STA    $22,X
+A25C: A7 88 22       STA    interrupt_status_22,X
 A25F: 86 01          LDA    #$01
 A261: A7 88 2F       STA    $2F,X
 A264: BD 9F 83       JSR    $9F83
@@ -3466,7 +3490,7 @@ A26D: AA 03          ORA    $3,X
 A26F: A7 02          STA    $2,X
 A271: 6F 88 18       CLR    $18,X
 A274: 35 C0          PULS   U,PC
-A276: A6 88 22       LDA    $22,X
+A276: A6 88 22       LDA    interrupt_status_22,X
 A279: 48             ASLA
 A27A: 97 00          STA    $00
 A27C: A6 88 15       LDA    $15,X
@@ -3527,7 +3551,7 @@ A33B: BD FE D1       JSR    $FED1
 A33E: A6 88 15       LDA    $15,X
 A341: 8A 40          ORA    #$40
 A343: A7 88 15       STA    $15,X
-A346: A6 88 21       LDA    $21,X
+A346: A6 88 21       LDA    nb_credits_0021,X
 A349: 27 08          BEQ    $A353
 A34B: BD 99 67       JSR    $9967
 A34E: 86 01          LDA    #$01
@@ -3679,7 +3703,7 @@ A4BD: A6 01          LDA    $1,X
 A4BF: A7 88 1D       STA    $1D,X
 A4C2: 86 16          LDA    #$16
 A4C4: A7 01          STA    $1,X
-A4C6: A6 88 21       LDA    $21,X
+A4C6: A6 88 21       LDA    nb_credits_0021,X
 A4C9: 27 08          BEQ    $A4D3
 A4CB: BD 99 67       JSR    $9967
 A4CE: 86 01          LDA    #$01
@@ -3763,12 +3787,12 @@ A596: A6 88 1B       LDA    $1B,X
 A599: 2B 7B          BMI    $A616
 A59B: BD A5 29       JSR    $A529
 A59E: 10 8E 8C 19    LDY    #$8C19
-A5A2: A6 88 21       LDA    $21,X
+A5A2: A6 88 21       LDA    nb_credits_0021,X
 A5A5: 81 07          CMPA   #$07
 A5A7: 24 11          BCC    $A5BA
 A5A9: A6 A6          LDA    A,Y
 A5AB: 26 0D          BNE    $A5BA
-A5AD: A6 88 21       LDA    $21,X
+A5AD: A6 88 21       LDA    nb_credits_0021,X
 A5B0: 27 08          BEQ    $A5BA
 A5B2: BD 99 67       JSR    $9967
 A5B5: 86 01          LDA    #$01
@@ -3831,7 +3855,7 @@ A659: C4 80          ANDB   #$80
 A65B: CA 0F          ORB    #$0F
 A65D: E7 88 1B       STB    $1B,X
 A660: 34 22          PSHS   Y,A
-A662: A6 88 21       LDA    $21,X
+A662: A6 88 21       LDA    nb_credits_0021,X
 A665: 27 08          BEQ    $A66F
 A667: BD 99 67       JSR    $9967
 A66A: 86 01          LDA    #$01
@@ -3864,7 +3888,7 @@ A6A5: 27 04          BEQ    $A6AB
 A6A7: 86 04          LDA    #$04
 A6A9: 20 07          BRA    $A6B2
 A6AB: 86 01          LDA    #$01
-A6AD: A7 88 22       STA    $22,X
+A6AD: A7 88 22       STA    interrupt_status_22,X
 A6B0: 86 05          LDA    #$05
 A6B2: A7 88 1B       STA    $1B,X
 A6B5: A6 88 34       LDA    $34,X
@@ -3879,7 +3903,7 @@ A6CA: 26 17          BNE    $A6E3
 A6CC: 86 01          LDA    #$01
 A6CE: A7 88 1B       STA    $1B,X
 A6D1: 86 00          LDA    #$00
-A6D3: A7 88 22       STA    $22,X
+A6D3: A7 88 22       STA    interrupt_status_22,X
 A6D6: 86 06          LDA    #$06
 A6D8: A7 C8 1B       STA    $1B,U
 A6DB: 86 40          LDA    #$40
@@ -3898,16 +3922,16 @@ A701: 24 11          BCC    $A714
 A703: A6 88 1F       LDA    $1F,X
 A706: 81 18          CMPA   #$18
 A708: 25 0A          BCS    $A714
-A70A: 6D 88 22       TST    $22,X
+A70A: 6D 88 22       TST    interrupt_status_22,X
 A70D: 26 05          BNE    $A714
 A70F: 86 01          LDA    #$01
-A711: A7 88 22       STA    $22,X
-A714: A6 88 22       LDA    $22,X
+A711: A7 88 22       STA    interrupt_status_22,X
+A714: A6 88 22       LDA    interrupt_status_22,X
 A717: 48             ASLA
 A718: 10 8E A7 1E    LDY   #jump_table_a71e
 A71C: 6E B6          JMP    [A,Y]			; [indirect_jump] [nb_entries=10]
 
-A732: A6 88 22       LDA    $22,X
+A732: A6 88 22       LDA    interrupt_status_22,X
 A735: 10 8E A8 71    LDY    #$A871
 A739: C6 0B          LDB    #$0B
 A73B: 3D             MUL
@@ -3921,7 +3945,7 @@ A74D: A7 88 16       STA    $16,X
 A750: A6 88 15       LDA    $15,X
 A753: 84 F7          ANDA   #$F7
 A755: A7 88 15       STA    $15,X
-A758: A6 88 21       LDA    $21,X
+A758: A6 88 21       LDA    nb_credits_0021,X
 A75B: 27 2E          BEQ    $A78B
 A75D: 34 20          PSHS   Y
 A75F: 10 AE 88 41    LDY    $41,X
@@ -4499,7 +4523,7 @@ ADBE: A7 88 19       STA    $19,X
 ADC1: 86 98          LDA    #$98
 ADC3: BD FE B6       JSR    $FEB6
 ADC6: 10 AE 88 2D    LDY    $2D,X
-ADCA: A6 A8 21       LDA    $21,Y
+ADCA: A6 A8 21       LDA    nb_credits_0021,Y
 ADCD: 27 0E          BEQ    $ADDD
 ADCF: 34 10          PSHS   X
 ADD1: 1F 21          TFR    Y,X
@@ -4537,7 +4561,7 @@ AE1A: ED 24          STD    $4,Y
 AE1C: 86 01          LDA    #$01
 AE1E: A7 A8 1B       STA    $1B,Y
 AE21: 86 07          LDA    #$07
-AE23: A7 A8 22       STA    $22,Y
+AE23: A7 A8 22       STA    interrupt_status_22,Y
 AE26: 86 04          LDA    #$04
 AE28: BD A5 49       JSR    $A549
 AE2B: A6 03          LDA    $3,X
@@ -4831,7 +4855,7 @@ B0F7: B7 0E 2D       STA    $0E2D
 B0FA: 7F 0E 2E       CLR    $0E2E
 B0FD: 39             RTS
 B0FE: 8E 03 A2       LDX    #$03A2
-B101: A6 88 21       LDA    $21,X
+B101: A6 88 21       LDA    nb_credits_0021,X
 B104: 27 08          BEQ    $B10E
 B106: BD 99 67       JSR    $9967
 B109: 86 01          LDA    #$01
@@ -4839,7 +4863,7 @@ B10B: A7 A8 1B       STA    $1B,Y
 B10E: 0F 2A          CLR    $2A
 B110: BD B1 37       JSR    $B137
 B113: 30 88 5E       LEAX   $5E,X
-B116: A6 88 21       LDA    $21,X
+B116: A6 88 21       LDA    nb_credits_0021,X
 B119: 27 08          BEQ    $B123
 B11B: BD 99 67       JSR    $9967
 B11E: 86 01          LDA    #$01
@@ -5586,7 +5610,7 @@ B882: 27 02          BEQ    $B886
 B884: C6 01          LDB    #$01		; error in main ROM (ROM 4)
 B886: 86 04          LDA    #$04
 B888: BD B8 EA       JSR    write_diagnostic_message_b8ea
-B88B: 7F 0E 3E       CLR    $0E3E
+B88B: 7F 0E 3E       CLR    sync_flag_0e3e
 B88E: 96 3A          LDA    bank_switch_copy_3a
 B890: 8A 10          ORA    #$10
 B892: 97 3A          STA    bank_switch_copy_3a
@@ -5599,11 +5623,13 @@ B89E: 96 3A          LDA    bank_switch_copy_3a
 B8A0: 84 EF          ANDA   #$EF
 B8A2: 97 3A          STA    bank_switch_copy_3a
 B8A4: B7 38 08       STA    bankswitch_3808
+; wait for irq to happen in sub cpu
 B8A7: B6 38 02       LDA    extra_3802
 B8AA: 84 10          ANDA   #$10
 B8AC: 27 F9          BEQ    $B8A7
-B8AE: B7 38 0F       STA    sub_irq_380f
-B8B1: 7D 0E 3E       TST    $0E3E
+; ack sub irq
+B8AE: B7 38 0F       STA    sub_irq_380f		
+B8B1: 7D 0E 3E       TST    sync_flag_0e3e
 B8B4: 27 FB          BEQ    $B8B1
 B8B6: BD 8A B5       JSR    $8AB5
 B8B9: B6 20 00       LDA    $2000		; check value that subcpu has put there
@@ -5692,7 +5718,7 @@ B9FB: B6 0E 52       LDA    $0E52
 B9FE: 26 73          BNE    $BA73
 BA00: BD BB 15       JSR    $BB15
 BA03: 10 24 00 6C    LBCC   $BA73
-BA07: A6 88 21       LDA    $21,X
+BA07: A6 88 21       LDA    nb_credits_0021,X
 BA0A: 27 08          BEQ    $BA14
 BA0C: 10 AE 88 41    LDY    $41,X
 BA10: A6 03          LDA    $3,X
@@ -5843,7 +5869,7 @@ BBA4: 24 1B          BCC    $BBC1
 BBA6: E6 88 16       LDB    $16,X
 BBA9: 2A 16          BPL    $BBC1
 BBAB: 10 AE 88 1F    LDY    $1F,X
-BBAF: E6 A8 21       LDB    $21,Y
+BBAF: E6 A8 21       LDB    nb_credits_0021,Y
 BBB2: 26 0D          BNE    $BBC1
 BBB4: CC 00 00       LDD    #$0000
 BBB7: A7 84          STA    ,X
