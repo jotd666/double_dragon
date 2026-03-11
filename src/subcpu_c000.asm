@@ -1,4 +1,4 @@
-;	map(0x8000, 0x81ff).ram().share(m_comram);
+;	map(0x8000, 0x81ff).ram().share(m_comram);  => 0x2000 on main cpu
 
 irq_already_called_0066 = $66
 shared_memory_8000 = $8000
@@ -13,7 +13,7 @@ C005: 3B       rti
 C006: 3B       rti  
 C007: 3B       rti  
 C008: 3B       rti  
-boot_c009:  ; [global]
+sub_boot_c009:  ; [global]
 C009: 8E 01 3F lds  #$013F		; set stack
 C00C: 86 FF    lda  #$FF
 C00E: 97 05    sta  $05
@@ -59,9 +59,9 @@ C057: 3B       rti
 
 rom_checksum_c058:
 C058: CE C0 00 ldx  #$C000
-C05B: A6 00    lda  $00,x
+C05B: A6 00    lda  $00,x	; [rom]
 C05D: 08       inx  
-C05E: AB 00    adda $00,x
+C05E: AB 00    adda $00,x	; [rom]
 C060: 08       inx  
 C061: 26 FB    bne  $C05E
 C063: B7 80 00 sta  shared_memory_8000		; write the result of the checksum here so maincpu can collect it
@@ -172,7 +172,7 @@ C135: D7 5F    stb  $5F
 C137: 58       aslb 
 C138: CE C2 EF ldx  #$C2EF
 C13B: 3A       abx  
-C13C: EE 00    ldx  $00,x
+C13C: EE 00    ldx  $00,x		; [rom]
 C13E: D6 41    ldb  $41
 C140: C4 7F    andb #$7F
 C142: 3A       abx  
@@ -234,7 +234,7 @@ C1A7: 54       lsrb
 C1A8: 54       lsrb 
 C1A9: 54       lsrb 
 C1AA: 3A       abx  
-C1AB: AA 00    ora  $00,x
+C1AB: AA 00    ora  $00,x		; [rom]
 C1AD: 97 62    sta  $62
 C1AF: 84 F0    anda #$F0
 C1B1: 81 20    cmpa #$20
@@ -255,7 +255,7 @@ C1C6: CE C2 EB ldx  #$C2EB
 C1C9: 3A       abx  
 C1CA: 7F 00 61 clr  $0061
 C1CD: 96 61    lda  $61
-C1CF: AA 00    ora  $00,x
+C1CF: AA 00    ora  $00,x		; [rom]
 C1D1: 97 61    sta  $61
 C1D3: DE 48    ldx  $48
 C1D5: 96 61    lda  $61
@@ -270,14 +270,14 @@ C1E6: 27 03    beq  $C1EB
 C1E8: 7C 00 51 inc  $0051
 C1EB: 7D 00 52 tst  $0052
 C1EE: 26 03    bne  $C1F3
-C1F0: A6 00    lda  $00,x
+C1F0: A6 00    lda  $00,x		; [rom]
 C1F2: 08       inx  
 C1F3: 97 63    sta  $63
 C1F5: 7D 00 5A tst  $005A
 C1F8: 2A 04    bpl  $C1FE
 C1FA: DF 48    stx  $48
 C1FC: DE 4C    ldx  $4C
-C1FE: E6 00    ldb  $00,x
+C1FE: E6 00    ldb  $00,x		; [rom]
 C200: 08       inx  
 C201: 96 54    lda  $54
 C203: 84 08    anda #$08
@@ -296,7 +296,7 @@ C217: 8A 02    ora  #$02
 C219: 97 61    sta  $61
 C21B: C8 FF    eorb #$FF
 C21D: D7 64    stb  $64
-C21F: E6 00    ldb  $00,x
+C21F: E6 00    ldb  $00,x		; [rom]
 C221: 08       inx  
 C222: 4F       clra 
 C223: 5D       tstb 

@@ -35,10 +35,25 @@ LOG_BUFFER_SIZE = 0x8000
 	.endif	
 	.endm
 	
+	.macro	GET_SUB_MEMORY_START_IN_A6
+	.ifeq	OPT_ALIGNED_MEMORY
+	lea		sub_ram_buffer,a6
+	.else
+	move.l		sub_ram_start_0000,a6
+	.endif	
+	.endm
+	
 	.macro	GET_MEMORY_START_AND_DP
 	move.l	m6809_direct_page_pointer,a5
 	move.l	bank_base,a1
 	GET_MEMORY_START_IN_A6
+	.endm
+	
+	.macro	GET_SUB_MEMORY_POINTERS
+	GET_MEMORY_START_IN_A6
+	lea		(0x2000,a6),a5
+	lea		sub_rom_base,a1
+	GET_SUB_MEMORY_START_IN_A6
 	.endm
 	
 	.endif

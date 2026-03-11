@@ -744,7 +744,7 @@ demo_game:
 	.ifne	OPT_ALIGNED_MEMORY
 	* compute ram start for dev mode
 	* align so real addresses LSW match actual arcade addresses
-	* and lower 16-bit match original RAM & even ROM offsets
+	* and lower 16-bit match original RAM & even ROM offsets (not for subcpu)
 	*
 
 	lea		dev_ram_buffer,a6
@@ -752,11 +752,14 @@ demo_game:
 	clr.w	d0
 	move.l	d0,d1
 	add.l	#0x10000+RAM_START,d1
-	move.l	d1,ram_start_0000		| memory (0x1000-0xFFFF)
+	move.l	d1,ram_start_0000		| memory (0x0000-0x3FFF)
+	move.l	d1,d0
+	add.l	#0x10000,d0
+	move.l	d0,sub_ram_start_0000	| sub-memory, right after (aligned on xxxx4yyyy but that's manageable!)
 	
 	* relocate rom tables just after shared RAM
-	* memory is contiguous (only 1 segment of memory RAM+ROM)
-	* and 6809 memory access is way faster (no bank switching)
+	* for main cpu memory is contiguous (only 1 segment of memory RAM+ROM)
+	* and 6809 memory access is way faster (except for banks)
 	
 	* copy the ROM data
 	add.l	#ROM_START-RAM_START,d1
@@ -810,6 +813,11 @@ demo_game:
 
 	jbsr	mirror_common_sprites
 
+	* init sub cpu. Original code then loops forever, we just return
+	GET_SUB_MEMORY_POINTERS
+	jbsr	sub_cpu_init
+	jbsr	sub_boot_c009
+	
 	jbsr	cpu_init		| zero most registers
 	moveq	#0,d5			| D5 too
 	moveq	#0,d0

@@ -1,49 +1,10 @@
 	.include	"data.inc"
-	.global	l_f900
-	.global	l_f90a
-	.global	l_f914
-	.global	l_f91e
-	.global	l_f928
-	.global	l_f932
-	.global	l_f93c
-	.global	l_f946
-	.global	l_fa00
-	.global	l_fa70
-	.global	l_fa80
-	.global	l_faa0
-	.global	l_fab8
-	.global	l_fb00
-	.global	l_fb44
-	.global	l_fb4e
-	.global	l_fb58
-	.global	l_fb62
-	.global	l_fb6c
-	.global	l_fb76
-	.global	l_fb8a
-	.global	l_fb94
-	.global	l_fb9e
-	.global	l_fba8
-	.global	l_fc00
-	.global	l_fc0a
-	.global	l_fc1e
-	.global	l_fc50
-	.global	l_fc78
-	.global	l_fdc8
-	.global	l_fde2
-	.global	l_fe20
-	.global	l_fe23
-	.global	l_fe30
-	.global	l_fe33
-	.global	l_fe36
-	.global	l_fe64
-	.global	l_ff10
-	.global	l_ffab
-	.global	l_ffb5
-	.global	l_ffc9
-	.global	l_ffd3
+	.global	sub_boot_c009
+	.global	rom_checksum_c058
+	.global	irq_c02e
 	.include "double_dragon_sub.inc"
 
-*	map(0x8000, 0x81ff).ram().share(m_comram);
+*	map(0x8000, 0x81ff).ram().share(m_comram);  => 0x2000 on main cpu
 
 
 * aux. cpu to help main cpu
@@ -56,7 +17,7 @@ sub_c005:
 sub_c006:
 sub_c007:
 sub_c008:
-boot_c009:
+sub_boot_c009:                          	| [global]
 sub_c009:
 	 |  [$c009: lds  #$013f] set stack
 	move.b	#0xff,d0                        	| [$c00c: lda  #$ff]
@@ -79,7 +40,7 @@ sub_c02b:
 	rts |  [$c02b: jmp  $c02b] infinite loop, wait for main cpu orders
 
 * triggered when sprites need displaying
-irq_c02e:
+irq_c02e:                               	| [global]
 sub_c02e:
 	OP_1_ON_DP_ADDRESS	tst,irq_already_called_0066| [$c02e: tst  irq_already_called_0066]
 	jne	sub_c036                           	| [$c031: bne  $c036]
@@ -109,15 +70,15 @@ irq_end_c039:
 
 rom_checksum_c058:
 	move.w	#0xc000,d2                      	| [$c058: ldx  #$c000]
-	GET_REG_ADDRESS	0x00,d2                	| [$c05b: lda  $00,x]
+	GET_ROM_REG_ADDRESS	0x00,d2                	| [$c05b: lda  $00,x] [rom]
 	move.b	(a0),d0                         	| [...]
 	addq.w	#1,d2                           	| [$c05d: inx]
 sub_c05e:
-	GET_REG_ADDRESS	0x00,d2                	| [$c05e: adda $00,x]
+	GET_ROM_REG_ADDRESS	0x00,d2                	| [$c05e: adda $00,x] [rom]
 	add.b	(a0),d0                          	| [...]
 	addq.w	#1,d2                           	| [$c060: inx]
 	jne	sub_c05e                           	| [$c061: bne  $c05e]
-	GET_ADDRESS	0x8000                     	| [$c063: sta  $8000]
+	GET_SHARED_ADDRESS	shared_memory_8000         	| [$c063: sta  shared_memory_8000] write the result of the checksum here so maincpu can collect it
 	move.b	d0,(a0)                         	| [...]
 	OP_W_ON_DP_ADDRESS	addq,irq_already_called_0066,#1| [$c066: inc  irq_already_called_0066]
 	jra	irq_end_c039                       	| [$c069: jmp  irq_end_c039]
@@ -129,7 +90,7 @@ sub_c06c:
 	OP_W_ON_DP_ADDRESS	move,0x4f,d0         | [$c074: sta  $4f]
 sub_c076:
 	OP_R_ON_DP_ADDRESS	move,0x4f,d0         | [$c076: lda  $4f]
-	GET_ADDRESS	0x8000                     	| [$c078: cmpa $8000]
+	GET_SHARED_ADDRESS	shared_memory_8000         	| [$c078: cmpa shared_memory_8000]
 	cmp.b	(a0),d0                          	| [...]
 	jcc	sub_c0a4                           	| [$c07b: bcc  $c0a4]
 	GET_REG_ADDRESS	0x00,d2                	| [$c07d: ldd  $00,x]
@@ -163,12 +124,12 @@ sub_c099:
 	OP_W_ON_DP_ADDRESS	move,0x4f,d0         | [$c0a0: sta  $4f]
 	jra	sub_c076                           	| [$c0a2: bra  $c076]
 sub_c0a4:
-	GET_ADDRESS	0x8000                     	| [$c0a4: clr  $8000]
+	GET_SHARED_ADDRESS	shared_memory_8000         	| [$c0a4: clr  shared_memory_8000]
 	clr.b	(a0)                         	| [...]
 	rts                                    	| [$c0a7: rts]
 
 sub_c0a8:
-	GET_ADDRESS	0x8000                     	| [$c0a8: tst  $8000]
+	GET_SHARED_ADDRESS	shared_memory_8000         	| [$c0a8: tst  shared_memory_8000]
 	tst.b	(a0)                             	| [...]
 	jeq	sub_c10a                           	| [$c0ab: beq  $c10a]
 sub_c0ad:
@@ -178,10 +139,10 @@ sub_c0ad:
 sub_c0b4:
 	OP_R_ON_DP_ADDRESS	move,0x4e,d0         | [$c0b4: lda  $4e]
 	add.b	#0x08,d0                         	| [$c0b6: adda #$08]
-	GET_ADDRESS	0x8000                     	| [$c0b8: cmpa $8000]
+	GET_SHARED_ADDRESS	shared_memory_8000         	| [$c0b8: cmpa shared_memory_8000]
 	cmp.b	(a0),d0                          	| [...]
 	jcc	sub_c105                           	| [$c0bb: bcc  $c105]
-	move.w	#0x8000,d2                      	| [$c0bd: ldx  #$8000]
+	move.w	#shared_memory_8000,d2          	| [$c0bd: ldx  #shared_memory_8000]
 	OP_R_ON_DP_ADDRESS	move,0x4e,d1         | [$c0c0: ldb  $4e]
 	ABX                                    	| [$c0c2: abx]
 	GET_REG_ADDRESS	0x04,d2                	| [$c0c3: ldd  $04,x]
@@ -253,7 +214,7 @@ sub_c10a:
 	rts                                    	| [$c10a: rts]
 
 sub_c10b:
-	GET_ADDRESS	0x81fd                     	| [$c10b: lda  $81fd]
+	GET_SHARED_ADDRESS	0x81fd                     	| [$c10b: lda  $81fd]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x4b,d0                         	| [$c10e: cmpa #$4b]
 	jcs	sub_c115                           	| [$c110: bcs  $c115]
@@ -267,7 +228,7 @@ sub_c115:
 	MAKE_A                                 	| [...]
 	POP_SR                                 	| [...]
 	MAKE_D                                 	| [...]
-	GET_ADDRESS	0x81fb                     	| [$c119: subd $81fb]
+	GET_SHARED_ADDRESS	0x81fb                     	| [$c119: subd $81fb]
 	SUB_W_TO_REG	a0,d1                          	| [...]
 	PUSH_SR                                	| [...]
 	MAKE_A                                 	| [...]
@@ -277,7 +238,7 @@ sub_c115:
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	GET_DP_ADDRESS	0x42                    	| [$c11e: ldd  $42]
 	LOAD_D                                 	| [$c11e: ldd  $42]
-	GET_ADDRESS	0x81f9                     	| [$c120: subd $81f9]
+	GET_SHARED_ADDRESS	0x81f9                     	| [$c120: subd $81f9]
 	SUB_W_TO_REG	a0,d1                          	| [...]
 	PUSH_SR                                	| [...]
 	MAKE_A                                 	| [...]
@@ -299,7 +260,7 @@ sub_c115:
 	asl.b	#1,d1                            	| [$c137: aslb]
 	move.w	#0xc2ef,d2                      	| [$c138: ldx  #$c2ef]
 	ABX                                    	| [$c13b: abx]
-	GET_REG_ADDRESS	0x00,d2                	| [$c13c: ldx  $00,x]
+	GET_ROM_REG_ADDRESS	0x00,d2                	| [$c13c: ldx  $00,x] [rom]
 	MOVE_W_TO_REG	a0,d2                         	| [...]
 	OP_R_ON_DP_ADDRESS	move,0x41,d1         | [$c13e: ldb  $41]
 	and.b	#0x7f,d1                         	| [$c140: andb #$7f]
@@ -309,7 +270,7 @@ sub_c115:
 	MOVE_W_TO_REG	a0,d2                         	| [...]
 	GET_DP_ADDRESS	0x48                    	| [$c146: stx  $48]
 	MOVE_W_FROM_REG	d2,a0                         	| [...]
-	GET_ADDRESS	0x81fd                     	| [$c148: ldb  $81fd]
+	GET_SHARED_ADDRESS	0x81fd                     	| [$c148: ldb  $81fd]
 	move.b	(a0),d1                         	| [...]
 	move.b	#0x05,d0                        	| [$c14b: lda  #$05]
 	jbsr	multiply_ab                       	| [$c14d: mul]
@@ -387,7 +348,7 @@ sub_c194:
                                          | [$c1a8: lsrb]
 	lsr.b	#4,d1                            	| [$c1a9: lsrb]
 	ABX                                    	| [$c1aa: abx]
-	GET_REG_ADDRESS	0x00,d2                	| [$c1ab: ora  $00,x]
+	GET_ROM_REG_ADDRESS	0x00,d2                	| [$c1ab: ora  $00,x] [rom]
 	or.b	(a0),d0                           	| [...]
 	OP_W_ON_DP_ADDRESS	move,0x62,d0         | [$c1ad: sta  $62]
 	and.b	#0xf0,d0                         	| [$c1af: anda #$f0]
@@ -410,7 +371,7 @@ sub_c1bf:
 	ABX                                    	| [$c1c9: abx]
 	OP_1_ON_DP_ADDRESS	clr,0x0061           | [$c1ca: clr  $0061]
 	OP_R_ON_DP_ADDRESS	move,0x61,d0         | [$c1cd: lda  $61]
-	GET_REG_ADDRESS	0x00,d2                	| [$c1cf: ora  $00,x]
+	GET_ROM_REG_ADDRESS	0x00,d2                	| [$c1cf: ora  $00,x] [rom]
 	or.b	(a0),d0                           	| [...]
 	OP_W_ON_DP_ADDRESS	move,0x61,d0         | [$c1d1: sta  $61]
 	GET_DP_ADDRESS	0x48                    	| [$c1d3: ldx  $48]
@@ -430,7 +391,7 @@ sub_c1bf:
 sub_c1eb:
 	OP_1_ON_DP_ADDRESS	tst,0x0052           | [$c1eb: tst  $0052]
 	jne	sub_c1f3                           	| [$c1ee: bne  $c1f3]
-	GET_REG_ADDRESS	0x00,d2                	| [$c1f0: lda  $00,x]
+	GET_ROM_REG_ADDRESS	0x00,d2                	| [$c1f0: lda  $00,x] [rom]
 	move.b	(a0),d0                         	| [...]
 	addq.w	#1,d2                           	| [$c1f2: inx]
 sub_c1f3:
@@ -442,7 +403,7 @@ sub_c1f3:
 	GET_DP_ADDRESS	0x4c                    	| [$c1fc: ldx  $4c]
 	MOVE_W_TO_REG	a0,d2                         	| [...]
 sub_c1fe:
-	GET_REG_ADDRESS	0x00,d2                	| [$c1fe: ldb  $00,x]
+	GET_ROM_REG_ADDRESS	0x00,d2                	| [$c1fe: ldb  $00,x] [rom]
 	move.b	(a0),d1                         	| [...]
 	addq.w	#1,d2                           	| [$c200: inx]
 	OP_R_ON_DP_ADDRESS	move,0x54,d0         | [$c201: lda  $54]
@@ -474,7 +435,7 @@ sub_c20d:
 sub_c21b:
 	not.b	d1                               	| [$c21b: eorb #$ff]
 	OP_W_ON_DP_ADDRESS	move,0x64,d1         | [$c21d: stb  $64]
-	GET_REG_ADDRESS	0x00,d2                	| [$c21f: ldb  $00,x]
+	GET_ROM_REG_ADDRESS	0x00,d2                	| [$c21f: ldb  $00,x] [rom]
 	move.b	(a0),d1                         	| [...]
 	addq.w	#1,d2                           	| [$c221: inx]
 	moveq	#0,d0                            	| [$c222: clra]
@@ -539,7 +500,7 @@ sub_c24d:
 	MOVE_W_FROM_REG	d2,a0                         	| [...]
 	GET_DP_ADDRESS	0x48                    	| [$c26a: ldx  $48]
 	MOVE_W_TO_REG	a0,d2                         	| [...]
-	GET_ADDRESS	0x81fd                     	| [$c26c: inc  $81fd]
+	GET_SHARED_ADDRESS	0x81fd                     	| [$c26c: inc  $81fd]
 	addq.b	#1,(a0)                         	| [...]
                                          | [$c26f: lda  $81fd]
 	move.b	(a0),d0                         	| [...]

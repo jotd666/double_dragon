@@ -4,7 +4,7 @@
 * are zeroed out so we can use add.l dy,ax with dy > 0x7FFF
 * without systematic masking
 *
-* WARNING: you also have to call "cpu_init"
+* WARNING: you also have to call "sub_cpu_init"
 * at start of any interrupt you could hook
 *
 * the GET_ADDRESS macro can just call get_address or it can also use
@@ -14,23 +14,26 @@
 
 
 	.global	sub_cpu_init
-	.global	m6809_sub_direct_page_pointer
 
 	.macro	ERROR	arg
 	.error	"\arg"     | comment out or replace by ".warning" to disable errors
 	.endm
 
+	.ifdef	__amiga__
+	* to define BREAKPOINT
+	.include 	"amiga/utility_macros.inc"
+	.else
+	.macro	BREAKPOINT	arg
+	.endm
+	.endif
 
-* the function that accesses all memory (except banks)
+* the function that accesses all memory
 * without any check
 	.macro	GET_UNCHECKED_ADDRESS_FUNC
 	lea	(a6,a0.l),a0
 	.endm
 
 
-	.macro	GET_ADDRESS_FUNC
-	jbsr	get_address
-	.endm
 
 	.macro	ABX
 	moveq	#0,d6
@@ -245,157 +248,124 @@
 	.endm
 
 
-* registers must be masked out to proper size before use
-	.macro	GET_INDIRECT_ADDRESS_REGS	reg1,reg2,destreg
-	move.l	\reg1,a0
-	lea	(a0,\reg2\().l),a0
-	GET_ADDRESS_FUNC
-	MOVE_W_TO_REG	a0,\destreg
-	.endm
 
-
+	* DP is fixed at 0 on that 6800 derived cpu
+	
 	.macro GET_DP_ADDRESS	offset
-	lea	(a5,\offset\().W),a0
+	lea	(a6,\offset\().W),a0
 	.endm
 
 * optimized DP operations
 	.macro OP_1_ON_DP_ADDRESS    inst,offset
-	\inst\().b    (a5,\offset\().W)
+	\inst\().b    (a6,\offset\().W)
 	.endm
 
 	.macro OP_R_ON_DP_ADDRESS    inst,offset,reg
-	\inst\().b    (a5,\offset\().W),\reg
+	\inst\().b    (a6,\offset\().W),\reg
 	.endm
 
 	.macro OP_W_ON_DP_ADDRESS    inst,offset,reg
-	\inst\().b    \reg,(a5,\offset\().W)
-	.endm
-
-	.macro	STORE_DP_IN_MEMORY
-	move.l	a5,m6809_sub_direct_page_pointer
-	.endm
-
-	.macro SET_DP_FROM_A
-	swap	d0    | would be catastrophic if D0 msw != 0
-	clr.w	d0   | can happen with the use of subq
-	swap	d0    | even if now I have set .w on all addq/subq
-	lsl.w    #8,d0
-	move.l    d0,a0  | remove MSB clear & change to move.w if always < 0x8000
-	GET_ADDRESS_FUNC
-	move.l	a0,a5
-	STORE_DP_IN_MEMORY
-	lsr.w    #8,d0
+	\inst\().b    \reg,(a6,\offset\().W)
 	.endm
 
 
-
-	.macro SET_DP_FROM    reg
-	exg	d0,\reg
-	SET_DP_FROM_A
-
-	exg	d0,\reg
+	.macro	GET_SHARED_ADDRESS_FUNC
+	jbsr	get_shared_address
+	.endm
+	.macro	GET_ROM_ADDRESS_FUNC
+	jbsr	get_rom_address
 	.endm
 
-	.macro GET_REG_ADDRESS	offset,reg
+
+	.macro GET_SHARED_REG_ADDRESS	offset,reg
 	.ifeq	\offset
 	move.l	\reg,a0
 	.else
 	lea	\offset,a0
 	lea	(a0,\reg\().l),a0
 	.endif
-	GET_ADDRESS_FUNC
+	GET_SHARED_ADDRESS_FUNC
 	.endm
 
-
-	.macro GET_REG_INDIRECT_ADDRESS	offset,reg
-	GET_REG_ADDRESS	\offset,\reg
-	READ_BE_WORD	a0
-	GET_ADDRESS_FUNC
-	.endm
-
-	.macro    GET_REG_REG_INDIRECT_ADDRESS reg1,reg2
-	GET_INDIRECT_ADDRESS_REGS	\reg1,\reg2,d6
-	and.l	#0xFFFF,d6
-	move.l	d6,a0
-	GET_ADDRESS_FUNC
-	.endm
-
-	.macro GET_REG_ADDRESS_FROM_REG	reg,reg2
+	.macro GET_ROM_REG_ADDRESS	offset,reg
+	.ifeq	\offset
 	move.l	\reg,a0
-	lea	(a0,\reg2\().l),a0
-	GET_ADDRESS_FUNC
+	.else
+	lea	\offset,a0
+	lea	(a0,\reg\().l),a0
+	.endif
+	GET_ROM_ADDRESS_FUNC
+	.endm
+
+
+	.macro GET_ROM_ADDRESS	offset
+	.if	\offset < 0xC000
+	.error  "offset must be >= 0xC000, found \offset"
+	.endif
+	lea	(a1,\offset-0xC000),a0
+	.endm
+
+	.macro GET_SHARED_ADDRESS	offset
+	.if	\offset < 0x8000
+	.error  "offset must be >= 0x8000, found \offset"
+	.endif
+	.if	\offset > 0x8200
+	.error  "offset must be < 0x8200, found \offset"
+	.endif
+	lea	(a5,\offset-0x8000),a0
 	.endm
 
 	.macro GET_ADDRESS	offset
-	lea	\offset,a0
-	GET_ADDRESS_FUNC
+	GET_DP_ADDRESS		\offset
 	.endm
 
-	.macro GET_INDIRECT_ADDRESS	offset
-	GET_ADDRESS	\offset
-	READ_BE_WORD	a0
-	GET_ADDRESS_FUNC
-	.endm
-	.macro GET_REG_UNCHECKED_ADDRESS	offset,reg
-	.ifeq	\offset
-	move.l	\reg,a0
-	.else
-	lea	\offset,a0
-	lea	(a0,\reg\().l),a0
-	.endif
-	GET_UNCHECKED_ADDRESS_FUNC
+	.macro GET_REG_ADDRESS	offset,reg
+	GET_SHARED_REG_ADDRESS		\offset,\reg
 	.endm
 
 
-	.macro GET_REG_INDIRECT_UNCHECKED_ADDRESS	offset,reg
-	GET_REG_ADDRESS	\offset,\reg
-	READ_BE_WORD	a0
-	GET_UNCHECKED_ADDRESS_FUNC
-	.endm
 
-	.macro    GET_REG_REG_UNCHECKED_INDIRECT_ADDRESS reg1,reg2
-	GET_INDIRECT_ADDRESS_REGS	\reg1,\reg2,d6
-	and.l	#0xFFFF,d6
-	move.l	d6,a0
-	GET_UNCHECKED_ADDRESS_FUNC
-	.endm
-
-	.macro GET_REG_UNCHECKED_ADDRESS_FROM_REG	reg,reg2
-	move.l	\reg,a0
-	lea	(a0,\reg2\().l),a0
-	GET_UNCHECKED_ADDRESS_FUNC
-	.endm
-
-	.macro GET_UNCHECKED_ADDRESS	offset
-	lea	\offset,a0
-	GET_UNCHECKED_ADDRESS_FUNC
-	.endm
-
-	.macro GET_INDIRECT_UNCHECKED_ADDRESS	offset
-	GET_ADDRESS	\offset
-	READ_BE_WORD	a0
-	GET_UNCHECKED_ADDRESS_FUNC
-	.endm
-* zero all registers but 6809 stack pointer
+* zero all registers but 6800 stack pointer
 sub_cpu_init:
 	moveq	#0,d0
 	moveq	#0,d1
 	moveq	#0,d2
-	moveq	#0,d3
-	moveq	#0,d4
+
 	moveq	#0,d6
 	moveq	#0,d7
 	rts
 
-get_address:
-	ERROR "`TODO: implement this by adding memory base to a0"
+get_shared_address:
+	sub.l	#0x8000,a0
+	.ifndef	RELEASE
+	jcc		0f
+	add.l	#0x8000,a0
+	BREAKPOINT	"shared address < 0x8000"
+	illegal
+0:
+	cmp.w	#0x200,a0
+	jcs		0f
+	add.l	#0x8000,a0
+	BREAKPOINT	"shared address > 0x81FF"
+	illegal
+0:
+	.endif
+	lea		(A5,A0.w),a0
 	rts
+	
 
-| direct page pointer needs to be reloaded in case of irq
-m6809_sub_direct_page_pointer:
-	.long	0xA5A5A5A5
-
-
+get_rom_address:
+	sub.l	#0xC000,a0
+	.ifndef	RELEASE
+	jcc		0f
+	add.l	#0xC000,a0
+	BREAKPOINT	"rom address < 0xC000"
+	illegal
+0:
+	.endif
+	lea		(A1,A0.w),a0
+	rts
+	
 multiply_ab:
 	and.w	#0xFF,d0
 	and.w	#0xFF,d1

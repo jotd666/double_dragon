@@ -115,8 +115,9 @@ def get_line_address(line):
     except (ValueError,IndexError):
         return None
 
-def process_file(input_radix,output_radix,f_handle_line,global_symbols,out_header="",is_bank=False):
+def process_file(input_radix,output_radix,f_handle_line,global_symbols=[],out_header="",is_bank=False):
     main_globals = set()
+    global_symbols = list(global_symbols)  # make a copy
 
     with open(source_dir / f"{input_radix}.s") as f:
         lines = [line for line in f if not explicit_stack_usage(line)]

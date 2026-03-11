@@ -114,6 +114,20 @@ def f_handle_bank5_line(address,lines,i):
 
 def f_handle_sub_line(address,lines,i):
     line = lines[i]
+
+    toks = line.split()
+    if "GET_ADDRESS" in line:
+        try:
+            offset = int(toks[1],16)
+        except ValueError:
+            offset = toks[1].split("_")[-1]
+            offset = int(offset,16)
+        if 0x8000 <= offset < 0x8200:
+            line = line.replace("GET_ADDRESS","GET_SHARED_ADDRESS")
+
+    if "GET_REG_ADDRESS" in line:
+        if "[rom]" in line:
+            line = line.replace("GET_REG_ADDRESS","GET_ROM_REG_ADDRESS")
     if "unsupported instruction rti" in line:
         if address == 0xC057:
             line = change_instruction("rts",lines,i)
@@ -123,7 +137,7 @@ def f_handle_sub_line(address,lines,i):
         # replace infinite loop after init by rts
         line = change_instruction("rts",lines,i)
     elif address == 0xc009:
-        # no need for explicit stack pointer here
+        # no need for explicit stack pointer here, cpu isn't able/doesn't use S
         line = remove_instruction(lines,i)
     if "unsupported instruction tap" in line:
         line = remove_instruction(lines,i)
@@ -258,7 +272,7 @@ if process_banks:
     process_bank_file(5)
 
 if process_sub:
-    process_file("conv_sub","subcpu_c000",f_handle_sub_line,sorted(main_globals),out_header="")
+    process_file("conv_sub","subcpu_c000",f_handle_sub_line,out_header="")
 
 if process_main:
     out_header = "l_0000:\nillegal\n"

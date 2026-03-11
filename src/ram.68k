@@ -21,8 +21,10 @@
 	.global	ram_buffer
 	.global	rom_bank
 	.global	rom_buffer
+	.global	sub_ram_buffer
 	.else
 	.global ram_start_0000
+	.global sub_ram_start_0000
 	.global	dev_ram_buffer
 	.endif
 	
@@ -41,10 +43,14 @@ rom_bank:
 	.skip	0x4000
 rom_buffer:
 	.skip	0x10000-ROM_START
+sub_ram_buffer:
+	.skip	0x200
 	.else
 dev_ram_buffer:
-	.skip	0x20000
+	.skip	0x20200   | in the worst case, align on 0x10000 will work plus space for 0x200 bytes for sub ram
 ram_start_0000:
+	.long	0
+sub_ram_start_0000:
 	.long	0
 	.endif
 
