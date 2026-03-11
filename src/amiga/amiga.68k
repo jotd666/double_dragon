@@ -1403,7 +1403,13 @@ call_nmi:
 0:
 	.endif
 	
-	jra	irq_8056
+	* first call irq once out of two (30Hz)
+	eor.b	#1,irq_flip_flop
+	jne		0f
+	jbsr	irq_80b0
+0:
+	* then call nmi (50Hz)
+	jra	nmi_8056
 	
 
 * just in case some hardware calls nmi
@@ -5262,6 +5268,8 @@ osd_entry_count:
 player_1_controls:
 	.byte	0
 flip_flop:
+	.byte	0
+irq_flip_flop:
 	.byte	0
 bank_value:
 	.byte	0

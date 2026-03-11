@@ -117,12 +117,12 @@ def get_line_address(line):
 
 def process_file(input_radix,output_radix,f_handle_line,global_symbols,out_header="",is_bank=False):
     main_globals = set()
+
     with open(source_dir / f"{input_radix}.s") as f:
         lines = [line for line in f if not explicit_stack_usage(line)]
 
         for i,line in enumerate(lines):
             # first the generic part
-
             if re.match("\w+\s*=\s*\w",line):
                 equates.add(line)
                 line = ""

@@ -1,6 +1,7 @@
 ;	map(0x8000, 0x81ff).ram().share(m_comram);
 
 irq_already_called_0066 = $66
+shared_memory_8000 = $8000
 
 ; aux. cpu to help main cpu
 C000: 3B       rti  
@@ -12,7 +13,7 @@ C005: 3B       rti
 C006: 3B       rti  
 C007: 3B       rti  
 C008: 3B       rti  
-boot_c009:
+boot_c009:  ; [global]
 C009: 8E 01 3F lds  #$013F		; set stack
 C00C: 86 FF    lda  #$FF
 C00E: 97 05    sta  $05
@@ -32,7 +33,7 @@ C029: 97 17    sta  $17
 C02B: 7E C0 2B jmp  $C02B		; infinite loop, wait for main cpu orders
 
 ; triggered when sprites need displaying
-irq_c02e:
+irq_c02e:  ; [global]
 C02E: 7D 00 66 tst  irq_already_called_0066
 C031: 26 03    bne  $C036
 ; first time IRQ is called it checksums the memory
@@ -63,7 +64,7 @@ C05D: 08       inx
 C05E: AB 00    adda $00,x
 C060: 08       inx  
 C061: 26 FB    bne  $C05E
-C063: B7 80 00 sta  $8000		; write the result of the checksum here so maincpu can collect it
+C063: B7 80 00 sta  shared_memory_8000		; write the result of the checksum here so maincpu can collect it
 C066: 7C 00 66 inc  irq_already_called_0066
 C069: 7E C0 39 jmp  irq_end_c039
 
@@ -72,7 +73,7 @@ C06F: CE 80 01 ldx  #$8001
 C072: 86 01    lda  #$01
 C074: 97 4F    sta  $4F
 C076: 96 4F    lda  $4F
-C078: B1 80 00 cmpa $8000
+C078: B1 80 00 cmpa shared_memory_8000
 C07B: 24 27    bcc  $C0A4
 C07D: EC 00    ldd  $00,x
 C07F: DD 40    std  $40
@@ -95,19 +96,19 @@ C09D: 96 4F    lda  $4F
 C09F: 1B       aba  
 C0A0: 97 4F    sta  $4F
 C0A2: 20 D2    bra  $C076
-C0A4: 7F 80 00 clr  $8000
+C0A4: 7F 80 00 clr  shared_memory_8000
 C0A7: 39       rts 
  
-C0A8: 7D 80 00 tst  $8000
+C0A8: 7D 80 00 tst  shared_memory_8000
 C0AB: 27 5D    beq  $C10A
 C0AD: 7F 00 4F clr  $004F
 C0B0: 86 01    lda  #$01
 C0B2: 97 4E    sta  $4E
 C0B4: 96 4E    lda  $4E
 C0B6: 8B 08    adda #$08
-C0B8: B1 80 00 cmpa $8000
+C0B8: B1 80 00 cmpa shared_memory_8000
 C0BB: 24 48    bcc  $C105
-C0BD: CE 80 00 ldx  #$8000
+C0BD: CE 80 00 ldx  #shared_memory_8000
 C0C0: D6 4E    ldb  $4E
 C0C2: 3A       abx  
 C0C3: EC 04    ldd  $04,x

@@ -4,13 +4,9 @@ from shared import *
 
 
 
-process_main = True
-process_bank_0 = 1
-process_bank_1 = 1
-
-process_bank_3 = 1
-process_bank_4 = 1
-process_bank_5 = 1
+process_main = 1
+process_banks = 1
+process_sub = 1
 
 def f_handle_bank0_line(address,lines,i):
     line = lines[i]
@@ -116,6 +112,27 @@ def f_handle_bank5_line(address,lines,i):
         lines[i+1] = remove_error(lines[i+1])
     lines[i] = line
 
+def f_handle_sub_line(address,lines,i):
+    line = lines[i]
+    if "unsupported instruction rti" in line:
+        if address == 0xC057:
+            line = change_instruction("rts",lines,i)
+        else:
+            line = remove_error(line)
+    if address == 0xC02B:
+        # replace infinite loop after init by rts
+        line = change_instruction("rts",lines,i)
+    elif address == 0xc009:
+        # no need for explicit stack pointer here
+        line = remove_instruction(lines,i)
+    if "unsupported instruction tap" in line:
+        line = remove_instruction(lines,i)
+    if ".long" in line:
+        # remove tables, they're informative but useless as native format
+        line = ""
+
+    lines[i] = line
+
 def f_handle_main_line(address,lines,i):
     line = lines[i]
     if "review pshu instruction" in line or "review pulu instruction" in line:
@@ -212,8 +229,6 @@ def f_handle_main_line(address,lines,i):
 
     elif "unsupported instruction rti" in line:
         line = change_instruction("rts",lines,i)
-    elif "unsupported instruction lds" in line:
-        line = remove_instruction(lines,i)
 
     lines[i] = line
 
@@ -227,20 +242,23 @@ def process_bank_file(bankno,global_symbols=[],out_header=""):
 
 # various dirty but at least automatic patches applying on the specific DD code
 
-if process_bank_0:
+if process_banks:
     process_bank_file(0)
 
-if process_bank_1:
+if process_banks:
     process_bank_file(1)
 
-if process_bank_3:
+if process_banks:
     process_bank_file(3)
 
-if process_bank_4:
+if process_banks:
     process_bank_file(4)
 
-if process_bank_5:
+if process_banks:
     process_bank_file(5)
+
+if process_sub:
+    process_file("conv_sub","subcpu_c000",f_handle_sub_line,sorted(main_globals),out_header="")
 
 if process_main:
     out_header = "l_0000:\nillegal\n"
