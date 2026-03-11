@@ -989,9 +989,9 @@ lb4_7bb4:  ; [global]
 7BBE: 8E 7C 05       LDX    #$7C05
 7BC1: F6 0A F8       LDB    $0AF8
 7BC4: 58             ASLB
-7BC5: AE 85          LDX    B,X
+7BC5: AE 85          LDX    B,X		; [bank_address]
 7BC7: 10 8E 10 10    LDY    #$1010
-7BCB: EC 81          LDD    ,X++
+7BCB: EC 81          LDD    ,X++		; [bank_address]
 7BCD: E7 A9 02 00    STB    $0200,Y
 7BD1: 58             ASLB
 7BD2: 49             ROLA
@@ -1007,9 +1007,9 @@ lb4_7bb4:  ; [global]
 7BE1: 8E 7C 11       LDX    #$7C11
 7BE4: F6 0A F8       LDB    $0AF8
 7BE7: 58             ASLB
-7BE8: AE 85          LDX    B,X
+7BE8: AE 85          LDX    B,X		; [bank_address]
 7BEA: 10 8E 10 70    LDY    #$1070
-7BEE: EC 81          LDD    ,X++
+7BEE: EC 81          LDD    ,X++		; [bank_address]
 7BF0: E7 A9 02 00    STB    $0200,Y
 7BF4: 58             ASLB
 7BF5: 49             ROLA
@@ -1042,9 +1042,9 @@ lb4_7bb4:  ; [global]
 7DBF: 10 8E 7E A5    LDY    #$7EA5
 7DC3: 86 80          LDA    #$80
 7DC5: A7 84          STA    ,X
-7DC7: EC A1          LDD    ,Y++
+7DC7: EC A1          LDD    ,Y++			; [bank_address]
 7DC9: ED 01          STD    $1,X
-7DCB: EC A1          LDD    ,Y++
+7DCB: EC A1          LDD    ,Y++			; [bank_address]
 7DCD: ED 03          STD    $3,X
 7DCF: 86 20          LDA    #$20
 7DD1: A7 07          STA    $7,X

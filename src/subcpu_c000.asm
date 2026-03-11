@@ -33,7 +33,7 @@ C029: 97 17    sta  $17
 C02B: 7E C0 2B jmp  $C02B		; infinite loop, wait for main cpu orders
 
 ; triggered when sprites need displaying
-irq_c02e:  ; [global]
+sub_irq_c02e:  ; [global]
 C02E: 7D 00 66 tst  irq_already_called_0066
 C031: 26 03    bne  $C036
 ; first time IRQ is called it checksums the memory

@@ -1,7 +1,6 @@
 	.include	"data.inc"
 	.global	sub_boot_c009
-	.global	rom_checksum_c058
-	.global	irq_c02e
+	.global	sub_irq_c02e
 	.include "double_dragon_sub.inc"
 
 *	map(0x8000, 0x81ff).ram().share(m_comram);  => 0x2000 on main cpu
@@ -40,7 +39,7 @@ sub_c02b:
 	rts |  [$c02b: jmp  $c02b] infinite loop, wait for main cpu orders
 
 * triggered when sprites need displaying
-irq_c02e:                               	| [global]
+sub_irq_c02e:                           	| [global]
 sub_c02e:
 	OP_1_ON_DP_ADDRESS	tst,irq_already_called_0066| [$c02e: tst  irq_already_called_0066]
 	jne	sub_c036                           	| [$c031: bne  $c036]

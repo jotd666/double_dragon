@@ -106,7 +106,6 @@ AGA_X_SHIFT = 0x37
 
 FG_SCREEN_TILE_ADDRESS = 0x1800
 BG_SCREEN_TILE_ADDRESS = 0x3000
-BG_SCREEN_COLOR_ADDRESS = 0x3400
 SPRITE_ADDRESS = 0x2800
 SPRITE_BUFFER_SIZE = 0x800
 
@@ -271,8 +270,7 @@ osd_enter_\@:
 	.global osd_enable_interrupts
 	.global osd_disable_interrupts
 	.global osd_set_tile_palette
-	.global osd_no_continue_hook
-	.global osd_colors_cycled
+	.global osd_call_sub_irq
 	.global osd_break		| for debug	
 	.global osd_blitz		| for debug
 	.global osd_read_dsw1
@@ -857,7 +855,6 @@ mirror_common_sprites:
 	
 
 copyright_message:
-	*.asciz	"ALL RIGHT RESEVED"
 	 .asciz	"AMIGA PORT : JOTD"
 
 	.ifndef	RELEASE
@@ -877,7 +874,13 @@ osd_black_colors:
 2:
 	rts
 
-	
+osd_call_sub_irq:
+	movem.l	d0-a6,-(a7)
+	GET_SUB_MEMORY_POINTERS
+	jbsr	sub_cpu_init
+	jbsr	sub_irq_c02e
+	movem.l	(a7)+,d0-a6
+	rts
 
 	
 osd_colors_cycled:
@@ -3211,10 +3214,25 @@ osd_video_byte_dirty:
 	sub.l	a6,d7
 	jmi		osd_w_videoram_out
 
-	* we now suppose that we're in 2000-3000
+	cmp.w	#BG_SCREEN_TILE_ADDRESS,d7
+	jcs		maybe_fg_tile		| lower than 0x3000 ? check fg
+	.ifndef		RELEASE
+	cmp.w	#BG_SCREEN_TILE_ADDRESS+0x800,d7
+	jcs		0f
+	BREAKPOINT	"write videoram out of range (D7)"
+	jra	osd_w_videoram_out	
+	.endif
+0:
+* bg tile
+	and.w	#0x7FE,d7
+	* bg tile: do nothing ATM
+	jra		osd_w_videoram_out
+	
+maybe_fg_tile:
+	* we now suppose that we're in 1800-2000
 	* check that in debug mode
 	.ifndef		RELEASE
-	cmp.w	#FG_SCREEN_TILE_ADDRESS+0x1000,d7
+	cmp.w	#FG_SCREEN_TILE_ADDRESS+0x800,d7
 	jcs		0f
 1:
 	BREAKPOINT	"write videoram out of range (D7)"
@@ -3231,8 +3249,6 @@ osd_video_byte_dirty:
 0:
 	.endif
 	
-	cmp.w	#BG_SCREEN_TILE_ADDRESS-FG_SCREEN_TILE_ADDRESS,d7
-	jcc		bg_tile
 	
 	and.w	#0x7FE,d7
 
@@ -3261,8 +3277,7 @@ bg_tile:
 	
 	
 	lea		(BG_SCREEN_TILE_ADDRESS,a6),a0
-	move.b	(a0,d7.w),d0
-	lea		(BG_SCREEN_COLOR_ADDRESS,a6),a0
+	move.b	(1,a0,d7.w),d0
 	move.b	(a0,d7.w),d1
 
 
@@ -4265,7 +4280,6 @@ log_used_bg_tiles:
 
 	GET_MEMORY_START_IN_A6
 	lea		(BG_SCREEN_TILE_ADDRESS,a6),a5
-	lea		(BG_SCREEN_COLOR_ADDRESS,a6),a4
 	lea		bg_tile_log_table,a0
 	move	#(1<<BG_TILE_NB_CLUTS_POW)-1,d4		| clut mask
 	move	#BG_TILE_NB_CLUTS_POW,d5		| nb clut pow
@@ -4905,6 +4919,7 @@ display_slots:
 
 osd_get_last_known_pc:
 	move.w	last_known_m6809_pc,d6
+	move.w	last_declared_bank,d7
 	rts
 	
 	

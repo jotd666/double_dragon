@@ -2004,7 +2004,7 @@ jump_table_5f4f:
 600E: 84 3F          ANDA   #$3F
 6010: 48             ASLA
 6011: 8E 61 0B       LDX    #$610B
-6014: 10 AE 86       LDY    A,X
+6014: 10 AE 86       LDY    A,X		; [bank_address]
 6017: 6F 42          CLR    $2,U
 6019: 6F 4C          CLR    $C,U
 601B: 6F 4D          CLR    $D,U

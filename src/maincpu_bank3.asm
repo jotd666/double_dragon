@@ -85,7 +85,7 @@ lb3_6c1e:		; [global]
 6CB1: E6 88 47       LDB    $47,X
 6CB4: 10 8E 6D 49    LDY    #$6D49
 6CB8: A6 88 13       LDA    $13,X
-6CBB: AB A5          ADDA   B,Y
+6CBB: AB A5          ADDA   B,Y			; [bank_address]
 6CBD: 81 20          CMPA   #$20
 6CBF: 26 04          BNE    $6CC5
 6CC1: 86 3C          LDA    #$3C
@@ -344,7 +344,7 @@ jump_table_6cdc:
 6F8C: C6 3C          LDB    #$3C
 6F8E: 8E 6F A1       LDX    #$6FA1
 6F91: 10 8E 0E 73    LDY    #$0E73
-6F95: A6 85          LDA    B,X
+6F95: A6 85          LDA    B,X		; [bank_address]
 6F97: A7 A5          STA    B,Y
 6F99: 5A             DECB
 6F9A: 2A F9          BPL    $6F95
@@ -1127,10 +1127,10 @@ jump_table_748f:
 7690: 39             RTS
 7691: 8E 76 C0       LDX    #$76C0
 7694: 96 00          LDA    $00
-7696: A6 86          LDA    A,X
+7696: A6 86          LDA    A,X			; [bank_address]
 7698: 48             ASLA
 7699: 8E 76 DB       LDX    #$76DB
-769C: AE 86          LDX    A,X
+769C: AE 86          LDX    A,X			; [bank_address]
 769E: 4F             CLRA
 769F: D6 01          LDB    $01
 76A1: C4 F0          ANDB   #$F0
@@ -1139,16 +1139,16 @@ jump_table_748f:
 76A6: 34 10          PSHS   X
 76A8: 8E 76 C0       LDX    #$76C0
 76AB: 96 00          LDA    $00
-76AD: A6 86          LDA    A,X
+76AD: A6 86          LDA    A,X			; [bank_address]
 76AF: 48             ASLA
 76B0: 8E 76 C9       LDX    #$76C9
-76B3: AE 86          LDX    A,X
-76B5: 96 01          LDA    $01
+76B3: AE 86          LDX    A,X			; [bank_address]
+76B5: 96 01          LDA    $01			
 76B7: 44             LSRA
 76B8: 44             LSRA
 76B9: 44             LSRA
 76BA: 44             LSRA
-76BB: A6 86          LDA    A,X
+76BB: A6 86          LDA    A,X		; [bank_address]
 76BD: 35 10          PULS   X
 76BF: 39             RTS
 

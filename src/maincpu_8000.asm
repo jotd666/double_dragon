@@ -576,7 +576,7 @@ swi_interrupt:
 83D2: BD B7 AD       JSR    $B7AD
 83D5: B6 0E 3E       LDA    sync_flag_0e3e
 83D8: 27 FB          BEQ    $83D5
-83DA: BD 8A B5       JSR    $8AB5
+83DA: BD 8A B5       JSR    wait_subcpu_reply_8ab5
 83DD: 35 04          PULS   B
 83DF: BD FE AD       JSR    $FEAD
 83E2: 96 22          LDA    interrupt_status_22
@@ -716,7 +716,7 @@ l_84ec:
 852A: BD 84 45       JSR    $8445
 852D: B6 0E 3E       LDA    sync_flag_0e3e
 8530: 27 FB          BEQ    $852D
-8532: BD 8A B5       JSR    $8AB5
+8532: BD 8A B5       JSR    wait_subcpu_reply_8ab5
 8535: 35 04          PULS   B
 8537: BD FE AD       JSR    $FEAD
 853A: 96 22          LDA    interrupt_status_22
@@ -827,7 +827,7 @@ l_84ec:
 8635: BD 86 EC       JSR    $86EC
 8638: B6 0E 3E       LDA    sync_flag_0e3e
 863B: 27 FB          BEQ    $8638
-863D: BD 8A B5       JSR    $8AB5
+863D: BD 8A B5       JSR    wait_subcpu_reply_8ab5
 8640: 35 04          PULS   B
 8642: BD FE AD       JSR    $FEAD
 8645: 96 22          LDA    interrupt_status_22
@@ -1304,6 +1304,7 @@ check_for_coin_inserted_8990:
 8AB1: B7 04 1F       STA    $041F
 8AB4: 39             RTS
 
+wait_subcpu_reply_8ab5:
 8AB5: 96 3A          LDA    bank_switch_copy_3a
 8AB7: 8A 10          ORA    #$10
 8AB9: 97 3A          STA    bank_switch_copy_3a
@@ -5628,10 +5629,12 @@ B8A7: B6 38 02       LDA    extra_3802
 B8AA: 84 10          ANDA   #$10
 B8AC: 27 F9          BEQ    $B8A7
 ; ack sub irq
-B8AE: B7 38 0F       STA    sub_irq_380f		
+B8AE: B7 38 0F       STA    sub_irq_380f
+; wait some time (is that useful?)
 B8B1: 7D 0E 3E       TST    sync_flag_0e3e
 B8B4: 27 FB          BEQ    $B8B1
-B8B6: BD 8A B5       JSR    $8AB5
+; now wait for subcpu to reply
+B8B6: BD 8A B5       JSR    wait_subcpu_reply_8ab5
 B8B9: B6 20 00       LDA    $2000		; check value that subcpu has put there
 B8BC: 81 84          CMPA   #$84
 B8BE: 27 0A          BEQ    $B8CA

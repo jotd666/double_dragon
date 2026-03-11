@@ -953,11 +953,11 @@ lb0_4804:     ; [global]
 4810: 4F             CLRA
 4811: 10 8E 48 2E    LDY    #$482E
 4815: 31 AB          LEAY   D,Y
-4817: EC A1          LDD    ,Y++
+4817: EC A1          LDD    ,Y++				; [bank_address]
 4819: ED 88 11       STD    $11,X
-481C: EC A1          LDD    ,Y++
+481C: EC A1          LDD    ,Y++				; [bank_address]
 481E: ED 0F          STD    $F,X
-4820: EC A1          LDD    ,Y++
+4820: EC A1          LDD    ,Y++				; [bank_address]
 4822: ED 0D          STD    $D,X
 4824: A6 84          LDA    ,X
 4826: 84 F0          ANDA   #$F0
@@ -1175,18 +1175,19 @@ lb0_49a0:   ; [global]
 4A35: 7C 0A F6       INC    $0AF6
 4A38: 7F 0A F5       CLR    $0AF5
 4A3B: 39             RTS
+
 4A3C: 8E 4A 54       LDX    #$4A54
 4A3F: F6 0A F8       LDB    $0AF8
 4A42: C4 01          ANDB   #$01
 4A44: 58             ASLB
-4A45: EC 85          LDD    B,X
+4A45: EC 85          LDD    B,X				; [bank_address]
 4A47: B7 11 0C       STA    $110C
 4A4A: F7 13 0C       STB    $130C
 4A4D: B7 10 8C       STA    $108C
 4A50: F7 12 8C       STB    $128C
 4A53: 39             RTS
 
-4A58: BD 4A 97       JSR    $4A97
+4A58: BD 4A 97       JSR    clear_bg_screen_4a97
 4A5B: BD 4A A5       JSR    $4AA5
 4A5E: BD 4A B7       JSR    $4AB7
 4A61: BD 4A 7E       JSR    $4A7E
@@ -1195,7 +1196,7 @@ lb0_49a0:   ; [global]
 4A6A: 39             RTS
 
 lb0_4a6b:    ; [global]
-4A6B: BD 4A 97       JSR    $4A97
+4A6B: BD 4A 97       JSR    clear_bg_screen_4a97
 4A6E: BD 4A A5       JSR    $4AA5
 4A71: BD 4A B7       JSR    $4AB7
 4A74: BD 4A C7       JSR    $4AC7
@@ -1212,9 +1213,11 @@ lb0_4a6b:    ; [global]
 4A91: 8C 10 20       CMPX   #$1020
 4A94: 26 EF          BNE    $4A85
 4A96: 39             RTS
+
+clear_bg_screen_4a97:
 4A97: 8E 30 00       LDX    #$3000
 4A9A: CC 07 FF       LDD    #$07FF
-4A9D: ED 81          STD    ,X++
+4A9D: ED 81          STD    ,X++		; [video_address_word]
 4A9F: 8C 38 00       CMPX   #$3800
 4AA2: 26 F9          BNE    $4A9D
 4AA4: 39             RTS
@@ -1240,10 +1243,10 @@ lb0_4a6b:    ; [global]
 4ACC: D7 00          STB    $00
 4ACE: C6 04          LDB    #$04
 4AD0: D7 01          STB    $01
-4AD2: 10 AE 81       LDY    ,X++
+4AD2: 10 AE 81       LDY    ,X++		; [bank_address]
 4AD5: 86 07          LDA    #$07
-4AD7: E6 80          LDB    ,X+
-4AD9: ED A1          STD    ,Y++
+4AD7: E6 80          LDB    ,X+		; [bank_address]
+4AD9: ED A1          STD    ,Y++	; [video_address_word]
 4ADB: 0A 01          DEC    $01
 4ADD: 26 F8          BNE    $4AD7
 4ADF: 0A 00          DEC    $00
@@ -1256,7 +1259,7 @@ lb0_4a6b:    ; [global]
 4AEF: A7 E4          STA    ,S
 4AF1: 86 0D          LDA    #$0D
 4AF3: A7 61          STA    $1,S
-4AF5: A6 84          LDA    ,X
+4AF5: A6 84          LDA    ,X				; [bank_address]
 4AF7: 81 FF          CMPA   #$FF
 4AF9: 26 04          BNE    $4AFF
 4AFB: 30 01          LEAX   $1,X
@@ -1271,7 +1274,7 @@ lb0_4a6b:    ; [global]
 4B09: A7 A0          STA    ,Y+
 4B0B: 86 03          LDA    #$03
 4B0D: A7 A0          STA    ,Y+
-4B0F: A6 80          LDA    ,X+
+4B0F: A6 80          LDA    ,X+				; [bank_address]
 4B11: A7 A0          STA    ,Y+
 4B13: A6 61          LDA    $1,S
 4B15: 48             ASLA
@@ -1291,7 +1294,7 @@ lb0_4a6b:    ; [global]
 4B2D: 39             RTS
 4B2E: 5F             CLRB
 4B2F: 10 8E 4B 3E    LDY    #$4B3E
-4B33: AE A1          LDX    ,Y++
+4B33: AE A1          LDX    ,Y++			; [bank_address]
 4B35: BD 4B 46       JSR    $4B46
 4B38: 5C             INCB
 4B39: C1 04          CMPB   #$04
@@ -1299,21 +1302,21 @@ lb0_4a6b:    ; [global]
 4B3D: 39             RTS
 
 4B46: 34 36          PSHS   Y,X,D     
-4B48: EC 81          LDD    ,X++      
+4B48: EC 81          LDD    ,X++    ; [bank_address]  
 4B4A: DD 00          STD    $00       
-4B4C: EC 81          LDD    ,X++      
+4B4C: EC 81          LDD    ,X++          ; [bank_address]  
 4B4E: DD 02          STD    $02       
 4B50: DD 04          STD    $04       
-4B52: A6 80          LDA    ,X+
+4B52: A6 80          LDA    ,X+    ; [bank_address]  
 4B54: 97 06          STA    $06
 4B56: 10 9E 00       LDY    $00
 4B59: 96 06          LDA    $06
-4B5B: E6 80          LDB    ,X+
+4B5B: E6 80          LDB    ,X+    ; [bank_address]  
 4B5D: C1 FF          CMPB   #$FF
 4B5F: 26 02          BNE    $4B63
 4B61: 4F             CLRA
 4B62: 5F             CLRB
-4B63: ED A1          STD    ,Y++
+4B63: ED A1          STD    ,Y++		; [video_address_word]
 4B65: 0A 04          DEC    $04
 4B67: 26 F0          BNE    $4B59
 4B69: 96 02          LDA    $02
