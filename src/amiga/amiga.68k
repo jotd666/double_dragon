@@ -4919,7 +4919,13 @@ display_slots:
 
 osd_get_last_known_pc:
 	move.w	last_known_m6809_pc,d6
+	cmp.w	#0xFFFF,d6
+	jeq		0f
 	move.w	last_declared_bank,d7
+	rts
+0:
+	move.w	0x100,d6
+	move.w	0x102,d7
 	rts
 	
 	
