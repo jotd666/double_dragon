@@ -249,7 +249,7 @@ jump_table_6cdc:
 6E29: A7 88 44       STA    $44,X
 6E2C: C4 0F          ANDB   #$0F
 6E2E: 10 8E 6E 39    LDY    #$6E39
-6E32: A6 A5          LDA    B,Y
+6E32: A6 A5          LDA    B,Y		; [bank_address]
 6E34: A7 88 45       STA    $45,X
 6E37: 35 FE          PULS   D,DP,X,Y,U,PC
 
@@ -287,7 +287,7 @@ jump_table_6cdc:
 6E8D: 8E 19 0E       LDX    #$190E
 6E90: 10 8E 6E C5    LDY    #$6EC5
 6E94: A6 E4          LDA    ,S
-6E96: E6 A6          LDB    A,Y
+6E96: E6 A6          LDB    A,Y		; [bank_address]
 6E98: C0 21          SUBB   #$21
 6E9A: 17 00 32       LBSR   $6ECF
 6E9D: 30 04          LEAX   $4,X
@@ -321,13 +321,13 @@ jump_table_6cdc:
 6EDE: A7 02          STA    $2,X
 6EE0: A7 88 40       STA    $40,X
 6EE3: A7 88 42       STA    $42,X
-6EE6: A6 A0          LDA    ,Y+
+6EE6: A6 A0          LDA    ,Y+		; [bank_address]
 6EE8: A7 01          STA    $1,X
-6EEA: A6 A0          LDA    ,Y+
+6EEA: A6 A0          LDA    ,Y+		; [bank_address]
 6EEC: A7 03          STA    $3,X
-6EEE: A6 A0          LDA    ,Y+
+6EEE: A6 A0          LDA    ,Y+		; [bank_address]
 6EF0: A7 88 41       STA    $41,X
-6EF3: A6 A4          LDA    ,Y
+6EF3: A6 A4          LDA    ,Y		; [bank_address]
 6EF5: A7 88 43       STA    $43,X
 6EF8: 35 FE          PULS   D,DP,X,Y,U,PC
 
@@ -770,7 +770,7 @@ jump_table_7290:
 7356: 27 04          BEQ    $735C
 7358: 10 8E 73 8B    LDY    #$738B
 735C: E6 88 18       LDB    $18,X
-735F: A6 A5          LDA    B,Y
+735F: A6 A5          LDA    B,Y		; [bank_address]
 7361: A7 02          STA    $2,X
 7363: 6C 88 19       INC    $19,X
 7366: 10 8E 73 8F    LDY    #$738F
@@ -1116,7 +1116,7 @@ jump_table_748f:
 767E: 48             ASLA
 767F: 5F             CLRB
 7680: C3 30 00       ADDD   #$3000
-7683: 34 06          PSHS   D
+7683: 34 06          PSHS   D		; [manual_stack_push]
 7685: 4F             CLRA
 7686: D6 01          LDB    $01
 7688: C4 F0          ANDB   #$F0

@@ -2083,12 +2083,12 @@ jump_table_5f4f:
 60A9: E6 A0          LDB    ,Y+		; [bank_address]
 60AB: ED 81          STD    ,X++		; [video_address_word]
 60AD: E6 A0          LDB    ,Y+		; [bank_address]
-60AF: ED 88 28       STD    $28,X
+60AF: ED 88 28       STD    $28,X		; [video_address_word]
 60B2: E6 A0          LDB    ,Y+		; [bank_address]
 60B4: ED 81          STD    ,X++		; [video_address_word]
 60B6: 30 88 3C       LEAX   $3C,X
 60B9: E6 A0          LDB    ,Y+	; [bank_address]
-60BB: ED 88 28       STD    $28,X
+60BB: ED 88 28       STD    $28,X		; [video_address_word]
 60BE: E6 A0          LDB    ,Y+		; [bank_address]
 60C0: ED 81          STD    ,X++		; [video_address_word]
 60C2: E6 A0          LDB    ,Y+		; [bank_address]
@@ -2107,8 +2107,8 @@ jump_table_5f4f:
 60DA: 8E 18 42       LDX    #$1842
 60DD: 10 8E 1F 82    LDY    #$1F82
 60E1: CC 00 62       LDD    #$0062
-60E4: ED 81          STD    ,X++
-60E6: ED A1          STD    ,Y++
+60E4: ED 81          STD    ,X++		; [video_address_word]
+60E6: ED A1          STD    ,Y++		; [video_address_word]
 60E8: 6A E4          DEC    ,S
 60EA: 26 F5          BNE    $60E1
 60EC: 8E 18 00       LDX    #$1800
@@ -2116,8 +2116,8 @@ jump_table_5f4f:
 60F3: C6 20          LDB    #$20
 60F5: E7 E4          STB    ,S
 60F7: CC 00 62       LDD    #$0062
-60FA: ED 84          STD    ,X
-60FC: ED A4          STD    ,Y
+60FA: ED 84          STD    ,X		; [video_address_word]
+60FC: ED A4          STD    ,Y		; [video_address_word]
 60FE: 30 88 40       LEAX   $40,X
 6101: 31 A8 40       LEAY   $40,Y
 6104: 6A E4          DEC    ,S
@@ -2214,13 +2214,13 @@ jump_table_5f4f:
 6548: E6 A0          LDB    ,Y+		; [bank_address]
 654A: C1 FF          CMPB   #$FF
 654C: 27 04          BEQ    $6552
-654E: ED 81          STD    ,X++
+654E: ED 81          STD    ,X++	; [video_address_word]
 6550: 20 F6          BRA    $6548
 6552: 8E 19 5A       LDX    #$195A
 6555: E6 A0          LDB    ,Y+		; [bank_address]
 6557: C1 FF          CMPB   #$FF
 6559: 27 04          BEQ    $655F
-655B: ED 81          STD    ,X++
+655B: ED 81          STD    ,X++	; [video_address_word]
 655D: 20 F6          BRA    $6555
 655F: BD 65 8F       JSR    $658F
 6562: 7F 0E 63       CLR    $0E63
@@ -3718,7 +3718,7 @@ jump_table_72a9:
 736C: 80 17          SUBA   #$17
 736E: 80 02          SUBA   #$02
 7370: 48             ASLA
-7371: 10 AE A6       LDY    A,Y
+7371: 10 AE A6       LDY    A,Y		; [bank_address]
 7374: 96 36          LDA    $36
 7376: 48             ASLA
 7377: 10 AE A6       LDY    A,Y
@@ -3802,10 +3802,10 @@ jump_table_72a9:
 75AF: A6 88 1B       LDA    $1B,X
 75B2: 2B 0E          BMI    $75C2
 75B4: BD FE 64       JSR    $FE64
-75B7: A6 A0          LDA    ,Y+
+75B7: A6 A0          LDA    ,Y+		; [bank_address]
 75B9: AA 03          ORA    $3,X
 75BB: A7 02          STA    $2,X
-75BD: A6 A4          LDA    ,Y
+75BD: A6 A4          LDA    ,Y		; [bank_address]
 75BF: A7 88 19       STA    $19,X
 75C2: 6A 88 19       DEC    $19,X
 75C5: 26 1E          BNE    $75E5
@@ -3814,11 +3814,11 @@ jump_table_72a9:
 75CD: 81 04          CMPA   #$04
 75CF: 24 0F          BCC    $75E0
 75D1: 48             ASLA
-75D2: E6 A6          LDB    A,Y
+75D2: E6 A6          LDB    A,Y		; [bank_address]
 75D4: EA 03          ORB    $3,X
 75D6: E7 02          STB    $2,X
 75D8: 4C             INCA
-75D9: E6 A6          LDB    A,Y
+75D9: E6 A6          LDB    A,Y		; [bank_address]
 75DB: E7 88 19       STB    $19,X
 75DE: 20 05          BRA    $75E5
 75E0: 86 00          LDA    #$00
@@ -3829,10 +3829,10 @@ jump_table_72a9:
 75F2: A6 88 1B       LDA    $1B,X
 75F5: 2B 0E          BMI    $7605
 75F7: BD FE 64       JSR    $FE64
-75FA: A6 A0          LDA    ,Y+
+75FA: A6 A0          LDA    ,Y+		; [bank_address]
 75FC: AA 03          ORA    $3,X
 75FE: A7 02          STA    $2,X
-7600: A6 A4          LDA    ,Y
+7600: A6 A4          LDA    ,Y		; [bank_address]
 7602: A7 88 19       STA    $19,X
 7605: 6A 88 19       DEC    $19,X
 7608: 26 1E          BNE    $7628
@@ -3841,11 +3841,11 @@ jump_table_72a9:
 7610: 81 04          CMPA   #$04
 7612: 24 0F          BCC    $7623
 7614: 48             ASLA
-7615: E6 A6          LDB    A,Y
+7615: E6 A6          LDB    A,Y		; [bank_address]
 7617: EA 03          ORB    $3,X
 7619: E7 02          STB    $2,X
 761B: 4C             INCA
-761C: E6 A6          LDB    A,Y
+761C: E6 A6          LDB    A,Y		; [bank_address]
 761E: E7 88 19       STB    $19,X
 7621: 20 05          BRA    $7628
 7623: 86 00          LDA    #$00
@@ -3859,10 +3859,10 @@ jump_table_72a9:
 763D: A6 03          LDA    $3,X
 763F: 88 80          EORA   #$80
 7641: A7 03          STA    $3,X
-7643: A6 A0          LDA    ,Y+
+7643: A6 A0          LDA    ,Y+		; [bank_address]
 7645: AA 03          ORA    $3,X
 7647: A7 02          STA    $2,X
-7649: A6 A4          LDA    ,Y
+7649: A6 A4          LDA    ,Y		; [bank_address]
 764B: A7 88 19       STA    $19,X
 764E: 6A 88 19       DEC    $19,X
 7651: 26 1E          BNE    $7671
@@ -3871,11 +3871,11 @@ jump_table_72a9:
 7659: 81 02          CMPA   #$02
 765B: 24 0F          BCC    $766C
 765D: 48             ASLA
-765E: E6 A6          LDB    A,Y
+765E: E6 A6          LDB    A,Y		; [bank_address]
 7660: EA 03          ORB    $3,X
 7662: E7 02          STB    $2,X
 7664: 4C             INCA
-7665: E6 A6          LDB    A,Y
+7665: E6 A6          LDB    A,Y		; [bank_address]
 7667: E7 88 19       STB    $19,X
 766A: 20 05          BRA    $7671
 766C: 86 00          LDA    #$00
@@ -3886,10 +3886,10 @@ jump_table_72a9:
 767A: A6 88 1B       LDA    $1B,X
 767D: 2B 0E          BMI    $768D
 767F: BD FE 64       JSR    $FE64
-7682: A6 A0          LDA    ,Y+
+7682: A6 A0          LDA    ,Y+		; [bank_address]
 7684: AA 03          ORA    $3,X
 7686: A7 02          STA    $2,X
-7688: A6 A4          LDA    ,Y
+7688: A6 A4          LDA    ,Y		; [bank_address]
 768A: A7 88 19       STA    $19,X
 768D: 6A 88 19       DEC    $19,X
 7690: 26 17          BNE    $76A9
@@ -3898,11 +3898,11 @@ jump_table_72a9:
 7698: 81 02          CMPA   #$02
 769A: 24 0E          BCC    $76AA
 769C: 48             ASLA
-769D: E6 A6          LDB    A,Y
+769D: E6 A6          LDB    A,Y		; [bank_address]
 769F: EA 03          ORB    $3,X
 76A1: E7 02          STB    $2,X
 76A3: 4C             INCA
-76A4: E6 A6          LDB    A,Y
+76A4: E6 A6          LDB    A,Y		; [bank_address]
 76A6: E7 88 19       STB    $19,X
 76A9: 39             RTS
 76AA: 86 00          LDA    #$00
@@ -3918,10 +3918,10 @@ jump_table_72a9:
 76C5: A6 88 21       LDA    $21,X
 76C8: 81 02          CMPA   #$02
 76CA: 27 27          BEQ    $76F3
-76CC: A6 A4          LDA    ,Y
+76CC: A6 A4          LDA    ,Y		; [bank_address]
 76CE: AA 03          ORA    $3,X
 76D0: A7 02          STA    $2,X
-76D2: A6 C4          LDA    ,U
+76D2: A6 C4          LDA    ,U		; [bank_address]
 76D4: A7 88 19       STA    $19,X
 76D7: 6A 88 19       DEC    $19,X
 76DA: 26 1C          BNE    $76F8
@@ -3949,7 +3949,7 @@ jump_table_72a9:
 770F: A6 88 1B       LDA    $1B,X
 7712: 2B 0E          BMI    $7722
 7714: BD FE 64       JSR    $FE64
-7717: A6 A0          LDA    ,Y+
+7717: A6 A0          LDA    ,Y+		; [bank_address]
 7719: AA 03          ORA    $3,X
 771B: A7 02          STA    $2,X
 771D: A6 C4          LDA    ,U
@@ -3984,7 +3984,7 @@ jump_table_72a9:
 7775: A6 88 1B       LDA    $1B,X
 7778: 2B 41          BMI    $77BB
 777A: BD FE 64       JSR    $FE64
-777D: A6 A0          LDA    ,Y+
+777D: A6 A0          LDA    ,Y+		; [bank_address]
 777F: AA 03          ORA    $3,X
 7781: A7 02          STA    $2,X
 7783: 86 02          LDA    #$02
@@ -4053,7 +4053,7 @@ jump_table_72a9:
 7817: A6 A0          LDA    ,Y+
 7819: AA 03          ORA    $3,X
 781B: A7 02          STA    $2,X
-781D: A6 C4          LDA    ,U
+781D: A6 C4          LDA    ,U		; [bank_address]
 781F: A7 88 19       STA    $19,X
 7822: 6A 88 19       DEC    $19,X
 7825: 26 1C          BNE    $7843
@@ -4064,7 +4064,7 @@ jump_table_72a9:
 7831: E6 A6          LDB    A,Y
 7833: EA 03          ORB    $3,X
 7835: E7 02          STB    $2,X
-7837: E6 C6          LDB    A,U
+7837: E6 C6          LDB    A,U		; [bank_address]
 7839: E7 88 19       STB    $19,X
 783C: 20 05          BRA    $7843
 783E: 86 00          LDA    #$00

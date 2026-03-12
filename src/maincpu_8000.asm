@@ -8327,7 +8327,7 @@ E5BF: 34 02          PSHS   A
 E5C1: 32 E8 EE       LEAS   -$12,S
 E5C4: FC 0A 46       LDD    $0A46
 E5C7: C4 F0          ANDB   #$F0
-E5C9: 34 06          PSHS   D
+E5C9: 34 06          PSHS   D		; [manual_stack_push]
 E5CB: FC 0A 5F       LDD    $0A5F
 E5CE: C4 F0          ANDB   #$F0
 E5D0: 10 A3 E1       CMPD   ,S++
@@ -8371,10 +8371,10 @@ E62C: A7 E8 10       STA    $10,S
 E62F: A6 E8 10       LDA    $10,S
 E632: BD E8 FB       JSR    set_bank_e8fb
 E635: AE 6E          LDX    $E,S
-E637: EC 84          LDD    ,X
+E637: EC 84          LDD    ,X		; [bank_address]
 E639: AE 6C          LDX    $C,S
 E63B: BD E9 72       JSR    $E972
-E63E: ED 84          STD    ,X
+E63E: ED 84          STD    ,X		; [video_address_word]
 E640: EC 6A          LDD    $A,S
 E642: C3 00 10       ADDD   #$0010
 E645: ED 6A          STD    $A,S
@@ -8405,7 +8405,7 @@ E677: 27 02          BEQ    $E67B
 E679: 20 9E          BRA    $E619
 E67B: FC 0A 5F       LDD    $0A5F
 E67E: C4 F0          ANDB   #$F0
-E680: 34 06          PSHS   D
+E680: 34 06          PSHS   D		; [manual_stack_push]
 E682: FC 0A 46       LDD    $0A46
 E685: C4 F0          ANDB   #$F0
 E687: F3 0A 65       ADDD   $0A65
@@ -8426,7 +8426,7 @@ E6AC: 34 02          PSHS   A
 E6AE: 32 E8 EE       LEAS   -$12,S
 E6B1: FC 0A 49       LDD    $0A49
 E6B4: C4 F0          ANDB   #$F0
-E6B6: 34 06          PSHS   D
+E6B6: 34 06          PSHS   D		; [manual_stack_push]
 E6B8: FC 0A 62       LDD    $0A62
 E6BB: C4 F0          ANDB   #$F0
 E6BD: 10 A3 E1       CMPD   ,S++
@@ -8505,7 +8505,7 @@ E767: 27 02          BEQ    $E76B
 E769: 20 9B          BRA    $E706
 E76B: FC 0A 62       LDD    $0A62
 E76E: C4 F0          ANDB   #$F0
-E770: 34 06          PSHS   D
+E770: 34 06          PSHS   D		; [manual_stack_push]
 E772: FC 0A 49       LDD    $0A49
 E775: C4 F0          ANDB   #$F0
 E777: F3 0A 68       ADDD   $0A68
@@ -8556,7 +8556,7 @@ E7DB: 44             LSRA
 E7DC: E6 63          LDB    $3,S
 E7DE: 53             COMB
 E7DF: C4 F0          ANDB   #$F0
-E7E1: 34 02          PSHS   A
+E7E1: 34 02          PSHS   A		; [manual_stack_push]
 E7E3: EB E0          ADDB   ,S+
 E7E5: 4F             CLRA
 E7E6: 58             ASLB
@@ -8620,7 +8620,7 @@ E853: 35 B0          PULS   X,Y,PC
 E855: 34 10          PSHS   X
 E857: 84 01          ANDA   #$01
 E859: 48             ASLA
-E85A: 34 02          PSHS   A
+E85A: 34 02          PSHS   A		; [manual_stack_push]
 E85C: C4 01          ANDB   #$01
 E85E: EA E0          ORB    ,S+
 E860: 8E E8 68       LDX    #$E868
@@ -8693,7 +8693,7 @@ E8E0: 44             LSRA
 E8E1: 44             LSRA
 E8E2: 44             LSRA
 E8E3: 44             LSRA
-E8E4: 34 02          PSHS   A
+E8E4: 34 02          PSHS   A			; [manual_stack_push]
 E8E6: E6 63          LDB    $3,S
 E8E8: 53             COMB
 E8E9: C4 F0          ANDB   #$F0
@@ -8708,7 +8708,7 @@ E8F9: 35 B0          PULS   X,Y,PC
 
 set_bank_e8fb:
 E8FB: 84 E0          ANDA   #$E0
-E8FD: 34 02          PSHS   A
+E8FD: 34 02          PSHS   A			; [manual_stack_push]
 E8FF: 96 3A          LDA    bank_switch_copy_3a
 E901: 84 1F          ANDA   #$1F
 E903: AA E0          ORA    ,S+		; change bank, not the rest
@@ -8727,7 +8727,7 @@ E91D: 39             RTS
 E91E: FC 0A 5F       LDD    $0A5F
 E921: F7 38 09       STB    $3809
 E924: 84 01          ANDA   #$01
-E926: 34 02          PSHS   A
+E926: 34 02          PSHS   A	; [manual_stack_push]
 E928: CC 01 00       LDD    #$0100
 E92B: B3 0A 62       SUBD   $0A62
 E92E: 84 01          ANDA   #$01
@@ -8735,7 +8735,7 @@ E930: F7 38 0A       STB    scroll_y_lo_380a
 E933: 84 01          ANDA   #$01
 E935: 48             ASLA
 E936: AA E0          ORA    ,S+
-E938: 34 02          PSHS   A
+E938: 34 02          PSHS   A		; [manual_stack_push]
 E93A: 96 3A          LDA    bank_switch_copy_3a
 E93C: 84 FC          ANDA   #$FC
 E93E: AA E0          ORA    ,S+
@@ -8750,6 +8750,7 @@ E94F: 43             COMA
 E950: 53             COMB
 E951: C3 00 01       ADDD   #$0001
 E954: 39             RTS
+
 E955: 34 02          PSHS   A
 E957: E3 21          ADDD   $1,Y
 E959: ED 21          STD    $1,Y
@@ -8773,12 +8774,13 @@ E971: 39             RTS
 E972: 34 04          PSHS   B
 E974: 1F 89          TFR    A,B
 E976: C4 07          ANDB   #$07
-E978: 34 04          PSHS   B
+E978: 34 04          PSHS   B		; [manual_stack_push]
 E97A: 84 F0          ANDA   #$F0
 E97C: 44             LSRA
 E97D: AA E0          ORA    ,S+
 E97F: 35 04          PULS   B
 E981: 39             RTS
+
 E982: 32 7F          LEAS   -$1,S
 E984: 6F E4          CLR    ,S
 E986: E6 E4          LDB    ,S

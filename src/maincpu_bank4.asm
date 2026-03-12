@@ -69,7 +69,7 @@ lb4_4000:   ; [global]
 409B: 20 04          BRA    $40A1
 409D: 26 02          BNE    $40A1
 409F: 31 23          LEAY   $3,Y
-40A1: A6 A4          LDA    ,Y
+40A1: A6 A4          LDA    ,Y		; [bank_address]
 40A3: 97 59          STA    $59
 40A5: 39             RTS
 
@@ -127,12 +127,12 @@ lb4_4000:   ; [global]
 411A: 58             ASLB
 411B: 3A             ABX
 411C: DC 5A          LDD    $5A
-411E: E3 84          ADDD   ,X
+411E: E3 84          ADDD   ,X		; [bank_address]
 4120: 2A 03          BPL    $4125
 4122: CC 00 00       LDD    #$0000
 4125: DD 5A          STD    $5A
 4127: DC 5E          LDD    $5E
-4129: E3 02          ADDD   $2,X
+4129: E3 02          ADDD   $2,X		; [bank_address]
 412B: DD 5E          STD    $5E
 412D: 86 FF          LDA    #$FF
 412F: 39             RTS
@@ -141,7 +141,7 @@ lb4_4000:   ; [global]
 4156: D3 5E          ADDD   $5E
 4158: C6 80          LDB    #$80
 415A: 3D             MUL
-415B: 34 06          PSHS   D
+415B: 34 06          PSHS   D		; [manual_stack_push]
 415D: DC 5A          LDD    $5A
 415F: 58             ASLB
 4160: 49             ROLA
@@ -151,7 +151,7 @@ lb4_4000:   ; [global]
 4165: E3 E1          ADDD   ,S++
 4167: C3 47 80       ADDD   #$4780
 416A: 1F 01          TFR    D,X
-416C: EC 84          LDD    ,X
+416C: EC 84          LDD    ,X		; [bank_address]
 416E: 26 03          BNE    $4173
 4170: BD 41 A1       JSR    $41A1
 4173: DC 60          LDD    $60
@@ -482,7 +482,7 @@ table_4317:
 440B: 26 03          BNE    $4410
 440D: BD 45 CF       JSR    $45CF
 4410: CB 01          ADDB   #$01
-4412: 34 06          PSHS   D
+4412: 34 06          PSHS   D		; [manual_stack_push]
 4414: DC 4E          LDD    $4E
 4416: A3 E4          SUBD   ,S
 4418: DD 4E          STD    $4E
@@ -535,7 +535,7 @@ table_4317:
 4475: 26 03          BNE    $447A
 4477: BD 45 CF       JSR    $45CF
 447A: CB 01          ADDB   #$01
-447C: 34 06          PSHS   D
+447C: 34 06          PSHS   D		; [manual_stack_push]
 447E: DC 4E          LDD    $4E
 4480: E3 E4          ADDD   ,S
 4482: DD 4E          STD    $4E
@@ -601,13 +601,13 @@ table_4317:
 4514: A6 88 17       LDA    $17,X
 4517: 8E 45 3B       LDX    #$453B
 451A: C6 FF          LDB    #$FF
-451C: A1 84          CMPA   ,X
+451C: A1 84          CMPA   ,X		; [bank_address]
 451E: 27 08          BEQ    $4528
 4520: 30 05          LEAX   $5,X
-4522: E1 84          CMPB   ,X
+4522: E1 84          CMPB   ,X		; [bank_address]
 4524: 26 F6          BNE    $451C
 4526: 20 06          BRA    $452E
-4528: 10 AE 03       LDY    $3,X
+4528: 10 AE 03       LDY    $3,X		; [bank_address]
 452B: AD 98 01       JSR    [$01,X]
 452E: 9E 56          LDX    $56
 4530: 30 88 21       LEAX   $21,X
@@ -772,7 +772,7 @@ table_4317:
 468C: ED 64          STD    $4,S
 468E: 10 8E 46 9E    LDY    #$469E
 4692: 96 00          LDA    $00
-4694: A6 A6          LDA    A,Y
+4694: A6 A6          LDA    A,Y		; [bank_address]
 4696: AB 65          ADDA   $5,S
 4698: 1C FE          ANDCC  #$FE
 469A: 32 6F          LEAS   $F,S
@@ -840,7 +840,7 @@ table_4317:
 4717: 0C 00          INC    $00
 4719: 10 8E 47 25    LDY    #$4725
 471D: D6 00          LDB    $00
-471F: A6 A5          LDA    B,Y
+471F: A6 A5          LDA    B,Y		; [bank_address]
 4721: 32 65          LEAS   $5,S
 4723: 35 B4          PULS   B,X,Y,PC
 
@@ -966,11 +966,11 @@ lb4_7809:  ; [global]
 7859: 8E 78 92       LDX    #$7892
 785C: F6 0B 13       LDB    $0B13
 785F: 58             ASLB
-7860: AE 85          LDX    B,X
+7860: AE 85          LDX    B,X		; [bank_address]
 7862: 10 8E 78 87    LDY    #$7887
-7866: A6 A0          LDA    ,Y+
+7866: A6 A0          LDA    ,Y+		; [bank_address]
 7868: 97 00          STA    $00
-786A: EC A1          LDD    ,Y++
+786A: EC A1          LDD    ,Y++		; [bank_address]
 786C: 34 20          PSHS   Y
 786E: 1F 02          TFR    D,Y
 7870: 86 10          LDA    #$10
@@ -1109,12 +1109,12 @@ lb4_7bb4:  ; [global]
 7E4E: 10 8E 7E AD    LDY    #$7EAD
 7E52: A6 06          LDA    $6,X
 7E54: 48             ASLA
-7E55: 10 AE A6       LDY    A,Y
+7E55: 10 AE A6       LDY    A,Y		; [bank_address]
 7E58: 10 AF 66       STY    $6,S
 7E5B: 10 8E 7E D9    LDY    #$7ED9
 7E5F: D6 00          LDB    $00
 7E61: 58             ASLB
-7E62: EC A5          LDD    B,Y
+7E62: EC A5          LDD    B,Y		; [bank_address]
 7E64: A7 61          STA    $1,S
 7E66: E7 63          STB    $3,S
 7E68: 6F E4          CLR    ,S

@@ -1,19 +1,10 @@
-- convert subcpu (else: no sprites): make it work connect irq with cpu irq, connect comram
-  simulate or remove sync (end of subcpu interrupt should set/clear the flag 0x10 in EXTRA)
-- wire special addresses
-- check what firq does (vs irq) on MAME : nullify it
+- insert coin call firq check us champ vball
 
 - play with palette write wpoint
 - palette writes can be useful to detect 
   level changes & load new tilesets
-
-
-bank 0:
-  pshu
-  pulu
-  leas
-  tap  transfer a to CCR (interrupt?)
-  save cc: PUSH_SR, save dp: move to d6 + save
+- dump bg tiles for title, start context based on palette
+- at some point, change palette for fg tiles to avoid too much dither or change global palette? (title/rest)
   
   optim for 6809 generator:
  	xxx_W_TO_REG	a0,d2                         	| [$5bd5: pulu   x,y]
@@ -24,6 +15,5 @@ bank 0:
  	xxx_W_TO_REG	a0,d2                         	| [$5bd5: pulu   x,y]
 =>  xxx_W_TO_REG_PREDEC
 
-banks 0-5 are non-empty
 monitor bank switch: wpset 3808:maincpu,1,W,,{printf "bank %d",(wpdata & 0xe0) >> 5;g}
 force bank switch: fill 3808:maincpu,1,bankno<<5

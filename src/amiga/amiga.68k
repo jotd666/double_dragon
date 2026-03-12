@@ -280,6 +280,8 @@ osd_enter_\@:
 	.global	osd_read_p1_inputs
 	.global	osd_read_p2_inputs
 	
+	.global	osd_clear_fg_screen
+	.global	osd_clear_bg_screen
 	.global	osd_video_byte_dirty
 	.global	osd_video_word_dirty
 
@@ -859,6 +861,7 @@ copyright_message:
 
 	.ifndef	RELEASE
 dump_and_quit:	
+	move.b	#0,0x120
 	jbsr	osd_dump_logs
 	illegal
 	.endif
@@ -2803,7 +2806,7 @@ platform_init:
 
  	*         VVHH
     move.w #0x89+((Y_START+0x10)<<8),d0
-    move.w #0x89+((Y_START-0x10)<<8),d1
+    move.w #0x89+((Y_START)<<8),d1
 	cmp.l	#NTSC_MONITOR_ID,monitor
 	jne		0f
 	sub.w	#NTSC_Y_SHIFT<<8,d0
@@ -3173,11 +3176,25 @@ osd_set_bank:
 	rts
 
 	
-osd_video_word_dirty:
-	jbsr	osd_video_byte_dirty
-	addq	#1,a0
-	jbsr	osd_video_byte_dirty
-	subq	#1,a0
+osd_clear_bg_screen:
+	rts
+	
+* fast way to clear screen
+osd_clear_fg_screen:
+	
+	movem.l	d0/d1/a0/a1,-(a7)
+	
+	lea		hw_sprite_pointers,a1
+	moveq	#7,d1
+0:
+	move.l	(a1)+,a0
+	add.w	#16,a0		| skip control word
+	move.w	#HW_SPRITE_BUFFER_SIZE/4-5,d0
+1:
+	clr.l	(a0)+
+	dbf		d0,1b
+	dbf		d1,0b
+	movem.l	(a7)+,d0/d1/a0/a1
 	rts
 	
 *TILE_GET_INFO_MEMBER(ddragon_state::get_bg_tile_info)
@@ -3206,6 +3223,7 @@ osd_video_word_dirty:
 * allows 1800-1FFF and 3000-37FF range
 * 1800: foreground/HUD
 * 3000: background
+osd_video_word_dirty:
 osd_video_byte_dirty:
 	OSD_ENTER
 	movem.l	d0-d7/a0-a2/a5,-(a7)
@@ -3752,7 +3770,7 @@ compute_fg_tile_xy:
 	lsr.w	#1,d6
 	move.b	d6,d0
 	
-	and.b	#0x3F,d0	| x
+	and.b	#0x1F,d0	| x
 	move.w	d6,d1
 	lsr.w	#5,d1		| Y
 	subq	#1,d1		| 1 first row isn't visible

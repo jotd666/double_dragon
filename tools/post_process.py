@@ -43,6 +43,10 @@ def f_handle_bank0_line(address,lines,i):
         lines[i+1] = remove_error(lines[i+1])
     elif address == 0x42f8:
         lines[i+2] += "\tscs\td6  | save carry as d6\n"
+    elif address == 0x41df:
+        line += "\tjbsr\tosd_clear_fg_screen\n"
+    elif address == 0x41ec:
+        line += "\tjbsr\tosd_clear_bg_screen\n"
     ### replace current line
     lines[i] = line
 
@@ -171,6 +175,7 @@ def f_handle_main_line(address,lines,i):
     elif address in {0xB8AC,0xB89C}:
         # remove subcpu sync shit
         line = remove_instruction(lines,i)
+
     elif address == 0x8AB5:
         # replace subcpu wait for irq reply by irq call
         line = change_instruction("jbsr\tosd_call_sub_irq",lines,i)
