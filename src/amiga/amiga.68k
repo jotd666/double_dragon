@@ -269,7 +269,7 @@ osd_enter_\@:
 	.global	osd_wait_vblank_interrupt
 	.global osd_enable_interrupts
 	.global osd_disable_interrupts
-	.global osd_set_tile_palette
+	
 	.global osd_call_sub_irq
 	.global osd_break		| for debug	
 	.global osd_blitz		| for debug
@@ -302,6 +302,8 @@ osd_enter_\@:
 	.global	osd_log_cpu
 	.global	osd_cpu_logging_control
 	
+	.global osd_set_tile_palette
+	.global	osd_set_flash_color
 	
 	.global	current_rom_bank
 	
@@ -901,6 +903,20 @@ osd_colors_cycled:
 	OSD_EXIT
 	rts
 
+* <D0=red,green,D1=blue
+osd_set_flash_color:
+	move.l	color_copper_pointers,a0
+	addq	#2,a0
+	tst.b	d0
+	jeq		0f
+	* yellow
+	move.w	#0xFF0,(a0)
+	rts
+0:
+	* back to black
+	clr.w	(a0)
+	rts
+	
 * very important for the amiga version as it allows to detect level/context switches
 * and load the relevant parts (we can't have everything in memory)
 * on 68k non-amiga versions (if done one day) derived on this port, this could be much simpler.

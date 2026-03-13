@@ -1,6 +1,7 @@
 - insert coin call firq check us champ vball
 
 - play with palette write wpoint
+- 3096: 07E8: title displayed: paste big pic at 32,24
 - palette writes can be useful to detect 
   level changes & load new tilesets
 - dump bg tiles for title, start context based on palette

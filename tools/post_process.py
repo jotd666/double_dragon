@@ -47,6 +47,8 @@ def f_handle_bank0_line(address,lines,i):
         line += "\tjbsr\tosd_clear_fg_screen\n"
     elif address == 0x41ec:
         line += "\tjbsr\tosd_clear_bg_screen\n"
+    elif address == 0x4A47:
+        line = "\tjbsr\tosd_set_flash_color\n"+line
     ### replace current line
     lines[i] = line
 

@@ -1170,7 +1170,7 @@ lb0_49a0:   ; [global]
 4A23: 26 16          BNE    $4A3B
 4A25: 7F 0A F7       CLR    $0AF7
 4A28: 7C 0A F8       INC    $0AF8
-4A2B: BD 4A 3C       JSR    $4A3C
+4A2B: BD 4A 3C       JSR    yellow_black_flash_4a3c
 4A2E: B6 0A F8       LDA    $0AF8
 4A31: 81 0A          CMPA   #$0A
 4A33: 26 D2          BNE    $4A07
@@ -1178,6 +1178,8 @@ lb0_49a0:   ; [global]
 4A38: 7F 0A F5       CLR    $0AF5
 4A3B: 39             RTS
 
+; alternately flash black/yellow in title
+yellow_black_flash_4a3c:
 4A3C: 8E 4A 54       LDX    #$4A54
 4A3F: F6 0A F8       LDB    $0AF8
 4A42: C4 01          ANDB   #$01
@@ -1193,7 +1195,7 @@ lb0_49a0:   ; [global]
 4A5B: BD 4A A5       JSR    $4AA5
 4A5E: BD 4A B7       JSR    $4AB7
 4A61: BD 4A 7E       JSR    $4A7E
-4A64: BD 4A C7       JSR    $4AC7
+4A64: BD 4A C7       JSR    display_title_tiles_4ac7
 4A67: BD 4A E4       JSR    $4AE4
 4A6A: 39             RTS
 
@@ -1201,7 +1203,7 @@ lb0_4a6b:    ; [global]
 4A6B: BD 4A 97       JSR    clear_bg_screen_4a97
 4A6E: BD 4A A5       JSR    $4AA5
 4A71: BD 4A B7       JSR    $4AB7
-4A74: BD 4A C7       JSR    $4AC7
+4A74: BD 4A C7       JSR    display_title_tiles_4ac7
 4A77: BD 4A E4       JSR    $4AE4
 4A7A: BD 4B 2E       JSR    $4B2E
 4A7D: 39             RTS
@@ -1240,6 +1242,8 @@ clear_bg_screen_4a97:
 4AC1: 97 4F          STA    $4F
 4AC3: BD FE 36       JSR    $FE36
 4AC6: 39             RTS
+
+display_title_tiles_4ac7:
 4AC7: 8E 4D 16       LDX    #$4D16
 4ACA: C6 09          LDB    #$09
 4ACC: D7 00          STB    $00
@@ -1254,6 +1258,7 @@ clear_bg_screen_4a97:
 4ADF: 0A 00          DEC    $00
 4AE1: 26 EB          BNE    $4ACE
 4AE3: 39             RTS
+
 4AE4: 32 7E          LEAS   -$2,S
 4AE6: 8E 4D 4C       LDX    #$4D4C
 4AE9: 10 8E 28 00    LDY    #$2800

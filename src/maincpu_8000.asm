@@ -1,6 +1,10 @@
 ;	map(0x0000, 0x0fff).ram().share("rambase");
-;	map(0x1000, 0x11ff).ram().w(m_palette, FUNC(palette_device::write8)).share("palette");
-;	map(0x1200, 0x13ff).ram().w(m_palette, FUNC(palette_device::write8_ext)).share("palette_ext");
+;	map(0x1000, 0x11ff).ram().w(m_palette, FUNC(palette_device::write8)).share("palette");  red and green
+;	map(0x1200, 0x13ff).ram().w(m_palette, FUNC(palette_device::write8_ext)).share("palette_ext");  blue
+;   0x1000-0x1080: foreground tiles layer
+;   0x1080-0x1100: sprites layer
+;   0x1100-0x1180: background tiles layer
+;
 ;	map(0x1800, 0x1fff).ram().w(FUNC(ddragon_state::fgvideoram_w)).share(m_fgvideoram);
 ;	map(0x2000, 0x21ff).rw(FUNC(ddragon_state::comram_r), FUNC(ddragon_state::comram_w)).mirror(0x0600);
 ;	map(0x2800, 0x2fff).ram().share(m_spriteram);
