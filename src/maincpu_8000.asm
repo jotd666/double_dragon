@@ -157,6 +157,9 @@ previous_bank_register_0e43 = $e43
 previous_bank_register_0e44 = $e44
 previous_bank_register_0e45 = $e45
 sync_flag_0e3e = $e3e
+bg_tiles_palette_1100 = $1100
+sprites_palette_1080 = $1080
+fg_tiles_palette_1000 = $1000
 
 bg_tiles_address_3000 = $3000
 fg_tiles_address_1800 = $1800
@@ -180,7 +183,7 @@ reset_8000:     ; [global]
 8022: BD FE 9B       JSR    clear_bg_screen_fe9b
 8025: BD FE 9E       JSR    $FE9E
 8028: BD FE A1       JSR    set_screen_orientation_fea1
-802B: BD FD F0       JSR    $FDF0
+802B: BD FD F0       JSR    set_palettes_fdf0
 802E: 1C EF          ANDCC  #$EF
 8030: 96 3A          LDA    bank_switch_copy_3a
 8032: 84 E7          ANDA   #$E7
@@ -297,7 +300,7 @@ swi_interrupt:
 810B: 0F 36          CLR    $36
 810D: 0F 38          CLR    $38
 810F: 0F 37          CLR    $37
-8111: BD FD F0       JSR    $FDF0
+8111: BD FD F0       JSR    set_palettes_fdf0
 8114: BD FD F3       JSR    $FDF3
 8117: BD FE F8       JSR    $FEF8
 811A: 86 06          LDA    #$06
@@ -338,7 +341,7 @@ swi_interrupt:
 8172: BD FE 9B       JSR    clear_bg_screen_fe9b
 8175: BD FE 9E       JSR    $FE9E
 8178: 0F 36          CLR    $36
-817A: BD FD F0       JSR    $FDF0
+817A: BD FD F0       JSR    set_palettes_fdf0
 817D: BD FD F3       JSR    $FDF3
 8180: BD FE 98       JSR    clear_fg_screen_fe98
 8183: BD FE E3       JSR    $FEE3
@@ -480,7 +483,7 @@ swi_interrupt:
 82C0: B7 03 EA       STA    $03EA
 82C3: F7 04 48       STB    $0448
 82C6: 7F 0B C0       CLR    $0BC0
-82C9: BD FD F0       JSR    $FDF0
+82C9: BD FD F0       JSR    set_palettes_fdf0
 82CC: B6 03 EE       LDA    $03EE
 82CF: 84 83          ANDA   #$83
 82D1: B7 03 EE       STA    $03EE
@@ -5554,7 +5557,7 @@ B800: 26 0E          BNE    $B810
 B802: 5A             DECB
 B803: 2A F3          BPL    $B7F8
 B805: 30 01          LEAX   $1,X
-B807: 8C 10 00       CMPX   #$1000
+B807: 8C 10 00       CMPX   #fg_tiles_palette_1000
 B80A: 26 EA          BNE    $B7F6
 B80C: C6 00          LDB    #$00		; no RAM error
 B80E: 20 02          BRA    $B812
@@ -8971,6 +8974,7 @@ EE0A: B7 0B 20       STA    $0B20
 EE0D: 32 61          LEAS   $1,S
 EE0F: 39             RTS
 
+set_palettes_ee30:
 EE30: 00 0F          CLR    $4B
 EE32: 0F 4D          CLR    $4D
 EE34: 0F 4F          CLR    $4F
@@ -8987,7 +8991,7 @@ EE48: 97 4C          STA    $4C
 EE4A: C6 10          LDB    #$10
 EE4C: 3D             MUL
 EE4D: A7 E4          STA    ,S
-EE4F: 10 8E 10 80    LDY    #$1080
+EE4F: 10 8E 10 80    LDY    #sprites_palette_1080
 EE53: 8E EE D5       LDX    #$EED5
 EE56: A6 E4          LDA    ,S
 EE58: EE 8B          LDU    D,X
@@ -9005,7 +9009,7 @@ EE6C: C6 10          LDB    #$10
 EE6E: 3D             MUL
 EE6F: A7 E4          STA    ,S
 EE71: 8E F7 E5       LDX    #$F7E5
-EE74: 10 8E 10 00    LDY    #$1000
+EE74: 10 8E 10 00    LDY    #fg_tiles_palette_1000
 EE78: A6 E4          LDA    ,S
 EE7A: EE 8B          LDU    D,X
 EE7C: 8D 2E          BSR    $EEAC
@@ -9021,7 +9025,7 @@ EE8C: 97 50          STA    $50
 EE8E: C6 10          LDB    #$10
 EE90: 3D             MUL
 EE91: A7 E4          STA    ,S
-EE93: 10 8E 11 00    LDY    #$1100
+EE93: 10 8E 11 00    LDY    #bg_tiles_palette_1100
 EE97: 8E F2 15       LDX    #$F215
 EE9A: A6 E4          LDA    ,S
 EE9C: EE 8B          LDU    D,X
@@ -9039,6 +9043,7 @@ EEAE: 32 7D          LEAS   -$3,S
 EEB0: B6 38 02       LDA    extra_3802
 EEB3: 84 08          ANDA   #$08
 EEB5: 27 F9          BEQ    $EEB0
+; 
 EEB7: 86 10          LDA    #$10
 EEB9: A7 62          STA    $2,S
 EEBB: EC C4          LDD    ,U
@@ -9610,7 +9615,8 @@ FDE7: 26 03          BNE    $FDEC
 FDE9: 6F 88 24       CLR    $24,X
 FDEC: 39             RTS
 
-FDF0: 7E EE 30       JMP    $EE30
+set_palettes_fdf0:
+FDF0: 7E EE 30       JMP    set_palettes_ee30
 FDF3: 7E EE 3E       JMP    $EE3E
 FDF6: 7E E0 80       JMP    $E080
 FDF9: 7E E1 07       JMP    $E107

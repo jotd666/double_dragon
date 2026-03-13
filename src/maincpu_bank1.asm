@@ -172,7 +172,7 @@ lb1_40e4:      ; [global]
 4122: 8A 10       ORA    #$10
 4124: 97 3A       STA    bank_switch_copy_3a
 4126: B7 38 08    STA    bankswitch_3808
-4129: B6 38 02    LDA    $3802
+4129: B6 38 02    LDA    extra_3802
 412C: 84 10       ANDA   #$10
 412E: 26 F9       BNE    $4129
 4130: 7F 20 00    CLR    $2000
@@ -186,7 +186,7 @@ lb1_40e4:      ; [global]
 4145: 7D 03 A1    TST    $03A1
 4148: 10 27 00 A7 LBEQ   $41F3
 414C: 10 8E 03 81 LDY    #$0381
-4150: CE 20 01    LDU    #$2001
+4150: CE 20 01    LDU    #$2001		; fill exchange zone
 4153: 5F          CLRB
 4154: AE A5       LDX    B,Y
 4156: A6 01       LDA    $1,X
@@ -261,15 +261,16 @@ lb1_40e4:      ; [global]
 41E7: F1 03 A1    CMPB   $03A1
 41EA: 10 25 FF 66 LBCS   $4154
 41EE: 1E 03       EXG    D,U
-41F0: F7 20 00    STB    $2000
+41F0: F7 20 00    STB    $2000			; set data in exchange memory
 41F3: 96 3A       LDA    bank_switch_copy_3a
 41F5: 84 EF       ANDA   #$EF
 41F7: 97 3A       STA    bank_switch_copy_3a
-41F9: B7 38 08    STA    bankswitch_3808
-41FC: B6 38 02    LDA    $3802
+41F9: B7 38 08    STA    bankswitch_3808		; wake up subcpu
+41FC: B6 38 02    LDA    extra_3802
 41FF: 84 10       ANDA   #$10
 4201: 27 F9       BEQ    $41FC
-4203: B7 38 0F    STA    $380F
+; subcpu has completed task
+4203: B7 38 0F    STA    $380F		; ack
 4206: 7F 03 A1    CLR    $03A1
 4209: 35 C0       PULS   U,PC
 420B: 34 76       PSHS   U,Y,X,D

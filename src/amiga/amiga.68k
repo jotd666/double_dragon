@@ -302,8 +302,8 @@ osd_enter_\@:
 	.global	osd_log_cpu
 	.global	osd_cpu_logging_control
 	
-	.global osd_set_tile_palette
 	.global	osd_set_flash_color
+	.global	osd_palette_updated
 	
 	.global	current_rom_bank
 	
@@ -903,6 +903,23 @@ osd_colors_cycled:
 	OSD_EXIT
 	rts
 
+CTX_MENU = 0xE8997E8A
+CTX_START_GAME = 0x8C9D5BF9
+
+* called when palette is updated
+* can use D1 & D2 as restored just afterwards
+* < A6: memory
+osd_palette_updated:
+	lea		(fg_tiles_palette_1000,a6),a0
+	moveq	#0,d1
+	move.w	#0x180/4-1,d2		| "checksum" R,G of colors
+0:
+	add.l	(a0)+,d1
+	dbf		d2,0b
+	move.l	d1,0x200
+	rts
+	
+	
 * <D0=red,green,D1=blue
 osd_set_flash_color:
 	move.l	color_copper_pointers,a0

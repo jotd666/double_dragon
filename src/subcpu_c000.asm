@@ -75,13 +75,13 @@ C074: 97 4F    sta  $4F
 C076: 96 4F    lda  $4F
 C078: B1 80 00 cmpa shared_memory_8000
 C07B: 24 27    bcc  $C0A4
-C07D: EC 00    ldd  $00,x
+C07D: EC 00    ldd  $00,x		; [select_address]
 C07F: DD 40    std  $40
-C081: EC 02    ldd  $02,x
+C081: EC 02    ldd  $02,x		; [select_address]
 C083: DD 42    std  $42
-C085: EC 04    ldd  $04,x
+C085: EC 04    ldd  $04,x		; [select_address]
 C087: DD 44    std  $44
-C089: EC 06    ldd  $06,x
+C089: EC 06    ldd  $06,x		; [select_address]
 C08B: DD 46    std  $46
 C08D: 3C       pshx 
 C08E: D6 41    ldb  $41
@@ -177,7 +177,7 @@ C13E: D6 41    ldb  $41
 C140: C4 7F    andb #$7F
 C142: 3A       abx  
 C143: 3A       abx  
-C144: EE 00    ldx  $00,x
+C144: EE 00    ldx  $00,x		; [rom]
 C146: DF 48    stx  $48
 C148: F6 81 FD ldb  $81FD
 C14B: 86 05    lda  #$05
@@ -185,7 +185,7 @@ C14D: 3D       mul
 C14E: C3 80 81 addd #$8081
 C151: DD 4A    std  $4A
 C153: DE 48    ldx  $48
-C155: E6 00    ldb  $00,x
+C155: E6 00    ldb  $00,x		; [rom]
 C157: 08       inx  
 C158: 7F 00 50 clr  $0050
 C15B: 7F 00 52 clr  $0052
@@ -196,19 +196,19 @@ C164: 84 1F    anda #$1F
 C166: 97 53    sta  $53
 C168: 5D       tstb 
 C169: 2A 05    bpl  $C170
-C16B: A6 00    lda  $00,x
+C16B: A6 00    lda  $00,x		; [rom]
 C16D: 08       inx  
 C16E: 97 50    sta  $50
 C170: C5 40    bitb #$40
 C172: 27 08    beq  $C17C
-C174: A6 00    lda  $00,x
+C174: A6 00    lda  $00,x		; [rom]
 C176: 08       inx  
 C177: 97 51    sta  $51
 C179: 73 00 52 com  $0052
 C17C: C5 20    bitb #$20
 C17E: 27 09    beq  $C189
 C180: 73 00 5A com  $005A
-C183: EC 00    ldd  $00,x
+C183: EC 00    ldd  $00,x		; [rom]
 C185: 08       inx  
 C186: 08       inx  
 C187: DD 4C    std  $4C
@@ -216,7 +216,7 @@ C189: 96 4E    lda  $4E
 C18B: 2A 04    bpl  $C191
 C18D: 96 50    lda  $50
 C18F: 20 03    bra  $C194
-C191: A6 00    lda  $00,x
+C191: A6 00    lda  $00,x		; [rom]
 C193: 08       inx  
 C194: 36       psha 
 C195: 84 0F    anda #$0F

@@ -276,7 +276,47 @@
 	jbsr	get_rom_address
 	.endm
 
+	.macro GET_ZP_REG_ADDRESS	offset,reg
+	.ifeq	\offset
+	move.l	\reg,a0
+	.else
+	lea	\offset,a0
+	lea	(a0,\reg\().l),a0
+	.endif
+	.ifndef	RELEASE
+	cmp.w	#0x100,a0
+	jcs		0f
+	BREAKPOINT	"zero page address > 0x100"
+0:
+	.endif
+	GET_DP_ADDRESS	a0
+	.endm
 
+	* not very efficient but covers all legal cases
+	.macro	GET_SELECT_REG_ADDRESS	offset,reg
+	.ifeq	\offset
+	move.l	\reg,a0
+	.else
+	lea	\offset,a0
+	lea	(a0,\reg\().l),a0
+	.endif
+	cmp.l	#0xC000,a0
+	jcs		0f
+	* ROM
+	GET_ROM_ADDRESS_FUNC		| load from ROM
+	jra		10f
+0:
+	cmp.w	#0x100,a0
+	jcc		0f
+	* zero page
+	lea		(a6,a0.w),a0
+	jra		10f
+0:
+	* exchange zone (check it!)
+	GET_SHARED_ADDRESS_FUNC
+10:
+	.endm
+	
 	.macro GET_SHARED_REG_ADDRESS	offset,reg
 	.ifeq	\offset
 	move.l	\reg,a0
@@ -325,31 +365,37 @@
 
 
 
+
 * zero all registers but 6800 stack pointer
 sub_cpu_init:
 	moveq	#0,d0
 	moveq	#0,d1
 	moveq	#0,d2
-
+	* so osd_log_cpu doesn't yell
+	.ifndef	RELEASE
+	move.l	#0xFFFF,d3
+	move.l	d3,d4
+	move.l	d3,d5
+	.endif
+	
 	moveq	#0,d6
 	moveq	#0,d7
 	rts
 
 get_shared_address:
-	sub.l	#0x8000,a0
 	.ifndef	RELEASE
+	cmp.l	#0x8000,a0
 	jcc		0f
-	add.l	#0x8000,a0
 	BREAKPOINT	"shared address < 0x8000"
 	illegal
 0:
-	cmp.w	#0x200,a0
+	cmp.l	#0x8200,a0
 	jcs		0f
-	add.l	#0x8000,a0
 	BREAKPOINT	"shared address > 0x81FF"
 	illegal
 0:
 	.endif
+	sub.l	#0x8000,a0
 	lea		(A5,A0.w),a0
 	rts
 	
@@ -374,3 +420,23 @@ multiply_ab:
 	move.b	d1,d0
 	ror.w	#8,d1
 	rts
+	.ifndef	RELEASE
+	* to trace at some virtual PCs, insert this macro
+	.macro	LOG_REGS	the_pc,the_bank
+	move.w	sr,-(a7)
+	move.w	#0x\the_pc,-(a7)
+	move.w	#\the_bank,-(a7)
+	jbsr	osd_log_cpu
+	addq.w	#4,a7
+	move.w	(a7)+,sr
+	.endm
+	
+	.macro	LOG_REGS__	the_pc,the_bank
+	move.w	sr,-(a7)
+
+	move.w	#0x\the_pc,0x100
+	move.w	#\the_bank,0x102
+
+	move.w	(a7)+,sr
+	.endm
+	.endif

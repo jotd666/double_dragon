@@ -74,7 +74,9 @@ def f_handle_bank1_line(address,lines,i):
         lines[i+1],lines[i+3] = lines[i+3],lines[i+1]
     elif address == 0x5ba0:
         lines[i+2] = remove_error(lines[i+2])
-
+    elif address == 0x4201:
+        # remove wait for subcpu (subcpu should be called here, we'll see laer'")
+        line = remove_instruction(lines,i)
     lines[i] = line
 
 
@@ -134,6 +136,11 @@ def f_handle_sub_line(address,lines,i):
     if "GET_REG_ADDRESS" in line:
         if "[rom]" in line:
             line = line.replace("GET_REG_ADDRESS","GET_ROM_REG_ADDRESS")
+        elif "[zero_page]" in line:
+            line = line.replace("GET_REG_ADDRESS","GET_ZP_REG_ADDRESS")
+        elif "[select_address]" in line:
+            line = line.replace("GET_REG_ADDRESS","GET_SELECT_REG_ADDRESS")
+
     if "unsupported instruction rti" in line:
         if address == 0xC057:
             line = change_instruction("rts",lines,i)
@@ -221,6 +228,8 @@ def f_handle_main_line(address,lines,i):
         line = change_instruction("jbsr\tosd_read_dsw_1",lines,i)
     elif "dsw2_1600" in line and "lda" in line:
         line = change_instruction("jbsr\tosd_read_dsw_2",lines,i)
+    elif address == 0xeed3:
+        line = "\tjbsr\tosd_palette_updated\n"+line
 
     if "multiply_ab" in line and "MAKE_D" in lines[i+1]:
         lines[i+1] = ""
