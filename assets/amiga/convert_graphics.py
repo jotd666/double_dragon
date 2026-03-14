@@ -541,7 +541,7 @@ fg_tile_sheet_dict = {i:Image.open(sheets_path / "fg_tiles" / f"pal_{i:02x}.png"
 ## foreground tiles: only 2 cases: title and in-game ##
 #######################################################
 
-context_list = ["title"] #,"game"]
+context_list = ["title","game"]
 for context in context_list:
 
     context = pathlib.Path(context)
@@ -595,7 +595,7 @@ for context in context_list:
 
     # pad
     if len(fg_tile_palette)>16:
-        print(f"Too many colors in fg upper tiles ({len(fg_tile_upper_palette)}), quantizing")
+        print(f"Too many colors in {context} fg upper tiles ({len(fg_tile_palette)}), quantizing")
         fg_replacement_dict = quantize_palette(fg_tile_palette,"foreground_tiles",16,transparent=magenta,dump_it=dump_it)
         apply_color_replacement(fg_tile_set_list,fg_replacement_dict)
         fg_tile_palette = sorted(set(fg_replacement_dict.values()))

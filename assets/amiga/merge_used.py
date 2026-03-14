@@ -43,6 +43,6 @@ def merge(used_name,context,nb_items,nb_cluts):
     with open(old_used,"wb") as f:
         f.write(contents)
 
-merge("fg_used_tiles","title",0x400,8)
+merge("fg_used_tiles","game",0x400,8)
 #merge("level4/bg_used_tiles",0x400,8)
 #merge("used_sprites",0x400,4)

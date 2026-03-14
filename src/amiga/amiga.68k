@@ -931,6 +931,26 @@ osd_palette_updated:
 	add.l	(a0)+,d1
 	dbf		d2,0b
 	move.l	d1,0x200
+	
+	lea		context_lookup_table,a0
+0:
+	move.l	(a0)+,d2
+	cmp.l 	#-1,d2
+	jeq		0f
+	cmp.l	d1,d2
+	jeq		context_switch_found
+	jra		0b
+0:
+	rts
+
+context_switch_found:
+	move.l	a0,d2
+	sub.l	#context_lookup_table+4,d2
+	lsr.w	#2,d2		| now d2 is the context
+	movem.l	d0-a6,-(a7)
+	move.l	d2,d0
+	jbsr	load_context
+	movem.l	(a7)+,d0-a6
 	rts
 	
 	
@@ -1011,7 +1031,9 @@ load_context:
 	* load foreground tiles
 	lea		fg_character_table_buffer,a1
 	move.l	#FG_TILE_FILE_MAX_SIZE,d0
-	move.l	(a2)+,a0
+	move.l	(a2)+,d1
+	jeq		0f
+	move.l	d1,a0
 	jbsr	load_file
 	
 	lea		(NB_FG_COLORS*2,a1),a1			| skip palette
@@ -1033,7 +1055,8 @@ load_context:
 	move.l	color_copper_pointers+TOTAL_NB_COLORS*4,a1	| entries 64-80
 	move.w	#NB_FG_COLORS,d0
 	jbsr	load_palette
-	
+
+0:	
 	tst		current_context
 	jne		0f
 	jbsr	load_title_picture
@@ -1045,7 +1068,7 @@ load_context:
 	clr.l	bg_tile_character_table
 	* load background tiles if any
 	move.l	(a2)+,d0
-	jne		31f
+	jeq		31f
 	move.l	d0,a0
 	lea		bg_character_table_buffer_ptr,a1
 	move.l	#BG_TILE_FILE_MAX_SIZE,d0
@@ -1120,6 +1143,7 @@ load_title_picture:
 * < D6: number of cluts on this layer (FG_TILE_NB_CLUTS/BG_TILE_NB_CLUTS)
 * < D7: number of tiles on this layer (FG_TILE_COUNT/BG_TILE_COUNT)
 relocate_tiles_file:
+	movem.l	d0-a6,-(a7)
 	* now relocate the tile file
 	move.l	a0,bg_tile_character_table				| set character table pointer
 	move.l	a0,d0
@@ -1157,6 +1181,7 @@ relocate_tiles_file:
 10:
 	dbf		d7,0b
 	addq	#4,a7
+	movem.l	(a7)+,d0-a6
 	rts
 	
 
@@ -1472,11 +1497,11 @@ set_scroll_values:
 * < D0: max size
 load_file:
 	move.l	_resload,d1
-	jeq		0f
+	jeq		1f
+	move.l	a2,-(a7)
+	movem.l	d0-d2/a0-a1,-(a7)
 	move.l	d1,a2
-	movem.l	d0-d3/a0/a1,-(a7)
 	move.l	d0,d2		| store max size
-	move.l	a0,d3		| store filename
 	jbsr	resload_GetFileSizeDec(a2)
 	.ifndef	RELEASE
 	cmp.l	d0,d2
@@ -1484,10 +1509,11 @@ load_file:
 	BREAKPOINT	"file size too big vs buffer. D0=size, D2=max, D3=filename"
 0:
 	.endif
-	movem.l	(a7),d0-d3/a0/a1
+	movem.l	(a7),d0-d2/a0-a1
 	
 	jbsr	resload_LoadFileDecrunch(a2)
-	movem.l	(a7)+,d0-d3/a0/a1
+	movem.l	(a7)+,d0-d2/a0-a1
+	move.l	(a7)+,a2
 	rts
 0:
 	illegal
@@ -1790,7 +1816,7 @@ level1_interrupt:
 23:
 	.ifne	OPT_ENABLE_LOGGING
 	jbsr	log_used_fg_tiles
-	*jbsr	log_used_bg_tiles
+	jbsr	log_used_bg_tiles
 	*jbsr	log_used_sprites
 	.endif
 3:
@@ -2648,6 +2674,7 @@ blit_planes_any_internal_no_cookie_cut:
     
     * blitter registers set
 
+	WRITE_BLITTER_REG_WORD	#0,bltalwm
 	WRITE_BLITTER_REG_WORD	d2,bltamod		|A modulo=bytes to skip between lines
 	
 	WRITE_BLITTER_REG_WORD	d0,bltdmod	|D modulo
@@ -4158,7 +4185,6 @@ blit_title_pic:
 	move.w	#24,d1
 	moveq	#0,d5
 	move.l	playfield_drawed_screen_ptr,a1
-	BREAKPOINT	"fkfkk"
 	jbsr	blit_planes_any_internal_no_cookie_cut
 	rts
 
@@ -4531,12 +4557,12 @@ log_used_bg_tiles:
 	move	#(1<<BG_TILE_NB_CLUTS_POW)-1,d4		| clut mask
 	move	#BG_TILE_NB_CLUTS_POW,d5		| nb clut pow
 
-	move.w	#0x800-1,d7
+	move.w	#0x7FE,d7
 0:
 	moveq	#0,d1
 	moveq	#0,d0
-	move.b	(a5,d7.w),d0	| tile code
-	move.b	(a4,d7.w),d1	| tile attribute
+	move.b	(a5,d7.w),d1	| tile attribute
+	move.b	(1,a5,d7.w),d0	| tile code
 
 	moveq	#0,d2
 	moveq	#0,d3
@@ -4553,7 +4579,8 @@ log_used_bg_tiles:
 	add.l	d3,d2			| add clut
 	st.b	(a0,d2.l)
 20:
-	dbf		d7,0b
+	subq	#2,d7
+	jpl		0b
 	rts
 	
 * sprite_log, log_sprites
