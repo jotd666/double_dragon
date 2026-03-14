@@ -646,12 +646,12 @@ full_title,next_cache_id = split_bitplane_data(title_bitplane_data,4+1,title_pla
 bank = bank_dir / f"title_pic.68k"
 with open(bank,"w") as f:
     f.write("title_palette:\n")
-    f.write(f"\t.word\t{len(title_palette)}   | nb_colors\n")
+    f.write(f"\t.word\t4   | nb_bitplanes\n")
     bitplanelib.palette_dump(title_palette,f,bitplanelib.PALETTE_FORMAT_ASMGNU)
     f.write("title_pic:\n")
     f.write("\t.word\t{width},{height}  | width (bytes),height\n".format(**full_title))
     for bid in full_title["bitplanes"]:
-        f.write(f"\t.word\tbitplane_{bid:02d}-title_pic\n")
+        f.write(f"\t.long\tbitplane_{bid:02d}-title_pic\n")
     dump_plane_cache(f,"bitplane",title_plane_cache)
     asm2bin(bank)
 

@@ -139,7 +139,7 @@ OPT_MIRROR_TEST = 0				| all sprites are mirrored
 	.endif
 	
 
-OPT_ENABLE_DOUBLE_BUFFERING = 1
+OPT_ENABLE_DOUBLE_BUFFERING = 0
 
 _custom = 0xDFF000
 
@@ -157,6 +157,8 @@ NB_FG_PLANES = 4
 NB_BG_PLANES = 5
 
 NB_FG_COLORS = 1<<NB_FG_PLANES
+NB_BG_COLORS = 1<<NB_BG_PLANES
+
 TOTAL_NB_COLORS = 1<<NB_PLAYFIELD_PLANES
 FG_NB_BYTES_PER_ROW = 0x20
 BG_NB_BYTES_PER_ROW = 0x28    | +64 pixels
@@ -232,6 +234,13 @@ BIT_FIRE_2 = 5
 	move.b	#\color,d0
 	jbsr	display_number
 	.set	row,row+1
+	.endm
+	
+	.macro	DO_BLIT
+	WRITE_BLITTER_REG_SIZE  d4
+	.ifndef	RELEASE
+	*jbsr	log_blit
+	.endif
 	.endm
 	
 	* S aka D5 is used a lot in the code as virtual stack, not only
@@ -1025,15 +1034,33 @@ load_context:
 	move.w	#NB_FG_COLORS,d0
 	jbsr	load_palette
 	
-	
+	tst		current_context
+	jne		0f
+	jbsr	load_title_picture
+0:
 	* todo: copy the first level of pointers in fastmem (256*4: 1kb)
 	jbsr	relocate_sprites_file
 
 30:
-	* re-set pointer
-*	move.l	bg_character_table_buffer_ptr,a0
-*	lea		(TOTAL_NB_COLORS,a0),a0		| skip 32 color palette
-*	move.l	a0,bg_tile_character_table				| set character table pointer
+	clr.l	bg_tile_character_table
+	* load background tiles if any
+	move.l	(a2)+,d0
+	jne		31f
+	move.l	d0,a0
+	lea		bg_character_table_buffer_ptr,a1
+	move.l	#BG_TILE_FILE_MAX_SIZE,d0
+	jbsr	load_file
+	
+	lea		(NB_BG_COLORS*2,a1),a1			| skip palette
+	move.l	a1,bg_tile_character_table
+	
+	move.l	a1,a0
+	move.w	#NB_BG_PLANES,d5
+	move.w	#BG_TILE_NB_CLUTS,d6
+	move.w	#BG_TILE_COUNT,d7
+	jbsr	relocate_tiles_file
+31:
+
 	
 	* optimize: should we mirror Y tiles? only in some contexts
 *	move.w	current_context,d0
@@ -1056,6 +1083,36 @@ load_context:
 	jbsr	osd_enable_interrupts
 
 	movem.l	(a7)+,d0-a6
+	rts
+	
+load_title_picture:
+	* special case: load title pic & palette like it's bg tiles
+	lea		sprite_table_buffer,a1
+	lea		title_pic_filename,a0
+	move.l	#SPRITE_FILE_MAX_SIZE,d0
+	jbsr	load_file
+	* just set the palette for now
+	lea		sprite_table_buffer,a0
+	move.l	color_copper_pointers,a1	| entries 0-xx
+	move.w	(a0)+,d1				| nb bitplanes
+	moveq	#1,d0
+	lsl.w	d1,d0
+	move.w	d0,d3
+	* < A0 contains the palette
+	jbsr	load_palette
+	* also we need to relocate the bitmaps
+	lea		sprite_table_buffer,a0
+	move.w	(a0)+,d0		| nb bitplanes
+	add.w	d3,a0
+	add.w	d3,a0
+	move.l	a0,d1
+	* A0 is the base
+	subq	#1,d0
+	lea		(4,a0),a1	| skip dimensions
+111:
+	add.l	d1,(a1)+	| relocate
+	dbf		d0,111b
+0:
 	rts
 	
 * < A0: start of bitmap (palette skipped)
@@ -2531,22 +2588,108 @@ clear_planes_any_blitter_internal:
 	
 	
 	
-* what: blits 16x? data on one plane, cookie cut
-* args:
-* < A0: pointers on 16x? data
-* < A1: plane  (40 rows)
-* < A3: source mask for cookie cut (16x16)
-* < D0: X
-* < D1: Y
-* < D2: source y-offset
-* < D3: height of data
-* trashes: D0-D1
-blit_planes_cookie_cut_16x:
-    lea _custom,A5
-	move.w	d2,d5
-	move.w	d3,d4
-	moveq	#NB_PLAYFIELD_PLANES,d3		| 4 planes
-    moveq  #4,d2       | 16 pixels + 2 shift bytes
+* < A5: custom
+* < D0.W,D1.W: x,y, no shifting
+* < A0: source (pointer on array of planes)
+* < A1: destination fg plane
+* < D2: width in bytes
+* < D3: number of planes
+* < D4: height. If negative, source is copied with negative modulo (flip)
+* < D5: y offset for source planes
+* < D7: blit mask (not considered, optim, -1 all through the game)
+* blit mask set
+* returns: start of destination in A1 (computed from old A1+X,Y)
+* trashes: a1
+blit_planes_any_internal_no_cookie_cut:
+    movem.l d0-d7/a4,-(a7)
+    * pre-compute the maximum of shit here
+	tst.w	d4
+	bpl.b	1f
+	sub.w	d4,d1	| pre-add height to d1
+	subq.w	#1,d1	| minus one
+1:	
+	tst	d1
+    beq.b   2f    | optim
+    lea		mulBG_NB_BYTES_PER_ROW_table,a4
+	.ifdef	NO68020
+	add.w	d1,d1
+    move.w  (a4,d1.w),d1	| y times 40
+	.else
+    move.w  (a4,d1.w*2),d1	| y times 40
+	.endif
+2:
+	
+    asr.w   #3,d0			| X displacement in bytes
+
+    add.w   d0,d1
+
+	move.l  #0x09f00000,d7    | A->D copy, ascending mode
+	move.l  #0x0FCA0000,d6     | D clear
+
+    * make offset even. Blitter will ignore odd address
+    * but a 68000 CPU doesn't and since we RETURN A1...
+    *bclr    #0,d1
+    add.w   d1,a1       | plane position (D1 < 0x7FFF, 288*40=0x2D00)
+	move.w	#BG_NB_BYTES_PER_ROW,d0
+	tst.w	d4
+	bpl.b	5f
+	neg.w	d0
+	neg.w	d4    | make d4 positive again
+5:
+    sub.w   d2,d0       | blit width
+    lsl.w   #6,d4
+    lsr.w   #1,d2
+    add.w   d2,d4       | blit height
+    * always the same settings (ATM)
+	moveq	#-2,d2
+	
+    * now just wait for blitter ready to write all registers
+	WAIT_BLIT
+    
+    * blitter registers set
+
+	WRITE_BLITTER_REG_WORD	d2,bltamod		|A modulo=bytes to skip between lines
+	
+	WRITE_BLITTER_REG_WORD	d0,bltdmod	|D modulo
+					
+	subq	#1,d3
+	jeq	7f
+	subq	#1,d3
+6:
+	jbsr	start_process_1_plane_nocc
+	
+	WRITE_BLITTER_REG_LONG	a1,bltdpt	|destination top (bottom) left corner
+	DO_BLIT	|rectangle size, starts blit
+	.if	BG_SCREEN_PLANE_SIZE > 0x7FFF
+	add.l	#BG_SCREEN_PLANE_SIZE,a1
+	.else
+	add.w	#BG_SCREEN_PLANE_SIZE,a1
+	.endif
+	WAIT_BLIT
+	dbf		d3,6b
+7:
+	jbsr	start_process_1_plane_nocc
+	WRITE_BLITTER_REG_LONG	a1,bltdpt	|destination top (bottom) left corner
+	DO_BLIT	|rectangle size, starts blit
+    
+    movem.l (a7)+,d0-d7/a4
+    rts
+	
+start_process_1_plane_nocc:
+	move.l (a0)+,d0
+	jne	61f
+
+	* source is 0: just clear (less bandwidth lost) and change bltcon
+	WRITE_BLITTER_REG_LONG	#0x01000000,bltcon0	| sets con0 and con1: clear
+
+	rts
+61:
+	* non-zero: set data source & bltcon
+	WRITE_BLITTER_REG_LONG	d7,bltcon0	| sets con0 and con1: C-A+B->D cookie cut full
+	WRITE_BLITTER_REG_LONG	d0,bltapt	| source graphic top left corner
+	rts
+
+
 * < A5: custom
 * < D0.W,D1.W: x,y
 * < A0: source (pointer on array of planes)
@@ -2641,7 +2784,11 @@ blit_planes_any_internal_cookie_cut:
 	WRITE_BLITTER_REG_LONG	a1,bltcpt	|pristine background top (bottom) left corner
 	WRITE_BLITTER_REG_LONG	a1,bltdpt	|destination top (bottom) left corner
 	WRITE_BLITTER_REG_SIZE	d4	|rectangle size, starts blit
-	add.l		#BG_SCREEN_PLANE_SIZE,a1
+	.if	BG_SCREEN_PLANE_SIZE > 0x7FFF
+	add.l	#BG_SCREEN_PLANE_SIZE,a1
+	.else
+	add.w	#BG_SCREEN_PLANE_SIZE,a1
+	.endif
 	WAIT_BLIT
 	dbf		d3,6b
 7:
@@ -3065,19 +3212,7 @@ platform_init:
 	jsr		_mt_install_cia
 
 
-	
-*	lea		hw_sprite_pointers,a0
-*	move.w	#0x48,d7
-*
-*2:
-*	move.b	#0x48,d0
-*	move.b	#1,d1
-*	jbsr	update_fg_tile
-*	
-*	addq	#1,d7
-*	cmp.w	#0x400,d7
-*	jne		2b
-	
+
 	
 	
     rts
@@ -3294,7 +3429,11 @@ osd_video_byte_dirty:
 0:
 * bg tile
 	and.w	#0x7FE,d7
-	* bg tile: do nothing ATM
+	lea		(BG_SCREEN_TILE_ADDRESS,a6),a0
+	move.b	(a0,d7.w),d1
+	move.b	(1,a0,d7.w),d0
+
+	jbsr	update_bg_tile
 	jra		osd_w_videoram_out
 	
 maybe_fg_tile:
@@ -3320,7 +3459,6 @@ maybe_fg_tile:
 	
 	
 	and.w	#0x7FE,d7
-
 	lea		(FG_SCREEN_TILE_ADDRESS,a6),a0
 	move.b	(a0,d7.w),d1
 	move.b	(1,a0,d7.w),d0
@@ -3511,6 +3649,16 @@ cache_bg_tiles_address:
 * uses x_offset computed from scrolling current params
 
 update_bg_tile:
+	* special case: title screen
+	cmp.w	#0x96,d7
+	jne		0f
+	cmp.b	#0xE8,d0
+	jne		0f
+	cmp.b	#7,d1
+	jne		0f
+	* skip all this crap altogether, blit the big pic
+	jra		blit_title_pic
+0:
 	moveq	#0,d2			| mask up to 255
 	move.b	d0,d2			| tile code
 	moveq	#0,d3
@@ -3854,7 +4002,9 @@ update_fg_tile:
 	cmp.w	#0x40,d7
 	jcc		0f
 	rts
+
 0:
+
 	moveq	#0,d2
 	move.b	d0,d2	| code
 	move.b	d1,d3	| attribute + tile msbits
@@ -3992,6 +4142,30 @@ standard_tile:
 empty_row:
 	.skip	8
 		
+blit_title_pic:
+	lea		_custom,a5
+	lea		sprite_table_buffer,a0
+	move.w	(a0)+,d0				| nb bitplanes
+	moveq	#2,d1
+	lsl.w	d0,d1
+	add.w	d1,a0
+	* now we point to the dimensions
+	move.w	(a0)+,d2
+	move.w	(a0)+,d4
+	* now A0 points to the list of planes
+	move.w	sprite_table_buffer,d3	| nb bitplanes
+	move.w	#32,d0
+	move.w	#24,d1
+	moveq	#0,d5
+	move.l	playfield_drawed_screen_ptr,a1
+	BREAKPOINT	"fkfkk"
+	jbsr	blit_planes_any_internal_no_cookie_cut
+	rts
+
+	
+	rts
+	
+
 * < d0.w: x
 * < d1.w: y
 * < a1: sprite pos table (depending on height)
@@ -5467,14 +5641,13 @@ _keyexit:
 cheat_used:
 	.byte	0
 dosname:
-	.ascii	"dos.library"
-	.byte	0
+	.asciz	"dos.library"
 graphicsname:
-	.ascii	"graphics.library"
-	.byte	0
+	.asciz	"graphics.library"
 floppy_file:
-	.ascii	"floppy"
-	.byte	0
+	.asciz	"floppy"
+title_pic_filename:
+	.asciz	"title_pic"
 temp_filename_buffer:
 	.skip	255
 	.align	2
