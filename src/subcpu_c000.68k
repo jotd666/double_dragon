@@ -183,7 +183,7 @@ sub_c099:
 	LOG_REGS	c099,-2   | added by add_reg_log.py
 	move.b	#0x08,d1                        	| [$c099: ldb  #$08]
 	LOG_REGS	c09b,-2   | added by add_reg_log.py
-	movem.w	(sp)+,d2                       	| [$c09b: pulx]
+	move.w	(sp)+,d2                        	| [$c09b: pulx]
 	LOG_REGS	c09c,-2   | added by add_reg_log.py
 	ABX                                    	| [$c09c: abx]
 	LOG_REGS	c09d,-2   | added by add_reg_log.py
@@ -536,7 +536,7 @@ sub_c194:
 	LOG_REGS	c1a1,-2   | added by add_reg_log.py
 	ABX                                    	| [$c1a1: abx]
 	LOG_REGS	c1a2,-2   | added by add_reg_log.py
-	movem.w	(sp)+,d1                       	| [$c1a2: pulb]
+	move.w	(sp)+,d1                        	| [$c1a2: pulb]
 	LOG_REGS	c1a3,-2   | added by add_reg_log.py
 	move.w	d1,-(sp)                        	| [$c1a3: pshb]
 	LOG_REGS	c1a4,-2   | added by add_reg_log.py
@@ -571,7 +571,7 @@ sub_c194:
 	OP_W_ON_DP_ADDRESS	move,0x62,d0         | [$c1bd: sta  $62]
 sub_c1bf:
 	LOG_REGS	c1bf,-2   | added by add_reg_log.py
-	movem.w	(sp)+,d1                       	| [$c1bf: pulb]
+	move.w	(sp)+,d1                        	| [$c1bf: pulb]
                                          | [$c1c0: lsrb]
                                          | [$c1c1: lsrb]
                                          | [$c1c2: lsrb]
@@ -706,7 +706,6 @@ sub_c21b:
 	LOG_REGS	c226,-2   | added by add_reg_log.py
 	subq.b	#1,d0                           	| [$c226: deca]
 sub_c227:
-	
 	MAKE_D                                 	| [...]
 	LOG_REGS	c227,-2   | added by add_reg_log.py
 	GET_DP_ADDRESS	0x56                    	| [$c227: addd $56]

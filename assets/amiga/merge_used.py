@@ -8,7 +8,7 @@ def add(contents,code,clut,nb_cluts):
 def rem(contents,code,clut,nb_cluts):
     contents[code*nb_cluts+clut] = 0
 
-def merge(used_name,nb_items,nb_cluts):
+def merge(used_name,context,nb_items,nb_cluts):
     merged_path_file = used_graphics_dir
 
 
@@ -20,7 +20,7 @@ def merge(used_name,nb_items,nb_cluts):
     else:
         new_contents = bytearray(nb_cluts*nb_items)
 
-    old_used = merged_path_file / used_name
+    old_used = merged_path_file / context / used_name
     if old_used.exists():
         with open(old_used,"rb") as f:
             old_contents = bytearray(f.read())
@@ -39,10 +39,10 @@ def merge(used_name,nb_items,nb_cluts):
                 code,clut = divmod(i,nb_cluts)
                 print(f"{used_name}: New: code={code:02x}, clut={clut:02x}")
 
-
-    with open(merged_path_file / used_name,"wb") as f:
+    old_used.parent.mkdir(exist_ok=True)
+    with open(old_used,"wb") as f:
         f.write(contents)
 
-merge("fg_used_tiles",0x400,8)
+merge("fg_used_tiles","title",0x400,8)
 #merge("level4/bg_used_tiles",0x400,8)
 #merge("used_sprites",0x400,4)

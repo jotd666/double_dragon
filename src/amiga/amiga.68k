@@ -51,7 +51,7 @@ CORKSCREW_NB_SCREENS = 20
 BORDERBLANK = 1
 START_HOST_SCROLL_X = (CORKSCREW_NB_SCREENS/2)*0x100
 
-MIRROR_BUFFER_SIZE = 0x15000
+MIRROR_BUFFER_SIZE = 0x1000
 
 PREVIOUS_SPRITE_SIZE = 8
 CURRENT_SPRITE_SIZE = 4
@@ -61,9 +61,9 @@ GAME_MAX_SCROLL_X = 0x200
 GAME_MAX_SCROLL_Y = 0x200
 BG_TILE_WIDTH = 16
 
+FG_TILE_FILE_MAX_SIZE = 0x8000
 BG_TILE_FILE_MAX_SIZE = 0x14000
-SPRITE_FILE_MAX_SIZE = 0x1F400
-*SPRITE_FILE_MAX_SIZE = 0x1C800   | 8k smaller without the white arremers
+SPRITE_FILE_MAX_SIZE = 0x30000
 
 	.if		OPT_CD32_VERSION==0
 BIGGEST_MUSIC_SIZE = 385000
@@ -156,6 +156,7 @@ OPT_AGA_MODE=0
 NB_FG_PLANES = 4
 NB_BG_PLANES = 5
 
+NB_FG_COLORS = 1<<NB_FG_PLANES
 TOTAL_NB_COLORS = 1<<NB_PLAYFIELD_PLANES
 FG_NB_BYTES_PER_ROW = 0x20
 BG_NB_BYTES_PER_ROW = 0x28    | +64 pixels
@@ -208,6 +209,7 @@ BIT_DOWN = 2
 BIT_FIRE_1 = 4
 BIT_FIRE_2 = 5
 
+	.include	"context.68k"
 	
 	.macro	COLOR0_FLASH	v
 	.ifne	OPT_AGA_MODE
@@ -808,7 +810,10 @@ demo_game:
 *	move.l	#BIGGEST_MUSIC_SIZE,d0
 *	jbsr	load_file
 	
-
+	* load title context now, we'll need it
+	move.w	#CTX_TITLE,d0
+	jbsr	load_context
+	
 	* create mirror parts for common sprites
 	* first initialize buffer address
 	move.l	#mirror_buffer,mirror_buffer_ptr
@@ -831,7 +836,7 @@ demo_game:
 mirror_common_sprites:
 	rts
 	
-	lea		shared_bob_table,a0
+	*lea		shared_bob_table,a0
 	move.w	#0x3FF,d7
 0:
 	move.l	(a0)+,d0
@@ -868,16 +873,16 @@ dump_and_quit:
 	illegal
 	.endif
 
-osd_black_colors:
-	lea		sprite_palette,a0
-	move.l	color_copper_pointers,a1	| tile entries 0-32
-	move.w	#TOTAL_NB_COLORS/2-1,d0
-1:
-	addq.w	#2,a1
-	clr.w	(a1)+
-	dbf		d0,1b
-2:
-	rts
+*osd_black_colors:
+*	lea		sprite_palette,a0
+*	move.l	color_copper_pointers,a1	| tile entries 0-32
+*	move.w	#TOTAL_NB_COLORS/2-1,d0
+*1:
+*	addq.w	#2,a1
+*	clr.w	(a1)+
+*	dbf		d0,1b
+*2:
+*	rts
 
 osd_call_sub_irq:
 	movem.l	d0-a6,-(a7)
@@ -969,6 +974,16 @@ load_context:
 	clr.l	(a0)+
 	cmp.l	#bg_tile_log_table_end,A0
 	jne	0b
+	lea	fg_tile_log_table,a0
+0:
+	clr.l	(a0)+
+	cmp.l	#fg_tile_log_table_end,A0
+	jne	0b
+	lea	sprite_log_table,a0
+0:
+	clr.l	(a0)+
+	cmp.l	#sprite_log_table_end,A0
+	jne	0b
 	.endif
 	
 	* clear mirror buffer (reset it just after the shared bob mirror data)
@@ -979,72 +994,83 @@ load_context:
 
 
 1:
-	lea	tile_context_name_table,A0
-	add.w	d0,d0	
-	add.w	d0,d0
-	move.l	(a0,d0.w),a0
-	move.w	#-1,saved_context   | cancel saved context
+	lea	context_table,A0
+	lsl.w	#4,d0		| 4 pointers
+	lea 	(a0,d0.w),a2
 	clr.l	context_sprite_table_ptr		| "free" sprites too
-	lea		bg_character_table_buffer,a1
-	move.l	a1,bg_character_table_buffer_ptr
-	move.l	#BG_TILE_FILE_MAX_SIZE,d0
+	
+	* load foreground tiles
+	lea		fg_character_table_buffer,a1
+	move.l	#FG_TILE_FILE_MAX_SIZE,d0
+	move.l	(a2)+,a0
 	jbsr	load_file
 	
-	* now load the specific sprites for that level
-	* there will be some repeats, but overall the memory footprint will be smaller
-	* thus allowing pre-computed symmetric bitmaps
-	cmp.w	#MAP_CONTEXT,d0
-	jeq		2f
-	move.w	current_context,d0
-	lea	sprite_context_name_table,A0
-	add.w	d0,d0	
-	add.w	d0,d0
-	move.l	(a0,d0.w),a0
-	lea		sprite_table_buffer,a1
-	move.l	a1,context_sprite_table_ptr
-	move.l	#SPRITE_FILE_MAX_SIZE,d0
-	jbsr	load_file
+	lea		(NB_FG_COLORS*2,a1),a1			| skip palette
+	move.l	a1,fg_tile_character_table
+	
+	move.l	a1,a0
+	move.w	#NB_FG_PLANES,d5
+	move.w	#FG_TILE_NB_CLUTS,d6
+	move.w	#FG_TILE_COUNT,d7
+	jbsr	relocate_tiles_file
+	
+*	lea		sprite_table_buffer,a1
+*	move.l	a1,context_sprite_table_ptr
+*	move.l	#SPRITE_FILE_MAX_SIZE,d0
+*	jbsr	load_file
+	
+	* set fg palette (attached sprites)
+	lea		fg_character_table_buffer,a0
+	move.l	color_copper_pointers+TOTAL_NB_COLORS*4,a1	| entries 64-80
+	move.w	#NB_FG_COLORS,d0
+	jbsr	load_palette
+	
+	
 	* todo: copy the first level of pointers in fastmem (256*4: 1kb)
 	jbsr	relocate_sprites_file
-	
-2:
-	jbsr	relocate_tiles_file
+
 30:
 	* re-set pointer
-	move.l	bg_character_table_buffer_ptr,a0
-	lea		(TOTAL_NB_COLORS,a0),a0		| skip 32 color palette
-	move.l	a0,bg_tile_character_table				| set character table pointer
+*	move.l	bg_character_table_buffer_ptr,a0
+*	lea		(TOTAL_NB_COLORS,a0),a0		| skip 32 color palette
+*	move.l	a0,bg_tile_character_table				| set character table pointer
 	
 	* optimize: should we mirror Y tiles? only in some contexts
-	move.w	current_context,d0
-	lea		mirror_y_tile_table,a0
-	tst.b	(a0,d0.w)
-	sne		must_mirror_y_tiles
+*	move.w	current_context,d0
+*	lea		mirror_y_tile_table,a0
+*	tst.b	(a0,d0.w)
+*	sne		must_mirror_y_tiles
 	
-	* if level 1 set (intro), pre-load level 12 music as may has been overwritten by highscore tune
-	tst.w	current_context
-	jne		0f
-**	move.w	#LEVEL12_TUNE_SND*8,d0
-	jbsr	load_music_if_needed
-0:
-	* at start redraw everything
-	move.w	#START_X,game_scroll_x
-	move.w	#START_Y,game_scroll_y
-	move.w	game_scroll_x,previous_scroll_x
-	jbsr force_all_screen_redraw
+*	* if level 1 set (intro), pre-load level 12 music as may has been overwritten by highscore tune
+*	tst.w	current_context
+*	jne		0f
+***	move.w	#LEVEL12_TUNE_SND*8,d0
+*	jbsr	load_music_if_needed
+*0:
+*	* at start redraw everything
+*	move.w	#START_X,game_scroll_x
+*	move.w	#START_Y,game_scroll_y
+*	move.w	game_scroll_x,previous_scroll_x
+*	jbsr force_all_screen_redraw
 
 	jbsr	osd_enable_interrupts
 
 	movem.l	(a7)+,d0-a6
 	rts
 	
+* < A0: start of bitmap (palette skipped)
+* < D5: number of bitplanes on this layer (NB_FG_PLANES/NB_BG_PLANES)
+* < D6: number of cluts on this layer (FG_TILE_NB_CLUTS/BG_TILE_NB_CLUTS)
+* < D7: number of tiles on this layer (FG_TILE_COUNT/BG_TILE_COUNT)
 relocate_tiles_file:
 	* now relocate the tile file
-	move.l	bg_character_table_buffer_ptr,a0
-	lea		(TOTAL_NB_COLORS,a0),a0		| skip 32 color palette
 	move.l	a0,bg_tile_character_table				| set character table pointer
 	move.l	a0,d0
-	move.w	#BG_TILE_COUNT-1,d7
+	subq	#1,d7
+	subq	#1,d6
+	subq	#1,D5
+	move.w	d6,-(a7)
+	move.w 	d5,-(a7)
 0:
 	move.l	(a0)+,d1
 	jeq		10f
@@ -1053,7 +1079,7 @@ relocate_tiles_file:
 	move.l	d1,a1
 
 	* relocate pointers on bitplane list in clut table
-	moveq	#BG_TILE_NB_CLUTS-1,d6
+	move.w	2(a7),d6
 1:
 	move.l	(a1)+,d2
 	jeq		5f
@@ -1061,7 +1087,7 @@ relocate_tiles_file:
 	move.l	d2,(-4,a1)
 	move.l	d2,a2
 	* relocate pointers on bitplanes
-	moveq	#NB_BG_PLANES-1,D5	| 5 bitplanes
+	move.w	(a7),d5	| 5 bitplanes
 2:
 	move.l	(a2)+,d3
 	jeq		4f
@@ -1073,6 +1099,7 @@ relocate_tiles_file:
 	dbf		d6,1b
 10:
 	dbf		d7,0b
+	addq	#4,a7
 	rts
 	
 
@@ -1400,9 +1427,10 @@ load_file:
 	BREAKPOINT	"file size too big vs buffer. D0=size, D2=max, D3=filename"
 0:
 	.endif
-	movem.l	(a7)+,d0-d3/a0/a1
+	movem.l	(a7),d0-d3/a0/a1
 	
 	jbsr	resload_LoadFileDecrunch(a2)
+	movem.l	(a7)+,d0-d3/a0/a1
 	rts
 0:
 	illegal
@@ -1982,7 +2010,7 @@ really_update_sprites:
 
     lea _custom,A5
 	move.l	bob_previous_drawed_sprites(pc),a6
-	lea		shared_bob_table,a4
+	*lea		shared_bob_table,a4
 	
 	moveq	#NB_TARGET_SPRITES-1,d7
 1:
@@ -2984,22 +3012,12 @@ platform_init:
 	dbf	d7,0b
 
 	
-	* load attached sprites palette
-	lea		fg_tile_upper_palette,a0
-	move.l	color_copper_pointers+TOTAL_NB_COLORS*4,a1	| entries 64-80
-	move.w	#16,d0
-	jbsr	load_palette
 		
-	* load palette for bottom tiles (in-game), skipping first color (transparent, for sprites)
-	lea		fg_tile_lower_palette+2,a0
-	lea		osd_lower_palette,a1
-	move.w	#15,d0
-	jbsr	load_palette
 	
-	lea		sprite_palette,a0
-	move.l	color_copper_pointers+TOTAL_NB_COLORS/2*4,a1	| entries 32-64
-	move.w	#TOTAL_NB_COLORS/2,d0
-	jbsr	load_palette
+*	lea		sprite_palette,a0
+*	move.l	color_copper_pointers+TOTAL_NB_COLORS/2*4,a1	| entries 32-64
+*	move.w	#TOTAL_NB_COLORS/2,d0
+*	jbsr	load_palette
 	
 	
 	jbsr		set_bobs_bitplanes
@@ -3880,8 +3898,13 @@ update_fg_tile:
 	add.w	d1,a1
 	
 	* now get source data
-	lea		fg_character_table,a0
-	
+	move.l		fg_tile_character_table,a0
+	.ifndef	RELEASE
+	cmp.l	#0,a0
+	jne		0f
+	BREAKPOINT	"no foreground graphics loaded"
+0:
+	.endif
 	* updating bitplanes
 
 	.ifdef	MC68020
@@ -4093,8 +4116,7 @@ scroll_table:
 	.else
 	.include	"scroll_table_16.68k"
 	.endif
-	
-	.include	"palette.68k"
+
 osd_debug_hook:
 	rts
 	
@@ -5144,9 +5166,6 @@ sprite_mem_name:
 
 
 
-	.include	"context.68k"
-
-
 	.align	2
 dyn_color_indexes:
 	.word	0
@@ -5203,8 +5222,7 @@ music_volume:
 	.align	2
 current_context:
 	.word	-1
-saved_context:
-	.word	-1
+
 previous_context:
 	.word	-1
 
@@ -5492,6 +5510,10 @@ mirror_buffer_context_ptr:
 	.long	0
 context_sprite_table_ptr:
 	.long	0
+fg_tile_character_table:
+	.long	0
+fg_character_table_buffer:
+	.skip	FG_TILE_FILE_MAX_SIZE
 bg_tile_character_table:
 	.long 	0
 bg_character_table_buffer_ptr:
@@ -5674,30 +5696,7 @@ pal_wait:
      .long    -2					
 	.ascii	"ENDCPLST"
 	
-	
-	.ifdef	NEED_ROWS
-	* moved out of the copperlist, we don't need this on this game
-	* I decided screw copper split
-first_rows:
-	.rept	NB_FIRST_ROWS
-	DECL_ROW
-	.endr
-first_rows_end:
-second_rows:
-	.rept	NB_SECOND_ROWS
-	DECL_ROW
-	.endr
 
-third_rows:
-	.rept	NB_THIRD_ROWS
-	DECL_ROW
-	.endr
-	.set	y_pos,0
-fourth_rows:
-	.rept	NB_FOURTH_ROWS
-	DECL_ROW
-	.endr
-	.endif
 	
 	* aligning on 8 bytes so .align will work
 	* in the next datachip sections

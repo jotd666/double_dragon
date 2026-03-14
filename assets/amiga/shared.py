@@ -7,8 +7,8 @@ data_dir = this_dir / ".." / ".." / "data"
 
 
 src_dir = this_dir / ".." / ".." / "src" / "amiga"
-bg_bank_dir = src_dir / "bg_banks"
-bg_bank_dir.mkdir(exist_ok=True)
+bank_dir = src_dir / "banks"
+bank_dir.mkdir(exist_ok=True)
 
 sheets_path = this_dir / ".." / "sheets"
 dump_dir = this_dir / "dumps"
@@ -24,9 +24,36 @@ BG_NB_TILES = 0x800
 BG_NB_CLUTS = 16
 SPRITE_NB_CLUTS = 16
 
+def dump_asm_bytes(*args,**kwargs):
+    bitplanelib.dump_asm_bytes(*args,**kwargs,mit_format=True)
 
 def palette_pad(palette,pad_nb):
     palette += (pad_nb-len(palette)) * [(0x10,0x20,0x30)]
+
+def dump_plane_cache(f,prefix,plane_cache):
+    for k,v in plane_cache.items():
+        f.write(f"{prefix}_{v:02d}:")
+        dump_asm_bytes(k,f)
+
+def split_bitplane_data(bitplane_data,actual_nb_planes,cache,width,height,y_start,next_cache_id):
+    plane_size = len(bitplane_data) // actual_nb_planes
+    bitplane_plane_ids = []
+    for j in range(actual_nb_planes):
+        offset = j*plane_size
+        bitplane = bitplane_data[offset:offset+plane_size]
+
+        cache_id = cache.get(bitplane)
+        if cache_id is not None:
+            bitplane_plane_ids.append(cache_id)
+        else:
+            if any(bitplane):
+                cache[bitplane] = next_cache_id
+                bitplane_plane_ids.append(next_cache_id)
+                next_cache_id += 1
+            else:
+                bitplane_plane_ids.append(0)  # blank
+    return {"width":width,"height":height,"y_start":y_start,"bitplanes":bitplane_plane_ids},next_cache_id
+
 
 def ensure_empty(d):
     if os.path.exists(d):

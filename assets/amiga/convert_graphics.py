@@ -8,6 +8,7 @@ sprite_names = get_sprite_names()
 
 mirror_sprites = get_mirror_sprites()
 
+nb_planes = 6
 
 possible_hw_sprites = set()
 
@@ -29,8 +30,6 @@ if dump_it:
             f.write("*")
 
 
-def dump_asm_bytes(*args,**kwargs):
-    bitplanelib.dump_asm_bytes(*args,**kwargs,mit_format=True)
 
 
 def ensure_empty(d):
@@ -309,27 +308,6 @@ all_tile_cluts = False
 
 
 sprite_cluts = {}
-fg_tile_cluts = {}
-
-
-read_used_tiles("fg_used_tiles",fg_tile_cluts,FG_NB_TILES,FG_NB_CLUTS)
-#read_used_tiles("used_sprites",sprite_cluts,SPRITE_NB_TILES,SPRITE_NB_CLUTS)
-
-
-# now gather all cluts used by letter/digit tiles, logging probably
-# missed some
-# some tiles are hard to display... We know they are there, we force them
-# instead of trying to trigger them by playing to death :)
-
-alphanum_tile_codes = [x-0x20 for x in list(range(ord('0'),ord('9')+1)) + list(range(ord('A'),ord('Z')+1))]
-used_cluts = set()
-for atc in alphanum_tile_codes:
-    cluts = fg_tile_cluts.get(atc)
-    if cluts:
-        used_cluts.update(cluts)
-# now set cluts for all alphanum tiles
-for atc in alphanum_tile_codes:
-    fg_tile_cluts[atc] = sorted(used_cluts)
 
 
 plane_orientations = [("standard",lambda x:x),
@@ -427,7 +405,7 @@ def read_tileset(img_set_list,palette,plane_orientation_flags,cache,is_bob,nb_cl
     return new_tile_table,next_cache_id
 
 
-def dump_tile_layer(tile_table,prefix,relative_root=None):
+def dump_tile_layer(f,tile_table,prefix,relative_root=None):
     item_decl = "\t.long\t"
     if relative_root:
         f.write(f"{relative_root}:\n")
@@ -549,104 +527,139 @@ def quantize_palette(rgb_tuples,img_type,nb_quantize,transparent=None,dump_it=Fa
 
 
 
-if dump_it:
-    if not all_tile_cluts:
-        with open(dump_dir / "used_sprites.json","w") as f:
-            sprite_cluts_dict = {hex(k):[hex(x) for x in v] for k,v in sprite_cluts.items() if v}
-            json.dump(sprite_cluts_dict,f,indent=2)
-        with open(dump_dir / "used_fg_tiles.json","w") as f:
+
+# foreground tiles doesn't seem to change palette (we'll see) but context selection allows to avoid too much global
+# quantization, so the colors won't look so washed up
+fg_tile_sheet_dict = {i:Image.open(sheets_path / "fg_tiles" / f"pal_{i:02x}.png") for i in range(FG_NB_CLUTS)}
+#sprite_sheet_dict = {i:Image.open(sheets_path / "sprites" / f"pal_{i:02x}.png") for i in range(SPRITE_NB_CLUTS)}
+
+##        with open(dump_dir / "used_sprites.json","w") as f:
+##            sprite_cluts_dict = {hex(k):[hex(x) for x in v] for k,v in sprite_cluts.items() if v}
+##            json.dump(sprite_cluts_dict,f,indent=2)
+
+#######################################################
+## foreground tiles: only 2 cases: title and in-game ##
+#######################################################
+
+context_list = ["title"] #,"game"]
+for context in context_list:
+
+    context = pathlib.Path(context)
+    fg_tile_palette = set()  # mostly alphanum + title
+    fg_tile_set_list = []
+
+    fg_tile_cluts = {}
+
+
+    read_used_tiles(context/"fg_used_tiles",fg_tile_cluts,FG_NB_TILES,FG_NB_CLUTS)
+    #read_used_tiles("used_sprites",sprite_cluts,SPRITE_NB_TILES,SPRITE_NB_CLUTS)
+
+
+    if dump_it:
+        (dump_dir / context).mkdir(exist_ok=True)
+        with open(dump_dir / context / "used_fg_tiles.json","w") as f:
             fg_tile_cluts_dict = {hex(k):[hex(x) for x in v] for k,v in fg_tile_cluts.items() if v}
             json.dump(fg_tile_cluts_dict,f,indent=2)
 
 
 
+    # now gather all cluts used by letter/digit tiles, logging probably
+    # missed some
+    # some tiles are hard to display... We know they are there, we force them
+    # instead of trying to trigger them by playing to death :)
+
+    alphanum_tile_codes = [x-0x20 for x in list(range(ord('0'),ord('9')+1)) + list(range(ord('A'),ord('Z')+1))]
+    used_cluts = set()
+    for atc in alphanum_tile_codes:
+        cluts = fg_tile_cluts.get(atc)
+        if cluts:
+            used_cluts.update(cluts)
+    # now set cluts for all alphanum tiles
+    for atc in alphanum_tile_codes:
+        fg_tile_cluts[atc] = sorted(used_cluts)
 
 
-fg_tile_sheet_dict = {i:Image.open(sheets_path / "fg_tiles" / f"pal_{i:02x}.png") for i in range(FG_NB_CLUTS)}
-#sprite_sheet_dict = {i:Image.open(sheets_path / "sprites" / f"pal_{i:02x}.png") for i in range(SPRITE_NB_CLUTS)}
+    for i,tsd in fg_tile_sheet_dict.items():
+        _,tile_set = load_tileset(tsd,i,8,8,"fg_tiles",dump_dir,dump=dump_it,
+        cluts=fg_tile_cluts,
+        name_dict=None)
 
-###############
-# foreground
-# not so simple as we need to separate tiles for better colors
-###############
-fg_tile_upper_palette = set()  # mostly alphanum + title
-fg_tile_lower_palette = set()  # frame+weapons+lives
-fg_tile_upper_set_list = []
-fg_tile_lower_set_list = []
+        for j,tile in enumerate(tile_set):
+            tp = set()
+            if tile:
+                tp = set(bitplanelib.palette_extract(tile))
+                fg_tile_palette.update(tp)
+                tile_set[j] = tile
 
-for i,tsd in fg_tile_sheet_dict.items():
-    _,tile_set = load_tileset(tsd,i,8,8,"fg_tiles",dump_dir,dump=dump_it,
-    cluts=fg_tile_cluts,
-    name_dict=None)
+        fg_tile_set_list.append(tile_set)
 
-    # we need to separate the palettes for OSD because 1) there are too many of them and quantize sucks
-    # and 2) the colors of the weapons in the panel is dynamic
+    # pad
+    if len(fg_tile_palette)>16:
+        print(f"Too many colors in fg upper tiles ({len(fg_tile_upper_palette)}), quantizing")
+        fg_replacement_dict = quantize_palette(fg_tile_palette,"foreground_tiles",16,transparent=magenta,dump_it=dump_it)
+        apply_color_replacement(fg_tile_set_list,fg_replacement_dict)
+        fg_tile_palette = sorted(set(fg_replacement_dict.values()))
+    else:
+        fg_tile_palette = sorted(fg_tile_palette)
 
-    upper_tile_set = [None] * len(tile_set)
-    lower_tile_set = [None] * len(tile_set)
-    for j,tile in enumerate(tile_set):
-        tp = set()
-        if tile:
-            tp = set(bitplanelib.palette_extract(tile))
-        if j in lower_osd_tiles:
-            fg_tile_lower_palette.update(tp)
-            lower_tile_set[j] = tile
-        else:
-            fg_tile_upper_palette.update(tp)
-            upper_tile_set[j] = tile
-
-    fg_tile_upper_set_list.append(upper_tile_set)
-    fg_tile_lower_set_list.append(lower_tile_set)
-
-# pad
-if len(fg_tile_upper_palette)>16:
-    print(f"Too many colors in fg upper tiles ({len(fg_tile_upper_palette)}), quantizing")
-    fg_replacement_dict = quantize_palette(fg_tile_upper_palette,"foreground_upper_tiles",16,transparent=magenta,dump_it=dump_it)
-    apply_color_replacement(fg_tile_upper_set_list,fg_replacement_dict)
-    fg_tile_upper_palette = sorted(set(fg_replacement_dict.values()))
-else:
-    fg_tile_upper_palette = sorted(fg_tile_upper_palette)
-
-# magenta first
-fg_tile_upper_palette.remove(magenta)
-fg_tile_upper_palette.insert(0,magenta)
+    # magenta first
+    fg_tile_palette.remove(magenta)
+    fg_tile_palette.insert(0,magenta)
 
 
-if len(fg_tile_lower_palette)>16:
-    # this is going to be hell to find matching colors for dynamic color changes
-    raise Error(f"Too many colors in fg lower tiles ({len(fg_tile_lower_palette)}), quantizing")
-##    fg_replacement_dict = quantize_palette(fg_tile_lower_palette,"foreground_lower_tiles",16,transparent=None,dump_it=dump_it)
-##    apply_color_replacement(fg_tile_lower_set_list,fg_replacement_dict)
-##    fg_tile_lower_palette = sorted(set(fg_replacement_dict.values()))
-else:
-    # round both palettes & ref palettes to RGB4
-    fg_tile_lower_palette_rgb4 = {bitplanelib.rgb4_to_rgb_triplet(bitplanelib.to_rgb4_color(x)) for x in fg_tile_lower_palette}
+    print(f"Used fg tile colors: {len(fg_tile_palette)}")
 
-    fg_tile_lower_palette.discard(magenta)
+    # pad to 16 colors
+    for p in [fg_tile_palette]:
+        p += (16-len(p)) * [(0x10,0x20,0x30)]
 
-    # sort: zero first, then respect order of original image palette (important!!)
-    fg_tile_lower_palette = [magenta] + [(0,0,0)] + list(fg_tile_lower_palette)
+    fg_tile_plane_cache = {}
+    fg_tile_table,next_id = read_tileset(fg_tile_set_list,fg_tile_palette,[True,False,False,False],cache=fg_tile_plane_cache, is_bob=False, nb_cluts=FG_NB_CLUTS, mask_color=magenta)
 
-    if dump_it:
-        bitplanelib.palette_dump(fg_tile_lower_palette,dump_dir / "fg_lower_palette.png",bitplanelib.PALETTE_FORMAT_PNG)
 
-print(f"Used fg tile upper colors: {len(fg_tile_upper_palette)}")
-print(f"Used fg tile lower colors: {len(fg_tile_lower_palette)}")
+    bank = bank_dir / f"{context}_fg_tiles.68k"
+    with open(bank,"w") as f:
+        f.write("fg_tile_palette:\n")
+        bitplanelib.palette_dump(fg_tile_palette,f,bitplanelib.PALETTE_FORMAT_ASMGNU)
 
-# pad to 16 colors
-for p in [fg_tile_lower_palette,fg_tile_upper_palette]:
-    p += (16-len(p)) * [(0x10,0x20,0x30)]
+        # map layer is special, included in exe, no need to relocate
+        dump_tile_layer(f,fg_tile_table,"fg",relative_root="fg_character_table")
+        dump_plane_cache(f,"tile_plane",fg_tile_plane_cache)
 
-###############
-# background: per level
-###############
 
-if False:
-    context_list = ["level1","level2","level3","level4","level5","level6","level7","map"]
-    # palette is the same between level 1 and 2 except that
-    # 1) used tiles are very different, so mixing them would mean quantize & color loss
-    # 2) we use the steady palette values from level 2 (water is animated by color cycling on level 1, corrupting level 2 ice tower tiles)
-    for context in context_list:
+    asm2bin(bank)
+
+# title is special: there are no tiles or sprites. Actually there are but it's much faster & efficient
+# to store a big pic made of tiles & sprites for the repository and also to display in-game with single blit
+
+title_pic = Image.open(sheets_path / "title.png")
+title_palette = bitplanelib.palette_extract(title_pic)
+title_bitplane_data = bitplanelib.palette_image2raw(title_pic,None,title_palette,generate_mask=True,mask_color=magenta)
+if len(title_palette)>16:
+    raise Exception("image colors > 16!")
+palette_pad(title_palette,16)
+
+title_plane_cache = {}
+full_title,next_cache_id = split_bitplane_data(title_bitplane_data,4+1,title_plane_cache,title_pic.size[0]//8 + 2,
+                            title_pic.size[1],0,0)
+
+bank = bank_dir / f"title_pic.68k"
+with open(bank,"w") as f:
+    f.write("title_palette:\n")
+    f.write(f"\t.word\t{len(title_palette)}   | nb_colors\n")
+    bitplanelib.palette_dump(title_palette,f,bitplanelib.PALETTE_FORMAT_ASMGNU)
+    f.write("title_pic:\n")
+    f.write("\t.word\t{width},{height}  | width (bytes),height\n".format(**full_title))
+    for bid in full_title["bitplanes"]:
+        f.write(f"\t.word\tbitplane_{bid:02d}-title_pic\n")
+    dump_plane_cache(f,"bitplane",title_plane_cache)
+    asm2bin(bank)
+
+# background tiles & sprite contexts
+context_list = ["title","level1"]
+for context in context_list:
+
+    if False:
         bg_tile_sheet_dict = {i:Image.open(sheets_path / "bg_tiles" / context / f"pal_{i:02x}.png") for i in range(BG_NB_CLUTS)}
         bg_tile_cluts = {}
         read_used_tiles(pathlib.Path(context)/"bg_used_tiles",bg_tile_cluts,BG_NB_TILES,BG_NB_CLUTS)
@@ -656,12 +669,6 @@ if False:
         # more annoying: after palette switch, the colors are there they're
         # just in another clut (clut 5 => clut 6) as the water needs displaying afterwards anyway
         # so almost everything can be solved statically by switching the clut index
-
-        if context=="level2":
-            for t in level2_tiles_5to6:
-                bg_tile_cluts[t]=[6]
-            for t in water_tiles:
-                bg_tile_cluts[t]=[5,6]
 
         bg_tile_palette = set()
         bg_tile_set_list = []
@@ -674,12 +681,6 @@ if False:
             bg_tile_set_list.append(tile_set)
             bg_tile_palette.update(tp)
 
-        if context=="level2":
-            # copy some tiles from clut 6 to clut 5 so the colors in ice towers are correct
-            tc5 = bg_tile_set_list[5]
-            tc6 = bg_tile_set_list[6]
-            for t in level2_tiles_5to6:
-                tc5[t] = tc6[t]
 
         if len(bg_tile_palette)>32:
             print(f"{context}: Too many colors in bg tiles ({len(bg_tile_palette)}), quantizing")
@@ -712,18 +713,15 @@ if False:
         bg_tile_table,_ = read_tileset(bg_tile_set_list,bg_tile_palette,[True,False,False,False],cache=bg_tile_plane_cache,
         is_bob=False, nb_cluts=BG_NB_CLUTS, mask_color=(0,0,0))
 
-        map_context = context == "map"
 
-        bank = bg_bank_dir / f"{context}_tiles.68k"
+        bank = bg_bank_dir / f"{context}_bg_tiles.68k"
         with open(bank,"w") as f:
             f.write("bg_tile_palette:\n")
             bitplanelib.palette_dump(bg_tile_palette,f,bitplanelib.PALETTE_FORMAT_ASMGNU)
 
-            # map layer is special, included in exe, no need to relocate
-            dump_tile_layer(bg_tile_table,"bg",relative_root=None if map_context else "bg_character_table")
-            for k,v in bg_tile_plane_cache.items():
-                f.write(f"tile_plane_{v:02d}:")
-                dump_asm_bytes(k,f)
+            dump_tile_layer(f,bg_tile_table,"bg",relative_root="bg_character_table")
+            dump_plane_cache(f,"tile_plane",bg_tile_plane_cache)
+
 
         if not map_context:
             asm2bin(bank)
@@ -788,9 +786,7 @@ sprite_palette += (16-len(sprite_palette)) * [(0x10,0x20,0x30)]
 
 #empty_32_cols = [(1,1,1)]*len(bg_tile_palette)
 
-tile_plane_cache = {}
 bob_plane_cache = {}
-fg_tile_upper_table,next_id = read_tileset(fg_tile_upper_set_list,fg_tile_upper_palette,[True,False,False,False],cache=tile_plane_cache, is_bob=False, nb_cluts=FG_NB_CLUTS, mask_color=magenta)
 #fg_tile_lower_table,_ = read_tileset(fg_tile_lower_set_list,fg_tile_lower_palette,[True,False,False,False],cache=tile_plane_cache, is_bob=False, nb_cluts=FG_NB_CLUTS, mask_color=magenta, next_cache_id = next_id)
 #sprite_table,_ = read_tileset(sprite_set_list,empty_32_cols+sprite_palette,[True,False,False,False],cache=bob_plane_cache, is_bob=True, mask_color=magenta, nb_cluts=SPRITE_NB_CLUTS)
 
@@ -799,15 +795,6 @@ fg_tile_upper_table,next_id = read_tileset(fg_tile_upper_set_list,fg_tile_upper_
 ##    if sprite_names.get(k)=="arremer" and k!=0x198:
 ##        sprite[2]=sprite[3]
 
-
-with open(src_dir / "palette.68k","w") as f:
-    f.write(generated_message)
-    f.write("fg_tile_upper_palette:\n")
-    bitplanelib.palette_dump(fg_tile_upper_palette,f,bitplanelib.PALETTE_FORMAT_ASMGNU)
-    f.write("fg_tile_lower_palette:\n")
-    bitplanelib.palette_dump(fg_tile_lower_palette,f,bitplanelib.PALETTE_FORMAT_ASMGNU)
-    f.write("sprite_palette:\n")
-    bitplanelib.palette_dump(sprite_palette,f,bitplanelib.PALETTE_FORMAT_ASMGNU)
 
 BLOCK_DISPLAY_MASK = 1<<14
 DO_DISPLAY_MASK = 1
@@ -841,24 +828,22 @@ with open(src_dir / "sprite_groups.68k","w") as f:
 
 
 # merge both tables
-fg_tile_table = [a if any(a) else b for a,b in zip(fg_tile_upper_table,fg_tile_upper_table)]  #fg_tile_lower_table
-
-with open(src_dir / "graphics_aga.68k","w") as f:
-    f.write(generated_message)
-    f.write("\t.global\tfg_character_table\n")
-    f.write("\t.global\tshared_bob_table\n")
-
-    f.write("fg_character_table:\n")
-
-    dump_tile_layer(fg_tile_table,"fg")
-
-
-    for k,v in tile_plane_cache.items():
-        f.write(f"tile_plane_{v:02d}:")
-        dump_asm_bytes(k,f)
-
-
-    f.write("shared_bob_table:\n")
+##with open(src_dir / "graphics_aga.68k","w") as f:
+##    f.write(generated_message)
+##    f.write("\t.global\tfg_character_table\n")
+##    f.write("\t.global\tshared_bob_table\n")
+##
+##    f.write("fg_character_table:\n")
+##
+##    dump_tile_layer(fg_tile_table,"fg")
+##
+##
+##    for k,v in tile_plane_cache.items():
+##        f.write(f"tile_plane_{v:02d}:")
+##        dump_asm_bytes(k,f)
+##
+##
+##    f.write("shared_bob_table:\n")
 ##    dump_bob_layer(sprite_table,f)
 
 
