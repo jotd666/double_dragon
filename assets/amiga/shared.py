@@ -21,8 +21,8 @@ SPRITE_NB_TILES = 0x1000
 FG_NB_TILES = 0x400
 FG_NB_CLUTS = 8
 BG_NB_TILES = 0x800
-BG_NB_CLUTS = 16
-SPRITE_NB_CLUTS = 16
+BG_NB_CLUTS = 8
+SPRITE_NB_CLUTS = 8
 
 def dump_asm_bytes(*args,**kwargs):
     bitplanelib.dump_asm_bytes(*args,**kwargs,mit_format=True)

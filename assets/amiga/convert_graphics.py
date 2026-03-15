@@ -656,75 +656,73 @@ with open(bank,"w") as f:
     asm2bin(bank)
 
 # background tiles & sprite contexts
-context_list = ["title","level1"]
+context_list = ["level_1"]
 for context in context_list:
 
-    if False:
-        bg_tile_sheet_dict = {i:Image.open(sheets_path / "bg_tiles" / context / f"pal_{i:02x}.png") for i in range(BG_NB_CLUTS)}
-        bg_tile_cluts = {}
-        read_used_tiles(pathlib.Path(context)/"bg_used_tiles",bg_tile_cluts,BG_NB_TILES,BG_NB_CLUTS)
+    bg_tile_sheet_dict = {i:Image.open(sheets_path / "bg_tiles" / context / f"pal_{i:02x}.png") for i in range(BG_NB_CLUTS)}
+    bg_tile_cluts = {}
+    read_used_tiles(pathlib.Path(context)/"bg_used_tiles",bg_tile_cluts,BG_NB_TILES,BG_NB_CLUTS)
 
-        # stupid cornercase for level 2
-        # level starts with ice towers, but palette is then different
-        # more annoying: after palette switch, the colors are there they're
-        # just in another clut (clut 5 => clut 6) as the water needs displaying afterwards anyway
-        # so almost everything can be solved statically by switching the clut index
+    # stupid cornercase for level 2
+    # level starts with ice towers, but palette is then different
+    # more annoying: after palette switch, the colors are there they're
+    # just in another clut (clut 5 => clut 6) as the water needs displaying afterwards anyway
+    # so almost everything can be solved statically by switching the clut index
 
-        bg_tile_palette = set()
-        bg_tile_set_list = []
+    bg_tile_palette = set()
+    bg_tile_set_list = []
 
-        for i,tsd in bg_tile_sheet_dict.items():
-            tp,tile_set = load_tileset(tsd,i,16,16,pathlib.Path(context) / "bg_tiles",dump_dir,dump=dump_it,
-            cluts=bg_tile_cluts,
-            name_dict=None)
+    for i,tsd in bg_tile_sheet_dict.items():
+        tp,tile_set = load_tileset(tsd,i,16,16,pathlib.Path(context) / "bg_tiles",dump_dir,dump=dump_it,
+        cluts=bg_tile_cluts,
+        name_dict=None)
 
-            bg_tile_set_list.append(tile_set)
-            bg_tile_palette.update(tp)
-
-
-        if len(bg_tile_palette)>32:
-            print(f"{context}: Too many colors in bg tiles ({len(bg_tile_palette)}), quantizing")
-            bg_replacement_dict = quantize_palette(bg_tile_palette,"background_tiles",32,transparent=None,dump_it=dump_it)
-            bg_tile_palette = sorted(set(bg_replacement_dict.values()))
-            apply_color_replacement(bg_tile_set_list,bg_replacement_dict)
-        else:
-            bg_tile_palette = sorted(bg_tile_palette)
-
-        bg_tile_palette += (32-len(bg_tile_palette)) * [(0x10,0x20,0x30)]
-        if context == "level1":
-            # generate 3 more palettes for intro fade
-            special_fade_palettes = [[tuple(((x*100-(x*i))//100) for x in rgb) for rgb in bg_tile_palette] for i in (10,25,100)]
-
-        print(f"{context}: Used bg tile colors: {len(bg_tile_palette)}")
-        if dump_it:
-            if not all_tile_cluts:
-                with open(dump_dir / "used_sprites.json","w") as f:
-                    sprite_cluts_dict = {hex(k):[hex(x) for x in v] for k,v in sprite_cluts.items() if v}
-                    json.dump(sprite_cluts_dict,f,indent=2)
-                with open(dump_dir / "used_fg_tiles.json","w") as f:
-                    fg_tile_cluts_dict = {hex(k):[hex(x) for x in v] for k,v in fg_tile_cluts.items() if v}
-                    json.dump(fg_tile_cluts_dict,f,indent=2)
-                (dump_dir / context).mkdir(exist_ok=True)
-                with open(dump_dir / context / "used_bg_tiles.json","w") as f:
-                    bg_tile_cluts_dict = {hex(k):[hex(x) for x in v] for k,v in bg_tile_cluts.items() if v}
-                    json.dump(bg_tile_cluts_dict,f,indent=2)
-
-        bg_tile_plane_cache = {}
-        bg_tile_table,_ = read_tileset(bg_tile_set_list,bg_tile_palette,[True,False,False,False],cache=bg_tile_plane_cache,
-        is_bob=False, nb_cluts=BG_NB_CLUTS, mask_color=(0,0,0))
+        bg_tile_set_list.append(tile_set)
+        bg_tile_palette.update(tp)
 
 
-        bank = bg_bank_dir / f"{context}_bg_tiles.68k"
-        with open(bank,"w") as f:
-            f.write("bg_tile_palette:\n")
-            bitplanelib.palette_dump(bg_tile_palette,f,bitplanelib.PALETTE_FORMAT_ASMGNU)
+    if len(bg_tile_palette)>32:
+        print(f"{context}: Too many colors in bg tiles ({len(bg_tile_palette)}), quantizing")
+        bg_replacement_dict = quantize_palette(bg_tile_palette,"background_tiles",32,transparent=None,dump_it=dump_it)
+        bg_tile_palette = sorted(set(bg_replacement_dict.values()))
+        apply_color_replacement(bg_tile_set_list,bg_replacement_dict)
+    else:
+        bg_tile_palette = sorted(bg_tile_palette)
 
-            dump_tile_layer(f,bg_tile_table,"bg",relative_root="bg_character_table")
-            dump_plane_cache(f,"tile_plane",bg_tile_plane_cache)
+    bg_tile_palette += (32-len(bg_tile_palette)) * [(0x10,0x20,0x30)]
+    if context == "level1":
+        # generate 3 more palettes for intro fade
+        special_fade_palettes = [[tuple(((x*100-(x*i))//100) for x in rgb) for rgb in bg_tile_palette] for i in (10,25,100)]
+
+    print(f"{context}: Used bg tile colors: {len(bg_tile_palette)}")
+    if dump_it:
+        if not all_tile_cluts:
+            with open(dump_dir / "used_sprites.json","w") as f:
+                sprite_cluts_dict = {hex(k):[hex(x) for x in v] for k,v in sprite_cluts.items() if v}
+                json.dump(sprite_cluts_dict,f,indent=2)
+            with open(dump_dir / "used_fg_tiles.json","w") as f:
+                fg_tile_cluts_dict = {hex(k):[hex(x) for x in v] for k,v in fg_tile_cluts.items() if v}
+                json.dump(fg_tile_cluts_dict,f,indent=2)
+            (dump_dir / context).mkdir(exist_ok=True)
+            with open(dump_dir / context / "used_bg_tiles.json","w") as f:
+                bg_tile_cluts_dict = {hex(k):[hex(x) for x in v] for k,v in bg_tile_cluts.items() if v}
+                json.dump(bg_tile_cluts_dict,f,indent=2)
+
+    bg_tile_plane_cache = {}
+    bg_tile_table,_ = read_tileset(bg_tile_set_list,bg_tile_palette,[True,False,False,False],cache=bg_tile_plane_cache,
+    is_bob=False, nb_cluts=BG_NB_CLUTS, mask_color=(0,0,0))
 
 
-        if not map_context:
-            asm2bin(bank)
+    bank = bank_dir / f"{context}_bg_tiles.68k"
+    with open(bank,"w") as f:
+        f.write("bg_tile_palette:\n")
+        bitplanelib.palette_dump(bg_tile_palette,f,bitplanelib.PALETTE_FORMAT_ASMGNU)
+
+        dump_tile_layer(f,bg_tile_table,"bg",relative_root="bg_character_table")
+        dump_plane_cache(f,"tile_plane",bg_tile_plane_cache)
+
+
+    asm2bin(bank)
 
 
 ###############

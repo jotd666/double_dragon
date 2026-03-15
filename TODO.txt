@@ -1,10 +1,10 @@
+- bg used tiles to tune, scroll Y value to convert, display bg tiles!
 - insert coin call firq check us champ vball
-pshx/pulx using movem.w instead of movem.l in subcpu
+pshx/pulx using movem.w instead of movem.l in subcpu: global: add 6809 tool push
 - f_handle_bank1_line: 4201 should call subcpu
 - play with palette write wpoint
 - 3096: 07E8: title displayed: paste big pic at 32,24
-- palette writes can be useful to detect 
-  level changes & load new tilesets
+
 - dump bg tiles for title, start context based on palette
 - mockup of title sprites (simpler? no subcpu used to transform coords?)
 - at some point, change palette for fg tiles to avoid too much dither or change global palette? (title/rest)

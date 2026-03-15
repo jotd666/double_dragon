@@ -81,7 +81,7 @@ FG_TILE_COUNT = 0x400
 
 BG_TILE_NB_CLUTS_POW = 3
 BG_TILE_NB_CLUTS = 1<<BG_TILE_NB_CLUTS_POW
-BG_TILE_COUNT = 0x400
+BG_TILE_COUNT = 0x800
 SPRITE_COUNT = 0x400
 
 SPRITE_NB_CLUTS_POW = 2
@@ -997,22 +997,8 @@ load_context:
 	jbsr	osd_disable_interrupts
 	
 	.ifne	OPT_ENABLE_LOGGING
-	* reset logged tiles
-	lea	bg_tile_log_table,a0
-0:
-	clr.l	(a0)+
-	cmp.l	#bg_tile_log_table_end,A0
-	jne	0b
-	lea	fg_tile_log_table,a0
-0:
-	clr.l	(a0)+
-	cmp.l	#fg_tile_log_table_end,A0
-	jne	0b
-	lea	sprite_log_table,a0
-0:
-	clr.l	(a0)+
-	cmp.l	#sprite_log_table_end,A0
-	jne	0b
+	jbsr	purge_sprite_log_data
+	jbsr	purge_tile_log_data
 	.endif
 	
 	* clear mirror buffer (reset it just after the shared bob mirror data)
@@ -3390,6 +3376,18 @@ osd_set_bank:
 
 	
 osd_clear_bg_screen:
+	movem.l	d0/a0/a1,-(a7)
+	
+	move.l	playfield_drawed_screen_ptr,a0
+	move.l	playfield_displayed_screen_ptr,a1
+	move.w	#(BG_SCREEN_PLANE_SIZE*NB_BG_PLANES)/16-1,d0
+0:
+	.rept	4
+	clr.l	(a0)+
+	clr.l	(a1)+
+	.endr
+	dbf		d0,0b
+	movem.l	(a7)+,d0/a0/a1
 	rts
 	
 * fast way to clear screen
@@ -4337,14 +4335,19 @@ osd_read_p2_inputs:
 	.ifne	OPT_ENABLE_LOGGING
 purge_tile_log_data:
 	movem.l	d0-a6,-(a7)
-	lea		fg_tile_log_table,a0
-	lea		fg_tile_log_table_end,a1
+	* reset logged tiles
+	lea	bg_tile_log_table,a0
 0:
-	clr.l (a0)+
-	cmp.l	a0,a1
-	jne		0b
-	
-	
+	clr.l	(a0)+
+	cmp.l	#bg_tile_log_table_end,A0
+	jne	0b
+	lea	fg_tile_log_table,a0
+0:
+	clr.l	(a0)+
+	cmp.l	#fg_tile_log_table_end,A0
+	jne	0b
+
+
 	movem.l	(a7)+,d0-a6
 	rts
 purge_sprite_log_data:
@@ -4568,13 +4571,15 @@ log_used_bg_tiles:
 	moveq	#0,d3
 	move.b	d0,d2	| code
 	move.b	d1,d3	| attribute + tile msbits
-	and.w	#0xC0,d3
-	lsl.w	#2,d3
+	and.w	#0x7,d3
+	lsl.w	#8,d3
 	add.w	d3,d2	| extended tile code
+	moveq	#0,d3
 	move.b	d1,d3	| attribute + tile msbits
-	and.w	d4,d3	| clut masked
+	lsr.b	#3,d3
+	and.b	#7,d3	| tile_color = (attr >> 3) & 0x7
 
-	| remove flip/mirror
+
 	lsl.l	d5,d2			| tile code * NB_CLUTS (long!)
 	add.l	d3,d2			| add clut
 	st.b	(a0,d2.l)
