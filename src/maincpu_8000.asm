@@ -160,6 +160,7 @@ sync_flag_0e3e = $e3e
 bg_tiles_palette_1100 = $1100
 sprites_palette_1080 = $1080
 fg_tiles_palette_1000 = $1000
+subcpu_shared_2000 = $2000
 
 bg_tiles_address_3000 = $3000
 fg_tiles_address_1800 = $1800
@@ -307,6 +308,8 @@ swi_interrupt:
 811C: BD FE B0       JSR    $FEB0
 811F: 86 0A          LDA    #$0A
 8121: B7 0E 2D       STA    $0E2D
+; "insert coin" loop wait during title
+insert_coin_loop_8124:
 8124: 86 07          LDA    #$07
 8126: BD FE B0       JSR    $FEB0
 8129: 86 18          LDA    #$18
@@ -316,17 +319,19 @@ swi_interrupt:
 8133: 86 08          LDA    #$08
 8135: BD B7 56       JSR    vbl_delay_b756
 8138: 7A 0E 2D       DEC    $0E2D
-813B: 26 E7          BNE    $8124
+813B: 26 E7          BNE    insert_coin_loop_8124
+; stop flashing "INSERT COIN", wait a while
 813D: 86 FF          LDA    #$FF
 813F: BD B7 56       JSR    vbl_delay_b756
 8142: 86 20          LDA    #$20
 8144: BD B7 56       JSR    vbl_delay_b756
+; then start the attract mode/demo
 8147: BD FE 9B       JSR    clear_bg_screen_fe9b
 814A: BD FE 98       JSR    clear_fg_screen_fe98
 814D: BD FE 9E       JSR    $FE9E
 8150: 86 01          LDA    #$01
 8152: BD B7 56       JSR    vbl_delay_b756
-8155: 16 00 BD       LBRA   $8215
+8155: 16 00 BD       LBRA   demo_8215
 
 coin_inserted_8158:
 8158: 86 FF          LDA    #$FF
@@ -413,6 +418,7 @@ coin_inserted_8158:
 8210: 8B 99          ADDA   #$99
 8212: 19             DAA
 8213: 97 21          STA    nb_credits_0021
+demo_8215:
 8215: 96 26          LDA    $26
 8217: 26 04          BNE    $821D
 8219: 86 83          LDA    #$83
@@ -449,6 +455,7 @@ coin_inserted_8158:
 8264: 97 37          STA    $37
 8266: B7 09 F2       STA    $09F2
 8269: 20 28          BRA    $8293
+
 826F: F6 38 04       LDB    dsw_1_3804                                      
 8272: 53             COMB                                               
 8273: 58             ASLB
@@ -529,7 +536,7 @@ coin_inserted_8158:
 8334: 27 04          BEQ    $833A
 8336: 81 03          CMPA   #$03
 8338: 26 03          BNE    $833D
-833A: BD 84 F8       JSR    $84F8
+833A: BD 84 F8       JSR    play_intro_animation_84f8
 833D: 86 80          LDA    #$80
 833F: C6 35          LDB    #$35
 8341: 7D 03 A2       TST    $03A2
@@ -556,6 +563,7 @@ coin_inserted_8158:
 8381: 8A 80          ORA    #$80
 8383: B7 0E 71       STA    $0E71
 8386: 7F 0E 52       CLR    $0E52
+gameloop_8389:
 8389: 7F 0E 3E       CLR    sync_flag_0e3e
 838C: 0F 22          CLR    interrupt_status_22
 838E: F6 21 FD       LDB    $21FD
@@ -623,12 +631,12 @@ coin_inserted_8158:
 842B: C4 50          ANDB   #$50
 842D: 10 26 01 33    LBNE   $8564
 8431: 96 26          LDA    $26
-8433: 10 26 FF 52    LBNE   $8389
+8433: 10 26 FF 52    LBNE   gameloop_8389
 8437: FC 0E 50       LDD    $0E50
 843A: 83 00 01       SUBD   #$0001
 843D: FD 0E 50       STD    $0E50
 8440: 27 0E          BEQ    $8450
-8442: 7E 83 89       JMP    $8389
+8442: 7E 83 89       JMP    gameloop_8389
 8445: 86 01          LDA    #$01
 8447: BD FE B0       JSR    $FEB0
 844A: 86 04          LDA    #$04
@@ -703,6 +711,8 @@ l_84ec:
 84F2: 26 03          BNE    $84F7
 84F4: BD FC BE       JSR    $FCBE
 84F7: 39             RTS
+
+play_intro_animation_84f8:
 84F8: 96 36          LDA    $36
 84FA: 26 07          BNE    $8503
 84FC: 86 05          LDA    #$05
@@ -740,13 +750,14 @@ l_84ec:
 854E: 84 03          ANDA   #$03
 8550: 81 03          CMPA   #$03
 8552: 26 BA          BNE    $850E
+; intro loop ended, return
 8554: 96 36          LDA    $36
 8556: 84 01          ANDA   #$01
 8558: 10 8E 85 62    LDY    #$8562
 855C: A6 A6          LDA    A,Y
 855E: BD FE B0       JSR    $FEB0
 8561: 39             RTS
-8562: 90 93          SUBA   $93
+
 8564: 86 80          LDA    #$80
 8566: B7 0E 52       STA    $0E52
 8569: 86 FE          LDA    #$FE
@@ -922,6 +933,7 @@ l_84ec:
 8713: 27 03          BEQ    $8718
 8715: BD FF 54       JSR    $FF54
 8718: 39             RTS
+
 8719: 34 76          PSHS   U,Y,X,D
 871B: 8E 03 A2       LDX    #$03A2
 871E: CE 04 00       LDU    #$0400
@@ -1282,7 +1294,7 @@ l_89ea:
 8A52: 10 CE 0F FF    LDS    #$0FFF
 8A56: CE 0E FF       LDU    #$0EFF
 8A59: 7F 0E 71       CLR    $0E71
-8A5C: 7F 38 0D       CLR    irq_ack_380d
+8A5C: 7F 38 0D       CLR    irq_ack_380d		
 8A5F: 86 44          LDA    #$44
 8A61: 97 22          STA    interrupt_status_22
 8A63: 0C 26          INC    $26
@@ -1325,7 +1337,7 @@ wait_subcpu_reply_8ab5:
 8AB5: 96 3A          LDA    bank_switch_copy_3a
 8AB7: 8A 10          ORA    #$10
 8AB9: 97 3A          STA    bank_switch_copy_3a
-8ABB: B7 38 08       STA    bankswitch_3808
+8ABB: B7 38 08       STA    bankswitch_3808		; trigger subcpu IRQ
 ; wait for subcpu reply
 8ABE: B6 38 02       LDA    extra_3802
 8AC1: 84 10          ANDA   #$10
@@ -5647,12 +5659,12 @@ B8AA: 84 10          ANDA   #$10
 B8AC: 27 F9          BEQ    $B8A7
 ; ack sub irq
 B8AE: B7 38 0F       STA    sub_irq_380f
-; wait some time (is that useful?)
+; wait some time, let subcpu reply
 B8B1: 7D 0E 3E       TST    sync_flag_0e3e
 B8B4: 27 FB          BEQ    $B8B1
 ; now wait for subcpu to reply
 B8B6: BD 8A B5       JSR    wait_subcpu_reply_8ab5
-B8B9: B6 20 00       LDA    $2000		; check value that subcpu has put there
+B8B9: B6 20 00       LDA    subcpu_shared_2000		; check value that subcpu has put there
 B8BC: 81 84          CMPA   #$84
 B8BE: 27 0A          BEQ    $B8CA
 B8C0: 86 05          LDA    #$05
@@ -7842,7 +7854,7 @@ E0D9: FC 0A 46       LDD    $0A46
 E0DC: FD 0A 65       STD    $0A65
 E0DF: 35 06          PULS   D
 E0E1: FD 0A 5F       STD    $0A5F
-E0E4: BD E9 1E       JSR    $E91E
+E0E4: BD E9 1E       JSR    update_scrolling_registers_e91e
 E0E7: 39             RTS
 E0E8: 8E 0A 41       LDX    #$0A41
 E0EB: 6F 80          CLR    ,X+
@@ -8736,13 +8748,15 @@ E90A: 39             RTS
 E90B: B6 0E 71       LDA    $0E71
 E90E: 85 40          BITA   #$40
 E910: 27 0B          BEQ    $E91D
-E912: BD E9 1E       JSR    $E91E
+E912: BD E9 1E       JSR    update_scrolling_registers_e91e
 E915: B6 0E 71       LDA    $0E71
 E918: 84 BF          ANDA   #$BF
 E91A: B7 0E 71       STA    $0E71
 E91D: 39             RTS
+
+update_scrolling_registers_e91e:
 E91E: FC 0A 5F       LDD    $0A5F
-E921: F7 38 09       STB    $3809
+E921: F7 38 09       STB    scroll_x_lo_3809
 E924: 84 01          ANDA   #$01
 E926: 34 02          PSHS   A	; [manual_stack_push]
 E928: CC 01 00       LDD    #$0100
@@ -8759,6 +8773,7 @@ E93E: AA E0          ORA    ,S+
 E940: 97 3A          STA    bank_switch_copy_3a
 E942: B7 38 08       STA    bankswitch_3808
 E945: 39             RTS
+
 E946: B6 0E 71       LDA    $0E71
 E949: 8A 40          ORA    #$40
 E94B: B7 0E 71       STA    $0E71

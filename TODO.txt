@@ -1,8 +1,8 @@
-
+- lockup at start, subcpu not doing the proper job maybe trace the subcpu in mame the second time
+  it's activated (with registers)
 
 - hack OSD palette to make black appear (character heads)
 - set DSW difficulty lives, etc.
-- insert coin works only once
 - f_handle_bank1_line: 4201 should call subcpu
 
 - title fading in not supported

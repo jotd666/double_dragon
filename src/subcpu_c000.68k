@@ -207,6 +207,7 @@ sub_c0a8:
 	tst.b	(a0)                             	| [...]
 	LOG_REGS	c0ab,-2   | added by add_reg_log.py
 	jeq	sub_c10a                           	| [$c0ab: beq  $c10a]
+* main cpu is asking for work
 sub_c0ad:
 	LOG_REGS	c0ad,-2   | added by add_reg_log.py
 	OP_1_ON_DP_ADDRESS	clr,0x004f           | [$c0ad: clr  $004f]

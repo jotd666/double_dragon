@@ -271,7 +271,7 @@ subcpu_processing_411e:
 41FF: 84 10       ANDA   #$10
 4201: 27 F9       BEQ    $41FC
 ; subcpu has completed task
-4203: B7 38 0F    STA    $380F		; ack
+4203: B7 38 0F    STA    sub_irq_380f		; ack
 4206: 7F 03 A1    CLR    $03A1
 4209: 35 C0       PULS   U,PC
 

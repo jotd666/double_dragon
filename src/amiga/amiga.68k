@@ -1580,13 +1580,14 @@ call_nmi:
 	
 	* check if a coin has been inserted, in which case we call
 	* the routine that is normally called in fast irq
-	tst.b	coin1_requested
-	jeq		0f
-	bclr	#6,(port_2_3801,a6)		| set bit
-	clr.b	coin1_requested
-	jbsr 	check_for_coin_inserted_8990
-	bset	#6,(port_2_3801,a6)		| clear bit
-0:
+	* disabled for now, causing too many problems
+*	tst.b	coin1_requested
+*	jeq		0f
+*	bclr	#6,(port_2_3801,a6)		| set bit
+*	clr.b	coin1_requested
+*	**jbsr 	check_for_coin_inserted_8990
+*	bset	#6,(port_2_3801,a6)		| clear bit
+*0:
 	
 
 	* then call nmi (50Hz)
@@ -1712,7 +1713,6 @@ level1_interrupt:
 
 
 	jbsr	call_nmi
-	
 
 
 	* update scrolling from registers
@@ -1720,19 +1720,19 @@ level1_interrupt:
 	moveq	#0,d0
 	move.b	(scroll_x_lo_3809,a6),d0
 	move.b	(bankswitch_3808,a6),d1
-	btst	#0,d1
+	btst	#0,d1			 | bit 1 is X scroll high bit (0x1xx)
 	jeq		0f
 	bset	#8,d0
 0:
 	move.w	D0,game_scroll_x
 	moveq	#0,d0
 	move.b	(scroll_y_lo_380a,a6),d0
-	btst	#1,d1
+	btst	#1,d1			 | bit 1 is Y scroll high bit (0x1xx)
 	jeq		0f
 	bset	#8,d0
 0:
 	move.w	D0,game_scroll_y
-
+	move.w	d0,0x150
 	
 	* ok now D5 can be used freely
 
@@ -3427,6 +3427,7 @@ osd_set_bank:
 	.endif
 	move.l	a1,bank_base
 1:
+
 	movem.l	(a7)+,d0/d1/a0
 	rts
 
