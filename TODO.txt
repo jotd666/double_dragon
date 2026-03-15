@@ -1,5 +1,8 @@
-- check DSW for infinite lives (9 lives)
-- bg used tiles to tune, scroll Y value to convert, display bg tiles!
+- 852D: B6 0E 3E       LDA    sync_flag_0e3e
+8530: 27 FB          BEQ    $852D   locked here
+
+- set DSW difficulty lives, etc.
+- bg used tiles to tune, display bg tiles!
 - insert coin works only once
 - f_handle_bank1_line: 4201 should call subcpu
 

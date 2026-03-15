@@ -227,7 +227,8 @@ BIT_PUNCH_2P = 2
 	.endm
 
 	.macro	WRITE_TEXT	text,color
-	lea		(0x2047+0x20*row,a6),a0
+	
+	lea		(fg_tile_address_table+0x47+0x20*row,a6),a0
 	lea		\text,a1
 	move.b	#\color,d0
 	jbsr	display_text
@@ -236,7 +237,7 @@ BIT_PUNCH_2P = 2
 
 	.macro	WRITE_HEX	value,color
 	move.w	\value,d1
-	lea		(0x2047+0x20*row+14,a6),a0
+	lea		(fg_tile_address_table+0x47+0x20*row+14,a6),a0
 	move.b	#\color,d0
 	jbsr	display_number
 	.set	row,row+1
@@ -544,9 +545,10 @@ display_text:
 0:
 	move.b	(a1)+,d1
 	jmi		1f
-	move.b	d1,(a0)
-	move.b	d0,(0x400,a0)
-	jbsr	osd_video_byte_dirty
+	sub.b	#0x20,d1
+	move.b	d1,(1,a0)
+	move.b	d0,(a0)
+	jbsr	osd_video_word_dirty
 	addq	#1,a0
 	jra		0b
 1:
@@ -560,14 +562,14 @@ num2hexstring:
 	moveq	#3,d4		| nb digits
 	move.l	#0xF000,D3
 	moveq.l	#4,D2
-	move.b	#'x',(A1)+	
+	move.b	#'X',(A1)+	
 .loop:
 	move.w	D0,D1
 	and.w	D3,D1
 	rol.w	D2,D1
 	cmp.b	#9,D1
 	bgt	.letter
-	**add.b	#'0',D1		| in this charset no need to add '0'
+	add.b	#'0',D1
 	move.b	D1,(A1)+
 	bra	.loopend
 .letter:
@@ -802,6 +804,9 @@ demo_game:
 	GET_MEMORY_START_AND_DP
 	jbsr	install_bank_0
 	
+	* set dip switches
+	* base settings, medium diff, 2 lives, demo sounds on
+	st.b	(dsw_1_3804,a6)
 	
 	.ifndef	RELEASE
 	* install dump and quit handler
@@ -3726,6 +3731,12 @@ cache_bg_tiles_address:
 * uses x_offset computed from scrolling current params
 
 update_bg_tile:
+	cmp.w	#0x508,d7
+	jne		0f
+	cmp.b	#0x1D,d0
+	jne		0f
+	BREAKPOINT	"caaaar"
+0:
 	* special case: title screen
 	cmp.w	#0x96,d7
 	jne		0f
@@ -3769,12 +3780,12 @@ update_bg_tile_gng:
 	scs		d6			| repeat tile draw if Y tile  < 0x10
 	jra		667f
 666:
-	* full horizontal level: don't draw anything below tile 0x10, don't mirror
+	* full horizontal level: don't draw anything above tile 0x10, don't mirror
 	sf		d6
-	cmp.w	#0x10,d1
-	jcs		667f
-	* do nothing, this tile will never be shown
-	rts
+*	cmp.w	#0x10,d1
+*	jcs		667f
+*	* do nothing, this tile will never be shown
+*	rts
 667:
 	* updating bitplanes
 	.if	BG_SCREEN_PLANE_SIZE>0x7FFF
@@ -4313,7 +4324,6 @@ set_bobs_bitplanes:
 	* set bitplanes
 	moveq	#0,d0
 	move.w	game_scroll_y,d0
-
 	lea		mulBG_NB_BYTES_PER_ROW_table,a2
 	.ifdef	MC68020
 	move.w	(a2,d0.w*2),d0		| compute Y offset
