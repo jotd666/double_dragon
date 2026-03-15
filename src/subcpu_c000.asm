@@ -101,6 +101,7 @@ C0A7: 39       rts
  
 C0A8: 7D 80 00 tst  shared_memory_8000
 C0AB: 27 5D    beq  $C10A
+; main cpu is asking for work
 C0AD: 7F 00 4F clr  $004F
 C0B0: 86 01    lda  #$01
 C0B2: 97 4E    sta  $4E

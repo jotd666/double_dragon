@@ -1,7 +1,7 @@
 lb1_4000:   ; [global]
 4000: 7E 41 00    JMP    $4100
 lb1_4003:   ; [global]
-4003: 7E 41 1E    JMP    $411E
+4003: 7E 41 1E    JMP    subcpu_processing_411e
 lb1_4006:   ; [global]
 4006: 7E 5C 88    JMP    $5C88
 lb1_4009:   ; [global]
@@ -167,6 +167,7 @@ lb1_40e4:      ; [global]
 4119: B7 03 A1    STA    $03A1
 411C: 35 A6       PULS   D,Y,PC
 
+subcpu_processing_411e:
 411E: 34 40       PSHS   U
 4120: 96 3A       LDA    bank_switch_copy_3a
 4122: 8A 10       ORA    #$10
@@ -261,7 +262,7 @@ lb1_40e4:      ; [global]
 41E7: F1 03 A1    CMPB   $03A1
 41EA: 10 25 FF 66 LBCS   $4154
 41EE: 1E 03       EXG    D,U
-41F0: F7 20 00    STB    $2000			; set data in exchange memory
+41F0: F7 20 00    STB    $2000			; set data in exchange memory: number of sprites (??) to process
 41F3: 96 3A       LDA    bank_switch_copy_3a
 41F5: 84 EF       ANDA   #$EF
 41F7: 97 3A       STA    bank_switch_copy_3a
@@ -273,6 +274,7 @@ lb1_40e4:      ; [global]
 4203: B7 38 0F    STA    $380F		; ack
 4206: 7F 03 A1    CLR    $03A1
 4209: 35 C0       PULS   U,PC
+
 420B: 34 76       PSHS   U,Y,X,D
 420D: 10 8E 42 CD LDY    #$42CD
 4211: A6 88 1B    LDA    $1B,X

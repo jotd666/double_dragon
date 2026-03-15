@@ -1,8 +1,7 @@
-- 852D: B6 0E 3E       LDA    sync_flag_0e3e
-8530: 27 FB          BEQ    $852D   locked here
 
+
+- hack OSD palette to make black appear (character heads)
 - set DSW difficulty lives, etc.
-- bg used tiles to tune, display bg tiles!
 - insert coin works only once
 - f_handle_bank1_line: 4201 should call subcpu
 

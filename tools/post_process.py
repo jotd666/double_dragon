@@ -222,6 +222,9 @@ def f_handle_main_line(address,lines,i):
     elif address in {0x89b7,0x8A20,0x8A50}:
         # removing safety checks when inserting coins
         line = remove_instruction(lines,i)
+    elif address in {0X8547}:
+        # removing interrupt ack shit (again)
+        line = remove_instruction(lines,i)
     elif address == 0x89C0:
         # skip coin debounce shit
         line = change_instruction("jra\tl_89ea",lines,i)
