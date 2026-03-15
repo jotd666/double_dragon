@@ -198,18 +198,24 @@ SPRITE_CODE = 0
 SPRITE_ATTRIBUTES = 1
 SPRITE_SIZEOF = 4
 
+
+* on port 1
+BIT_START_1P = 6
+BIT_START_2P = 7
+BIT_UP = 2
+BIT_RIGHT = 0
+BIT_LEFT = 1
+BIT_DOWN = 3
+BIT_KICK = 4
+BIT_JUMP = 5
+
+* on port 2, same as above for controls, plus coin control
 BIT_COIN1 = 6
 BIT_COIN2 = 7
 
-BIT_START_1P = 0
-BIT_START_2P = 1
-
-BIT_UP = 3
-BIT_RIGHT = 0
-BIT_LEFT = 1
-BIT_DOWN = 2
-BIT_FIRE_1 = 4
-BIT_FIRE_2 = 5
+* extra port
+BIT_PUNCH_1P = 1
+BIT_PUNCH_2P = 2
 
 	.include	"context.68k"
 	
@@ -936,14 +942,13 @@ osd_palette_updated:
 	jeq		0f
 	cmp.l	d1,d2
 	jeq		context_switch_found
+	addq	#4,a0
 	jra		0b
 0:
 	rts
 
 context_switch_found:
-	move.l	a0,d2
-	sub.l	#context_lookup_table+4,d2
-	lsr.w	#2,d2		| now d2 is the context
+	move.l	(a0)+,d2		| now d2 is the context
 	movem.l	d0-a6,-(a7)
 	move.l	d2,d0
 	jbsr	load_context
@@ -1560,6 +1565,16 @@ call_nmi:
 0:
 	.endif
 	
+	* check if a coin has been inserted, in which case we call
+	* the routine that is normally called in fast irq
+	tst.b	coin1_requested
+	jeq		0f
+	bclr	#6,(port_2_3801,a6)		| set bit
+	clr.b	coin1_requested
+	jbsr 	check_for_coin_inserted_8990
+	bset	#6,(port_2_3801,a6)		| clear bit
+0:
+	
 	* first call irq once out of two (30Hz)
 	eor.b	#1,irq_flip_flop
 	jne		0f
@@ -1583,8 +1598,6 @@ level3_interrupt:
 	jeq		1f
 
 	* vblank
-	GET_MEMORY_START_IN_A6
-	bclr	#3,(extra_3802,a6)
 
 	tst.b	detect_controllers
 	jeq	0f
@@ -1593,16 +1606,22 @@ level3_interrupt:
 
 0:
 
+	moveq	#1,d0
 	move.l	joypad_1_state(pc),d1
 	move.l	d1,d2
-	moveq	#0,d0
-	move.b	p1_joystick_slot,d0
-	jmi		0f
 	jbsr	_read_joystick
 	move.l	d0,joypad_1_state
-0:
+	moveq	#0,d0
+	jbsr	_read_joystick
+	move.l	d0,joypad_2_state
 
-	jbsr	update_controls
+	jbsr	update_player_1_controls
+
+	* change I/O stuff for the game
+	GET_MEMORY_START_IN_A6
+	bclr	#3,(extra_3802,a6)		| ack vblank
+	move.b	d0,(port_1_3800,a6)
+	
 	
 	move.l	joypad_1_state,d0
 	btst	#JPB_BTN_PLAY,d0
@@ -4396,7 +4415,7 @@ purge_sprite_log_data:
 
 	
 * < D1: previous state
-update_controls:
+update_player_1_controls:
 	moveq	#-1,d0
 
 	lea		keyboard_table(pc),a0
@@ -4419,20 +4438,31 @@ update_controls:
 0:
 	tst.b	(0x63,a0)		| "ctrl" key
 	beq.b	0f
-	bclr	#BIT_FIRE_1,d0
+	bclr	#BIT_KICK,d0
 0:
 	tst.b	(0x64,a0)		| left "alt" key
 	beq.b	0f
-	bclr	#BIT_FIRE_2,d0
+	bclr	#BIT_JUMP,d0
 0:
+	tst.b	(1,a0)		| "1" key like in MAME
+	beq.b	0f
+	st.b	detect_controllers
+	bclr	#BIT_START_1P,d0
+0:	
+	tst.b	(2,a0)		| "2" key like in MAME
+	beq.b	0f
+	st.b	detect_controllers
+	bclr	#BIT_START_2P,d0
+0:	
 
 	* directions + fire
 	move.l	joypad_1_state(pc),d1
 	jbsr	decode_joypad_controls
+	btst	#JPB_BTN_GRN,d1
+	jeq		0f
+	bclr	#BIT_PUNCH_1P,d0
+0:
 	move.b	d0,player_1_controls
-
-	
-
 
 	rts
 	
@@ -4455,11 +4485,11 @@ decode_joypad_controls:
 0:
 	btst	#JPB_BTN_RED,d1
 	beq.b	0f
-	bclr	#BIT_FIRE_1,d0
+	bclr	#BIT_KICK,d0
 0:
 	btst	#JPB_BTN_BLU,d1
 	beq.b	0f
-	bclr	#BIT_FIRE_2,d0
+	bclr	#BIT_JUMP,d0
 0:
 	rts
 	
@@ -4474,58 +4504,7 @@ osd_read_dsw2:
 	move.b	dip_switches_2,d0	| what MAME returns by default
 	rts
 	
-osd_read_system:
-	st.b	d0
-	movem.l	a0/d1,-(a7)
-	lea		keyboard_table(pc),a0
-	tst.b	coin1_requested
-	jeq		0f
-	subq.b	#1,coin1_requested
-	st.b	detect_controllers
-	bclr	#BIT_COIN1,d0
-0:
 
-	tst.b	coin2_requested
-	beq.b	0f
-	subq.b	#1,coin2_requested
-	st.b	detect_controllers
-	bclr	#BIT_COIN2,d0
-0:	
-	tst.b	(1,a0)		| "1" key like in MAME
-	beq.b	0f
-	st.b	detect_controllers
-	bclr	#BIT_START_1P,d0
-0:	
-	tst.b	(2,a0)		| "2" key like in MAME
-	beq.b	0f
-	st.b	detect_controllers
-	bclr	#BIT_START_2P,d0
-0:	
-
-	jbsr		is_game_playing
-	jeq	1f
-	move.l	joypad_1_state,d1
-
-	* game not playing, we can insert coin/start with joypad
-	btst	#JPB_BTN_RED,d1		| "5" key like in MAME
-	jeq		0f
-	st.b	detect_controllers
-	bclr	#BIT_COIN1,d0
-0:
-	btst	#JPB_BTN_UP,d1		| "1" key like in MAME
-	jeq		0f
-	st.b	detect_controllers
-	bclr	#BIT_START_1P,d0
-0:
-	btst	#JPB_BTN_DOWN,d1		| "2" key like in MAME
-	jeq		0f
-	st.b	detect_controllers
-	bclr	#BIT_START_2P,d0
-0:
-
-1:	
-	movem.l	(a7)+,a0/d1
-	rts
 
 	
 
@@ -4687,16 +4666,14 @@ handle_keyboard:
     seq (a0,d0.w)       | updates keyboard table
     jne   2f     | we don't care about key release
 	
-	* to insert a credit, game needs a short pulse
-	* so maintaining the key too long would fail. But too
-	* short would not work either. 10 ticks seems to work
+
 	cmp.b	#5,d0	| "5" key like in MAME
 	bne.b	0f
-	move.b	#10,coin1_requested
+	st.b	coin1_requested
 0:
 	cmp.b	#6,d0	| "5" key like in MAME
 	bne.b	0f
-	move.b	#10,coin2_requested
+	st.b	coin2_requested
 0:
 
     cmp.b   #0x19,d0	| "P" key
@@ -5613,10 +5590,7 @@ must_mirror_y_tiles:
 	.byte	0
 current_rom_bank:
 	.byte	0
-p1_joystick_slot:
-	.byte	1
-p2_joystick_slot:
-	.byte	0
+
 	
 * this table indicates the tile engine if Y mirror is needed
 mirror_y_tile_table:

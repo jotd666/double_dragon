@@ -327,6 +327,8 @@ swi_interrupt:
 8150: 86 01          LDA    #$01
 8152: BD B7 56       JSR    vbl_delay_b756
 8155: 16 00 BD       LBRA   $8215
+
+coin_inserted_8158:
 8158: 86 FF          LDA    #$FF
 815A: B7 38 0E       STA    sound_irq_380e
 815D: C6 FF          LDB    #$FF
@@ -886,7 +888,7 @@ l_84ec:
 86B3: 7F 09 F2       CLR    $09F2
 86B6: 7F 0E 71       CLR    $0E71
 86B9: 0D 21          TST    nb_credits_0021
-86BB: 10 26 FA 99    LBNE   $8158
+86BB: 10 26 FA 99    LBNE   coin_inserted_8158
 86BF: 7E 80 BA       JMP    $80BA
 86C2: 81 03          CMPA   #$03
 86C4: 10 26 FC 31    LBNE   $82F9
@@ -1138,7 +1140,7 @@ l_84ec:
 8920: BD FE 98       JSR    clear_fg_screen_fe98
 8923: BD FE 9E       JSR    $FE9E
 8926: 0D 21          TST    nb_credits_0021
-8928: 10 26 F8 2C    LBNE   $8158
+8928: 10 26 F8 2C    LBNE   coin_inserted_8158
 892C: 0F 26          CLR    $26
 892E: 7E 80 BA       JMP    $80BA
 8931: 86 8B          LDA    #$8B
@@ -1182,37 +1184,41 @@ l_84ec:
 898D: 32 62          LEAS   $2,S
 898F: 39             RTS
 
-check_for_coin_inserted_8990:
+check_for_coin_inserted_8990:    ; [global]
 8990: 32 7E          LEAS   -$2,S
 8992: B6 0E 71       LDA    $0E71
 8995: B7 0E 72       STA    $0E72
-8998: B6 38 01       LDA    port_2_3801
-899B: 43             COMA
+8998: B6 38 01       LDA    port_2_3801		; bits 6 & 7 hold "coin inserted" bits
+899B: 43             COMA					; negative logic
 899C: F6 38 02       LDB    extra_3802
 899F: 53             COMB
 89A0: 54             LSRB
 89A1: 46             RORA
 89A2: 84 E0          ANDA   #$E0
 89A4: 26 0D          BNE    $89B3
+; game makes sure that the pulse stays a while? or not too long? never mind
 89A6: D6 CC          LDB    $CC
 89A8: C1 FF          CMPB   #$FF
-89AA: 10 25 00 CA    LBCS   $8A78
+89AA: 10 25 00 CA    LBCS   no_coin_inserted_8a78
 89AE: 0C CC          INC    $CC
-89B0: 7E 8A 78       JMP    $8A78
+89B0: 7E 8A 78       JMP    no_coin_inserted_8a78
 89B3: D6 CC          LDB    $CC
 89B5: C1 23          CMPB   #$23
 89B7: 25 F5          BCS    $89AE
 89B9: 97 20          STA    $20
 89BB: 0F CC          CLR    $CC
 89BD: 7F 0E 71       CLR    $0E71
-89C0: 17 00 BE       LBSR   $8A81
-89C3: 10 27 00 B1    LBEQ   $8A78
-89C7: 17 00 B7       LBSR   $8A81
-89CA: 10 27 00 AA    LBEQ   $8A78
-89CE: 17 00 B0       LBSR   $8A81
-89D1: 10 27 00 A3    LBEQ   $8A78
-89D5: 17 00 A9       LBSR   $8A81
-89D8: 10 27 00 9C    LBEQ   $8A78
+89C0: 17 00 BE       LBSR   coin_debounce_8a81
+89C3: 10 27 00 B1    LBEQ   no_coin_inserted_8a78
+89C7: 17 00 B7       LBSR   coin_debounce_8a81
+89CA: 10 27 00 AA    LBEQ   no_coin_inserted_8a78
+89CE: 17 00 B0       LBSR   coin_debounce_8a81
+89D1: 10 27 00 A3    LBEQ   no_coin_inserted_8a78
+89D5: 17 00 A9       LBSR   coin_debounce_8a81
+89D8: 10 27 00 9C    LBEQ   no_coin_inserted_8a78
+; at this point the game has checked that the coin has been inserted
+; this didn't happen because of some parasiting or whatever
+; this is the part which is super-protected, else the game could be hacked
 89DC: B6 38 01       LDA    port_2_3801
 89DF: 43             COMA
 89E0: F6 38 02       LDB    extra_3802
@@ -1221,6 +1227,7 @@ check_for_coin_inserted_8990:
 89E5: 46             RORA
 89E6: 84 E0          ANDA   #$E0
 89E8: 26 F2          BNE    $89DC
+l_89ea:
 89EA: 86 02          LDA    #$02
 89EC: B7 38 0E       STA    sound_irq_380e
 89EF: 6F E4          CLR    ,S
@@ -1249,7 +1256,7 @@ check_for_coin_inserted_8990:
 8A1A: 1F 98          TFR    B,A
 8A1C: E6 61          LDB    $1,S
 8A1E: A1 85          CMPA   B,X
-8A20: 25 56          BCS    $8A78
+8A20: 25 56          BCS    no_coin_inserted_8a78
 8A22: A6 E4          LDA    ,S
 8A24: 6F A6          CLR    A,Y
 8A26: 8E 8A A0       LDX    #$8AA0
@@ -1271,7 +1278,7 @@ check_for_coin_inserted_8990:
 8A49: 97 3A          STA    bank_switch_copy_3a
 8A4B: B7 38 08       STA    bankswitch_3808
 8A4E: 96 26          LDA    $26
-8A50: 26 26          BNE    $8A78
+8A50: 26 26          BNE    no_coin_inserted_8a78
 8A52: 10 CE 0F FF    LDS    #$0FFF
 8A56: CE 0E FF       LDU    #$0EFF
 8A59: 7F 0E 71       CLR    $0E71
@@ -1286,11 +1293,14 @@ check_for_coin_inserted_8990:
 8A6E: 84 1F          ANDA   #$1F
 8A70: 97 3A          STA    bank_switch_copy_3a
 8A72: B7 38 08       STA    bankswitch_3808
-8A75: 7E 81 58       JMP    $8158
+8A75: 7E 81 58       JMP    coin_inserted_8158
+no_coin_inserted_8a78:
 8A78: 32 62          LEAS   $2,S
 8A7A: F6 0E 72       LDB    $0E72
 8A7D: F7 0E 71       STB    $0E71
 8A80: 39             RTS
+
+coin_debounce_8a81:
 8A81: 8E 01 F9       LDX    #$01F9
 8A84: 30 1F          LEAX   -$1,X
 8A86: 8C 00 00       CMPX   #$0000
