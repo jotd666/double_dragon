@@ -526,7 +526,7 @@ def quantize_palette(rgb_tuples,img_type,nb_quantize,transparent=None,dump_it=Fa
     return rval
 
 
-
+nb_bg_tiles_colors = 32
 
 # foreground tiles doesn't seem to change palette (we'll see) but context selection allows to avoid too much global
 # quantization, so the colors won't look so washed up
@@ -540,6 +540,7 @@ fg_tile_sheet_dict = {i:Image.open(sheets_path / "fg_tiles" / f"pal_{i:02x}.png"
 #######################################################
 ## foreground tiles: only 2 cases: title and in-game ##
 #######################################################
+
 
 context_list = ["title","game"]
 for context in context_list:
@@ -681,15 +682,16 @@ for context in context_list:
         bg_tile_palette.update(tp)
 
 
-    if len(bg_tile_palette)>32:
+    if len(bg_tile_palette)>nb_bg_tiles_colors:
         print(f"{context}: Too many colors in bg tiles ({len(bg_tile_palette)}), quantizing")
-        bg_replacement_dict = quantize_palette(bg_tile_palette,"background_tiles",32,transparent=None,dump_it=dump_it)
+        bg_replacement_dict = quantize_palette(bg_tile_palette,"background_tiles",nb_bg_tiles_colors,transparent=None,dump_it=dump_it)
         bg_tile_palette = sorted(set(bg_replacement_dict.values()))
         apply_color_replacement(bg_tile_set_list,bg_replacement_dict)
     else:
         bg_tile_palette = sorted(bg_tile_palette)
 
-    bg_tile_palette += (32-len(bg_tile_palette)) * [(0x10,0x20,0x30)]
+
+    palette_pad(bg_tile_palette,nb_bg_tiles_colors)
     if context == "level1":
         # generate 3 more palettes for intro fade
         special_fade_palettes = [[tuple(((x*100-(x*i))//100) for x in rgb) for rgb in bg_tile_palette] for i in (10,25,100)]

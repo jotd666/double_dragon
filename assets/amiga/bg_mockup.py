@@ -68,7 +68,7 @@ for address in range(0,0x800,2):
     y += qsy*256
 
     attr = m_bgvideoram[address]
-    tile_code = (m_bgvideoram[address+1] + ((attr & 0x7) << 8))&0x7FF
+    tile_code = (m_bgvideoram[address+1] + ((attr & 0x7) << 8))
     tile_color = (attr >> 3) & 0x7
     used_cluts.add(tile_color)
     used_tiles.add(tile_code)

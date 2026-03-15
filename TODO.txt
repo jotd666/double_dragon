@@ -1,3 +1,4 @@
+- check DSW for infinite lives (9 lives)
 - bg used tiles to tune, scroll Y value to convert, display bg tiles!
 - insert coin call firq check us champ vball
 pshx/pulx using movem.w instead of movem.l in subcpu: global: add 6809 tool push

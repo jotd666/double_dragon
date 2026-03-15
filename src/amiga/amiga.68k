@@ -872,12 +872,9 @@ mirror_common_sprites:
 	rts
 	
 
-copyright_message:
-	 .asciz	"AMIGA PORT : JOTD"
 
 	.ifndef	RELEASE
 dump_and_quit:	
-	move.b	#0,0x120
 	jbsr	osd_dump_logs
 	illegal
 	.endif
@@ -1301,10 +1298,19 @@ compute_mirror_bitplanes:
 	movem.l	(a7)+,d0-a6
 	rts
 	
+* force screen redraw. Also wired on Ghosts'N'Goblins screen layout
+* we'll use a conversion table
 force_all_screen_redraw:
 	lea		_custom,a5
 	REALLY_WAIT_BLIT
 	GET_MEMORY_START_IN_A6
+	
+
+	* force tile draw
+	* retrieve tile values
+	* this requires to convert the GnG address to DD address
+	
+	
 	* given the current scroll X/Y, draw all tiles on screen
 	move.w	game_scroll_x,d0
 	move.w	d0,previous_scroll_x
@@ -1319,6 +1325,7 @@ force_all_screen_redraw:
 	
 	move.w	d0,d5				| save scroll X
 	lea		(bg_tiles_address_3000,a6),a5
+	lea		gng2dd_table,a6
 	move.w	game_scroll_x,d0
 	lsr.w	#4,D0	| divide by 16 to get real X tile offset
 	* now compute start address to fetch data from
@@ -1342,15 +1349,16 @@ force_all_screen_redraw:
 	move.w	d0,x_offset
 	and.w	#0x3FF,d7		| wrap on memory
 	* force tile draw
-	lea		(a5,d7.w),a0
 
 	movem.l	d1-d2/d5-d6,-(a7)
-	move.b	(a0),d0
-	move.b	(0x400,a0),d1
-	jbsr	update_bg_tile	
+	move.w	(a6,d7.w*2),d6
+	lea		(a5,d6.w),a0		| now DD address
+	move.b	(a0)+,d1			| read tile code
+	move.b	(a0),d0				| read tile color/attribute
+	jbsr	update_bg_tile_gng	
 	movem.l	(a7)+,d1-d2/d5-d6
 	
-	add.w	#0x1,d7		| next X
+	addq	#0x1,d7		| next X
 	dbf		d1,1b
 	add.w	#0x20,d6
 	add.w	#BG_TILE_WIDTH,d5	| keep track of current "scroll"
@@ -1377,6 +1385,8 @@ draw_column_tiles:
 	GET_MEMORY_START_AND_DP
 
 	lea		(bg_tiles_address_3000,a6),a5
+	
+	lea		gng2dd_table,a6
 	lsr.w	#4,D0	| divide by 16 to get real X tile offset
 	* now compute start address to fetch data from
 	move.w	#0,d7		| first row is not visible with scroll=0, visible with=$10
@@ -1388,13 +1398,16 @@ draw_column_tiles:
 0:
 	and.w	#0x3FF,d7		| wrap
 	* force tile draw
-	lea		(a5,d7.w),a0
-		
-	move.b	(a0),d0
-	move.b	(0x400,a0),d1
+	* retrieve tile values
+	* this requires to convert the GnG address to DD address
+	
+	move.w	(a6,d7.w*2),d6
+	lea		(a5,d6.w),a0		| now DD address
+	move.b	(a0)+,d1			| read tile code
+	move.b	(a0),d0				| read tile color/attribute
 
 	move.w	d2,-(a7)
-	jbsr	update_bg_tile
+	jbsr	update_bg_tile_gng
 	move.w	(a7)+,d2
 	
 	addq	#1,d7			| next Y
@@ -1665,19 +1678,26 @@ level1_interrupt:
 
 	jbsr	call_nmi
 	
-	
-	GET_MEMORY_START_IN_A6
-	*move.w	(scroll_x_register_lsb_3b08,a6),d0
-	moveq	#0,d0
-	ror.w	#8,d0		| hardware is in little endian
-	move.w	D0,game_scroll_x
-	*move.w	(scroll_y_register_lsb_3b0a,a6),d0
-	ror.w	#8,d0		| hardware is in little endian
-	jpl		0f
 
-	add.w	#0x200,d0
+
+	* update scrolling from registers
+	GET_MEMORY_START_IN_A6
+	moveq	#0,d0
+	move.b	(scroll_x_lo_3809,a6),d0
+	move.b	(bankswitch_3808,a6),d1
+	btst	#0,d1
+	jeq		0f
+	bset	#8,d0
+0:
+	move.w	D0,game_scroll_x
+	moveq	#0,d0
+	move.b	(scroll_y_lo_380a,a6),d0
+	btst	#1,d1
+	jeq		0f
+	bset	#8,d0
 0:
 	move.w	D0,game_scroll_y
+
 	
 	* ok now D5 can be used freely
 
@@ -3345,6 +3365,7 @@ osd_disable_interrupts:
 * > A1 bank pointer minus 0x4000
 osd_set_bank:
 	movem.l	d0/d1/a0,-(a7)
+	move.b	d0,(bankswitch_3808,a6)		| scrolling needs the value
 	* make sure D5 is not used there!
 	move.b	d0,d1
 	lsr.b	#5,d1
@@ -3496,11 +3517,14 @@ osd_w_videoram_out:
 	rts	
 	
 bg_tile:
-	and.w	#0x7FF,d7
+	and.w	#0x7FE,d7
 	
 	* we need to see if the tile is on screen considering X scolling
 	* positions. Compute first X & last X coord visible
 
+
+	lea		dd2gng_table,a0
+	move.w	(a0,d7.w),d6
 	jbsr	compute_x_offset
 	jmi		osd_w_videoram_out
 	
@@ -3542,7 +3566,8 @@ bg_tile:
 * corkscrew effect
 * !only valable for a single random tile poke, not for a scroll column update
 * that computes its own x_offset!
-* < D7: address (0-0x400)
+* < D6: address (0-0x400) matching Ghosts'N'Goblins layout
+* (I'm lazy I'm not going to change that routine it was a pain in the *ss to tune)
 * > N: set not in visible screen
 * > x_offset: updated
 compute_x_offset:
@@ -3550,7 +3575,7 @@ compute_x_offset:
 	* we need to see if the tile is on screen considering X scolling
 	* positions. Compute first X & last X coord visible
 	clr.w	x_offset
-	move.w	d7,d2
+	move.w	d6,d2
 	lsr.w	#5,d2
 	
 	* establish min & max bounds including invisible tile used for scroll
@@ -3668,7 +3693,7 @@ cache_bg_tiles_address:
 	.endif
 	.endm
 	
-* < D7: 0-0x400 address
+* < D7: 0-0x800 address
 * < D0: tile code
 * < D1: color code
 * uses x_offset computed from scrolling current params
@@ -3684,15 +3709,21 @@ update_bg_tile:
 	* skip all this crap altogether, blit the big pic
 	jra		blit_title_pic
 0:
+	* now convert address to GnG layout. The screen size is the same
+	* and all routines work, so let's not rewrite everything
+	* there's this damn layout by quadrant that we eliminate that way
+	lea	dd2gng_table,a1
+	move.w	(a1,d7.w),d7
+	
+update_bg_tile_gng:
 	moveq	#0,d2			| mask up to 255
 	move.b	d0,d2			| tile code
 	moveq	#0,d3
 	move.b	d1,d3			| CLUT & tile code & flags
 
 	move.w	d3,d4
-	and.b	#0xC0,d4
-	add.w	d4,d4
-	add.w	d4,d4
+	and.b	#7,d4
+	lsl.w	#8,d4
 	add.w	d4,d2			| full tile code
 
 	* compute address
@@ -3781,9 +3812,11 @@ update_bg_tile:
 	.endif
 	move.l	d0,a2
 	move.w	d3,d1		| save attributes
-	lsr.w	#4,d1
-	and.w	#3,d1		| mirror/flip
+	*lsr.w	#4,d1
+	*and.w	#3,d1		| mirror/flip
+	moveq	#0,d1		| ATM no mirror no flip
 	
+	lsr.w	#3,d3		| tile_color = (attr >> 3) & 0x7
 	and.w	#0x7,d3
 	.ifdef	NO68020
 	add.w	d3,d3
@@ -3818,8 +3851,7 @@ update_bg_tile:
 	.endif
 	
 	* we wait just in case a blitter operation is in progress
-	* it rarely conflicts, as only animated tiles are the windows at level 2
-	* from where the flying small pests arrive
+	* disabled ATM it seems that bg layout is widely static
 	*lea		_custom,a5
 	*REALLY_WAIT_BLIT
 	tst.b 	d6
@@ -5659,6 +5691,8 @@ tiles_ptr:
 
 
 
+	.include	"bg_conv_layout.68k"
+	
 
 sprite_group_table:
 	* generated by "convert_graphics.py" python script
