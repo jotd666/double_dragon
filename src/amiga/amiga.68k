@@ -1058,7 +1058,8 @@ load_context:
 	move.l	(a2)+,d0
 	jeq		31f
 	move.l	d0,a0
-	lea		bg_character_table_buffer_ptr,a1
+	lea		bg_character_table_buffer,a1
+	move.l	a1,bg_character_table_buffer_ptr
 	move.l	#BG_TILE_FILE_MAX_SIZE,d0
 	jbsr	load_file
 	
@@ -1070,6 +1071,13 @@ load_context:
 	move.w	#BG_TILE_NB_CLUTS,d6
 	move.w	#BG_TILE_COUNT,d7
 	jbsr	relocate_tiles_file
+	
+	* set bg palette
+	lea		bg_character_table_buffer,a0
+	move.l	color_copper_pointers,a1	| entries 64-80
+	move.w	#NB_BG_COLORS,d0
+	jbsr	load_palette
+
 31:
 
 	
