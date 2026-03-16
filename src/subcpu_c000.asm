@@ -65,30 +65,30 @@ C05E: AB 00    adda $00,x	; [rom]
 C060: 08       inx  
 C061: 26 FB    bne  $C05E
 C063: B7 80 00 sta  shared_memory_8000		; write the result of the checksum here so maincpu can collect it
-C066: 7C 00 66 inc  irq_already_called_0066
+C066: 7C 00 66 inc  irq_already_called_0066	; next time do the real processing, not rom checksum
 C069: 7E C0 39 jmp  irq_end_c039
 
 C06C: BD C0 A8 jsr  $C0A8
-C06F: CE 80 01 ldx  #$8001
+C06F: CE 80 01 ldx  #$8001		; load X with start of shared memory
 C072: 86 01    lda  #$01
 C074: 97 4F    sta  $4F
 C076: 96 4F    lda  $4F
 C078: B1 80 00 cmpa shared_memory_8000
 C07B: 24 27    bcc  $C0A4
-C07D: EC 00    ldd  $00,x		; [select_address]
+C07D: EC 00    ldd  $00,x
 C07F: DD 40    std  $40
-C081: EC 02    ldd  $02,x		; [select_address]
+C081: EC 02    ldd  $02,x
 C083: DD 42    std  $42
-C085: EC 04    ldd  $04,x		; [select_address]
+C085: EC 04    ldd  $04,x
 C087: DD 44    std  $44
-C089: EC 06    ldd  $06,x		; [select_address]
+C089: EC 06    ldd  $06,x
 C08B: DD 46    std  $46
 C08D: 3C       pshx 
 C08E: D6 41    ldb  $41
 C090: C4 7F    andb #$7F
 C092: C1 7F    cmpb #$7F
 C094: 27 03    beq  $C099
-C096: BD C1 0B jsr  $C10B
+C096: BD C1 0B jsr  heavy_lifting_c10b
 C099: C6 08    ldb  #$08
 C09B: 38       pulx 
 C09C: 3A       abx  
@@ -100,7 +100,7 @@ C0A4: 7F 80 00 clr  shared_memory_8000
 C0A7: 39       rts 
  
 C0A8: 7D 80 00 tst  shared_memory_8000
-C0AB: 27 5D    beq  $C10A
+C0AB: 27 5D    beq  $C10A		; 0: return immediately
 ; main cpu is asking for work
 C0AD: 7F 00 4F clr  $004F
 C0B0: 86 01    lda  #$01
@@ -148,10 +148,11 @@ C105: 7D 00 4F tst  $004F
 C108: 26 A3    bne  $C0AD
 C10A: 39       rts 
  
+heavy_lifting_c10b:
 C10B: B6 81 FD lda  $81FD
 C10E: 81 4B    cmpa #$4B
 C110: 25 03    bcs  $C115
-C112: 7E C2 7E jmp  $C27E
+C112: 7E C2 7E jmp  $C27E		; do nothing
 C115: DC 44    ldd  $44
 C117: D3 46    addd $46
 C119: B3 81 FB subd $81FB
@@ -213,6 +214,7 @@ C183: EC 00    ldd  $00,x		; [rom]
 C185: 08       inx  
 C186: 08       inx  
 C187: DD 4C    std  $4C
+; loop
 C189: 96 4E    lda  $4E
 C18B: 2A 04    bpl  $C191
 C18D: 96 50    lda  $50
@@ -324,7 +326,7 @@ C24B: DE 48    ldx  $48
 C24D: DF 48    stx  $48
 C24F: DE 4A    ldx  $4A
 C251: 96 60    lda  $60
-C253: A7 00    sta  $00,x
+C253: A7 00    sta  $00,x	; exchange memory 0x81xx
 C255: 96 61    lda  $61
 C257: A7 01    sta  $01,x
 C259: 96 62    lda  $62

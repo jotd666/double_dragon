@@ -138,8 +138,10 @@ def f_handle_sub_line(address,lines,i):
             line = line.replace("GET_REG_ADDRESS","GET_ROM_REG_ADDRESS")
         elif "[zero_page]" in line:
             line = line.replace("GET_REG_ADDRESS","GET_ZP_REG_ADDRESS")
-        elif "[select_address]" in line:
-            line = line.replace("GET_REG_ADDRESS","GET_SELECT_REG_ADDRESS")
+##        elif "[select_address]" in line:
+##            line = line.replace("GET_REG_ADDRESS","GET_SELECT_REG_ADDRESS")
+        elif "[shared_address]" in line:
+            line = line.replace("GET_REG_ADDRESS","GET_SHARED_REG_ADDRESS")
 
     if "unsupported instruction rti" in line:
         if address == 0xC057:

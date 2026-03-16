@@ -1,6 +1,6 @@
 lb1_4000:   ; [global]
 4000: 7E 41 00    JMP    $4100
-lb1_4003:   ; [global]
+subcpu_processing_4003:   ; [global]
 4003: 7E 41 1E    JMP    subcpu_processing_411e
 lb1_4006:   ; [global]
 4006: 7E 5C 88    JMP    $5C88
@@ -173,10 +173,11 @@ subcpu_processing_411e:
 4122: 8A 10       ORA    #$10
 4124: 97 3A       STA    bank_switch_copy_3a
 4126: B7 38 08    STA    bankswitch_3808
+; wait for subcpu to be ready
 4129: B6 38 02    LDA    extra_3802
 412C: 84 10       ANDA   #$10
 412E: 26 F9       BNE    $4129
-4130: 7F 20 00    CLR    $2000
+4130: 7F 20 00    CLR    subcpu_shared_2000
 4133: DC 3C       LDD    $3C
 4135: FD 21 F9    STD    $21F9
 4138: DC 3F       LDD    $3F
@@ -189,10 +190,11 @@ subcpu_processing_411e:
 414C: 10 8E 03 81 LDY    #$0381
 4150: CE 20 01    LDU    #$2001		; fill exchange zone
 4153: 5F          CLRB
-4154: AE A5       LDX    B,Y
-4156: A6 01       LDA    $1,X
-4158: A7 C4       STA    ,U
-415A: A6 02       LDA    $2,X
+; loop
+4154: AE A5       LDX    B,Y		; load source offset
+4156: A6 01       LDA    $1,X		; load data
+4158: A7 C4       STA    ,U			; store in exchange zone
+415A: A6 02       LDA    $2,X		; repeat ad nauseam
 415C: A7 41       STA    $1,U
 415E: A6 04       LDA    $4,X
 4160: A7 42       STA    $2,U
@@ -260,18 +262,19 @@ subcpu_processing_411e:
 41E3: 33 48       LEAU   $8,U
 41E5: CB 02       ADDB   #$02
 41E7: F1 03 A1    CMPB   $03A1
-41EA: 10 25 FF 66 LBCS   $4154
+41EA: 10 25 FF 66 LBCS   $4154		; loop back
 41EE: 1E 03       EXG    D,U
-41F0: F7 20 00    STB    $2000			; set data in exchange memory: number of sprites (??) to process
+41F0: F7 20 00    STB    subcpu_shared_2000			; set data in exchange memory: number of sprites (??) to process
 41F3: 96 3A       LDA    bank_switch_copy_3a
 41F5: 84 EF       ANDA   #$EF
 41F7: 97 3A       STA    bank_switch_copy_3a
-41F9: B7 38 08    STA    bankswitch_3808		; wake up subcpu
+41F9: B7 38 08    STA    bankswitch_3808
+; wait for subcpu to be ready
 41FC: B6 38 02    LDA    extra_3802
 41FF: 84 10       ANDA   #$10
 4201: 27 F9       BEQ    $41FC
-; subcpu has completed task
-4203: B7 38 0F    STA    sub_irq_380f		; ack
+; wake up subcpu, let it work in parallel
+4203: B7 38 0F    STA    sub_irq_380f
 4206: 7F 03 A1    CLR    $03A1
 4209: 35 C0       PULS   U,PC
 

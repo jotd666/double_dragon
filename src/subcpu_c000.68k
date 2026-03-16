@@ -122,7 +122,7 @@ sub_c05e:
 	GET_SHARED_ADDRESS	shared_memory_8000         	| [$c063: sta  shared_memory_8000] write the result of the checksum here so maincpu can collect it
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	c066,-2   | added by add_reg_log.py
-	OP_W_ON_DP_ADDRESS	addq,irq_already_called_0066,#1| [$c066: inc  irq_already_called_0066]
+	OP_W_ON_DP_ADDRESS	addq,irq_already_called_0066,#1| [$c066: inc  irq_already_called_0066] next time do the real processing, not rom checksum
 	LOG_REGS	c069,-2   | added by add_reg_log.py
 	jra	irq_end_c039                       	| [$c069: jmp  irq_end_c039]
 
@@ -130,7 +130,7 @@ sub_c06c:
 	LOG_REGS	c06c,-2   | added by add_reg_log.py
 	jbsr	sub_c0a8                          	| [$c06c: jsr  $c0a8]
 	LOG_REGS	c06f,-2   | added by add_reg_log.py
-	move.w	#0x8001,d2                      	| [$c06f: ldx  #$8001]
+	move.w	#0x8001,d2                      	| [$c06f: ldx  #$8001] load X with start of shared memory
 	LOG_REGS	c072,-2   | added by add_reg_log.py
 	move.b	#0x01,d0                        	| [$c072: lda  #$01]
 	LOG_REGS	c074,-2   | added by add_reg_log.py
@@ -144,26 +144,26 @@ sub_c076:
 	LOG_REGS	c07b,-2   | added by add_reg_log.py
 	jcc	sub_c0a4                           	| [$c07b: bcc  $c0a4]
 	LOG_REGS	c07d,-2   | added by add_reg_log.py
-	GET_SELECT_REG_ADDRESS	0x00,d2                	| [$c07d: ldd  $00,x] [select_address]
-	LOAD_D                                 	| [$c07d: ldd  $00,x] [select_address]
+	GET_REG_ADDRESS	0x00,d2                	| [$c07d: ldd  $00,x]
+	LOAD_D                                 	| [$c07d: ldd  $00,x]
 	LOG_REGS	c07f,-2   | added by add_reg_log.py
 	GET_DP_ADDRESS	0x40                    	| [$c07f: std  $40]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	LOG_REGS	c081,-2   | added by add_reg_log.py
-	GET_SELECT_REG_ADDRESS	0x02,d2                	| [$c081: ldd  $02,x] [select_address]
-	LOAD_D                                 	| [$c081: ldd  $02,x] [select_address]
+	GET_REG_ADDRESS	0x02,d2                	| [$c081: ldd  $02,x]
+	LOAD_D                                 	| [$c081: ldd  $02,x]
 	LOG_REGS	c083,-2   | added by add_reg_log.py
 	GET_DP_ADDRESS	0x42                    	| [$c083: std  $42]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	LOG_REGS	c085,-2   | added by add_reg_log.py
-	GET_SELECT_REG_ADDRESS	0x04,d2                	| [$c085: ldd  $04,x] [select_address]
-	LOAD_D                                 	| [$c085: ldd  $04,x] [select_address]
+	GET_REG_ADDRESS	0x04,d2                	| [$c085: ldd  $04,x]
+	LOAD_D                                 	| [$c085: ldd  $04,x]
 	LOG_REGS	c087,-2   | added by add_reg_log.py
 	GET_DP_ADDRESS	0x44                    	| [$c087: std  $44]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	LOG_REGS	c089,-2   | added by add_reg_log.py
-	GET_SELECT_REG_ADDRESS	0x06,d2                	| [$c089: ldd  $06,x] [select_address]
-	LOAD_D                                 	| [$c089: ldd  $06,x] [select_address]
+	GET_REG_ADDRESS	0x06,d2                	| [$c089: ldd  $06,x]
+	LOAD_D                                 	| [$c089: ldd  $06,x]
 	LOG_REGS	c08b,-2   | added by add_reg_log.py
 	GET_DP_ADDRESS	0x46                    	| [$c08b: std  $46]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
@@ -178,7 +178,7 @@ sub_c076:
 	LOG_REGS	c094,-2   | added by add_reg_log.py
 	jeq	sub_c099                           	| [$c094: beq  $c099]
 	LOG_REGS	c096,-2   | added by add_reg_log.py
-	jbsr	sub_c10b                          	| [$c096: jsr  $c10b]
+	jbsr	heavy_lifting_c10b                	| [$c096: jsr  heavy_lifting_c10b]
 sub_c099:
 	LOG_REGS	c099,-2   | added by add_reg_log.py
 	move.b	#0x08,d1                        	| [$c099: ldb  #$08]
@@ -206,7 +206,7 @@ sub_c0a8:
 	GET_SHARED_ADDRESS	shared_memory_8000         	| [$c0a8: tst  shared_memory_8000]
 	tst.b	(a0)                             	| [...]
 	LOG_REGS	c0ab,-2   | added by add_reg_log.py
-	jeq	sub_c10a                           	| [$c0ab: beq  $c10a]
+	jeq	sub_c10a                           	| [$c0ab: beq  $c10a] 0: return immediately
 * main cpu is asking for work
 sub_c0ad:
 	LOG_REGS	c0ad,-2   | added by add_reg_log.py
@@ -334,7 +334,7 @@ sub_c10a:
 	LOG_REGS	c10a,-2   | added by add_reg_log.py
 	rts                                    	| [$c10a: rts]
 
-sub_c10b:
+heavy_lifting_c10b:
 	LOG_REGS	c10b,-2   | added by add_reg_log.py
 	GET_SHARED_ADDRESS	0x81fd                     	| [$c10b: lda  $81fd]
 	move.b	(a0),d0                         	| [...]
@@ -343,7 +343,7 @@ sub_c10b:
 	LOG_REGS	c110,-2   | added by add_reg_log.py
 	jcs	sub_c115                           	| [$c110: bcs  $c115]
 	LOG_REGS	c112,-2   | added by add_reg_log.py
-	jra	sub_c27e                           	| [$c112: jmp  $c27e]
+	jra	sub_c27e                           	| [$c112: jmp  $c27e] do nothing
 sub_c115:
 	LOG_REGS	c115,-2   | added by add_reg_log.py
 	GET_DP_ADDRESS	0x44                    	| [$c115: ldd  $44]
@@ -503,6 +503,7 @@ sub_c17c:
 	LOG_REGS	c187,-2   | added by add_reg_log.py
 	GET_DP_ADDRESS	0x4c                    	| [$c187: std  $4c]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
+* loop
 sub_c189:
 	LOG_REGS	c189,-2   | added by add_reg_log.py
 	OP_R_ON_DP_ADDRESS	move,0x4e,d0         | [$c189: lda  $4e]
@@ -766,7 +767,7 @@ sub_c24d:
 	LOG_REGS	c251,-2   | added by add_reg_log.py
 	OP_R_ON_DP_ADDRESS	move,0x60,d0         | [$c251: lda  $60]
 	LOG_REGS	c253,-2   | added by add_reg_log.py
-	GET_REG_ADDRESS	0x00,d2                	| [$c253: sta  $00,x]
+	GET_REG_ADDRESS	0x00,d2                	| [$c253: sta  $00,x] exchange memory 0x81xx
 	move.b	d0,(a0)                         	| [...]
 	LOG_REGS	c255,-2   | added by add_reg_log.py
 	OP_R_ON_DP_ADDRESS	move,0x61,d0         | [$c255: lda  $61]

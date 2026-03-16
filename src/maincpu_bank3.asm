@@ -395,7 +395,7 @@ jump_table_6cdc:
 7017: A6 88 17       LDA    $17,X
 701A: 81 0F          CMPA   #$0F
 701C: 26 09          BNE    $7027
-701E: 17 00 11       LBSR   $7032
+701E: 17 00 11       LBSR   $7032		; useless!
 7021: 17 00 0F       LBSR   $7033
 7024: 17 00 70       LBSR   $7097
 7027: 30 88 21       LEAX   $21,X
@@ -404,6 +404,7 @@ jump_table_6cdc:
 702D: 17 00 FA       LBSR   $712A
 7030: 35 FE          PULS   D,DP,X,Y,U,PC
 7032: 39             RTS
+
 7033: 34 7E          PSHS   U,Y,X,DP,D
 7035: A6 88 31       LDA    $31,X
 7038: 85 03          BITA   #$03
@@ -444,6 +445,7 @@ jump_table_6cdc:
 7090: 86 01          LDA    #$01
 7092: A7 88 31       STA    $31,X
 7095: 35 FE          PULS   D,DP,X,Y,U,PC
+
 7097: 34 7E          PSHS   U,Y,X,DP,D
 7099: 10 8E 70 A7    LDY    #jump_table_70a7
 709D: A6 88 31       LDA    $31,X

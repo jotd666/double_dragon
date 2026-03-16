@@ -150,7 +150,7 @@ def process_file(input_radix,output_radix,f_handle_line,global_symbols=[],out_he
             if is_bank:
                 # replace prefixes by normal prefixes, add to returned globals if range not in bank address
                 # (easy to cheat with regex bank address 4xxx-7xxx)
-                m = re.search("(lb\d_)([012389abcdef]...)",line,flags=re.I)
+                m = re.search(r"(lb\d_)([012389abcdef][a-f0-9][a-f0-9][a-f0-9])\b",line,flags=re.I)
                 if m:
                     prefix,offset = m.groups()
                     go = f"l_{offset}"
@@ -230,12 +230,14 @@ def process_file(input_radix,output_radix,f_handle_line,global_symbols=[],out_he
 
             lines[i] = line
 
+
             # now the specific part
             f_handle_line(address,lines,i)
 
         # make the line number correct
         lines = "".join(lines).splitlines(True)
         for i,line in enumerate(lines,out_header.count("\n")+2+len(global_symbols)):
+
             if line.lstrip().startswith("ERROR"):
                 print(i,line,end="")
 

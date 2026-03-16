@@ -270,7 +270,8 @@ lb0_41f0:   ; [global]
 420E: 5A             DECB
 420F: 26 F9          BNE    $420A
 4211: 35 D7          PULS   CC,D,X,U,PC
-lb0_4213:   ; [global]
+
+lb0_clear_sprite_memory_4213:   ; [global]
 4213: 34 77          PSHS   U,Y,X,D,CC
 4215: 7F 21 FD       CLR    $21FD
 4218: 7F 03 A1       CLR    $03A1
@@ -278,15 +279,15 @@ lb0_4213:   ; [global]
 421E: C6 4C          LDB    #$4C
 4220: 8D CE          BSR    lb0_41f0
 4222: CC 01 80       LDD    #$0180
-4225: 8E 28 00       LDX    #$2800
+4225: 8E 28 00       LDX    #sprite_memory_2800
 4228: 6F 80          CLR    ,X+
 422A: 83 00 01       SUBD   #$0001
 422D: 26 F9          BNE    $4228
 422F: 35 F7          PULS   CC,D,X,Y,U,PC
 
-lb0_4231:  ; [global]
-4231: 8E 20 81       LDX    #$2081
-4234: 10 8E 28 00    LDY    #$2800
+lb0_update_sprite_memory_4231:  ; [global]
+4231: 8E 20 81       LDX    #$2081		; source: subcpu exchange memory
+4234: 10 8E 28 00    LDY    #sprite_memory_2800		; destination: sprite memory
 4238: EC 81          LDD    ,X++
 423A: ED A1          STD    ,Y++
 423C: 8C 21 FD       CMPX   #$21FD
@@ -1261,7 +1262,7 @@ display_title_tiles_4ac7:
 
 4AE4: 32 7E          LEAS   -$2,S
 4AE6: 8E 4D 4C       LDX    #$4D4C
-4AE9: 10 8E 28 00    LDY    #$2800
+4AE9: 10 8E 28 00    LDY    #sprite_memory_2800
 4AED: 86 0D          LDA    #$0D
 4AEF: A7 E4          STA    ,S
 4AF1: 86 0D          LDA    #$0D
