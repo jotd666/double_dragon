@@ -5275,13 +5275,7 @@ osd_log_cpu:
 	CHECK_ZERO_MSW	d4		| U
 	CHECK_ZERO_MSW	d5		| S
 
-*	check that stack is in RAM
-*   we had to disable it because at some point the game uses
-*   puls/pulu to read data
-*	cmp.l	#0x3000,d5
-*	jcs		0f
-*	BREAKPOINT	"target stack is not in RAM"
-*0:
+
 	move.w	(4,a7),last_declared_bank
 	move.w	(6,a7),last_known_m6809_pc
 	

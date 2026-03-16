@@ -75,8 +75,11 @@ def f_handle_bank1_line(address,lines,i):
     elif address == 0x5ba0:
         lines[i+2] = remove_error(lines[i+2])
     elif address == 0x4201:
-        # remove wait for subcpu (subcpu should be called here, we'll see laer'")
+        # remove wait for subcpu
         line = remove_instruction(lines,i)
+    elif address == 0x4203:
+        # replace subcpu irq write by irq call
+        line = change_instruction("jbsr\tosd_call_sub_irq",lines,i)
     lines[i] = line
 
 

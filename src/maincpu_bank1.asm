@@ -1,6 +1,6 @@
 lb1_4000:   ; [global]
 4000: 7E 41 00    JMP    $4100
-subcpu_processing_4003:   ; [global]
+lb1_subcpu_processing_4003:   ; [global]
 4003: 7E 41 1E    JMP    subcpu_processing_411e
 lb1_4006:   ; [global]
 4006: 7E 5C 88    JMP    $5C88

@@ -420,6 +420,21 @@ multiply_ab:
 	move.b	d1,d0
 	ror.w	#8,d1
 	rts
+	
+	.macro	ENABLE_LOG_REGS
+	moveq	#1,d6		| enable
+	jbsr	osd_cpu_logging_control	
+	.endm
+	.macro	DISABLE_LOG_REGS
+	moveq	#0,d6		| disable
+	jbsr	osd_cpu_logging_control	
+	.endm	
+	.macro	REENABLE_LOG_REGS
+	moveq	#2,d6		| enable
+	jbsr	osd_cpu_logging_control	
+	.endm
+
+
 	.ifndef	RELEASE
 	* to trace at some virtual PCs, insert this macro
 	.macro	LOG_REGS	the_pc,the_bank

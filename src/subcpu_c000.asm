@@ -38,7 +38,7 @@ C02E: 7D 00 66 tst  irq_already_called_0066
 C031: 26 03    bne  $C036
 ; first time IRQ is called it checksums the memory
 C033: 7E C0 58 jmp  rom_checksum_c058
-C036: BD C0 6C jsr  $C06C
+C036: BD C0 6C jsr  sprite_convert_c06c
 irq_end_c039:
 C039: 96 65    lda  $65
 C03B: 84 FD    anda #$FD
@@ -68,6 +68,7 @@ C063: B7 80 00 sta  shared_memory_8000		; write the result of the checksum here 
 C066: 7C 00 66 inc  irq_already_called_0066	; next time do the real processing, not rom checksum
 C069: 7E C0 39 jmp  irq_end_c039
 
+sprite_convert_c06c:
 C06C: BD C0 A8 jsr  $C0A8
 C06F: CE 80 01 ldx  #$8001		; load X with start of shared memory
 C072: 86 01    lda  #$01

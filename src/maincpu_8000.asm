@@ -571,7 +571,7 @@ gameloop_8389:
 838C: 0F 22          CLR    interrupt_status_22
 838E: F6 21 FD       LDB    $21FD
 8391: 34 04          PSHS   B
-8393: BD FF 1A       JSR    $FF1A
+8393: BD FF 1A       JSR    subcpu_processing_ff1a
 8396: BD FE C5       JSR    $FEC5
 8399: BD 84 7E       JSR    $847E
 839C: BD FD 0C       JSR    $FD0C
@@ -729,7 +729,7 @@ play_intro_animation_84f8:
 8511: 0F 22          CLR    interrupt_status_22
 8513: F6 21 FD       LDB    $21FD
 8516: 34 04          PSHS   B
-8518: BD FF 1A       JSR    $FF1A
+8518: BD FF 1A       JSR    subcpu_processing_ff1a
 851B: BD B3 F6       JSR    $B3F6
 851E: BD B3 50       JSR    $B350
 8521: BD B4 00       JSR    $B400
@@ -832,7 +832,7 @@ play_intro_animation_84f8:
 8607: 0F 22          CLR    interrupt_status_22
 8609: F6 21 FD       LDB    $21FD
 860C: 34 04          PSHS   B
-860E: BD FF 1A       JSR    $FF1A
+860E: BD FF 1A       JSR    subcpu_processing_ff1a
 8611: BD FE F5       JSR    $FEF5
 8614: BD B7 9A       JSR    $B79A
 8617: 96 36          LDA    $36
@@ -9742,8 +9742,9 @@ FF13: BD 40 00       JSR    lb1_4000
 FF16: BD FD B2       JSR    restore_previous_bank_fdb2
 FF19: 39             RTS
 
+subcpu_processing_ff1a:
 FF1A: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
-FF1D: BD 40 03       JSR    subcpu_processing_4003
+FF1D: BD 40 03       JSR    lb1_subcpu_processing_4003
 FF20: BD FD B2       JSR    restore_previous_bank_fdb2
 FF23: 39             RTS
 
