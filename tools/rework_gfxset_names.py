@@ -3,7 +3,7 @@ import glob,os,re,pathlib
 
 gfx_dir = "../assets/sheets"
 
-for sn,ttype in ((0,"fg_tiles"),):
+for sn,ttype in ((0,"fg_tiles"),(1,"sprites"),):
     outdir = pathlib.Path(gfx_dir) / ttype
     outdir.mkdir(exist_ok=True)
 

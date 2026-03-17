@@ -9,6 +9,8 @@ this_dir = os.path.dirname(os.path.abspath(__file__))
 
 tilesdir = os.path.join(this_dir,os.pardir,"sheets","sprites")
 
+mono_clut = True
+
 def doit(binname):
     with open(os.path.join(this_dir,binname),"rb") as f:
         contents = f.read()
@@ -25,6 +27,7 @@ def doit(binname):
 
     def load_tileset(image_name,side,dump_prefix=""):
         full_image_path = os.path.join(tilesdir,image_name)
+        print(f"loading {image_name}")
         tiles_1 = Image.open(full_image_path)
         nb_rows = tiles_1.size[1] // side
         nb_cols = tiles_1.size[0] // side
@@ -42,47 +45,47 @@ def doit(binname):
 
         return tileset_1
 
-    ts_title_list = [load_tileset(f"pal_{p:02x}.png",16) for p in range(4)]
+    ts_title_list = [load_tileset(f"pal_{p:02x}.png",16) for p in range(1 if mono_clut else 8)]
     layer = Image.new("RGB",(256,256))
 
-    buffered_spriteram = contents[0:0x180]
+    src = contents
 
     used_sprites = set()
 
-    for offs in range(len(buffered_spriteram)-4,0,-4):
-        attributes = buffered_spriteram[offs + 1]
-        sx = buffered_spriteram[offs + 3] - 0x100 * (attributes & 0x01)
-        sy = buffered_spriteram[offs + 2]
-        if sy==0xF8:
-            continue
-        flipx = attributes & 0x04
-        flipy = attributes & 0x08
+    for i in range(0,len(src),5):
+        attr = src[i + 1]
+        if (attr & 0x80): # visible
 
-        tile_code = buffered_spriteram[offs] + ((attributes << 2) & 0x300)
-        tile_color = (attributes >> 4) & 3
-        name = sprite_names.get(tile_code,"unknown")
-        if name=="blank":
-            continue
+            sx = 240 - src[i + 4] + ((attr & 2) << 7);
+            sy = 232 - src[i + 0] + ((attr & 1) << 8);
+            size = (attr & 0x30) >> 4;
+            flipx = attr & 8;
+            flipy = attr & 4;
+            dx = -16
+            dy = -16;
+            color = src[i + 2] >> 4;
+            which = src[i + 3] | ((src[i + 2] & 0x0f) << 8);
 
-        #sx += 128
-        sy += 6
+            #which &= 0x100-size-1;
 
-        used_sprites.add(tile_code)
+            if mono_clut:
+                color = 0
+            sheet = ts_title_list[color]
 
-        sheet = ts_title_list[tile_color]
-        img = sheet[tile_code]
-        if flipx:
-            img = ImageOps.mirror(img)
-        elif flipy:
-            img = ImageOps.flip(img)
+            img = sheet[which]
+            if flipx:
+                img = ImageOps.mirror(img)
+            elif flipy:
+                img = ImageOps.flip(img)
 
-        print(f"offset={offs:04x}, code={tile_code:02x}: name={name}, x={sx}, y={sy}")
-        layer.paste(img,box=(sx,sy))
+            name = sprite_names.get(i,"unknown")
+            print(f"offset={i:04x}, code={which:02x}: name={name}, x={sx}, y={sy}")
+            layer.paste(img,box=(sx,sy))
 
 
     layer.save(f"{binname}.png")
 
-doit("sprites")
+doit("sprites_amiga")
 
 
 
