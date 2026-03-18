@@ -137,6 +137,8 @@
 ; FFFCH to FFFDH 	Non-maskable interrupt vector (NMI)      $8056 freq 1/60s (15ms)
 ; FFFEH to FFFFH 	Reset vector                             $8000
 
+; characters seem to have a 16 color palette each
+; ex in intro $1xCx is boss palette, $1xDx is green punk palette
 bank_switch_copy_3a = $3a
 
 bank_address_4000 = $4000
@@ -164,6 +166,7 @@ sprites_palette_1080 = $1080
 fg_tiles_palette_1000 = $1000
 subcpu_shared_2000 = $2000
 sprite_memory_2800 = $2800
+nmi_active_flag_0e71 = $0e71
 
 bg_tiles_address_3000 = $3000
 fg_tiles_address_1800 = $1800
@@ -172,7 +175,7 @@ interrupt_status_22 = $22
 
 reset_8000:     ; [global]
 8000: 4F             CLRA
-8001: B7 0E 71       STA    $0E71
+8001: B7 0E 71       STA    nmi_active_flag_0e71	; nmi is inactive
 8004: B7 38 08       STA    bankswitch_3808		; set bank 0
 8007: 1A 50          ORCC   #$50				; disable interrupts
 8009: B7 38 0D       STA    irq_ack_380d
@@ -207,9 +210,10 @@ reset_8000:     ; [global]
 
 nmi_8056:   ; [global]
 8056: 4F             CLRA
-8057: 1F 8B          TFR    A,DP
-8059: F6 0E 71       LDB    $0E71
+8057: 1F 8B          TFR    A,DP			; direct page 0
+8059: F6 0E 71       LDB    nmi_active_flag_0e71
 805C: 2A 30          BPL    $808E
+; flag is negative ($80): nmi will do something
 805E: 96 22          LDA    interrupt_status_22
 8060: 2B 2C          BMI    $808E
 8062: 8A 80          ORA    #$80
@@ -222,7 +226,7 @@ nmi_8056:   ; [global]
 8071: BD FF 24       JSR    save_and_switch_to_bank_0_ff24
 8074: BD FE A4       JSR    update_sprite_memory_fea4	; copy from subcpu memory to sprite memory
 8077: BD FE A7       JSR    $FEA7			; ??? tried disabling it, the game runs normally...
-807A: BD FD F3       JSR    $FDF3
+807A: BD FD F3       JSR    set_palettes_fdf3
 807D: BD FF 34       JSR    restore_previous_bank_ff34
 8080: 96 22          LDA    interrupt_status_22
 8082: 8A 02          ORA    #$02
@@ -305,7 +309,7 @@ swi_interrupt:
 810D: 0F 38          CLR    $38
 810F: 0F 37          CLR    $37
 8111: BD FD F0       JSR    set_palettes_fdf0
-8114: BD FD F3       JSR    $FDF3
+8114: BD FD F3       JSR    set_palettes_fdf3
 8117: BD FE F8       JSR    $FEF8
 811A: 86 06          LDA    #$06
 811C: BD FE B0       JSR    $FEB0
@@ -352,7 +356,7 @@ coin_inserted_8158:
 8175: BD FE 9E       JSR    clear_sprite_memory_fe9e
 8178: 0F 36          CLR    $36
 817A: BD FD F0       JSR    set_palettes_fdf0
-817D: BD FD F3       JSR    $FDF3
+817D: BD FD F3       JSR    set_palettes_fdf3
 8180: BD FE 98       JSR    clear_fg_screen_fe98
 8183: BD FE E3       JSR    $FEE3
 8186: 86 FF          LDA    #$FF
@@ -480,7 +484,7 @@ demo_8215:
 8293: B6 03 EA       LDA    $03EA
 8296: F6 04 48       LDB    $0448
 8299: 34 06          PSHS   D
-829B: 7F 0E 71       CLR    $0E71
+829B: 7F 0E 71       CLR    nmi_active_flag_0e71
 829E: 8E 03 A2       LDX    #$03A2
 82A1: 10 8E 0A CF    LDY    #$0ACF
 82A5: BD FE AA       JSR    $FEAA
@@ -522,7 +526,7 @@ demo_8215:
 8307: A6 85          LDA    B,X
 8309: 97 4F          STA    $4F
 830B: 0F 4D          CLR    $4D
-830D: BD FD F3       JSR    $FDF3
+830D: BD FD F3       JSR    set_palettes_fdf3
 8310: BD FD F6       JSR    $FDF6
 8313: BD FC 5A       JSR    $FC5A
 8316: BD FC BE       JSR    $FCBE
@@ -560,11 +564,11 @@ demo_8215:
 8369: 96 36          LDA    $36
 836B: A6 A6          LDA    A,Y
 836D: BD FE B6       JSR    $FEB6
-8370: 20 0C          BRA    $837E
-
-837E: B6 0E 71       LDA    $0E71
+8370: 20 0C          BRA    activate_nmi_flag_837e		; [useless]
+activate_nmi_flag_837e:
+837E: B6 0E 71       LDA    nmi_active_flag_0e71
 8381: 8A 80          ORA    #$80
-8383: B7 0E 71       STA    $0E71
+8383: B7 0E 71       STA    nmi_active_flag_0e71
 8386: 7F 0E 52       CLR    $0E52
 gameloop_8389:
 8389: 7F 0E 3E       CLR    sync_flag_0e3e
@@ -645,7 +649,8 @@ gameloop_8389:
 844A: 86 04          LDA    #$04
 844C: BD FE B3       JSR    $FEB3
 844F: 39             RTS
-8450: 7F 0E 71       CLR    $0E71
+
+8450: 7F 0E 71       CLR    nmi_active_flag_0e71
 8453: 86 FF          LDA    #$FF
 8455: B7 38 0E       STA    sound_irq_380e
 8458: BD FE 98       JSR    clear_fg_screen_fe98
@@ -722,11 +727,11 @@ play_intro_animation_84f8:
 84FE: 97 4B          STA    $4B
 8500: BD B3 EC       JSR    $B3EC
 8503: BD B3 31       JSR    $B331
-8506: B6 0E 71       LDA    $0E71
+8506: B6 0E 71       LDA    nmi_active_flag_0e71
 8509: 8A 80          ORA    #$80
-850B: B7 0E 71       STA    $0E71
+850B: B7 0E 71       STA    nmi_active_flag_0e71
 850E: 7F 0E 3E       CLR    sync_flag_0e3e
-8511: 0F 22          CLR    interrupt_status_22
+;;8511: 0F 22          CLR    interrupt_status_22
 8513: F6 21 FD       LDB    $21FD
 8516: 34 04          PSHS   B
 8518: BD FF 1A       JSR    subcpu_processing_ff1a
@@ -741,6 +746,7 @@ play_intro_animation_84f8:
 8532: BD 8A B5       JSR    wait_subcpu_reply_8ab5
 8535: 35 04          PULS   B
 8537: BD FE AD       JSR    $FEAD
+; activate bit in 22 so nmi runs fully
 853A: 96 22          LDA    interrupt_status_22
 853C: 8A 01          ORA    #$01
 853E: 97 22          STA    interrupt_status_22
@@ -782,9 +788,9 @@ play_intro_animation_84f8:
 858C: 0D 37          TST    $37
 858E: 27 55          BEQ    $85E5
 8590: 0F 38          CLR    $38
-8592: B6 0E 71       LDA    $0E71
+8592: B6 0E 71       LDA    nmi_active_flag_0e71
 8595: 84 7F          ANDA   #$7F
-8597: B7 0E 71       STA    $0E71
+8597: B7 0E 71       STA    nmi_active_flag_0e71
 859A: 10 8E 86 E0    LDY    #$86E0
 859E: 96 36          LDA    $36
 85A0: A6 A6          LDA    A,Y
@@ -825,9 +831,9 @@ play_intro_animation_84f8:
 85F5: 81 FF          CMPA   #$FF
 85F7: 27 03          BEQ    $85FC
 85F9: BD FE B6       JSR    $FEB6
-85FC: B6 0E 71       LDA    $0E71
+85FC: B6 0E 71       LDA    nmi_active_flag_0e71
 85FF: 8A 80          ORA    #$80
-8601: B7 0E 71       STA    $0E71
+8601: B7 0E 71       STA    nmi_active_flag_0e71
 8604: 7F 0E 3E       CLR    sync_flag_0e3e
 8607: 0F 22          CLR    interrupt_status_22
 8609: F6 21 FD       LDB    $21FD
@@ -885,9 +891,9 @@ play_intro_animation_84f8:
 8688: B6 09 F2       LDA    $09F2
 868B: 84 3F          ANDA   #$3F
 868D: B7 09 F2       STA    $09F2
-8690: B6 0E 71       LDA    $0E71
+8690: B6 0E 71       LDA    nmi_active_flag_0e71
 8693: 84 7F          ANDA   #$7F
-8695: B7 0E 71       STA    $0E71
+8695: B7 0E 71       STA    nmi_active_flag_0e71
 8698: 86 80          LDA    #$80
 869A: BD B7 56       JSR    vbl_delay_b756
 869D: 86 8F          LDA    #$8F
@@ -900,7 +906,7 @@ play_intro_animation_84f8:
 86AF: 81 04          CMPA   #$04
 86B1: 26 0F          BNE    $86C2
 86B3: 7F 09 F2       CLR    $09F2
-86B6: 7F 0E 71       CLR    $0E71
+86B6: 7F 0E 71       CLR    nmi_active_flag_0e71
 86B9: 0D 21          TST    nb_credits_0021
 86BB: 10 26 FA 99    LBNE   coin_inserted_8158
 86BF: 7E 80 BA       JMP    $80BA
@@ -914,7 +920,7 @@ play_intro_animation_84f8:
 86D4: 10 26 FC 21    LBNE   $82F9
 86D8: 86 09          LDA    #$09
 86DA: BD FE B6       JSR    $FEB6
-86DD: 7E 83 7E       JMP    $837E
+86DD: 7E 83 7E       JMP    activate_nmi_flag_837e
 
 86EC: 96 36          LDA    $36
 86EE: 81 03          CMPA   #$03
@@ -1066,7 +1072,7 @@ play_intro_animation_84f8:
 883E: 32 63          LEAS   $3,S
 8840: 39             RTS
 
-884B: 7F 0E 71       CLR    $0E71
+884B: 7F 0E 71       CLR    nmi_active_flag_0e71
 884E: B6 03 EE       LDA    $03EE
 8851: 48             ASLA
 8852: BA 04 4C       ORA    $044C
@@ -1107,8 +1113,8 @@ play_intro_animation_84f8:
 88A7: 7D 04 48       TST    $0448
 88AA: 26 03          BNE    $88AF
 88AC: BD 87 19       JSR    $8719
-88AF: 7E 83 7E       JMP    $837E
-88B2: 7F 0E 71       CLR    $0E71
+88AF: 7E 83 7E       JMP    activate_nmi_flag_837e
+88B2: 7F 0E 71       CLR    nmi_active_flag_0e71
 88B5: 86 8B          LDA    #$8B
 88B7: BD FE B0       JSR    $FEB0
 88BA: 86 8C          LDA    #$8C
@@ -1165,7 +1171,7 @@ play_intro_animation_84f8:
 893B: 86 40          LDA    #$40
 893D: B6 0E 52       LDA    $0E52
 8940: 10 26 FC B8    LBNE   $85FC
-8944: 7E 83 7E       JMP    $837E
+8944: 7E 83 7E       JMP    activate_nmi_flag_837e
 8947: 32 7E          LEAS   -$2,S
 8949: 7C 0E 34       INC    $0E34
 894C: B6 0E 34       LDA    $0E34
@@ -1201,7 +1207,7 @@ play_intro_animation_84f8:
 
 check_for_coin_inserted_8990:    ; [global]
 8990: 32 7E          LEAS   -$2,S
-8992: B6 0E 71       LDA    $0E71
+8992: B6 0E 71       LDA    nmi_active_flag_0e71
 8995: B7 0E 72       STA    $0E72
 8998: B6 38 01       LDA    port_2_3801		; bits 6 & 7 hold "coin inserted" bits
 899B: 43             COMA					; negative logic
@@ -1222,7 +1228,7 @@ check_for_coin_inserted_8990:    ; [global]
 89B7: 25 F5          BCS    $89AE
 89B9: 97 20          STA    $20
 89BB: 0F CC          CLR    $CC
-89BD: 7F 0E 71       CLR    $0E71
+89BD: 7F 0E 71       CLR    nmi_active_flag_0e71
 89C0: 17 00 BE       LBSR   coin_debounce_8a81
 89C3: 10 27 00 B1    LBEQ   no_coin_inserted_8a78
 89C7: 17 00 B7       LBSR   coin_debounce_8a81
@@ -1296,7 +1302,7 @@ l_89ea:
 8A50: 26 26          BNE    no_coin_inserted_8a78
 8A52: 10 CE 0F FF    LDS    #$0FFF
 8A56: CE 0E FF       LDU    #$0EFF
-8A59: 7F 0E 71       CLR    $0E71
+8A59: 7F 0E 71       CLR    nmi_active_flag_0e71
 8A5C: 7F 38 0D       CLR    irq_ack_380d		
 8A5F: 86 44          LDA    #$44
 8A61: 97 22          STA    interrupt_status_22
@@ -1312,7 +1318,7 @@ l_89ea:
 no_coin_inserted_8a78:
 8A78: 32 62          LEAS   $2,S
 8A7A: F6 0E 72       LDB    $0E72
-8A7D: F7 0E 71       STB    $0E71
+8A7D: F7 0E 71       STB    nmi_active_flag_0e71
 8A80: 39             RTS
 
 coin_debounce_8a81:
@@ -8751,13 +8757,13 @@ E907: B7 38 08       STA    bankswitch_3808
 E90A: 39             RTS
 
 update_scrolling_e90b:
-E90B: B6 0E 71       LDA    $0E71
+E90B: B6 0E 71       LDA    nmi_active_flag_0e71
 E90E: 85 40          BITA   #$40
 E910: 27 0B          BEQ    $E91D
 E912: BD E9 1E       JSR    update_scrolling_registers_e91e
-E915: B6 0E 71       LDA    $0E71
+E915: B6 0E 71       LDA    nmi_active_flag_0e71
 E918: 84 BF          ANDA   #$BF
-E91A: B7 0E 71       STA    $0E71
+E91A: B7 0E 71       STA    nmi_active_flag_0e71
 E91D: 39             RTS
 
 update_scrolling_registers_e91e:
@@ -8780,9 +8786,9 @@ E940: 97 3A          STA    bank_switch_copy_3a
 E942: B7 38 08       STA    bankswitch_3808
 E945: 39             RTS
 
-E946: B6 0E 71       LDA    $0E71
+E946: B6 0E 71       LDA    nmi_active_flag_0e71
 E949: 8A 40          ORA    #$40
-E94B: B7 0E 71       STA    $0E71
+E94B: B7 0E 71       STA    nmi_active_flag_0e71
 E94E: 39             RTS
 E94F: 43             COMA
 E950: 53             COMB
@@ -9650,6 +9656,7 @@ FDEC: 39             RTS
 
 set_palettes_fdf0:
 FDF0: 7E EE 30       JMP    set_palettes_ee30
+set_palettes_fdf3:
 FDF3: 7E EE 3E       JMP    set_palettes_ee3e
 FDF6: 7E E0 80       JMP    $E080
 FDF9: 7E E1 07       JMP    $E107
@@ -9705,7 +9712,7 @@ update_sprite_memory_fea4:
 FEA4: 7E 42 31       JMP    lb0_update_sprite_memory_4231
 FEA7: 7E 45 66       JMP    $4566 ; [banks=0]
 FEAA: 7E 41 BF       JMP    $41BF ; [banks=0]
-FEAD: 7E 41 F0       JMP    $41F0 ; [banks=0]
+FEAD: 7E 41 F0       JMP    lb0_41f0
 FEB0: 7E FC 50       JMP    $FC50
 FEB3: 7E FC 78       JMP    $FC78
 FEB6: 7E 44 CD       JMP    $44CD ; [banks=0]

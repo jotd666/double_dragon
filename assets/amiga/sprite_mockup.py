@@ -9,7 +9,14 @@ this_dir = os.path.dirname(os.path.abspath(__file__))
 
 tilesdir = os.path.join(this_dir,os.pardir,"sheets","sprites")
 
-mono_clut = True
+mono_clut = False
+
+def get_transformed(img,flipx,flipy):
+    if flipx:
+        img = ImageOps.mirror(img)
+    elif flipy:
+        img = ImageOps.flip(img)
+    return img
 
 def doit(binname):
     with open(os.path.join(this_dir,binname),"rb") as f:
@@ -73,19 +80,39 @@ def doit(binname):
             sheet = ts_title_list[color]
 
             img = sheet[which]
-            if flipx:
-                img = ImageOps.mirror(img)
-            elif flipy:
-                img = ImageOps.flip(img)
+            img = get_transformed(img,flipx,flipy)
 
-            name = sprite_names.get(i,"unknown")
-            print(f"offset={i:04x}, code={which:02x}: name={name}, x={sx}, y={sy}")
-            layer.paste(img,box=(sx,sy))
+            name = sprite_names.get(which,"unknown")
+            if name=="garage_door":
+                continue
+            print(f"offset={i:04x}, code={which:03x}, color={color}, name={name}, x={sx}, y={sy}, size={size}")
+            if size==0:
+                layer.paste(img,box=(sx,sy))
+            elif size==1:
+                # double Y
+                layer.paste(img,box=(sx,sy+dy))
+                img = get_transformed(sheet[which+1],flipx,flipy)
+                layer.paste(img,box=(sx,sy))
+            elif size==2:
+                # double X
+                layer.paste(img,box=(sx+dx,sy))
+                img = get_transformed(sheet[which+2],flipx,flipy)
+                layer.paste(img,box=(sx,sy))
+            elif size==3:
+                # double X & Y
+                layer.paste(img,box=(sx+dx,sy+dy))
+                img = get_transformed(sheet[which+1],flipx,flipy)
+                layer.paste(img,box=(sx+dx,sy))
+                img = get_transformed(sheet[which+2],flipx,flipy)
+                layer.paste(img,box=(sx,sy+dy))
+                img = get_transformed(sheet[which+3],flipx,flipy)
+                layer.paste(img,box=(sx,sy))
+
 
 
     layer.save(f"{binname}.png")
 
-doit("sprites_amiga")
+doit("sprites_amiga_2")
 
 
 

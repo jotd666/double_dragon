@@ -147,7 +147,27 @@ def read_used_tiles(used_tiles_name,tile_cluts,nb_tiles,nb_cluts):
 
 def get_sprite_names():
 
-    rval = {}
+    rval = {k:"player" for k in range(0,0xE4)}
+    rval |= {k:"whip" for k in range(0xE7,0x100)}
+    rval |= {k:"player" for k in range(0x101,0x23A)}
+    rval |= {k:"player" for k in range(0x25C,0x2C5)}
+    rval |= {k:"player" for k in range(0x300,0x348)}
+    rval |= {k:"girl" for k in range(0x348,0x360)}
+    rval |= {k:"girl" for k in range(0xFCA,0xFE1)}
+    rval |= {k:"punk" for k in range(0x500,0x58E)}
+    rval |= {k:"barrel" for k in range(0xEC0,0xEDA)}
+    rval |= {k:"barrel" for k in range(0xF00,0xF4A)}
+    rval |= {k:"brick" for k in range(0xF4A,0xF68)}
+    rval |= {k:"giant" for k in range(0xF86,0xFC5)}
+    rval |= {k:"giant" for k in range(0x9F4,0xA39)}
+    rval |= {k:"crate" for k in range(0xD62,0xD82)}
+    rval |= {k:"rock" for k in range(0xD80,0xD96)}
+    rval |= {k:"boss" for k in range(0xA39,0xAA0)}
+    rval |= {k:"knife" for k in range(0x9A8,0x9BE)}
+    rval |= {k:"bat" for k in range(0x9C1,0x9E9)}
+    rval |= {k:"player_marker" for k in range(0x800,0x804)}
+    rval |= {k:"garage_door" for k in list(range(0xE50,0xE5E))+[0xE45]}
+
     return rval
 
 def get_mirror_sprites():

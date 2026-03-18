@@ -1,8 +1,9 @@
 - lockup at start, subcpu is doing the job but seems that shared zone not copied in 2800
+if 8511 is skipped, update is done but it causes other problems
 
 8064: 97 22          STA    interrupt_status_22
 8066: 0C 2F          INC    $2F
-8068: 96 22          LDA    interrupt_status_22    <=== this is probably not updated
+8068: 96 22          LDA    interrupt_status_22    <=== this is updated but seems like race condition between nmi and cpu loop in intro
 806A: 84 01          ANDA   #$01
 806C: 27 1A          BEQ    $8088
 806E: BD FD FC       JSR    update_scrolling_fdfc
@@ -16,18 +17,13 @@
 8084: 97 22          STA    interrupt_status_22
 
 
-  now that it's activated, it seems to loop, check if it reaches C27E or C0A7 and compare with execution log
-  (maybe the cpu is setting 8000 at some point to unlock the subcpu, and we are screwed)
-
-- handle double / quad width/height in mockup
-
+- hack sprites palette 1080/1280: if 0 in both offsets set 0F in both offsets for purple
 - hack OSD palette to make black appear (character heads)
 - set DSW difficulty lives, etc.
 
 
 - title fading in not supported
 
-- mockup of title sprites (simpler? no subcpu used to transform coords?)
   
   optim for 6809 generator:
  	xxx_W_TO_REG	a0,d2                         	| [$5bd5: pulu   x,y]
