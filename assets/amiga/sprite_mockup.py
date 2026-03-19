@@ -63,15 +63,15 @@ def doit(binname):
         attr = src[i + 1]
         if (attr & 0x80): # visible
 
-            sx = 240 - src[i + 4] + ((attr & 2) << 7);
-            sy = 232 - src[i + 0] + ((attr & 1) << 8);
-            size = (attr & 0x30) >> 4;
-            flipx = attr & 8;
-            flipy = attr & 4;
+            sx = 240 - src[i + 4] + ((attr & 2) << 7)
+            sy = 232 - src[i + 0] + ((attr & 1) << 8)
+            size = (attr & 0x30) >> 4
+            flipx = attr & 8
+            flipy = attr & 4
             dx = -16
-            dy = -16;
-            color = src[i + 2] >> 4;
-            which = src[i + 3] | ((src[i + 2] & 0x0f) << 8);
+            dy = -16
+            color = src[i + 2] >> 4
+            which = src[i + 3] | ((src[i + 2] & 0x0f) << 8)
 
             #which &= 0x100-size-1;
 

@@ -115,11 +115,12 @@ SPRITE_BUFFER_SIZE = 0x800
 * RAMs have 4 bytes per sprite, only the order
 * and some bits differ
 
-TARGET_SPRITE_Y = 2
-TARGET_SPRITE_X = 3
+TARGET_SPRITE_Y = 0
+TARGET_SPRITE_X = 4
 TARGET_SPRITE_ATTRIBUTES = 1
-TARGET_SPRITE_CODE = 0
-TARGET_SPRITE_SIZEOF = 4
+TARGET_SPRITE_COLOR = 2
+TARGET_SPRITE_CODE = 3
+TARGET_SPRITE_SIZEOF = 5
 
 MIRROR_BIT = 2
 FLIT_BIT = 3
@@ -1858,7 +1859,7 @@ level1_interrupt:
 	.ifne	OPT_ENABLE_LOGGING
 	jbsr	log_used_fg_tiles
 	jbsr	log_used_bg_tiles
-	*jbsr	log_used_sprites
+	jbsr	log_used_sprites
 	.endif
 3:
     movem.l (a7)+,d0-d7/a0-a6
@@ -4626,22 +4627,43 @@ log_used_sprites:
 	lea	sprite_log_table,a0
 	moveq	#0,d7
 0:
-	cmp.b	#0xF8,(TARGET_SPRITE_Y,a5,d7.w)
-	jeq		1f			| not active
-	moveq	#0,d2
+	move.b	(TARGET_SPRITE_ATTRIBUTES,a5,d7.w),d2
+	jpl		1f			| not active
+	
+	* sx = 240 - src[i + 4] + ((attr & 2) << 7)
+	* sy = 232 - src[i + 0] + ((attr & 1) << 8)
+	
+	* size = (attr & 0x30) >> 4
+	moveq	#0,d3
+	move.b	d2,d3
+	and.b	#0x30,d3
+	lsr.b	#4,d3 			| size
+	
+	* flipx = attr & 8
+	btst.b	#3,d2
+	sne		d4
+	
+	* flipy = attr & 4
+	btst.b	#2,d2
+	sne		d5
+	
+	* color = src[i + 2] >> 4
 	moveq	#0,d1
+	move.b	(TARGET_SPRITE_COLOR,a5,d7.w),d2
+	move.b	d2,d1
+	lsr.b	#4,d1
+	
+	* which = src[i + 3] | ((src[i + 2] & 0x0f) << 8)
 	moveq	#0,d0
 	move.b	(TARGET_SPRITE_CODE,a5,d7.w),d0
-	move.b	(TARGET_SPRITE_ATTRIBUTES,a5,d7.w),d1
-	move.b	d1,d2
-	* extended tile code
-	lsl.w	#2,d2
-	and.w	#0x300,d2
-	add.w	d2,d0
-	lsr.b	#4,d1
-	and.w	#SPRITE_NB_CLUTS-1,d1
-	
-	lsl.l	#SPRITE_NB_CLUTS_POW,d0			| sprite code * NB_CLUTS (long!)
+	and.b	#0xF,d2
+	lsl.w	#8,d2
+	or.w	d2,d0
+
+	lsl.l	#SPRITE_NB_CLUTS_POW+2,d0			| sprite code * NB_CLUTS * 4 (4 sizes)
+	move.l	#SPRITE_NB_CLUTS,d2
+	mulu	d3,d2
+	add.l	d2,d0			| add size clut offset
 	add.l	d1,d0			| add clut
 
 	st.b	(a0,d0.l)
