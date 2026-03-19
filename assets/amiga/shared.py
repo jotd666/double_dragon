@@ -115,6 +115,9 @@ sr3(0x290,0x296)
 
 group_sprite_quadruplets = sr4(0x2C0,0x300)
 
+group_sprite_triplets = set()
+group_sprite_pairs = set()
+group_sprite_quadruplets = set()
 
 # tiles that represent lives and weapon: not alphanumeric
 
@@ -165,6 +168,7 @@ def get_sprite_names():
     rval |= {k:"boss" for k in range(0xA39,0xAA0)}
     rval |= {k:"knife" for k in range(0x9A8,0x9BE)}
     rval |= {k:"bat" for k in range(0x9C1,0x9E9)}
+    rval |= {k:"thug" for k in range(0x700,0x7EE)}
     rval |= {k:"player_marker" for k in range(0x800,0x804)}
     rval |= {k:"garage_door" for k in list(range(0xE50,0xE5E))+[0xE45]}
 

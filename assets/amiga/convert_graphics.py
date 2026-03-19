@@ -303,12 +303,6 @@ dump=False,name_dict=None,cluts=None,tile_number=0,is_bob=False):
 
     return sorted(set(palette)),tileset_1
 
-all_tile_cluts = False
-
-
-
-sprite_cluts = {}
-
 
 plane_orientations = [("standard",lambda x:x),
 ("flip",ImageOps.flip),
@@ -531,11 +525,8 @@ nb_bg_tiles_colors = 32
 # foreground tiles doesn't seem to change palette (we'll see) but context selection allows to avoid too much global
 # quantization, so the colors won't look so washed up
 fg_tile_sheet_dict = {i:Image.open(sheets_path / "fg_tiles" / f"pal_{i:02x}.png") for i in range(FG_NB_CLUTS)}
-#sprite_sheet_dict = {i:Image.open(sheets_path / "sprites" / f"pal_{i:02x}.png") for i in range(SPRITE_NB_CLUTS)}
+sprite_sheet_dict = {i:Image.open(sheets_path / "sprites" / f"pal_{i:02x}.png") for i in range(SPRITE_NB_CLUTS)}
 
-##        with open(dump_dir / "used_sprites.json","w") as f:
-##            sprite_cluts_dict = {hex(k):[hex(x) for x in v] for k,v in sprite_cluts.items() if v}
-##            json.dump(sprite_cluts_dict,f,indent=2)
 
 #######################################################
 ## foreground tiles: only 2 cases: title and in-game ##
@@ -553,7 +544,6 @@ for context in context_list:
 
 
     read_used_tiles(context/"fg_used_tiles",fg_tile_cluts,FG_NB_TILES,FG_NB_CLUTS)
-    #read_used_tiles("used_sprites",sprite_cluts,SPRITE_NB_TILES,SPRITE_NB_CLUTS)
 
 
     if dump_it:
@@ -692,19 +682,12 @@ for context in context_list:
 
 
     palette_pad(bg_tile_palette,nb_bg_tiles_colors)
-    if context == "level1":
-        # generate 3 more palettes for intro fade
-        special_fade_palettes = [[tuple(((x*100-(x*i))//100) for x in rgb) for rgb in bg_tile_palette] for i in (10,25,100)]
 
     print(f"{context}: Used bg tile colors: {len(bg_tile_palette)}")
     if dump_it:
-        if not all_tile_cluts:
-            with open(dump_dir / "used_sprites.json","w") as f:
-                sprite_cluts_dict = {hex(k):[hex(x) for x in v] for k,v in sprite_cluts.items() if v}
-                json.dump(sprite_cluts_dict,f,indent=2)
-            with open(dump_dir / "used_fg_tiles.json","w") as f:
-                fg_tile_cluts_dict = {hex(k):[hex(x) for x in v] for k,v in fg_tile_cluts.items() if v}
-                json.dump(fg_tile_cluts_dict,f,indent=2)
+##            with open(dump_dir / "used_fg_tiles.json","w") as f:
+##                fg_tile_cluts_dict = {hex(k):[hex(x) for x in v] for k,v in fg_tile_cluts.items() if v}
+##                json.dump(fg_tile_cluts_dict,f,indent=2)
             (dump_dir / context).mkdir(exist_ok=True)
             with open(dump_dir / context / "used_bg_tiles.json","w") as f:
                 bg_tile_cluts_dict = {hex(k):[hex(x) for x in v] for k,v in bg_tile_cluts.items() if v}
@@ -733,19 +716,15 @@ for context in context_list:
 
 sprite_palette = set()
 sprite_set_list = []
-if False:
-    print("Sprites:")
+sprite_cluts = {}
+context_list = ["intro"]
+for context in context_list:
+    context = pathlib.Path(context)
+    read_used_tiles(context/"used_sprites",sprite_cluts,SPRITE_NB_TILES,SPRITE_NB_CLUTS)
     for i,tsd in sprite_sheet_dict.items():
-        tp,tile_set = load_tileset(tsd,i,16,16,"sprites",dump_dir,dump=dump_it,
-        cluts=sprite_cluts,
+        tp,tile_set = load_tileset(tsd,i,16,16,"sprites",dump_dir,dump=dump_it, cluts=sprite_cluts,
         name_dict=get_sprite_names(),
         is_bob=True)
-        for j,tile in enumerate(tile_set):
-            if tile:
-                name = get_sprite_names().get(j)
-                if name and name.startswith("frog"):
-                    bitplanelib.replace_color_from_dict(tile,frog_colors_replacement_dict)
-                    #tile.save(name+f"{j}.png")
         sprite_set_list.append(tile_set)
         sprite_palette.update(tp)
 
@@ -772,11 +751,13 @@ if False:
 
     sprite_palette += (32-len(sprite_palette)) * [(0x10,0x20,0x30)]
 
-else:
-    sprite_palette = []
+##with open(dump_dir / "used_sprites.json","w") as f:
+##    sprite_cluts_dict = {hex(k):[hex(x) for x in v] for k,v in sprite_cluts.items() if v}
+##    json.dump(sprite_cluts_dict,f,indent=2)
+
 
 print(f"Used sprite colors: {len(sprite_palette)}")
-sprite_palette += (16-len(sprite_palette)) * [(0x10,0x20,0x30)]
+
 
 
 # sprite_set_list is now a 16x512 matrix of sprite tiles
