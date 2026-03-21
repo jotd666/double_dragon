@@ -139,11 +139,22 @@ def add_tile(table,index,cluts=[0],merge_cluts=True):
 
 
 
-def read_used_tiles(used_tiles_name,tile_cluts,nb_tiles,nb_cluts):
+def read_used_tiles(used_tiles_name,tile_cluts,nb_tiles,nb_cluts,size_table=None):
     with open(used_graphics_dir / used_tiles_name,"rb") as f:
         for index in range(nb_tiles):
             d = f.read(nb_cluts)
-            cluts = [i for i,c in enumerate(d) if c]
+            cluts = []
+            for i,c in enumerate(d):
+                if c:
+                    cluts.append(i)
+                    if size_table is not None:
+                        if c&1 and c!=1:
+                            # correct wrong size logging
+                            c&=0xFE
+                        size_table[index] = c
+                        if c==2:
+                            # Y size we have to declare the next tile as used too
+                            add_tile(tile_cluts,index+1,cluts=cluts)
             if cluts:
                 add_tile(tile_cluts,index,cluts=cluts)
 

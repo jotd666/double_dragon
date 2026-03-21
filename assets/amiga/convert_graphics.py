@@ -9,6 +9,9 @@ sprite_names = get_sprite_names()
 mirror_sprites = get_mirror_sprites()
 
 nb_planes = 6
+max_nb_sprite_colors = 32
+max_nb_bg_tile_colors = 32
+
 
 possible_hw_sprites = set()
 
@@ -69,19 +72,17 @@ def is_in_level(prefix,context):
     # included only if context defined and matches
     return not levels or context in levels
 
-def dump_bob_layer(sprite_table,f,relative_root=None,context=None):
+def dump_bob_layer(sprite_table,f,relative_root=None):
     if relative_root:
         f.write(f"{relative_root}:\n")
     for i,tile_entry in enumerate(sprite_table):
         f.write("\t.long\t")
         if i not in possible_hw_sprites and any(tile_entry):
             prefix = sprite_names.get(i,"bob")
-            if is_in_level(prefix,context):
-                f.write(f"{prefix}_{i:02x}")
-                if relative_root:
-                    f.write(f"-{relative_root}")
-            else:
-                f.write("0")
+            f.write(f"{prefix}_{i:02x}")
+            if relative_root:
+                f.write(f"-{relative_root}")
+
         else:
             f.write("0")
         f.write("\n")
@@ -90,77 +91,75 @@ def dump_bob_layer(sprite_table,f,relative_root=None,context=None):
     for i,tile_entry in enumerate(sprite_table):
         if i not in possible_hw_sprites and any(tile_entry):
             prefix = sprite_names.get(i,"bob")
-            if is_in_level(prefix,context):
-                f.write(f"{prefix}_{i:02x}:\n")
-                for j,t in enumerate(tile_entry):
-                    f.write("\t.long\t")
-                    if t:
-                        f.write(f"{prefix}_{i:02x}_{j:02x}")
-                        if relative_root:
-                            f.write(f"-{relative_root}")
-                    else:
-                        f.write("0")
-                    f.write("\n")
+            f.write(f"{prefix}_{i:02x}:\n")
+            for j,t in enumerate(tile_entry):
+                f.write("\t.long\t")
+                if t:
+                    f.write(f"{prefix}_{i:02x}_{j:02x}")
+                    if relative_root:
+                        f.write(f"-{relative_root}")
+                else:
+                    f.write("0")
+                f.write("\n")
 
     needed_bob_bitplanes = set()
 
     for i,tile_entry in enumerate(sprite_table):
         if i not in possible_hw_sprites and any(tile_entry):
             prefix = sprite_names.get(i,"bob")
-            if is_in_level(prefix,context):
-                for j,t in enumerate(tile_entry):
-                    if t:
-                        name = f"{prefix}_{i:02x}_{j:02x}"
+            for j,t in enumerate(tile_entry):
+                if t:
+                    name = f"{prefix}_{i:02x}_{j:02x}"
 
-                        f.write(f"{name}:\n")
-                        height = 0
+                    f.write(f"{name}:\n")
+                    height = 0
 
-                        offset = 0
-                        for orientation,_ in plane_orientations:
-                            if orientation in t:
-                                width = t[orientation]["width"]
-                                height = t[orientation]["height"]
-                                offset = t[orientation]["y_start"]
-                                break
-                        else:
-                            raise Exception(f"height not found for {name}!!")
-                        nonzero_written = False
-                        for orientation,_ in plane_orientations:
-                            # loop for this, this sucks
-                            if orientation == "standard":
-                                f.write("* orientation={}\n".format(orientation))
-                                active_planes = 0
-                                bitplanes = t[orientation]["bitplanes"]
+                    offset = 0
+                    for orientation,_ in plane_orientations:
+                        if orientation in t:
+                            width = t[orientation]["width"]
+                            height = t[orientation]["height"]
+                            offset = t[orientation]["y_start"]
+                            break
+                    else:
+                        raise Exception(f"height not found for {name}!!")
+                    nonzero_written = False
+                    for orientation,_ in plane_orientations:
+                        # loop for this, this sucks
+                        if orientation == "standard":
+                            f.write("* orientation={}\n".format(orientation))
+                            active_planes = 0
+                            bitplanes = t[orientation]["bitplanes"]
 
-                                for j,bitplane_id in enumerate(bitplanes):
-                                    if bitplane_id:
-                                        active_planes |= 1<<j
-                                bitplane_info = f"\t.word\t{height},{width},{offset},0x{active_planes:x}  | height,width,offset,active_planes\n"
-                                f.write(bitplane_info)
-                                for bitplane_id in bitplanes:
-                                    f.write("\t.long\t")
-                                    if bitplane_id:
-                                        nonzero_written = True
-                                        bob_bitplane_ptr = f"bob_plane_{bitplane_id:02d}"
-                                        needed_bob_bitplanes.add(bitplane_id)
-                                        f.write(bob_bitplane_ptr)
-                                        if relative_root:
-                                            f.write(f"-{relative_root}")
-                                    else:
-                                        f.write("0")
-                                    f.write("\n")
+                            for j,bitplane_id in enumerate(bitplanes):
+                                if bitplane_id:
+                                    active_planes |= 1<<j
+                            bitplane_info = f"\t.word\t{height},{width},{offset},0x{active_planes:x}  | height,width,offset,active_planes\n"
+                            f.write(bitplane_info)
+                            for bitplane_id in bitplanes:
+                                f.write("\t.long\t")
+                                if bitplane_id:
+                                    nonzero_written = True
+                                    bob_bitplane_ptr = f"bob_plane_{bitplane_id:02d}"
+                                    needed_bob_bitplanes.add(bitplane_id)
+                                    f.write(bob_bitplane_ptr)
+                                    if relative_root:
+                                        f.write(f"-{relative_root}")
+                                else:
+                                    f.write("0")
+                                f.write("\n")
 
-                        if nonzero_written and is_pre_mirrored(prefix,context):
-                            # tell the game engine that it has to mirror the bitplanes
-                            # at start/file load and put them here
-                            # (except if tile has 0 data because it's blank)
+                    if False: #nonzero_written and is_pre_mirrored(prefix,context):
+                        # tell the game engine that it has to mirror the bitplanes
+                        # at start/file load and put them here
+                        # (except if tile has 0 data because it's blank)
 
-                            f.write("* mirrored bitplanes pointers (inc. mask) go here\n")
-                            for _ in bitplanes:
-                                f.write(f"\t.long\t-1\n")
-                        else:
-                            # tell the game engine that it has to mirror in-place
-                            f.write("\t.word\t-2    | bitplanes above will be mirrored in-place\n\n")
+                        f.write("* mirrored bitplanes pointers (inc. mask) go here\n")
+                        for _ in bitplanes:
+                            f.write(f"\t.long\t-1\n")
+                    else:
+                        # tell the game engine that it has to mirror in-place
+                        f.write("\t.word\t-2    | bitplanes above will be mirrored in-place\n\n")
 
     if not relative_root:
         f.write("\t.section\t.datachip\n")
@@ -173,7 +172,7 @@ bob_plane_{v:02d}:""")
             dump_asm_bytes(k,f)
 
 def load_tileset(image_name,palette_index,width,height,tileset_name,dumpdir,
-dump=False,name_dict=None,cluts=None,tile_number=0,is_bob=False):
+dump=False,name_dict=None,cluts=None,tile_number=0,is_bob=False,size_table=None):
 
 ##    if isinstance(image_name,str):
 ##        full_image_path = os.path.join(this_dir,os.path.pardir,"sheets",
@@ -226,7 +225,27 @@ dump=False,name_dict=None,cluts=None,tile_number=0,is_bob=False):
         # rework & dump grouped / non grouped sprites
         # rework tiles which are grouped
         for tile_number,wtile in enumerate(tileset_1):
-
+            # hardware grouped tiles
+            if wtile:
+                tile_size = size_table[tile_number]
+                if tile_size == 1:
+                    pass
+                elif tile_size == 2:
+                    # Y group
+                    other_tile_index = tile_number+1
+                    other_tile = tileset_1[other_tile_index]
+                    if not other_tile:
+                        raise Exception(f"YHW size: pair: 0x{tile_number:02x} ok but other tile index 0x{other_tile_index:02x} not found")
+                    new_tile = Image.new("RGB",(wtile.size[0],wtile.size[1]*2))
+                    new_tile.paste(wtile,box=(0,0))
+                    new_tile.paste(other_tile,box=(0,16))
+                    tileset_1[tile_number] = new_tile
+                    tileset_1[other_tile_index] = None  # discatd
+                    wtile = new_tile
+                else:
+                    # TODO when we encounter it
+                    raise Exception(f"Unsupported size {tile_size}")
+            # software grouped tiles, not enabled, and wrong too: it doesn't follow a logic, it needs to be specified by hand
             if wtile:
                 if tile_number in group_sprite_pairs:
                     # change wtile, fetch code +1
@@ -520,7 +539,6 @@ def quantize_palette(rgb_tuples,img_type,nb_quantize,transparent=None,dump_it=Fa
     return rval
 
 
-nb_bg_tiles_colors = 32
 
 # foreground tiles doesn't seem to change palette (we'll see) but context selection allows to avoid too much global
 # quantization, so the colors won't look so washed up
@@ -672,16 +690,16 @@ for context in context_list:
         bg_tile_palette.update(tp)
 
 
-    if len(bg_tile_palette)>nb_bg_tiles_colors:
+    if len(bg_tile_palette)>max_nb_bg_tile_colors:
         print(f"{context}: Too many colors in bg tiles ({len(bg_tile_palette)}), quantizing")
-        bg_replacement_dict = quantize_palette(bg_tile_palette,"background_tiles",nb_bg_tiles_colors,transparent=None,dump_it=dump_it)
+        bg_replacement_dict = quantize_palette(bg_tile_palette,"background_tiles",max_nb_bg_tile_colors,transparent=None,dump_it=dump_it)
         bg_tile_palette = sorted(set(bg_replacement_dict.values()))
         apply_color_replacement(bg_tile_set_list,bg_replacement_dict)
     else:
         bg_tile_palette = sorted(bg_tile_palette)
 
 
-    palette_pad(bg_tile_palette,nb_bg_tiles_colors)
+    palette_pad(bg_tile_palette,max_nb_bg_tile_colors)
 
     print(f"{context}: Used bg tile colors: {len(bg_tile_palette)}")
     if dump_it:
@@ -714,31 +732,35 @@ for context in context_list:
 # sprites
 ###############
 
-sprite_palette = set()
-sprite_set_list = []
-sprite_cluts = {}
+
 context_list = ["intro"]
 for context in context_list:
+    bob_plane_cache = {}
+    sprite_palette = set()
+    sprite_set_list = []
+    sprite_cluts = {}
+    size_table = {}
     context = pathlib.Path(context)
-    read_used_tiles(context/"used_sprites",sprite_cluts,SPRITE_NB_TILES,SPRITE_NB_CLUTS)
+    read_used_tiles(context/"used_sprites",sprite_cluts,SPRITE_NB_TILES,SPRITE_NB_CLUTS,size_table)
     for i,tsd in sprite_sheet_dict.items():
-        tp,tile_set = load_tileset(tsd,i,16,16,"sprites",dump_dir,dump=dump_it, cluts=sprite_cluts,
+        tp,tile_set = load_tileset(tsd,i,16,16,"sprites",dump_dir / context,dump=dump_it, cluts=sprite_cluts,
         name_dict=get_sprite_names(),
-        is_bob=True)
+        is_bob=True,
+        size_table=size_table)
         sprite_set_list.append(tile_set)
         sprite_palette.update(tp)
 
     # remove transparent color from palette
     sprite_palette.remove(magenta)
 
-    if len(sprite_palette)>32:
+    if len(sprite_palette)>max_nb_sprite_colors:
         print(f"Too many colors in sprite tiles ({len(sprite_palette)}), quantizing")
         # if we specify 32 right away, the algorithm can provide less colors than 32, wasting entries
         # by attempting to quantize with higher values, we guarantee not to waste colors
-        for attempt_nb_colors in [35,34,33,32]:
+        for attempt_nb_colors in [max_nb_sprite_colors+3,max_nb_sprite_colors+2,max_nb_sprite_colors+1,max_nb_sprite_colors]:
             sprite_replacement_dict = quantize_palette(sprite_palette,"sprite_tiles",attempt_nb_colors,dump_it=dump_it)
             new_sprite_palette = sorted(set(sprite_replacement_dict.values()))
-            if len(new_sprite_palette)<=32:
+            if len(new_sprite_palette)<=max_nb_sprite_colors:
                 print(f"Quantization achieved {len(new_sprite_palette)} colors with start colors = {attempt_nb_colors}")
                 sprite_palette = new_sprite_palette
                 break
@@ -749,12 +771,15 @@ for context in context_list:
     else:
         sprite_palette = sorted(sprite_palette)
 
-    sprite_palette += (32-len(sprite_palette)) * [(0x10,0x20,0x30)]
+    palette_pad(sprite_palette,max_nb_sprite_colors)
+    empty_32_cols = []
+    palette_pad(empty_32_cols,max_nb_bg_tile_colors)
 
-##with open(dump_dir / "used_sprites.json","w") as f:
-##    sprite_cluts_dict = {hex(k):[hex(x) for x in v] for k,v in sprite_cluts.items() if v}
-##    json.dump(sprite_cluts_dict,f,indent=2)
-
+    sprite_table,_ = read_tileset(sprite_set_list,empty_32_cols+sprite_palette,[True,False,False,False],cache=bob_plane_cache, is_bob=True, mask_color=magenta, nb_cluts=SPRITE_NB_CLUTS)
+    bank = bank_dir / f"{context}_sprites.68k"
+    with open(bank,"w") as f:
+        dump_bob_layer(sprite_table,f,relative_root="bob_table")
+    asm2bin(bank)
 
 print(f"Used sprite colors: {len(sprite_palette)}")
 
@@ -763,11 +788,6 @@ print(f"Used sprite colors: {len(sprite_palette)}")
 # sprite_set_list is now a 16x512 matrix of sprite tiles
 
 
-
-
-#empty_32_cols = [(1,1,1)]*len(bg_tile_palette)
-
-bob_plane_cache = {}
 #fg_tile_lower_table,_ = read_tileset(fg_tile_lower_set_list,fg_tile_lower_palette,[True,False,False,False],cache=tile_plane_cache, is_bob=False, nb_cluts=FG_NB_CLUTS, mask_color=magenta, next_cache_id = next_id)
 #sprite_table,_ = read_tileset(sprite_set_list,empty_32_cols+sprite_palette,[True,False,False,False],cache=bob_plane_cache, is_bob=True, mask_color=magenta, nb_cluts=SPRITE_NB_CLUTS)
 
@@ -776,38 +796,38 @@ bob_plane_cache = {}
 ##    if sprite_names.get(k)=="arremer" and k!=0x198:
 ##        sprite[2]=sprite[3]
 
+##
+##BLOCK_DISPLAY_MASK = 1<<14
+##DO_DISPLAY_MASK = 1
+##
+##def gen_codes(i):
+##    im = (i<<1)
+##    return im | DO_DISPLAY_MASK,(0x800 + im) | DO_DISPLAY_MASK
+##
+##gs_array = [0]*SPRITE_NB_TILES
+##for i in group_sprite_pairs:
+##    gs_array[i],gs_array[i+1] = gen_codes(i)
+##
+##for i in group_sprite_triplets:
+##    gs_array[i],gs_array[i+2] = gen_codes(i)
+##    gs_array[i+1] = BLOCK_DISPLAY_MASK    # never display alone!
+##for i in group_sprite_quadruplets:
+##    gs_array[i],gs_array[i+3] = gen_codes(i)
+##    gs_array[i+1] = BLOCK_DISPLAY_MASK    # never display alone!
+##    gs_array[i+2] = BLOCK_DISPLAY_MASK    # never display alone!
 
-BLOCK_DISPLAY_MASK = 1<<14
-DO_DISPLAY_MASK = 1
-
-def gen_codes(i):
-    im = (i<<1)
-    return im | DO_DISPLAY_MASK,(0x800 + im) | DO_DISPLAY_MASK
-
-gs_array = [0]*SPRITE_NB_TILES
-for i in group_sprite_pairs:
-    gs_array[i],gs_array[i+1] = gen_codes(i)
-
-for i in group_sprite_triplets:
-    gs_array[i],gs_array[i+2] = gen_codes(i)
-    gs_array[i+1] = BLOCK_DISPLAY_MASK    # never display alone!
-for i in group_sprite_quadruplets:
-    gs_array[i],gs_array[i+3] = gen_codes(i)
-    gs_array[i+1] = BLOCK_DISPLAY_MASK    # never display alone!
-    gs_array[i+2] = BLOCK_DISPLAY_MASK    # never display alone!
-
-used_sprite_codes = set(sprite_cluts) | {i for i,g in enumerate(gs_array) if g}
-unused_sprite_codes = set(range(0,0x300))-used_sprite_codes
-# it's normal that some sprite codes aren't used at all
-print("Unused sprite codes: {}".format(",".join(sorted(f"0x{x:03x}" for x in unused_sprite_codes))))
-
-with open(src_dir / "sprite_groups.68k","w") as f:
-    f.write(generated_message)
-    f.write("* see amiga.68k display_one_bob routine to know how this works\n")
-
-    bitplanelib.dump_asm_bytes(gs_array,f,mit_format=True,size=2)
-
-
+##used_sprite_codes = set(sprite_cluts) | {i for i,g in enumerate(gs_array) if g}
+##unused_sprite_codes = set(range(0,SPRITE_NB_TILES))-used_sprite_codes
+### it's normal that some sprite codes aren't used at all
+##print("Unused sprite codes: {}".format(",".join(sorted(f"0x{x:03x}" for x in unused_sprite_codes))))
+##
+##with open(src_dir / "sprite_groups.68k","w") as f:
+##    f.write(generated_message)
+##    f.write("* see amiga.68k display_one_bob routine to know how this works\n")
+##
+##    bitplanelib.dump_asm_bytes(gs_array,f,mit_format=True,size=2)
+##
+##
 # merge both tables
 ##with open(src_dir / "graphics_aga.68k","w") as f:
 ##    f.write(generated_message)

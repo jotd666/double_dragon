@@ -1,3 +1,4 @@
+- detect size and create sprites using this information
 - lockup at start, subcpu is doing the job but seems that shared zone not copied in 2800
 if 8511 is skipped, update is done but it causes other problems
 
@@ -17,7 +18,6 @@ if 8511 is skipped, update is done but it causes other problems
 8084: 97 22          STA    interrupt_status_22
 
 
-- hack sprites palette 1080/1280: if 0 in both offsets set 0F in both offsets for purple
 - hack OSD palette to make black appear (character heads)
 - set DSW difficulty lives, etc.
 

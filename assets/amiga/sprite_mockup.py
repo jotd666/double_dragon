@@ -9,7 +9,7 @@ this_dir = os.path.dirname(os.path.abspath(__file__))
 
 tilesdir = os.path.join(this_dir,os.pardir,"sheets","sprites")
 
-mono_clut = False
+mono_clut = True
 
 def get_transformed(img,flipx,flipy):
     if flipx:
