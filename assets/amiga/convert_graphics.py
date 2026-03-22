@@ -778,6 +778,8 @@ for context in context_list:
     sprite_table,_ = read_tileset(sprite_set_list,empty_32_cols+sprite_palette,[True,False,False,False],cache=bob_plane_cache, is_bob=True, mask_color=magenta, nb_cluts=SPRITE_NB_CLUTS)
     bank = bank_dir / f"{context}_sprites.68k"
     with open(bank,"w") as f:
+        f.write("sprite_palette:\n")
+        bitplanelib.palette_dump(sprite_palette,f,bitplanelib.PALETTE_FORMAT_ASMGNU)
         dump_bob_layer(sprite_table,f,relative_root="bob_table")
     asm2bin(bank)
 

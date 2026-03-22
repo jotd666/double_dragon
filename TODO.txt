@@ -1,3 +1,4 @@
+- sprites loaded during menu??? WTF
 - detect size and create sprites using this information
 - lockup at start, subcpu is doing the job but seems that shared zone not copied in 2800
 if 8511 is skipped, update is done but it causes other problems
@@ -20,6 +21,7 @@ if 8511 is skipped, update is done but it causes other problems
 
 - hack OSD palette to make black appear (character heads)
 - set DSW difficulty lives, etc.
+- cache subcontext (loaded fg/bg/sprite files)
 
 
 - title fading in not supported
