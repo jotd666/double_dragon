@@ -3,6 +3,8 @@ import os
 
 import shared
 
+# amiga: S amiga_sprites rA6+$2800 $800
+# MAME: save mame_sprites,$2800,$800
 sprite_names = shared.get_sprite_names()
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
@@ -85,7 +87,8 @@ def doit(binname):
             name = sprite_names.get(which,"unknown")
             if name=="garage_door":
                 continue
-            print(f"offset={i:04x}, code={which:03x}, color={color}, name={name}, x={sx}, y={sy}, size={size}")
+
+            print(f"offset={i:04x}, code={which:03x}, color={color}, name={name}, x={sx}, y={sy}, size={size}, flipx={flipx}, flipy={flipy}")
             if size==0:
                 layer.paste(img,box=(sx,sy))
             elif size==1:
@@ -112,7 +115,7 @@ def doit(binname):
 
     layer.save(f"{binname}.png")
 
-doit("sprites_amiga_2")
+doit(r"C:\Users\Public\Documents\Amiga Files\WinUAE\amiga_sprites")
 
 
 

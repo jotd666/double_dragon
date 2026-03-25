@@ -1206,7 +1206,6 @@ relocate_tiles_file:
 
 relocate_sprites_file:
 	* now relocate the tile file
-	BREAKPOINT	"relocate!!"
 	move.l	sprite_tile_table,a0
 	move.l	a0,d0
 	jne		0f
@@ -2192,8 +2191,7 @@ update_one_bob:
 	jpl		2f			| not active
 	moveq	#0,d5
 	* size = (attr & 0x30) >> 4
-	moveq	#0,d1
-	move.b	d2,d1
+	move.b	d2,d5
 	and.b	#0x30,d5
 	lsr.b	#4,d5 			| d5: size 0,1,2,3
 
@@ -2223,7 +2221,7 @@ update_one_bob:
 	add.w	#SPRITE_X_CORRECTION,d0		| d0: X
 	.endif
 	
-	btst	#1,d5
+	btst	#0,d5
 	jeq		0f
 	* double Y: subtract 16 to start Y
 	sub.w	#0x10,d1
@@ -2258,7 +2256,8 @@ update_one_bob:
 0:
 
 	
-*	move.b	(TARGET_SPRITE_ATTRIBUTES,a0),d4
+	move.b	(TARGET_SPRITE_ATTRIBUTES,a0),d4
+	move.b	d4,d6
 *	
 *	.if		OPT_MIRROR_TEST==1
 *	bset	#MIRROR_BIT,d4
@@ -2321,18 +2320,18 @@ update_one_bob:
 
 * now we have to check if mirror must be performed, either by doing this in-place
 * or by selecting already mirrored data
-	move.b	(TARGET_SPRITE_ATTRIBUTES,a0),d3
 	lea		((NB_PLAYFIELD_PLANES+1)*4,a0),a1		| load mirrored data pointers
 	tst.w	(a1)
 	jmi		101f		| invalid pointers: we must do in-place
-	btst	#MIRROR_BIT,d3
+	btst	#MIRROR_BIT,d6
 	jeq		102f
 	* to mirror, just change pointer list
 	move.l	a1,a0
 	* and skip mirroring bit
 	jra		103f
 101:
-	btst	#MIRROR_BIT,d3
+	btst	#MIRROR_BIT,d6
+	jeq		102f
 102:
 	sne		d3		| convert attribute to boolean 0/ff for mirror_sprite_planes
 	jbsr	mirror_sprite_planes

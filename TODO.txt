@@ -1,7 +1,6 @@
-- sprites loaded during menu??? WTF
-- detect size and create sprites using this information
 - lockup at start, subcpu is doing the job but seems that shared zone not copied in 2800
-if 8511 is skipped, update is done but it causes other problems
+if 8511 is skipped (temp: this is the case), update is done but it causes other problems
+it also seems that the sprite info is duplicated/repeated when doing this
 
 8064: 97 22          STA    interrupt_status_22
 8066: 0C 2F          INC    $2F
