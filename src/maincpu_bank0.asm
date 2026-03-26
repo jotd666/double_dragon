@@ -252,15 +252,15 @@ clear_bg_screen_41e3:
 41E8: 10 8E 08 00    LDY    #$0800
 41EC: 8D D1          BSR    clear_memory_41bf
 41EE: 35 B1          PULS   CC,X,Y,PC
-lb0_41f0:   ; [global]
+lb0_clear_sprite_slots_41f0:   ; [global]
 41F0: 34 57          PSHS   U,X,D,CC
 41F2: 1F 98          TFR    B,A
 41F4: F0 21 FD       SUBB   $21FD
 41F7: 23 18          BLS    $4211
 41F9: 34 04          PSHS   B
-41FB: C6 05          LDB    #$05
+41FB: C6 05          LDB    #$05		; size of 1 sprite slot
 41FD: 3D             MUL
-41FE: CE 20 81       LDU    #$2081
+41FE: CE 20 81       LDU    #sprite_memory_2081
 4201: 33 CB          LEAU   D,U
 4203: 35 04          PULS   B
 4205: 8E 00 00       LDX    #$0000
@@ -277,7 +277,7 @@ lb0_clear_sprite_memory_4213:   ; [global]
 4218: 7F 03 A1       CLR    $03A1
 421B: 7F 03 A2       CLR    $03A2
 421E: C6 4C          LDB    #$4C
-4220: 8D CE          BSR    lb0_41f0
+4220: 8D CE          BSR    lb0_clear_sprite_slots_41f0
 4222: CC 01 80       LDD    #$0180
 4225: 8E 28 00       LDX    #sprite_memory_2800
 4228: 6F 80          CLR    ,X+
@@ -286,7 +286,7 @@ lb0_clear_sprite_memory_4213:   ; [global]
 422F: 35 F7          PULS   CC,D,X,Y,U,PC
 
 lb0_update_sprite_memory_4231:  ; [global]
-4231: 8E 20 81       LDX    #$2081		; source: subcpu exchange memory
+4231: 8E 20 81       LDX    #sprite_memory_2081		; source: subcpu exchange memory
 4234: 10 8E 28 00    LDY    #sprite_memory_2800		; destination: sprite memory
 4238: EC 81          LDD    ,X++
 423A: ED A1          STD    ,Y++

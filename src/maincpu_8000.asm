@@ -172,6 +172,8 @@ bg_tiles_address_3000 = $3000
 fg_tiles_address_1800 = $1800
 nb_credits_0021 = $21
 interrupt_status_22 = $22
+intro_anim_flag_0e30 = $e30
+sprite_memory_2081 = $2081
 
 reset_8000:     ; [global]
 8000: 4F             CLRA
@@ -259,6 +261,7 @@ firq_8092:   ; [global]
 80AD: 35 7F          PULS   CC,D,DP,X,Y,U
 80AF: 3B             RTI
 
+; irq is just there to set sync flag
 irq_80b0:   ; [global]
 80B0: 86 01          LDA    #$01
 80B2: B7 0E 3E       STA    sync_flag_0e3e		; set sync flag
@@ -586,7 +589,7 @@ gameloop_8389:
 83AB: BD FC C8       JSR    $FCC8
 83AE: BD B7 CA       JSR    $B7CA
 83B1: BD FC 82       JSR    switch_to_bank_5_fc82
-83B4: BD 40 5D       JSR    $405D		 ; [banks=5]
+83B4: BD 40 5D       JSR    lb5_405d
 83B7: BD FC 8F       JSR    switch_to_bank_0_fc8f
 83BA: BD FF 01       JSR    $FF01
 83BD: BD FF 5E       JSR    $FF5E
@@ -602,7 +605,7 @@ gameloop_8389:
 83D8: 27 FB          BEQ    $83D5
 83DA: BD 8A B5       JSR    wait_subcpu_reply_8ab5
 83DD: 35 04          PULS   B
-83DF: BD FE AD       JSR    $FEAD
+83DF: BD FE AD       JSR    clear_sprite_slots_fead
 83E2: 96 22          LDA    interrupt_status_22
 83E4: 8A 01          ORA    #$01
 83E6: 97 22          STA    interrupt_status_22
@@ -644,6 +647,7 @@ gameloop_8389:
 843D: FD 0E 50       STD    $0E50
 8440: 27 0E          BEQ    $8450
 8442: 7E 83 89       JMP    gameloop_8389
+
 8445: 86 01          LDA    #$01
 8447: BD FE B0       JSR    $FEB0
 844A: 86 04          LDA    #$04
@@ -731,31 +735,33 @@ play_intro_animation_84f8:
 8509: 8A 80          ORA    #$80
 850B: B7 0E 71       STA    nmi_active_flag_0e71
 850E: 7F 0E 3E       CLR    sync_flag_0e3e
-;;8511: 0F 22          CLR    interrupt_status_22
+; block things in nmi
+8511: 0F 22          CLR    interrupt_status_22
 8513: F6 21 FD       LDB    $21FD
 8516: 34 04          PSHS   B
 8518: BD FF 1A       JSR    subcpu_processing_ff1a
 851B: BD B3 F6       JSR    $B3F6
 851E: BD B3 50       JSR    $B350
 8521: BD B4 00       JSR    $B400
-8524: BD FE AD       JSR    $FEAD
+8524: BD FE AD       JSR    clear_sprite_slots_fead
 8527: BD FD F9       JSR    $FDF9
 852A: BD 84 45       JSR    $8445
+; wait for sync
 852D: B6 0E 3E       LDA    sync_flag_0e3e
 8530: 27 FB          BEQ    $852D
 8532: BD 8A B5       JSR    wait_subcpu_reply_8ab5
 8535: 35 04          PULS   B
-8537: BD FE AD       JSR    $FEAD
+8537: BD FE AD       JSR    clear_sprite_slots_fead
 ; activate bit in 22 so nmi runs fully
 853A: 96 22          LDA    interrupt_status_22
 853C: 8A 01          ORA    #$01
 853E: 97 22          STA    interrupt_status_22
-8540: 7F 38 0B       CLR    nmi_ack_380b
+8540: 7F 38 0B       CLR    nmi_ack_380b		; skipping this doesn't change a thing
 8543: 96 22          LDA    interrupt_status_22
 8545: 84 02          ANDA   #$02
 8547: 27 FA          BEQ    $8543
 8549: 0C 51          INC    $51
-854B: B6 0E 30       LDA    $0E30
+854B: B6 0E 30       LDA    intro_anim_flag_0e30
 854E: 84 03          ANDA   #$03
 8550: 81 03          CMPA   #$03
 8552: 26 BA          BNE    $850E
@@ -858,7 +864,7 @@ play_intro_animation_84f8:
 863B: 27 FB          BEQ    $8638
 863D: BD 8A B5       JSR    wait_subcpu_reply_8ab5
 8640: 35 04          PULS   B
-8642: BD FE AD       JSR    $FEAD
+8642: BD FE AD       JSR    clear_sprite_slots_fead
 8645: 96 22          LDA    interrupt_status_22
 8647: 8A 01          ORA    #$01
 8649: 97 22          STA    interrupt_status_22
@@ -5117,8 +5123,8 @@ B3B7: 24 0B          BCC    $B3C4
 B3B9: 6F 0E          CLR    $E,X
 B3BB: 96 2A          LDA    $2A
 B3BD: 4C             INCA
-B3BE: BA 0E 30       ORA    $0E30
-B3C1: B7 0E 30       STA    $0E30
+B3BE: BA 0E 30       ORA    intro_anim_flag_0e30
+B3C1: B7 0E 30       STA    intro_anim_flag_0e30
 B3C4: BD FE 80       JSR    $FE80
 B3C7: 96 51          LDA    $51
 B3C9: 84 01          ANDA   #$01
@@ -5128,8 +5134,8 @@ B3D0: BD FF 10       JSR    $FF10
 B3D3: 39             RTS
 B3D4: 96 2A          LDA    $2A
 B3D6: 4C             INCA
-B3D7: BA 0E 30       ORA    $0E30
-B3DA: B7 0E 30       STA    $0E30
+B3D7: BA 0E 30       ORA    intro_anim_flag_0e30
+B3DA: B7 0E 30       STA    intro_anim_flag_0e30
 B3DD: 39             RTS
 
 B3EC: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
@@ -5138,9 +5144,10 @@ B3F2: BD FD B2       JSR    restore_previous_bank_fdb2
 B3F5: 39             RTS
 
 B3F6: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
-B3F9: BD 40 8D       JSR    $408D ; [banks=1]
+B3F9: BD 40 8D       JSR    lb1_408d
 B3FC: BD FD B2       JSR    restore_previous_bank_fdb2
 B3FF: 39             RTS
+
 B400: 34 7E          PSHS   U,Y,X,DP,D
 B402: 96 36          LDA    $36
 B404: 26 10          BNE    $B416
@@ -9471,7 +9478,7 @@ FC4E: 35 82          PULS   A,PC
 
 l_fc50:
 FC50: BD FC 82       JSR    switch_to_bank_5_fc82
-FC53: BD 40 45       JSR    $4045 ; [banks=5]
+FC53: BD 40 45       JSR    lb5_4045
 FC56: BD FC 8F       JSR    switch_to_bank_0_fc8f
 FC59: 39             RTS
 
@@ -9712,7 +9719,8 @@ update_sprite_memory_fea4:
 FEA4: 7E 42 31       JMP    lb0_update_sprite_memory_4231
 FEA7: 7E 45 66       JMP    $4566 ; [banks=0]
 FEAA: 7E 41 BF       JMP    $41BF ; [banks=0]
-FEAD: 7E 41 F0       JMP    lb0_41f0
+clear_sprite_slots_fead:
+FEAD: 7E 41 F0       JMP    lb0_clear_sprite_slots_41f0
 FEB0: 7E FC 50       JMP    $FC50
 FEB3: 7E FC 78       JMP    $FC78
 FEB6: 7E 44 CD       JMP    $44CD ; [banks=0]
@@ -9740,7 +9748,7 @@ FEF5: 7E 4D DD       JMP    $4DDD ; [banks=0]
 FEF8: 7E 49 A0       JMP    $49A0 ; [banks=0]
 FEFB: 7E 46 A3       JMP    $46A3 ; [banks=0]
 FEFE: 7E FF C9       JMP    $FFC9
-FF01: 7E 42 42       JMP    $4242 ; [banks=0]
+FF01: 7E 42 42       JMP    lb0_4242
 FF04: 7E 48 8C       JMP    $488C ; [banks=0]
 
 l_ff10:

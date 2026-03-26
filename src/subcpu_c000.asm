@@ -1,5 +1,9 @@
 ;	map(0x8000, 0x81ff).ram().share(m_comram);  => 0x2000 on main cpu
 
+;	map(0x0020, 0x0fff).ram();
+
+;	map(0xc000, 0xffff).rom();
+
 irq_already_called_0066 = $66
 shared_memory_8000 = $8000
 

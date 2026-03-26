@@ -2,6 +2,11 @@
 if 8511 is skipped (temp: this is the case), update is done but it causes other problems
 it also seems that the sprite info is duplicated/repeated when doing this
 
+check this hd63701y0_cpu_device object and out_p6_cb
+	hd63701y0_cpu_device &subcpu(HD63701Y0(config, m_subcpu, MAIN_CLOCK / 2));  // HD63701Y0P, 6 MHz / 4 internally
+	subcpu.set_addrmap(AS_PROGRAM, &ddragon_state::ddragon_sub_map);
+	subcpu.out_p6_cb().set(FUNC(ddragon_state::sub_port6_w));
+	
 8064: 97 22          STA    interrupt_status_22
 8066: 0C 2F          INC    $2F
 8068: 96 22          LDA    interrupt_status_22    <=== this is updated but seems like race condition between nmi and cpu loop in intro

@@ -3589,6 +3589,7 @@ subcpu_processing_411e:
 627B: 86 10       LDA    #$10
 627D: B7 0E 31    STA    $0E31
 6280: 39          RTS
+
 6281: B6 0E 2F    LDA    $0E2F
 6284: 81 05       CMPA   #$05
 6286: 24 2F       BCC    $62B7
@@ -3795,6 +3796,7 @@ subcpu_processing_411e:
 6472: 24 02       BCC    $6476
 6474: ED 04       STD    $4,X
 6476: 39          RTS
+
 6477: D6 26       LDB    $26
 6479: 26 07       BNE    $6482
 647B: F6 38 04    LDB    $3804
@@ -3802,6 +3804,7 @@ subcpu_processing_411e:
 6480: 27 03       BEQ    $6485
 6482: B7 38 0E    STA    $380E
 6485: 39          RTS
+
 6486: DC 3C       LDD    $3C
 6488: 10 83 0F 00 CMPD   #$0F00
 648C: 25 1B       BCS    $64A9
