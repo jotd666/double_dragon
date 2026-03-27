@@ -6,6 +6,8 @@
 
 irq_already_called_0066 = $66
 shared_memory_8000 = $8000
+copy_of_port6_0065 = $65
+port6_0017 = $17
 
 ; aux. cpu to help main cpu
 C000: 3B       rti  
@@ -25,15 +27,15 @@ C010: 97 16    sta  $16
 C012: 86 10    lda  #$10
 C014: 06       tap  			; interrupt handling
 C015: 7F 00 66 clr  irq_already_called_0066
-C018: 7F 00 65 clr  $0065
-C01B: 96 65    lda  $65
+C018: 7F 00 65 clr  copy_of_port6_0065
+C01B: 96 65    lda  copy_of_port6_0065
 C01D: 84 FE    anda #$FE
-C01F: 97 65    sta  $65
-C021: 97 17    sta  $17
+C01F: 97 65    sta  copy_of_port6_0065
+C021: 97 17    sta  port6_0017
 C023: 86 01    lda  #$01
-C025: 9A 65    ora  $65
-C027: 97 65    sta  $65
-C029: 97 17    sta  $17
+C025: 9A 65    ora  copy_of_port6_0065
+C027: 97 65    sta  copy_of_port6_0065
+C029: 97 17    sta  port6_0017
 C02B: 7E C0 2B jmp  $C02B		; infinite loop, wait for main cpu orders
 
 ; triggered when sprites need displaying
@@ -44,21 +46,21 @@ C031: 26 03    bne  $C036
 C033: 7E C0 58 jmp  rom_checksum_c058
 C036: BD C0 6C jsr  sprite_convert_c06c
 irq_end_c039:
-C039: 96 65    lda  $65
+C039: 96 65    lda  copy_of_port6_0065
 C03B: 84 FD    anda #$FD
-C03D: 97 65    sta  $65
-C03F: 97 17    sta  $17
+C03D: 97 65    sta  copy_of_port6_0065
+C03F: 97 17    sta  port6_0017
 C041: 86 02    lda  #$02
-C043: 9A 65    ora  $65
-C045: 97 65    sta  $65
-C047: 96 65    lda  $65
+C043: 9A 65    ora  copy_of_port6_0065
+C045: 97 65    sta  copy_of_port6_0065
+C047: 96 65    lda  copy_of_port6_0065
 C049: 84 FE    anda #$FE
-C04B: 97 65    sta  $65
-C04D: 97 17    sta  $17
+C04B: 97 65    sta  copy_of_port6_0065
+C04D: 97 17    sta  port6_0017
 C04F: 86 01    lda  #$01
-C051: 9A 65    ora  $65
-C053: 97 65    sta  $65
-C055: 97 17    sta  $17
+C051: 9A 65    ora  copy_of_port6_0065
+C053: 97 65    sta  copy_of_port6_0065
+C055: 97 17    sta  port6_0017
 C057: 3B       rti
 
 rom_checksum_c058:
