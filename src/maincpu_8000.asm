@@ -174,6 +174,8 @@ nb_credits_0021 = $21
 interrupt_status_22 = $22
 intro_anim_flag_0e30 = $e30
 sprite_memory_2081 = $2081
+nb_sprites_to_convert_03a1 = $3a1
+untransformed_sprite_coords_0381 = $381
 
 reset_8000:     ; [global]
 8000: 4F             CLRA
@@ -1421,7 +1423,7 @@ wait_subcpu_reply_8ab5:
 8B46: 96 51          LDA    $51
 8B48: 84 04          ANDA   #$04
 8B4A: 27 03          BEQ    $8B4F
-8B4C: BD FF 10       JSR    $FF10
+8B4C: BD FF 10       JSR    push_one_sprite_entry_ff10
 8B4F: A6 88 34       LDA    $34,X
 8B52: 84 0C          ANDA   #$0C
 8B54: A7 88 34       STA    $34,X
@@ -4770,11 +4772,11 @@ AFA9: 39             RTS
 AFAA: 8E 03 A2       LDX    #$03A2
 AFAD: A6 84          LDA    ,X
 AFAF: 2A 03          BPL    $AFB4
-AFB1: BD FF 10       JSR    $FF10
+AFB1: BD FF 10       JSR    push_one_sprite_entry_ff10
 AFB4: 30 88 5E       LEAX   $5E,X
 AFB7: A6 84          LDA    ,X
 AFB9: 2A 03          BPL    $AFBE
-AFBB: BD FF 10       JSR    $FF10
+AFBB: BD FF 10       JSR    push_one_sprite_entry_ff10
 AFBE: B6 0E 1A       LDA    $0E1A
 AFC1: 84 04          ANDA   #$04
 AFC3: 27 08          BEQ    $AFCD
@@ -5035,7 +5037,7 @@ B220: 4C             INCA
 B221: BA 0E 2E       ORA    $0E2E
 B224: B7 0E 2E       STA    $0E2E
 B227: 6F 0E          CLR    $E,X
-B229: BD FF 10       JSR    $FF10
+B229: BD FF 10       JSR    push_one_sprite_entry_ff10
 B22C: 20 09          BRA    $B237
 B22E: 96 2A          LDA    $2A
 B230: 4C             INCA
@@ -5134,7 +5136,7 @@ B3C7: 96 51          LDA    $51
 B3C9: 84 01          ANDA   #$01
 B3CB: 27 03          BEQ    $B3D0
 B3CD: BD FC 1E       JSR    $FC1E
-B3D0: BD FF 10       JSR    $FF10
+B3D0: BD FF 10       JSR    push_one_sprite_entry_ff10
 B3D3: 39             RTS
 B3D4: 96 2A          LDA    $2A
 B3D6: 4C             INCA
@@ -5224,7 +5226,7 @@ B49E: 84 7F          ANDA   #$7F
 B4A0: 48             ASLA
 B4A1: 10 8E B4 AB    LDY   #jump_table_b4ab
 B4A5: AD B6          JSR    [A,Y]        ; [indirect_jump] [nb_entries=6]
-B4A7: BD FF 10       JSR    $FF10
+B4A7: BD FF 10       JSR    push_one_sprite_entry_ff10
 B4AA: 39             RTS
 
 B4B7: 86 08          LDA    #$08
@@ -5332,7 +5334,7 @@ B59D: 84 7F          ANDA   #$7F
 B59F: 48             ASLA
 B5A0: 10 8E B5 AA    LDY   #jump_table_b5aa
 B5A4: AD B6          JSR    [A,Y]        ; [indirect_jump] [nb_entries=4]
-B5A6: BD FF 10       JSR    $FF10
+B5A6: BD FF 10       JSR    push_one_sprite_entry_ff10
 B5A9: 39             RTS
 
 B5B6: 86 84          LDA    #$84                                       
@@ -5487,7 +5489,7 @@ B72D: A6 88 18       LDA    $18,X
 B730: 81 04          CMPA   #$04
 B732: 25 03          BCS    $B737
 B734: 6F 88 18       CLR    $18,X
-B737: BD FF 10       JSR    $FF10
+B737: BD FF 10       JSR    push_one_sprite_entry_ff10
 B73A: 35 FE          PULS   D,DP,X,Y,U,PC
 B73C: FC 04 62       LDD    $0462
 B73F: 10 83 01 10    CMPD   #$0110
@@ -5813,7 +5815,7 @@ BA75: 2A 0B          BPL    $BA82
 BA77: BD F9 60       JSR    $F960
 BA7A: BD FE FB       JSR    $FEFB
 BA7D: 25 03          BCS    $BA82
-BA7F: BD FF 10       JSR    $FF10
+BA7F: BD FF 10       JSR    push_one_sprite_entry_ff10
 BA82: A6 88 34       LDA    $34,X
 BA85: 84 0C          ANDA   #$0C
 BA87: A7 88 34       STA    $34,X
@@ -5936,7 +5938,7 @@ BBC7: 48             ASLA
 BBC8: AD B6          JSR    [A,Y]        ; [indirect_jump] [nb_entries=20]
 BBCA: BD FE FB       JSR    $FEFB
 BBCD: 25 03          BCS    $BBD2
-BBCF: BD FF 10       JSR    $FF10
+BBCF: BD FF 10       JSR    push_one_sprite_entry_ff10
 BBD2: BD BC 4F       JSR    $BC4F
 BBD5: C6 21          LDB    #$21
 BBD7: 3A             ABX
@@ -9758,9 +9760,9 @@ FEFE: 7E FF C9       JMP    $FFC9
 FF01: 7E 42 42       JMP    lb0_4242
 FF04: 7E 48 8C       JMP    $488C ; [banks=0]
 
-l_ff10:
+push_one_sprite_entry_ff10:  ; [global]
 FF10: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
-FF13: BD 40 00       JSR    lb1_4000
+FF13: BD 40 00       JSR    lb1_push_one_sprite_entry_4000
 FF16: BD FD B2       JSR    restore_previous_bank_fdb2
 FF19: 39             RTS
 

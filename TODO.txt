@@ -1,5 +1,9 @@
-- at start sprites seem to be updated alternately (flicker) then thug walks but doesn't move left
+- check first sprite update using subcpu: what's in input from cpu, what's in output from subcpu, compare MAME/amiga
+
+- thug walks but doesn't move left
   track when the game moves the thug left, see why it doesn't happen
+
+- at start sprites seem to be updated alternately (flicker) double buf or simple?
   
 - hack OSD palette to make black appear (character heads)
 - set DSW difficulty lives, etc.

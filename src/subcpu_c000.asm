@@ -42,7 +42,8 @@ C02B: 7E C0 2B jmp  $C02B		; infinite loop, wait for main cpu orders
 sub_irq_c02e:  ; [global]
 C02E: 7D 00 66 tst  irq_already_called_0066
 C031: 26 03    bne  $C036
-; first time IRQ is called it checksums the memory
+; first time IRQ is called it checksums the memory, other times it
+; convert sprites coordinates
 C033: 7E C0 58 jmp  rom_checksum_c058
 C036: BD C0 6C jsr  sprite_convert_c06c
 irq_end_c039:

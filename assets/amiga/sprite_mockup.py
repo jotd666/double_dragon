@@ -115,7 +115,7 @@ def doit(binname):
 
     layer.save(f"{binname}.png")
 
-doit(r"C:\Users\Public\Documents\Amiga Files\WinUAE\amiga_sprites")
+doit(r"amiga/sprites_2800_mame_inj")
 
 
 

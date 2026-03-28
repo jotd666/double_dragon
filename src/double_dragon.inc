@@ -412,21 +412,33 @@ end_\@:
 
 
 	.macro GET_DP_ADDRESS	offset
+	.if	\offset>0xFF
+	.error	"offset \offset > 0xFF"
+	.endif
 	lea	(a5,\offset\().W),a0
 	.endm
 
 * optimized DP operations
-.macro OP_1_ON_DP_ADDRESS    inst,offset
+	.macro OP_1_ON_DP_ADDRESS    inst,offset
+	.if	\offset>0xFF
+	.error	"offset \offset > 0xFF"
+	.endif
 	\inst\().b    (a5,\offset\().W)
-.endm
+	.endm
 
-.macro OP_R_ON_DP_ADDRESS    inst,offset,reg
+	.macro OP_R_ON_DP_ADDRESS    inst,offset,reg
+	.if	\offset>0xFF
+	.error	"offset \offset > 0xFF"
+	.endif
 	\inst\().b    (a5,\offset\().W),\reg
-.endm
+	.endm
 
-.macro OP_W_ON_DP_ADDRESS    inst,offset,reg
+	.macro OP_W_ON_DP_ADDRESS    inst,offset,reg
+	.if	\offset>0xFF
+	.error	"offset \offset > 0xFF"
+	.endif
 	\inst\().b    \reg,(a5,\offset\().W)
-.endm
+	.endm
 
 	.macro	STORE_DP_IN_MEMORY
 	move.l	a5,m6809_direct_page_pointer

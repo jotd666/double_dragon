@@ -249,9 +249,12 @@
 
 
 
-	* DP is fixed at 0 on that 6800 derived cpu
+	* DP is fixed at 0 on that 6801 derived cpu
 	
 	.macro GET_DP_ADDRESS	offset
+	.if	\offset>0xFF
+	.error	"offset \offset > 0xFF"
+	.endif
 	lea	(a6,\offset\().W),a0
 	.endm
 

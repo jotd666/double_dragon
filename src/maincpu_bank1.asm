@@ -1,5 +1,5 @@
-lb1_4000:   ; [global]
-4000: 7E 41 00    JMP    $4100
+lb1_push_one_sprite_entry_4000:   ; [global]
+4000: 7E 41 00    JMP    lb1_push_one_sprite_entry_4100
 lb1_subcpu_processing_4003:   ; [global]
 4003: 7E 41 1E    JMP    subcpu_processing_411e
 lb1_4006:   ; [global]
@@ -153,20 +153,23 @@ lb1_40e1:      ; [global]
 lb1_40e4:      ; [global]
 40E4: 7E 76 FE    JMP    $76FE      ; [bogus]
 
+; < X: pointer on object to push
+lb1_push_one_sprite_entry_4100:
 4100: 34 26       PSHS   Y,D
-4102: 10 8E 03 81 LDY    #$0381
-4106: B6 03 A1    LDA    $03A1
+4102: 10 8E 03 81 LDY    #untransformed_sprite_coords_0381
+4106: B6 03 A1    LDA    nb_sprites_to_convert_03a1
 4109: 81 20       CMPA   #$20
-410B: 24 0F       BCC    $411C
+410B: 24 0F       BCC    $411C		; too much: out
 410D: E6 02       LDB    $2,X
 410F: C4 7F       ANDB   #$7F
 4111: C1 7F       CMPB   #$7F
-4113: 27 07       BEQ    $411C
+4113: 27 07       BEQ    $411C		; inactive: out
 4115: AF A6       STX    A,Y
 4117: 8B 02       ADDA   #$02
-4119: B7 03 A1    STA    $03A1
+4119: B7 03 A1    STA    nb_sprites_to_convert_03a1
 411C: 35 A6       PULS   D,Y,PC
 
+; < X
 subcpu_processing_411e:
 411E: 34 40       PSHS   U
 4120: 96 3A       LDA    bank_switch_copy_3a
@@ -185,9 +188,9 @@ subcpu_processing_411e:
 413D: 96 2B       LDA    $2B
 413F: B7 21 FE    STA    $21FE
 4142: 7F 21 FD    CLR    $21FD
-4145: 7D 03 A1    TST    $03A1
-4148: 10 27 00 A7 LBEQ   $41F3
-414C: 10 8E 03 81 LDY    #$0381
+4145: 7D 03 A1    TST    nb_sprites_to_convert_03a1
+4148: 10 27 00 A7 LBEQ   $41F3		; no sprites to transform: out
+414C: 10 8E 03 81 LDY    #untransformed_sprite_coords_0381
 4150: CE 20 01    LDU    #$2001		; fill exchange zone
 4153: 5F          CLRB
 ; loop
@@ -261,7 +264,7 @@ subcpu_processing_411e:
 41E1: A7 C4       STA    ,U
 41E3: 33 48       LEAU   $8,U
 41E5: CB 02       ADDB   #$02
-41E7: F1 03 A1    CMPB   $03A1
+41E7: F1 03 A1    CMPB   nb_sprites_to_convert_03a1
 41EA: 10 25 FF 66 LBCS   $4154		; loop back
 41EE: 1E 03       EXG    D,U
 41F0: F7 20 00    STB    subcpu_shared_2000			; set data in exchange memory: number of sprites (??) to process
@@ -275,7 +278,7 @@ subcpu_processing_411e:
 4201: 27 F9       BEQ    $41FC
 ; wake up subcpu, let it work in parallel
 4203: B7 38 0F    STA    sub_irq_380f
-4206: 7F 03 A1    CLR    $03A1
+4206: 7F 03 A1    CLR    nb_sprites_to_convert_03a1
 4209: 35 C0       PULS   U,PC
 
 420B: 34 76       PSHS   U,Y,X,D
@@ -3607,7 +3610,7 @@ subcpu_processing_411e:
 62A4: A1 E4       CMPA   ,S
 62A6: 26 03       BNE    $62AB
 62A8: BD 62 C8    JSR    $62C8
-62AB: BD 41 00    JSR    $4100
+62AB: BD 41 00    JSR    lb1_push_one_sprite_entry_4100
 62AE: C6 21       LDB    #$21
 62B0: 3A          ABX
 62B1: 6A E4       DEC    ,S

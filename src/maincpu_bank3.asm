@@ -529,7 +529,7 @@ jump_table_70a7:
 7138: 2B 02          BMI    $713C
 713A: 8A 80          ORA    #$80
 713C: A7 02          STA    $2,X
-713E: 17 8D CF       LBSR   $FF10
+713E: 17 8D CF       LBSR   push_one_sprite_entry_ff10
 7141: 6C 88 19       INC    $19,X
 7144: A6 88 19       LDA    $19,X
 7147: 81 02          CMPA   #$02
@@ -602,7 +602,7 @@ jump_table_70a7:
 71E2: 86 7F          LDA    #$7F
 71E4: A7 02          STA    $2,X
 71E6: 6F 88 16       CLR    $16,X
-71E9: 17 8D 24       LBSR   $FF10
+71E9: 17 8D 24       LBSR   push_one_sprite_entry_ff10
 71EC: 39             RTS
 71ED: 8E 09 6B       LDX    #$096B
 71F0: B6 0B 03       LDA    $0B03
@@ -679,7 +679,7 @@ jump_table_7229:
 7285: 86 1F          LDA    #$1F
 7287: A7 01          STA    $1,X
 7289: 6F 88 16       CLR    $16,X
-728C: 17 8C 81       LBSR   $FF10
+728C: 17 8C 81       LBSR   push_one_sprite_entry_ff10
 728F: 39             RTS
 
 jump_table_7290:
@@ -931,7 +931,7 @@ jump_table_748f:
 74C5: AB 88 18       ADDA   $18,X
 74C8: A7 02          STA    $2,X
 74CA: 6F 88 16       CLR    $16,X
-74CD: 17 8A 40       LBSR   $FF10
+74CD: 17 8A 40       LBSR   push_one_sprite_entry_ff10
 74D0: 6C 88 19       INC    $19,X
 74D3: A6 88 19       LDA    $19,X
 74D6: 81 08          CMPA   #$08
@@ -1003,7 +1003,7 @@ jump_table_748f:
 7568: EC 28          LDD    $8,Y
 756A: C3 00 48       ADDD   #$0048
 756D: ED 08          STD    $8,X
-756F: 17 89 9E       LBSR   $FF10
+756F: 17 89 9E       LBSR   push_one_sprite_entry_ff10
 7572: 6C 88 19       INC    $19,X
 7575: A6 88 19       LDA    $19,X
 7578: 81 04          CMPA   #$04
