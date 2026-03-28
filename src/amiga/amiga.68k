@@ -1751,7 +1751,6 @@ level1_interrupt:
 	bset	#8,d0
 0:
 	move.w	D0,game_scroll_y
-	move.w	d0,0x150
 	
 	* ok now D5 can be used freely
 

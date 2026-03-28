@@ -132,7 +132,7 @@
 ; FFF2H to FFF3H 	SWI3 instruction interrupt vector        $80B9 (not used, RTI)
 ; FFF4H to FFF5H 	SWI2 instruction interrupt vector        $80B9 (not used, RTI)
 ; FFF6H to FFF7H 	Fast hardware int. vector (FIRQ)         $8092 freq 0.7ms only to check for inserted coins
-; FFF8H to FFF9H 	Hardware interrupt vector (IRQ)          $80B0 freq 1/30s (29ms)
+; FFF8H to FFF9H 	Hardware interrupt vector (IRQ)          $80B0 controlled by subcpu
 ; FFFAH to FFFBH 	SWI instruction interrupt vector         $80B9 (not used, RTI)
 ; FFFCH to FFFDH 	Non-maskable interrupt vector (NMI)      $8056 freq 1/60s (15ms)
 ; FFFEH to FFFFH 	Reset vector                             $8000
@@ -160,7 +160,7 @@ previous_bank_register_0e43 = $e43
 previous_bank_register_0e44 = $e44
 previous_bank_register_0e45 = $e45
 previous_bank_register_0e46 = $e46
-sync_flag_0e3e = $e3e
+irq_sync_flag_0e3e = $e3e
 bg_tiles_palette_1100 = $1100
 sprites_palette_1080 = $1080
 fg_tiles_palette_1000 = $1000
@@ -219,24 +219,26 @@ nmi_8056:   ; [global]
 805E: 96 22          LDA    interrupt_status_22
 8060: 2B 2C          BMI    $808E
 8062: 8A 80          ORA    #$80
-8064: 97 22          STA    interrupt_status_22
+8064: 97 22          STA    interrupt_status_22		; bit 7 to tell that we're within the nmi
 8066: 0C 2F          INC    $2F
 8068: 96 22          LDA    interrupt_status_22
 806A: 84 01          ANDA   #$01
-806C: 27 1A          BEQ    $8088
+806C: 27 1A          BEQ    $8088					; skip if bit 0 is not set
+; main graphic update
 806E: BD FD FC       JSR    update_scrolling_fdfc
 8071: BD FF 24       JSR    save_and_switch_to_bank_0_ff24
 8074: BD FE A4       JSR    update_sprite_memory_fea4	; copy from subcpu memory to sprite memory
 8077: BD FE A7       JSR    $FEA7			; ??? tried disabling it, the game runs normally...
 807A: BD FD F3       JSR    set_palettes_fdf3
 807D: BD FF 34       JSR    restore_previous_bank_ff34
+; "ack" nmi graphic update by setting bit 2 
 8080: 96 22          LDA    interrupt_status_22
 8082: 8A 02          ORA    #$02
 8084: 97 22          STA    interrupt_status_22
 8086: 0F 2F          CLR    $2F
 8088: 96 22          LDA    interrupt_status_22
 808A: 84 7F          ANDA   #$7F
-808C: 97 22          STA    interrupt_status_22
+808C: 97 22          STA    interrupt_status_22		; clear bit 7 to tell that we're outside the nmi
 808E: B7 38 0B       STA    nmi_ack_380b		; ack our interrupt
 8091: 3B             RTI
 
@@ -264,7 +266,7 @@ firq_8092:   ; [global]
 ; irq is just there to set sync flag
 irq_80b0:   ; [global]
 80B0: 86 01          LDA    #$01
-80B2: B7 0E 3E       STA    sync_flag_0e3e		; set sync flag
+80B2: B7 0E 3E       STA    irq_sync_flag_0e3e		; set sync flag
 80B5: B7 38 0D       STA    irq_ack_380d		; ack our interrupt
 80B8: 3B             RTI
 
@@ -315,17 +317,17 @@ swi_interrupt:
 8114: BD FD F3       JSR    set_palettes_fdf3
 8117: BD FE F8       JSR    $FEF8
 811A: 86 06          LDA    #$06
-811C: BD FE B0       JSR    $FEB0
+811C: BD FE B0       JSR    display_credit_feb0
 811F: 86 0A          LDA    #$0A
 8121: B7 0E 2D       STA    $0E2D
 ; "insert coin" loop wait during title
 insert_coin_loop_8124:
 8124: 86 07          LDA    #$07
-8126: BD FE B0       JSR    $FEB0
+8126: BD FE B0       JSR    display_credit_feb0
 8129: 86 18          LDA    #$18
 812B: BD B7 56       JSR    vbl_delay_b756
 812E: 86 87          LDA    #$87
-8130: BD FE B0       JSR    $FEB0
+8130: BD FE B0       JSR    display_credit_feb0
 8133: 86 08          LDA    #$08
 8135: BD B7 56       JSR    vbl_delay_b756
 8138: 7A 0E 2D       DEC    $0E2D
@@ -383,7 +385,7 @@ coin_inserted_8158:
 81B3: C8 80          EORB   #$80
 81B5: F7 0E 35       STB    $0E35
 81B8: 86 84          LDA    #$84
-81BA: BD FE B0       JSR    $FEB0
+81BA: BD FE B0       JSR    display_credit_feb0
 81BD: 20 1C          BRA    $81DB
 81BF: 86 03          LDA    #$03
 81C1: 34 04          PSHS   B
@@ -398,7 +400,7 @@ coin_inserted_8158:
 81D1: 88 80          EORA   #$80
 81D3: B7 0E 35       STA    $0E35
 81D6: 86 84          LDA    #$84
-81D8: BD FE B0       JSR    $FEB0
+81D8: BD FE B0       JSR    display_credit_feb0
 81DB: BD 84 45       JSR    $8445
 81DE: 86 01          LDA    #$01
 81E0: BD B7 56       JSR    vbl_delay_b756
@@ -574,7 +576,7 @@ activate_nmi_flag_837e:
 8383: B7 0E 71       STA    nmi_active_flag_0e71
 8386: 7F 0E 52       CLR    $0E52
 gameloop_8389:
-8389: 7F 0E 3E       CLR    sync_flag_0e3e
+8389: 7F 0E 3E       CLR    irq_sync_flag_0e3e
 838C: 0F 22          CLR    interrupt_status_22
 838E: F6 21 FD       LDB    $21FD
 8391: 34 04          PSHS   B
@@ -601,7 +603,7 @@ gameloop_8389:
 83CD: 26 06          BNE    $83D5
 83CF: BD B7 8A       JSR    call_bank3_b78a
 83D2: BD B7 AD       JSR    call_bank3_b7ad
-83D5: B6 0E 3E       LDA    sync_flag_0e3e
+83D5: B6 0E 3E       LDA    irq_sync_flag_0e3e
 83D8: 27 FB          BEQ    $83D5
 83DA: BD 8A B5       JSR    wait_subcpu_reply_8ab5
 83DD: 35 04          PULS   B
@@ -649,7 +651,7 @@ gameloop_8389:
 8442: 7E 83 89       JMP    gameloop_8389
 
 8445: 86 01          LDA    #$01
-8447: BD FE B0       JSR    $FEB0
+8447: BD FE B0       JSR    display_credit_feb0
 844A: 86 04          LDA    #$04
 844C: BD FE B3       JSR    $FEB3
 844F: 39             RTS
@@ -734,7 +736,7 @@ play_intro_animation_84f8:
 8506: B6 0E 71       LDA    nmi_active_flag_0e71
 8509: 8A 80          ORA    #$80
 850B: B7 0E 71       STA    nmi_active_flag_0e71
-850E: 7F 0E 3E       CLR    sync_flag_0e3e
+850E: 7F 0E 3E       CLR    irq_sync_flag_0e3e
 ; block things in nmi
 8511: 0F 22          CLR    interrupt_status_22
 8513: F6 21 FD       LDB    $21FD
@@ -747,7 +749,7 @@ play_intro_animation_84f8:
 8527: BD FD F9       JSR    $FDF9
 852A: BD 84 45       JSR    $8445
 ; wait for sync
-852D: B6 0E 3E       LDA    sync_flag_0e3e
+852D: B6 0E 3E       LDA    irq_sync_flag_0e3e
 8530: 27 FB          BEQ    $852D
 8532: BD 8A B5       JSR    wait_subcpu_reply_8ab5
 8535: 35 04          PULS   B
@@ -757,10 +759,12 @@ play_intro_animation_84f8:
 853C: 8A 01          ORA    #$01
 853E: 97 22          STA    interrupt_status_22
 8540: 7F 38 0B       CLR    nmi_ack_380b		; skipping this doesn't change a thing
+; wait for NMI to happen
 8543: 96 22          LDA    interrupt_status_22
 8545: 84 02          ANDA   #$02
 8547: 27 FA          BEQ    $8543
 8549: 0C 51          INC    $51
+; wait for intro to end
 854B: B6 0E 30       LDA    intro_anim_flag_0e30
 854E: 84 03          ANDA   #$03
 8550: 81 03          CMPA   #$03
@@ -770,7 +774,7 @@ play_intro_animation_84f8:
 8556: 84 01          ANDA   #$01
 8558: 10 8E 85 62    LDY    #$8562
 855C: A6 A6          LDA    A,Y
-855E: BD FE B0       JSR    $FEB0
+855E: BD FE B0       JSR    display_credit_feb0
 8561: 39             RTS
 
 8564: 86 80          LDA    #$80
@@ -803,16 +807,16 @@ play_intro_animation_84f8:
 85A2: 81 FF          CMPA   #$FF
 85A4: 27 3F          BEQ    $85E5
 85A6: 1F 89          TFR    A,B
-85A8: BD FE B0       JSR    $FEB0
+85A8: BD FE B0       JSR    display_credit_feb0
 85AB: 86 14          LDA    #$14
-85AD: BD FE B0       JSR    $FEB0
+85AD: BD FE B0       JSR    display_credit_feb0
 85B0: 86 40          LDA    #$40
 85B2: BD B7 56       JSR    vbl_delay_b756
 85B5: 1F 98          TFR    B,A
 85B7: 8A 80          ORA    #$80
-85B9: BD FE B0       JSR    $FEB0
+85B9: BD FE B0       JSR    display_credit_feb0
 85BC: 86 94          LDA    #$94
-85BE: BD FE B0       JSR    $FEB0
+85BE: BD FE B0       JSR    display_credit_feb0
 85C1: 96 36          LDA    $36
 85C3: 10 8E 86 E8    LDY    #$86E8
 85C7: A6 A6          LDA    A,Y
@@ -840,7 +844,7 @@ play_intro_animation_84f8:
 85FC: B6 0E 71       LDA    nmi_active_flag_0e71
 85FF: 8A 80          ORA    #$80
 8601: B7 0E 71       STA    nmi_active_flag_0e71
-8604: 7F 0E 3E       CLR    sync_flag_0e3e
+8604: 7F 0E 3E       CLR    irq_sync_flag_0e3e
 8607: 0F 22          CLR    interrupt_status_22
 8609: F6 21 FD       LDB    $21FD
 860C: 34 04          PSHS   B
@@ -860,7 +864,7 @@ play_intro_animation_84f8:
 862F: BD FD F9       JSR    $FDF9
 8632: BD B7 AD       JSR    call_bank3_b7ad
 8635: BD 86 EC       JSR    $86EC
-8638: B6 0E 3E       LDA    sync_flag_0e3e
+8638: B6 0E 3E       LDA    irq_sync_flag_0e3e
 863B: 27 FB          BEQ    $8638
 863D: BD 8A B5       JSR    wait_subcpu_reply_8ab5
 8640: 35 04          PULS   B
@@ -903,7 +907,7 @@ play_intro_animation_84f8:
 8698: 86 80          LDA    #$80
 869A: BD B7 56       JSR    vbl_delay_b756
 869D: 86 8F          LDA    #$8F
-869F: BD FE B0       JSR    $FEB0
+869F: BD FE B0       JSR    display_credit_feb0
 86A2: 20 03          BRA    $86A7
 86A4: 7F 09 F2       CLR    $09F2
 86A7: 7F 0E 2D       CLR    $0E2D
@@ -1021,7 +1025,7 @@ play_intro_animation_84f8:
 87BC: 10 8E 87 CF    LDY    #$87CF
 87C0: D6 2A          LDB    $2A
 87C2: A6 A5          LDA    B,Y
-87C4: BD FE B0       JSR    $FEB0
+87C4: BD FE B0       JSR    display_credit_feb0
 87C7: BD FC AA       JSR    $FCAA
 87CA: BD FC BE       JSR    $FCBE
 87CD: 35 B6          PULS   D,X,Y,PC
@@ -1074,7 +1078,7 @@ play_intro_animation_84f8:
 8833: F6 0E 35       LDB    $0E35
 8836: C8 80          EORB   #$80
 8838: F7 0E 35       STB    $0E35
-883B: BD FE B0       JSR    $FEB0
+883B: BD FE B0       JSR    display_credit_feb0
 883E: 32 63          LEAS   $3,S
 8840: 39             RTS
 
@@ -1122,21 +1126,21 @@ play_intro_animation_84f8:
 88AF: 7E 83 7E       JMP    activate_nmi_flag_837e
 88B2: 7F 0E 71       CLR    nmi_active_flag_0e71
 88B5: 86 8B          LDA    #$8B
-88B7: BD FE B0       JSR    $FEB0
+88B7: BD FE B0       JSR    display_credit_feb0
 88BA: 86 8C          LDA    #$8C
-88BC: BD FE B0       JSR    $FEB0
+88BC: BD FE B0       JSR    display_credit_feb0
 88BF: 86 09          LDA    #$09
-88C1: BD FE B0       JSR    $FEB0
+88C1: BD FE B0       JSR    display_credit_feb0
 88C4: 96 29          LDA    $29
 88C6: 2A 05          BPL    $88CD
 88C8: 86 0A          LDA    #$0A
-88CA: BD FE B0       JSR    $FEB0
+88CA: BD FE B0       JSR    display_credit_feb0
 88CD: 86 80          LDA    #$80
 88CF: BD B7 56       JSR    vbl_delay_b756
 88D2: 86 8B          LDA    #$8B
-88D4: BD FE B0       JSR    $FEB0
+88D4: BD FE B0       JSR    display_credit_feb0
 88D7: 86 8C          LDA    #$8C
-88D9: BD FE B0       JSR    $FEB0
+88D9: BD FE B0       JSR    display_credit_feb0
 88DC: CC 02 80       LDD    #$0280
 88DF: FD 0E 4D       STD    $0E4D
 88E2: 96 36          LDA    $36
@@ -1171,9 +1175,9 @@ play_intro_animation_84f8:
 892C: 0F 26          CLR    $26
 892E: 7E 80 BA       JMP    $80BA
 8931: 86 8B          LDA    #$8B
-8933: BD FE B0       JSR    $FEB0
+8933: BD FE B0       JSR    display_credit_feb0
 8936: 86 8C          LDA    #$8C
-8938: BD FE B0       JSR    $FEB0
+8938: BD FE B0       JSR    display_credit_feb0
 893B: 86 40          LDA    #$40
 893D: B6 0E 52       LDA    $0E52
 8940: 10 26 FC B8    LBNE   $85FC
@@ -1201,11 +1205,11 @@ play_intro_animation_84f8:
 8975: 88 01          EORA   #$01
 8977: B7 0E 35       STA    $0E35
 897A: A6 E4          LDA    ,S
-897C: BD FE B0       JSR    $FEB0
+897C: BD FE B0       JSR    display_credit_feb0
 897F: 0D 29          TST    $29
 8981: 2A 05          BPL    $8988
 8983: A6 61          LDA    $1,S
-8985: BD FE B0       JSR    $FEB0
+8985: BD FE B0       JSR    display_credit_feb0
 8988: 86 04          LDA    #$04
 898A: BD FE B3       JSR    $FEB3
 898D: 32 62          LEAS   $2,S
@@ -4701,7 +4705,7 @@ AF06: 96 38          LDA    $38
 AF08: 27 02          BEQ    $AF0C
 AF0A: 86 03          LDA    #$03
 AF0C: A6 A6          LDA    A,Y
-AF0E: BD FE B0       JSR    $FEB0
+AF0E: BD FE B0       JSR    display_credit_feb0
 AF11: BD B0 D0       JSR    $B0D0
 AF14: BD B0 FE       JSR    $B0FE
 AF17: 24 08          BCC    $AF21
@@ -4739,7 +4743,7 @@ AF60: 86 9A          LDA    #$9A
 AF62: 20 04          BRA    $AF68
 AF64: 0C 36          INC    $36
 AF66: 86 91          LDA    #$91
-AF68: BD FE B0       JSR    $FEB0
+AF68: BD FE B0       JSR    display_credit_feb0
 AF6B: 39             RTS
 AF6C: B6 0E 2D       LDA    $0E2D
 AF6F: 84 0F          ANDA   #$0F
@@ -4749,7 +4753,7 @@ AF76: 6E B6          JMP    [A,Y]		; [indirect_jump] [nb_entries=6]
 AF78: 39             RTS
 
 AF85: 86 12          LDA    #$12
-AF87: BD FE B0       JSR    $FEB0
+AF87: BD FE B0       JSR    display_credit_feb0
 AF8A: BD AF 11       JSR    $AF11
 AF8D: 39             RTS
 AF8E: BD B0 D0       JSR    $B0D0
@@ -4839,7 +4843,7 @@ B060: 6E B6          JMP    [A,Y]		; [indirect_jump] [nb_entries=2]
 B062: 39             RTS
 
 B067: 86 0F          LDA    #$0F
-B069: BD FE B0       JSR    $FEB0
+B069: BD FE B0       JSR    display_credit_feb0
 B06C: BD B0 D0       JSR    $B0D0
 B06F: BD B0 FE       JSR    $B0FE                                        
 B072: 24 2C          BCC    $B0A0                                        
@@ -5100,7 +5104,7 @@ B384: 96 36          LDA    $36
 B386: 84 01          ANDA   #$01
 B388: 10 8E B3 DE    LDY    #$B3DE
 B38C: A6 A6          LDA    A,Y
-B38E: BD FE B0       JSR    $FEB0
+B38E: BD FE B0       JSR    display_credit_feb0
 B391: 10 8E B3 E0    LDY    #$B3E0
 B395: 96 36          LDA    $36
 B397: 84 02          ANDA   #$02
@@ -5658,7 +5662,7 @@ B882: 27 02          BEQ    $B886
 B884: C6 01          LDB    #$01		; error in main ROM (ROM 4)
 B886: 86 04          LDA    #$04
 B888: BD B8 EA       JSR    write_diagnostic_message_b8ea
-B88B: 7F 0E 3E       CLR    sync_flag_0e3e
+B88B: 7F 0E 3E       CLR    irq_sync_flag_0e3e
 B88E: 96 3A          LDA    bank_switch_copy_3a
 B890: 8A 10          ORA    #$10
 B892: 97 3A          STA    bank_switch_copy_3a
@@ -5678,7 +5682,7 @@ B8AC: 27 F9          BEQ    $B8A7
 ; trigger sub irq
 B8AE: B7 38 0F       STA    sub_irq_380f
 ; wait some time, let subcpu reply
-B8B1: 7D 0E 3E       TST    sync_flag_0e3e
+B8B1: 7D 0E 3E       TST    irq_sync_flag_0e3e
 B8B4: 27 FB          BEQ    $B8B1
 ; now wait for subcpu to reply
 B8B6: BD 8A B5       JSR    wait_subcpu_reply_8ab5
@@ -9476,7 +9480,7 @@ FC49: 97 3A          STA    bank_switch_copy_3a
 FC4B: B7 38 08       STA    bankswitch_3808
 FC4E: 35 82          PULS   A,PC
 
-l_fc50:
+display_credit_fc50:   ; [global]
 FC50: BD FC 82       JSR    switch_to_bank_5_fc82
 FC53: BD 40 45       JSR    lb5_4045
 FC56: BD FC 8F       JSR    switch_to_bank_0_fc8f
@@ -9721,7 +9725,10 @@ FEA7: 7E 45 66       JMP    $4566 ; [banks=0]
 FEAA: 7E 41 BF       JMP    $41BF ; [banks=0]
 clear_sprite_slots_fead:
 FEAD: 7E 41 F0       JMP    lb0_clear_sprite_slots_41f0
-FEB0: 7E FC 50       JMP    $FC50
+
+display_credit_feb0:
+FEB0: 7E FC 50       JMP    display_credit_fc50
+
 FEB3: 7E FC 78       JMP    $FC78
 FEB6: 7E 44 CD       JMP    $44CD ; [banks=0]
 FEB9: 7E 44 49       JMP    $4449 ; [banks=0]

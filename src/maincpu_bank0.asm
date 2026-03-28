@@ -316,7 +316,7 @@ lb0_4242:   ; [global]
 4264: E6 43          LDB    $3,U
 4266: 1F 02          TFR    D,Y
 4268: A6 C4          LDA    ,U
-426A: BD FC 50       JSR    $FC50
+426A: BD FC 50       JSR    display_credit_fc50
 426D: A6 C4          LDA    ,U
 426F: 88 80          EORA   #$80
 4271: A7 C4          STA    ,U
