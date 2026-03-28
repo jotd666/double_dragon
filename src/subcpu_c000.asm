@@ -46,6 +46,7 @@ C031: 26 03    bne  $C036
 C033: 7E C0 58 jmp  rom_checksum_c058
 C036: BD C0 6C jsr  sprite_convert_c06c
 irq_end_c039:
+; send a pulse to trigger main cpu IRQ
 C039: 96 65    lda  copy_of_port6_0065
 C03B: 84 FD    anda #$FD
 C03D: 97 65    sta  copy_of_port6_0065

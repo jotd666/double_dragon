@@ -147,9 +147,10 @@ def f_handle_sub_line(address,lines,i):
             line = line.replace("GET_REG_ADDRESS","GET_SHARED_REG_ADDRESS")
 
     if "unsupported instruction rti" in line:
-        if address == 0xC057:
-            line = change_instruction("rts",lines,i)
-        else:
+##        if address == 0xC057:
+##            pass
+##            #line = change_instruction("rts",lines,i)
+##        else:
             line = remove_error(line)
     if address == 0xC02B:
         # replace infinite loop after init by rts
@@ -157,6 +158,8 @@ def f_handle_sub_line(address,lines,i):
     elif address == 0xc009:
         # no need for explicit stack pointer here, cpu isn't able/doesn't use S
         line = remove_instruction(lines,i)
+    elif address == 0xC039:
+        line = change_instruction("jbra\tosd_call_main_irq",lines,i)
     if "unsupported instruction tap" in line:
         line = remove_instruction(lines,i)
     if ".long" in line:
@@ -164,6 +167,9 @@ def f_handle_sub_line(address,lines,i):
         line = ""
 
     lines[i] = line
+    lines[i] = remove_code_range(lines,i,address,0xC03B,0xC058)
+
+
 
 def f_handle_main_line(address,lines,i):
     line = lines[i]
@@ -280,8 +286,6 @@ jra        coin_inserted_8158
         else:
             line = change_instruction("jbsr\tosd_enable_interrupts",lines,i)
             lines[i-1] = remove_instruction(lines,i-1)
-
-
 
 
     elif "unsupported instruction rti" in line:

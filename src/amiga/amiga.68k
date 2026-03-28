@@ -289,6 +289,7 @@ osd_enter_\@:
 	.global	osd_wait_vblank_interrupt
 	.global osd_enable_interrupts
 	.global osd_disable_interrupts
+	.global osd_call_main_irq
 	
 	.global osd_call_sub_irq
 	.global osd_break		| for debug	
@@ -304,7 +305,6 @@ osd_enter_\@:
 	.global	osd_clear_bg_screen
 	.global	osd_video_byte_dirty
 	.global	osd_video_word_dirty
-
 
 	.global osd_read_high_scores
 	.global osd_write_high_scores
@@ -903,6 +903,7 @@ dump_and_quit:
 *2:
 *	rts
 
+* call subcpu irq from main cpu
 osd_call_sub_irq:
 	movem.l	d0-a6,-(a7)
 	GET_SUB_MEMORY_POINTERS
@@ -911,6 +912,14 @@ osd_call_sub_irq:
 	movem.l	(a7)+,d0-a6
 	rts
 
+* call cpu irq from subcpu
+osd_call_main_irq:
+	movem.l	d0-a6,-(a7)
+	GET_MEMORY_START_AND_DP
+	jbsr	cpu_init
+	jbsr	irq_80b0
+	movem.l	(a7)+,d0-a6
+	rts
 	
 osd_colors_cycled:
 * < A0: tile palette in RAM (but shadows hardware palette)
@@ -1614,6 +1623,8 @@ _nmi:
 	move.w	#0x7FFF,_custom+intreq
 	move.w	#0x7FFF,_custom+intreq
 	rts
+
+	
 	
 level3_interrupt:
 	movem.l d0-d7/a0-a6,-(a7)
@@ -1647,14 +1658,7 @@ level3_interrupt:
 	bclr	#3,(extra_3802,a6)		| ack vblank
 	move.b	d0,(port_1_3800,a6)
 	
-	* first call irq once out of two (25Hz todo 30Hz with double count else copper arg...)
-	* we cannot rely on 60Hz freq of level 1 interrupt as the game syncs within the interrupt
-	eor.b	#1,irq_flip_flop
-	jne		0f
-	jbsr	cpu_init
-	jbsr	irq_80b0
-0:
-	
+
 	move.l	joypad_1_state,d0
 	btst	#JPB_BTN_PLAY,d0
 	beq.b	0f

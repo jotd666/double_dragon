@@ -141,6 +141,12 @@ def load_mame_log(in_log,out_log,pcs):
     with open(out_log,"w") as fw:
         fw.writelines(lst)
 
+def remove_code_range(lines,i,address,start,end):
+    line = lines[i]
+    if address is not None:
+        if start <= address < end:
+            line = remove_instruction(lines,i)
+    return line
 
 def remove_instruction(lines,i):
     return change_instruction("",lines,i)
