@@ -677,7 +677,7 @@ table_4317:
 45B8: 39             RTS
 
 45CF: 34 16          PSHS   X,D
-45D1: AE 64          LDX    $4,S
+45D1: AE 64          LDX    $4,S	; [pushed_parameter]
 45D3: CC 25 32       LDD    #$2532
 45D6: FD 21 D0       STD    $21D0
 45D9: F7 21 D2       STB    $21D2

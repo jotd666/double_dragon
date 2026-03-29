@@ -61,13 +61,14 @@ lb0_401e:   ; [global]
 406D: 8B FF          ADDA   #$FF
 406F: A7 08          STA    $8,X
 4071: 35 FE          PULS   D,DP,X,Y,U,PC
+
 4073: 34 7E          PSHS   U,Y,X,DP,D
 4075: E6 0E          LDB    $E,X
 4077: A6 0D          LDA    $D,X
 4079: 17 00 DD       LBSR   $4159
 407C: A6 05          LDA    $5,X
 407E: E6 0A          LDB    $A,X
-4080: D3 00          ADDD   $00
+4080: D3 00          ADDD   $00		; add X direction
 4082: E7 0A          STB    $A,X
 4084: A7 05          STA    $5,X
 4086: A6 04          LDA    $4,X
@@ -172,8 +173,10 @@ lb0_401e:   ; [global]
 4153: 8B FF          ADDA   #$FF
 4155: A7 08          STA    $8,X
 4157: 35 FE          PULS   D,DP,X,Y,U,PC
+
+; < D (read from stack)
 4159: 34 36          PSHS   Y,X,D
-415B: 32 78          LEAS   -$8,S
+415B: 32 78          LEAS   -$8,S	; alloc auto-memory
 415D: 44             LSRA
 415E: 44             LSRA
 415F: 44             LSRA
@@ -181,7 +184,7 @@ lb0_401e:   ; [global]
 4161: 44             LSRA
 4162: A7 E4          STA    ,S
 4164: 1F 89          TFR    A,B
-4166: A6 68          LDA    $8,S
+4166: A6 68          LDA    $8,S		; [pushed_parameter]
 4168: 84 1F          ANDA   #$1F
 416A: A7 61          STA    $1,S
 416C: 8E 41 B7       LDX    #$41B7
@@ -200,27 +203,27 @@ lb0_401e:   ; [global]
 4185: 86 20          LDA    #$20
 4187: A7 E5          STA    B,S
 4189: A6 64          LDA    $4,S
-418B: E6 69          LDB    $9,S
+418B: E6 69          LDB    $9,S		; [pushed_parameter]
 418D: 3D             MUL
 418E: DD 02          STD    $02
 4190: A6 63          LDA    $3,S
-4192: E6 69          LDB    $9,S
+4192: E6 69          LDB    $9,S			; [pushed_parameter]
 4194: 3D             MUL
 4195: DD 00          STD    $00
-4197: A6 68          LDA    $8,S
+4197: A6 68          LDA    $8,S			; [pushed_parameter]
 4199: 2A 07          BPL    $41A2
 419B: CC 00 00       LDD    #$0000
-419E: 93 00          SUBD   $00
+419E: 93 00          SUBD   $00		; change X direction
 41A0: DD 00          STD    $00
-41A2: A6 68          LDA    $8,S
+41A2: A6 68          LDA    $8,S			; [pushed_parameter]
 41A4: 81 40          CMPA   #$40
 41A6: 25 0B          BCS    $41B3
 41A8: 81 C0          CMPA   #$C0
 41AA: 24 07          BCC    $41B3
 41AC: CC 00 00       LDD    #$0000
-41AF: 93 02          SUBD   $02
+41AF: 93 02          SUBD   $02		; change Y direction ?
 41B1: DD 02          STD    $02
-41B3: 32 68          LEAS   $8,S
+41B3: 32 68          LEAS   $8,S	; restore stack
 41B5: 35 B6          PULS   D,X,Y,PC
 
 ; clear memory
@@ -421,7 +424,7 @@ lb0_42b4:   ; [global]
 4340: 24 4F          BCC    $4391
 4342: 10 8E 43 BB    LDY    #$43BB
 4346: 31 A6          LEAY   A,Y
-4348: 32 7D          LEAS   -$3,S
+4348: 32 7D          LEAS   -$3,S		; alloc auto-memory
 434A: A6 88 4D       LDA    $4D,X
 434D: A7 E4          STA    ,S
 434F: 58             ASLB
@@ -980,9 +983,9 @@ lb0_488c:  ; [global]
 4897: E7 01          STB    $1,X
 4899: 84 40          ANDA   #$40
 489B: 27 12          BEQ    $48AF
-489D: A6 64          LDA    $4,S
+489D: A6 64          LDA    $4,S	; [pushed_parameter]
 489F: A7 02          STA    $2,X
-48A1: A6 66          LDA    $6,S
+48A1: A6 66          LDA    $6,S	; [pushed_parameter]
 48A3: A7 03          STA    $3,X
 48A5: 35 B7          PULS   CC,D,X,Y,PC
 48A7: C6 04          LDB    #$04
@@ -1054,7 +1057,7 @@ lb0_48eb:  ; [global]
 4923: 27 28          BEQ    $494D
 4925: C1 00          CMPB   #$00
 4927: 27 24          BEQ    $494D
-4929: 32 71          LEAS   -$F,S
+4929: 32 71          LEAS   -$F,S		; alloc auto-memory
 492B: A7 E4          STA    ,S
 492D: E7 61          STB    $1,S
 492F: 86 08          LDA    #$08
@@ -1081,7 +1084,7 @@ lb0_48eb:  ; [global]
 4953: 27 43          BEQ    $4998
 4955: 10 8C 00 00    CMPY   #$0000
 4959: 27 3D          BEQ    $4998
-495B: 32 71          LEAS   -$F,S
+495B: 32 71          LEAS   -$F,S		; alloc auto-memory
 495D: 6F 64          CLR    $4,S
 495F: 6F 65          CLR    $5,S
 4961: 6F 66          CLR    $6,S
@@ -1300,6 +1303,7 @@ display_title_tiles_4ac7:
 4B29: 26 C6          BNE    $4AF1
 4B2B: 32 62          LEAS   $2,S
 4B2D: 39             RTS
+
 4B2E: 5F             CLRB
 4B2F: 10 8E 4B 3E    LDY    #$4B3E
 4B33: AE A1          LDX    ,Y++			; [bank_address]
@@ -1773,6 +1777,7 @@ lb0_51e5:    ; [global]
 5252: 20 03          BRA    $5257
 5254: 7A 0A FD       DEC    $0AFD
 5257: 39             RTS
+
 5258: 32 78          LEAS   -$8,S
 525A: 7F 0B 0F       CLR    $0B0F
 525D: 10 8E 53 04    LDY    #$5304
@@ -2123,7 +2128,8 @@ lb0_51e5:    ; [global]
 5674: B7 0A EC       STA    $0AEC
 5677: 7F 0A EE       CLR    $0AEE
 567A: 39             RTS
-567B: 32 71          LEAS   -$F,S
+
+567B: 32 71          LEAS   -$F,S	; alloc auto-memory
 567D: 96 51          LDA    $51
 567F: 84 03          ANDA   #$03
 5681: 26 66          BNE    $56E9

@@ -199,8 +199,8 @@ nb_objects_to_convert_03a1 = $3a1
 ;    1F: girl
 ; 2:
 ; 3:
-; 4: X coordinate
-; 6: Y coordinate
+; 4.W: X coordinate
+; 6.W: Y coordinate
 logical_objects_array_0381 = $381
 number_of_players_flag_0029 = $29
 game_in_play_0026 = $26
@@ -1595,6 +1595,7 @@ wait_subcpu_reply_8ab5:
 8D0C: FC 0B 52       LDD    $0B52
 8D0F: ED 08          STD    $8,X
 8D11: 39             RTS
+
 8D12: 34 7E          PSHS   U,Y,X,DP,D
 8D14: 32 7A          LEAS   -$6,S
 8D16: A6 05          LDA    $5,X
@@ -1654,6 +1655,7 @@ wait_subcpu_reply_8ab5:
 8D9C: ED 04          STD    $4,X
 8D9E: 32 66          LEAS   $6,S
 8DA0: 35 FE          PULS   D,DP,X,Y,U,PC
+
 8DA2: B6 0B 4D       LDA    $0B4D
 8DA5: 85 0F          BITA   #$0F
 8DA7: 26 12          BNE    $8DBB
@@ -5452,10 +5454,10 @@ B66A: 2B 27          BMI    $B693
 B66C: 8A 80          ORA    #$80
 B66E: A7 88 31       STA    $31,X
 ; get pushed stack value, times 5
-B671: A6 61          LDA    $1,S	; retrieve pushed object number from stack (D lsb)
+B671: A6 61          LDA    $1,S	; [pushed_parameter] retrieve pushed object number from stack (D lsb)
 B673: 48             ASLA
 B674: 48             ASLA
-B675: AB 61          ADDA   $1,S
+B675: AB 61          ADDA   $1,S	; [pushed_parameter]
 B677: 10 8E B6 95    LDY    #$B695		; get ROM values for object (start enemies)
 B67B: 31 A6          LEAY   A,Y
 B67D: EC A4          LDD    ,Y
@@ -5491,6 +5493,7 @@ B6CD: 10 B3 04 62    CMPD   $0462
 B6D1: 24 03          BCC    $B6D6
 B6D3: 7F 0E 31       CLR    $0E31
 B6D6: 35 FE          PULS   D,DP,X,Y,U,PC
+
 B6D8: 34 7E          PSHS   U,Y,X,DP,D
 B6DA: A6 88 1B       LDA    $1B,X
 B6DD: 2B 1F          BMI    $B6FE
@@ -8713,6 +8716,7 @@ E84E: 49             ROLA
 E84F: E3 64          ADDD   $4,S
 E851: 32 66          LEAS   $6,S
 E853: 35 B0          PULS   X,Y,PC
+
 E855: 34 10          PSHS   X
 E857: 84 01          ANDA   #$01
 E859: 48             ASLA

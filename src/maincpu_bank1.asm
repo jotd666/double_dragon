@@ -3615,7 +3615,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 62C8: A6 88 1B    LDA    $1B,X
 62CB: 2B 21       BMI    $62EE
 62CD: BD FE 64    JSR    $FE64
-62D0: A6 A4       LDA    ,Y
+62D0: A6 A4       LDA    ,Y			; [bank_address]
 62D2: A7 02       STA    $2,X
 62D4: 86 04       LDA    #$04
 62D6: A7 88 19    STA    $19,X
@@ -3634,7 +3634,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 62F6: A6 88 18    LDA    $18,X
 62F9: 81 04       CMPA   #$04
 62FB: 24 0A       BCC    $6307
-62FD: E6 A6       LDB    A,Y
+62FD: E6 A6       LDB    A,Y		; [bank_address]
 62FF: E7 02       STB    $2,X
 6301: C6 04       LDB    #$04
 6303: E7 88 19    STB    $19,X
@@ -4688,10 +4688,11 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 6D09: 26 02       BNE    $6D0D
 6D0B: 8A 08       ORA    #$08
 6D0D: A7 88 31    STA    $31,X
-6D10: EC 64       LDD    $4,S
+6D10: EC 64       LDD    $4,S		; [pushed_parameter]
 6D12: ED 88 2D    STD    $2D,X
 6D15: 32 64       LEAS   $4,S
 6D17: 35 A0       PULS   Y,PC
+
 6D19: 96 36       LDA    $36
 6D1B: D6 37       LDB    $37
 6D1D: 10 83 02 01 CMPD   #$0201

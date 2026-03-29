@@ -262,7 +262,7 @@ jump_table_6cdc:
 6E59: 39             RTS
 
 6E5A: 34 7E          PSHS   U,Y,X,DP,D
-6E5C: 32 71          LEAS   -$F,S
+6E5C: 32 71          LEAS   -$F,S	; alloc auto memory
 6E5E: CE 0E 76       LDU    #$0E76
 6E61: 6F E4          CLR    ,S
 6E63: 6F 61          CLR    $1,S
@@ -280,7 +280,7 @@ jump_table_6cdc:
 6E7F: 33 46          LEAU   $6,U
 6E81: 6F E4          CLR    ,S
 6E83: 6C 61          INC    $1,S
-6E85: A6 61          LDA    $1,S
+6E85: A6 61          LDA    $1,S	; auto-memory
 6E87: 81 05          CMPA   #$05
 6E89: 25 DD          BCS    $6E68
 6E8B: 6F E4          CLR    ,S

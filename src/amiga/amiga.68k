@@ -140,7 +140,7 @@ OPT_MIRROR_TEST = 0				| all sprites are mirrored
 	.endif
 	
 
-OPT_ENABLE_DOUBLE_BUFFERING = 0
+OPT_ENABLE_DOUBLE_BUFFERING = 1
 
 _custom = 0xDFF000
 
@@ -957,6 +957,9 @@ osd_palette_updated:
 	addq	#4,a0
 	jra		0b
 0:
+	.ifndef	RELEASE
+	move.l	D1,0x200	| store current color checksum in ZP
+	.endif
 	moveq	#0,d1
 	moveq	#0,d2
 	rts
@@ -4254,6 +4257,12 @@ empty_row:
 	.skip	8
 		
 blit_title_pic:
+	.ifne	OPT_ENABLE_DOUBLE_BUFFERING
+	lea		playfield_displayed_screen_ptr,a1
+	jbsr	0f
+	.endif
+	move.l	playfield_drawed_screen_ptr,a1
+0:
 	lea		_custom,a5
 	lea		sprite_table_buffer,a0
 	move.w	(a0)+,d0				| nb bitplanes
@@ -4268,7 +4277,6 @@ blit_title_pic:
 	move.w	#32,d0
 	move.w	#24,d1
 	moveq	#0,d5
-	move.l	playfield_drawed_screen_ptr,a1
 	jbsr	blit_planes_any_internal_no_cookie_cut
 	rts
 

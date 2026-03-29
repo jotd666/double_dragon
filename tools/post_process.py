@@ -11,6 +11,7 @@ process_sub = 1
 def f_handle_bank0_line(address,lines,i):
     line = lines[i]
     ### specific file patches
+
     if address in {0x420A,0x5bc9,0x5bd5,0x6a61,0x6a6e,0x6e71,0x6e78} and "GET_REG_ADDRESS" in line:
         # okay to pshu/pulu in all cases (except fake instructions so thanks review flags!!!)
         lines[i-1] = remove_error(lines[i-1])
@@ -18,6 +19,9 @@ def f_handle_bank0_line(address,lines,i):
         # okay to pshu
         lines[i-1] = ""  # useless MAKE_D
         lines[i-2] = remove_error(lines[i-2])
+    elif address == 0x415b:
+        # fix stack parameter passing
+        line = "\tGET_REG_ADDRESS\t0,d5\n\tmove.b\td0,(a0)+\n\tmove.b\td1,(a0)   | correct parameter passing\n"+line
     elif address == 0x4375:
         lines[i-1],line = line,lines[i-1]  # swap lines so carry is correct
         lines[i+2] = remove_error(lines[i+2])
@@ -196,15 +200,18 @@ def f_handle_main_line(address,lines,i):
         # remove subcpu sync shit
         line = remove_instruction(lines,i)
 
-##    elif address == 0x8124:
-##        # set 5 credits right away. Problem with the current game architecture is that
-##        # credits are inserted from fast irq, but fast irq doesn't return, so it causes us trouble
-##        # on the amiga because the interrupts work differently. Here just set 5 credits and jump to the routine
-##        # that fastirq calls when there are credits. problem is: with that there's no attract mode anymore
-##        line = """\tmoveq    #5,d1
-##\tOP_W_ON_DP_ADDRESS    move,nb_credits_0021,d1
-##jra        coin_inserted_8158
-##"""
+    # HACK TO BE ABLE TO START GAME MUST BE IMPROVED ELSE DEMO WON'T SHOW
+    elif address == 0x8124:
+        # set 5 credits right away. Problem with the current game architecture is that
+        # credits are inserted from fast irq, but fast irq doesn't return, so it causes us trouble
+        # on the amiga because the interrupts work differently. Here just set 5 credits and jump to the routine
+        # that fastirq calls when there are credits. problem is: with that there's no attract mode anymore
+        line = """\tmoveq    #5,d1
+\tOP_W_ON_DP_ADDRESS    move,nb_credits_0021,d1
+\tmoveq\t#1,d1
+\tOP_W_ON_DP_ADDRESS    move,game_in_play_0026,d1
+jra        coin_inserted_8158
+"""
     elif address == 0xB671:
         # replace stack pull by direct read of B/D1
         line = change_instruction("move.b\td1,d0",lines,i)
