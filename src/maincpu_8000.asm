@@ -174,8 +174,20 @@ nb_credits_0021 = $21
 interrupt_status_22 = $22
 intro_anim_flag_0e30 = $e30
 sprite_memory_2081 = $2081
-nb_sprites_to_convert_03a1 = $3a1
-untransformed_sprite_coords_0381 = $381
+nb_objects_to_convert_03a1 = $3a1
+; contains the array on pointers on object structures, located just after the array, at $3A2
+; in intro:
+; - 381-38B: garage doors objects
+; - 38B-38D: players (03A2,0400)
+; - 38F: girl
+; - 391: thug that hits the girl
+; - 393: green punk
+; - 395: thug in white outfit
+; - 397: machine gun boss
+; 
+logical_objects_array_0381 = $381
+number_of_players_flag_0029 = $29
+game_in_play_0026 = $26
 
 reset_8000:     ; [global]
 8000: 4F             CLRA
@@ -304,8 +316,8 @@ swi_interrupt:
 80EE: D7 3A          STB    bank_switch_copy_3a
 80F0: 86 01          LDA    #$01
 80F2: BD FE B6       JSR    $FEB6
-80F5: 0F 26          CLR    $26
-80F7: 0F 29          CLR    $29
+80F5: 0F 26          CLR    game_in_play_0026
+80F7: 0F 29          CLR    number_of_players_flag_0029
 80F9: 7F 03 EE       CLR    $03EE
 80FC: 7F 04 4C       CLR    $044C
 80FF: BD FE A1       JSR    set_screen_orientation_fea1
@@ -357,7 +369,7 @@ coin_inserted_8158:
 8164: B7 38 0E       STA    sound_irq_380e
 8167: 7F 03 EE       CLR    $03EE
 816A: 7F 04 4C       CLR    $044C
-816D: 0F 29          CLR    $29
+816D: 0F 29          CLR    number_of_players_flag_0029
 816F: BD FE A1       JSR    set_screen_orientation_fea1
 8172: BD FE 9B       JSR    clear_bg_screen_fe9b
 8175: BD FE 9E       JSR    clear_sprite_memory_fe9e
@@ -412,18 +424,18 @@ coin_inserted_8158:
 81E9: 27 9B          BEQ    $8186
 81EB: C1 40          CMPB   #$40
 81ED: 26 08          BNE    $81F7
-81EF: 96 29          LDA    $29
-81F1: 8A 01          ORA    #$01
-81F3: 97 29          STA    $29
+81EF: 96 29          LDA    number_of_players_flag_0029
+81F1: 8A 01          ORA    #$01		; 1 player
+81F3: 97 29          STA    number_of_players_flag_0029
 81F5: 20 17          BRA    $820E
 81F7: C1 80          CMPB   #$80
 81F9: 26 8B          BNE    $8186
 81FB: D6 21          LDB    nb_credits_0021
 81FD: C1 02          CMPB   #$02
 81FF: 25 85          BCS    $8186
-8201: 96 29          LDA    $29
-8203: 8A 83          ORA    #$83
-8205: 97 29          STA    $29
+8201: 96 29          LDA    number_of_players_flag_0029
+8203: 8A 83          ORA    #$83		; 2 players: 3 + negative for quick test
+8205: 97 29          STA    number_of_players_flag_0029
 8207: 96 21          LDA    nb_credits_0021
 8209: 8B 99          ADDA   #$99
 820B: 19             DAA
@@ -433,17 +445,17 @@ coin_inserted_8158:
 8212: 19             DAA
 8213: 97 21          STA    nb_credits_0021
 demo_8215:
-8215: 96 26          LDA    $26
+8215: 96 26          LDA    game_in_play_0026
 8217: 26 04          BNE    $821D
 8219: 86 83          LDA    #$83
-821B: 97 29          STA    $29
+821B: 97 29          STA    number_of_players_flag_0029	; set 2 players
 821D: 86 02          LDA    #$02
 821F: 97 00          STA    $00
 8221: 8D 4C          BSR    $826F
 8223: DC 00          LDD    $00
 8225: B7 03 EA       STA    $03EA
 8228: F7 04 48       STB    $0448
-822B: 0D 29          TST    $29
+822B: 0D 29          TST    number_of_players_flag_0029
 822D: 2B 03          BMI    $8232
 822F: 7F 04 48       CLR    $0448
 8232: B6 38 04       LDA    dsw_1_3804
@@ -457,7 +469,7 @@ demo_8215:
 8244: B7 04 1F       STA    $041F
 8247: 7F 03 EF       CLR    $03EF
 824A: 7F 04 4D       CLR    $044D
-824D: 0D 26          TST    $26
+824D: 0D 26          TST    game_in_play_0026
 824F: 27 18          BEQ    $8269
 8251: CC 00 00       LDD    #$0000
 8254: FD 03 EB       STD    $03EB
@@ -561,7 +573,7 @@ demo_8215:
 834F: 2A 06          BPL    $8357
 8351: B7 09 CE       STA    $09CE
 8354: F7 04 1F       STB    $041F
-8357: 96 26          LDA    $26
+8357: 96 26          LDA    game_in_play_0026
 8359: 26 0A          BNE    $8365
 835B: CC 04 58       LDD    #$0458
 835E: FD 0E 50       STD    $0E50
@@ -644,7 +656,7 @@ gameloop_8389:
 8427: 10 27 04 20    LBEQ   $884B
 842B: C4 50          ANDB   #$50
 842D: 10 26 01 33    LBNE   $8564
-8431: 96 26          LDA    $26
+8431: 96 26          LDA    game_in_play_0026
 8433: 10 26 FF 52    LBNE   gameloop_8389
 8437: FC 0E 50       LDD    $0E50
 843A: 83 00 01       SUBD   #$0001
@@ -676,8 +688,8 @@ gameloop_8389:
 8476: B7 38 08       STA    bankswitch_3808
 8479: 97 3A          STA    bank_switch_copy_3a
 847B: 7E 80 BA       JMP    $80BA
-847E: 96 29          LDA    $29
-8480: 2B 1D          BMI    $849F
+847E: 96 29          LDA    number_of_players_flag_0029
+8480: 2B 1D          BMI    two_players_849f
 8482: 0F 2A          CLR    $2A
 8484: 8E 03 A2       LDX    #$03A2
 8487: BD 84 B0       JSR    $84B0
@@ -689,6 +701,7 @@ gameloop_8389:
 8497: BD 87 5F       JSR    $875F
 849A: BD 87 D5       JSR    $87D5
 849D: 20 10          BRA    $84AF
+two_players_849f:
 849F: 0F 2A          CLR    $2A
 84A1: 8E 03 A2       LDX    #$03A2
 84A4: BD 84 B0       JSR    $84B0
@@ -734,7 +747,7 @@ play_intro_animation_84f8:
 84FC: 86 05          LDA    #$05
 84FE: 97 4B          STA    $4B
 8500: BD B3 EC       JSR    $B3EC
-8503: BD B3 31       JSR    $B331
+8503: BD B3 31       JSR    push_player_sprites_b331
 8506: B6 0E 71       LDA    nmi_active_flag_0e71
 8509: 8A 80          ORA    #$80
 850B: B7 0E 71       STA    nmi_active_flag_0e71
@@ -744,8 +757,8 @@ play_intro_animation_84f8:
 8513: F6 21 FD       LDB    $21FD
 8516: 34 04          PSHS   B
 8518: BD FF 1A       JSR    subcpu_processing_ff1a
-851B: BD B3 F6       JSR    $B3F6
-851E: BD B3 50       JSR    $B350
+851B: BD B3 F6       JSR    push_sprites_in_pre_shadow_memory_b3f6
+851E: BD B3 50       JSR    push_some_sprites_b350
 8521: BD B4 00       JSR    $B400
 8524: BD FE AD       JSR    clear_sprite_slots_fead
 8527: BD FD F9       JSR    $FDF9
@@ -896,7 +909,7 @@ play_intro_animation_84f8:
 867A: 26 28          BNE    $86A4
 867C: 96 38          LDA    $38
 867E: 27 24          BEQ    $86A4
-8680: 96 29          LDA    $29
+8680: 96 29          LDA    number_of_players_flag_0029
 8682: 84 03          ANDA   #$03
 8684: 81 03          CMPA   #$03
 8686: 26 1C          BNE    $86A4
@@ -926,7 +939,7 @@ play_intro_animation_84f8:
 86C4: 10 26 FC 31    LBNE   $82F9
 86C8: 0D 38          TST    $38
 86CA: 10 27 FC 2B    LBEQ   $82F9
-86CE: 96 29          LDA    $29
+86CE: 96 29          LDA    number_of_players_flag_0029
 86D0: 84 03          ANDA   #$03
 86D2: 81 03          CMPA   #$03
 86D4: 10 26 FC 21    LBNE   $82F9
@@ -937,7 +950,7 @@ play_intro_animation_84f8:
 86EC: 96 36          LDA    $36
 86EE: 81 03          CMPA   #$03
 86F0: 26 26          BNE    $8718
-86F2: 96 29          LDA    $29
+86F2: 96 29          LDA    number_of_players_flag_0029
 86F4: 84 03          ANDA   #$03
 86F6: 81 03          CMPA   #$03
 86F8: 27 1E          BEQ    $8718
@@ -969,13 +982,13 @@ play_intro_animation_84f8:
 8735: 26 05          BNE    $873C
 8737: BD FF 54       JSR    $FF54
 873A: 20 21          BRA    $875D
-873C: 96 29          LDA    $29
+873C: 96 29          LDA    number_of_players_flag_0029
 873E: D6 2A          LDB    $2A
 8740: 10 8E 87 D1    LDY    #$87D1
 8744: A4 A5          ANDA   B,Y
-8746: 97 29          STA    $29
+8746: 97 29          STA    number_of_players_flag_0029
 8748: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
-874B: BD 40 99       JSR    $4099		 ; [banks=1]
+874B: BD 40 99       JSR    lb1_4099
 874E: 34 01          PSHS   CC
 8750: BD FD B2       JSR    restore_previous_bank_fdb2
 8753: 35 01          PULS   CC
@@ -1018,12 +1031,12 @@ play_intro_animation_84f8:
 87A7: 27 02          BEQ    $87AB
 87A9: 86 05          LDA    #$05
 87AB: BD FE B3       JSR    $FEB3
-87AE: 96 29          LDA    $29
+87AE: 96 29          LDA    number_of_players_flag_0029
 87B0: D6 2A          LDB    $2A
 87B2: 10 8E 87 D1    LDY    #$87D1
 87B6: CB 02          ADDB   #$02
 87B8: AA A5          ORA    B,Y
-87BA: 97 29          STA    $29
+87BA: 97 29          STA    number_of_players_flag_0029
 87BC: 10 8E 87 CF    LDY    #$87CF
 87C0: D6 2A          LDB    $2A
 87C2: A6 A5          LDA    B,Y
@@ -1045,7 +1058,7 @@ play_intro_animation_84f8:
 87EC: 7F 0E 34       CLR    $0E34
 87EF: E7 E4          STB    ,S
 87F1: 10 8E 88 43    LDY    #$8843
-87F5: 0D 29          TST    $29
+87F5: 0D 29          TST    number_of_players_flag_0029
 87F7: 2B 0A          BMI    $8803
 87F9: 31 26          LEAY   $6,Y
 87FB: 5F             CLRB
@@ -1133,7 +1146,7 @@ play_intro_animation_84f8:
 88BC: BD FE B0       JSR    display_credit_feb0
 88BF: 86 09          LDA    #$09
 88C1: BD FE B0       JSR    display_credit_feb0
-88C4: 96 29          LDA    $29
+88C4: 96 29          LDA    number_of_players_flag_0029
 88C6: 2A 05          BPL    $88CD
 88C8: 86 0A          LDA    #$0A
 88CA: BD FE B0       JSR    display_credit_feb0
@@ -1156,7 +1169,7 @@ play_intro_animation_84f8:
 88F4: BD 87 5F       JSR    $875F
 88F7: B6 03 A2       LDA    $03A2
 88FA: 2B 35          BMI    $8931
-88FC: 96 29          LDA    $29
+88FC: 96 29          LDA    number_of_players_flag_0029
 88FE: 2A 0D          BPL    $890D
 8900: 0C 2A          INC    $2A
 8902: 30 88 5E       LEAX   $5E,X
@@ -1174,7 +1187,7 @@ play_intro_animation_84f8:
 8923: BD FE 9E       JSR    clear_sprite_memory_fe9e
 8926: 0D 21          TST    nb_credits_0021
 8928: 10 26 F8 2C    LBNE   coin_inserted_8158
-892C: 0F 26          CLR    $26
+892C: 0F 26          CLR    game_in_play_0026
 892E: 7E 80 BA       JMP    $80BA
 8931: 86 8B          LDA    #$8B
 8933: BD FE B0       JSR    display_credit_feb0
@@ -1208,7 +1221,7 @@ play_intro_animation_84f8:
 8977: B7 0E 35       STA    $0E35
 897A: A6 E4          LDA    ,S
 897C: BD FE B0       JSR    display_credit_feb0
-897F: 0D 29          TST    $29
+897F: 0D 29          TST    number_of_players_flag_0029
 8981: 2A 05          BPL    $8988
 8983: A6 61          LDA    $1,S
 8985: BD FE B0       JSR    display_credit_feb0
@@ -1310,7 +1323,7 @@ l_89ea:
 8A47: 35 02          PULS   A
 8A49: 97 3A          STA    bank_switch_copy_3a
 8A4B: B7 38 08       STA    bankswitch_3808
-8A4E: 96 26          LDA    $26
+8A4E: 96 26          LDA    game_in_play_0026
 8A50: 26 26          BNE    no_coin_inserted_8a78
 8A52: 10 CE 0F FF    LDS    #$0FFF
 8A56: CE 0E FF       LDU    #$0EFF
@@ -1318,7 +1331,7 @@ l_89ea:
 8A5C: 7F 38 0D       CLR    irq_ack_380d		
 8A5F: 86 44          LDA    #$44
 8A61: 97 22          STA    interrupt_status_22
-8A63: 0C 26          INC    $26
+8A63: 0C 26          INC    game_in_play_0026
 8A65: 1C AF          ANDCC  #$AF
 8A67: 86 01          LDA    #$01
 8A69: BD B7 56       JSR    vbl_delay_b756
@@ -1347,7 +1360,7 @@ coin_debounce_8a81:
 8A95: 94 20          ANDA   $20
 8A97: 39             RTS
 
-8AA8: 96 26          LDA    $26
+8AA8: 96 26          LDA    game_in_play_0026
 8AAA: 26 08          BNE    $8AB4
 8AAC: 86 99          LDA    #$99
 8AAE: B7 03 C1       STA    $03C1
@@ -1547,9 +1560,9 @@ wait_subcpu_reply_8ab5:
 8CDC: A7 2C          STA    $C,Y
 8CDE: BD FE 80       JSR    $FE80
 8CE1: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
-8CE4: BD 40 8A       JSR    $408A	 ; [banks=1]
-8CE7: BD 40 A8       JSR    $40A8	 ; [banks=1]
-8CEA: BD 40 AB       JSR    $40AB	 ; [banks=1]
+8CE4: BD 40 8A       JSR    lb1_408A
+8CE7: BD 40 A8       JSR    lb1_40A8
+8CEA: BD 40 AB       JSR    lb1_40AB
 8CED: BD FD B2       JSR    restore_previous_bank_fdb2
 8CF0: EC 04          LDD    $4,X
 8CF2: ED 26          STD    $6,Y
@@ -1710,7 +1723,7 @@ wait_subcpu_reply_8ab5:
 8E70: 7E FA 4C       JMP    $FA4C
 
 8E7C: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
-8E7F: BD 40 90       JSR    $4090 ; [banks=1]
+8E7F: BD 40 90       JSR    lb1_4090
 8E82: 34 01          PSHS   CC
 8E84: BD FD B2       JSR    restore_previous_bank_fdb2
 8E87: 35 81          PULS   CC,PC
@@ -2609,7 +2622,7 @@ wait_subcpu_reply_8ab5:
 9962: BD 9E 7B       JSR    $9E7B
 9965: 35 C0          PULS   U,PC
 9967: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
-996A: BD 40 78       JSR    $4078	 ; [banks=1]
+996A: BD 40 78       JSR    lb1_4078
 996D: BD FD B2       JSR    restore_previous_bank_fdb2
 9970: 39             RTS
 9971: 34 40          PSHS   U
@@ -3066,7 +3079,7 @@ wait_subcpu_reply_8ab5:
 9DC5: 86 07          LDA    #$07
 9DC7: 20 11          BRA    $9DDA
 9DC9: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
-9DCC: BD 40 5A       JSR    $405A		 ; [banks=1]
+9DCC: BD 40 5A       JSR    lb1_405A
 9DCF: 34 01          PSHS   CC
 9DD1: BD FD B2       JSR    restore_previous_bank_fdb2
 9DD4: 35 01          PULS   CC
@@ -3342,7 +3355,7 @@ A093: A7 02          STA    $2,X
 A095: 86 04          LDA    #$04
 A097: A7 88 19       STA    $19,X
 A09A: 35 C0          PULS   U,PC
-A09C: 96 29          LDA    $29
+A09C: 96 29          LDA    number_of_players_flag_0029
 A09E: 84 03          ANDA   #$03
 A0A0: 81 03          CMPA   #$03
 A0A2: 26 7E          BNE    $A122
@@ -3582,7 +3595,7 @@ A30A: E3 04          ADDD   $4,X
 A30C: ED 04          STD    $4,X
 A30E: 39             RTS
 A30F: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
-A312: BD 40 5D       JSR    $405D		 ; [banks=1]
+A312: BD 40 5D       JSR    lb1_405D
 A315: 34 01          PSHS   CC
 A317: BD FD B2       JSR    restore_previous_bank_fdb2
 A31A: 35 81          PULS   CC,PC
@@ -4065,7 +4078,7 @@ A7F5: A6 88 14       LDA    $14,X
 A7F8: 85 10          BITA   #$10
 A7FA: 26 14          BNE    $A810
 A7FC: EC 08          LDD    $8,X
-A7FE: ED 88 26       STD    $26,X
+A7FE: ED 88 26       STD    game_in_play_0026,X
 A801: 4F             CLRA
 A802: E6 27          LDB    $7,Y
 A804: E3 08          ADDD   $8,X
@@ -4102,7 +4115,7 @@ A849: E7 03          STB    $3,X
 A84B: BD FA 24       JSR    $FA24
 A84E: BD A8 C9       JSR    $A8C9
 A851: EC 08          LDD    $8,X
-A853: A3 88 26       SUBD   $26,X
+A853: A3 88 26       SUBD   game_in_play_0026,X
 A856: 2A 01          BPL    $A859
 A858: 5F             CLRB
 A859: 4F             CLRA
@@ -4121,29 +4134,30 @@ A86F: 35 F6          PULS   D,X,Y,U,PC
 
 
 A8C9: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
-A8CC: BD 40 30       JSR    $4030	 ; [banks=1]
+A8CC: BD 40 30       JSR    lb1_4030
 A8CF: 34 01          PSHS   CC
 A8D1: BD FD B2       JSR    restore_previous_bank_fdb2
 A8D4: 35 81          PULS   CC,PC
 
 A8D6: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
-A8D9: BD 40 6C       JSR    $406C	 ; [banks=1]
+A8D9: BD 40 6C       JSR    lb1_406C
 A8DC: BD FD B2       JSR    restore_previous_bank_fdb2
 A8DF: 35 F6          PULS   D,X,Y,U,PC
 
 A8E1: BD FC 82       JSR    switch_to_bank_5_fc82
-A8E4: BD 40 60       JSR    $4060	 ; [banks=5]
+A8E4: BD 40 60       JSR    lb5_4060
 A8E7: BD FC 8F       JSR    switch_to_bank_0_fc8f
 A8EA: 39             RTS
 A8EB: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
-A8EE: BD 40 A2       JSR    $40A2	 ; [banks=1]
+A8EE: BD 40 A2       JSR    lb1_40A2
 A8F1: BD FD B2       JSR    restore_previous_bank_fdb2
 A8F4: 35 F6          PULS   D,X,Y,U,PC
 
 A8F6: BD FC 82       JSR    switch_to_bank_5_fc82
-A8F9: BD 40 BA       JSR    $40BA	 ; [banks=5]
+A8F9: BD 40 BA       JSR    lb5_40BA
 A8FC: BD FC 8F       JSR    switch_to_bank_0_fc8f
 A8FF: 39             RTS
+
 A900: A6 88 1B       LDA    $1B,X
 A903: 2B 0D          BMI    $A912
 A905: A6 88 3E       LDA    $3E,X
@@ -4833,7 +4847,7 @@ B046: 7F 0E 2E       CLR    $0E2E
 B049: 0C 36          INC    $36
 B04B: 0F 37          CLR    $37
 B04D: 39             RTS
-B04E: 96 29          LDA    $29
+B04E: 96 29          LDA    number_of_players_flag_0029
 B050: 84 03          ANDA   #$03
 B052: 81 03          CMPA   #$03
 B054: 26 4B          BNE    $B0A1
@@ -4980,7 +4994,7 @@ B1A3: 0D 37          TST    $37
 B1A5: 26 0E          BNE    $B1B5
 B1A7: 8B 0C          ADDA   #$0C
 B1A9: 20 0A          BRA    $B1B5
-B1AB: D6 29          LDB    $29
+B1AB: D6 29          LDB    number_of_players_flag_0029
 B1AD: C4 03          ANDB   #$03
 B1AF: C1 03          CMPB   #$03
 B1B1: 27 02          BEQ    $B1B5
@@ -5064,27 +5078,33 @@ B25E: 39             RTS
 B25F: BD 8C CA       JSR    $8CCA
 B262: 39             RTS
 
-
+push_player_sprites_b331:
 B331: 8E 03 A2       LDX    #$03A2
 B334: 0F 2A          CLR    $2A
-B336: BD B3 46       JSR    $B346
-B339: 96 29          LDA    $29
+B336: BD B3 46       JSR    push_player_sprite_b346
+B339: 96 29          LDA    number_of_players_flag_0029
 B33B: 2A 08          BPL    $B345
-B33D: 30 88 5E       LEAX   $5E,X
+B33D: 30 88 5E       LEAX   $5E,X		; 0x400
 B340: 0C 2A          INC    $2A
-B342: BD B3 46       JSR    $B346
+B342: BD B3 46       JSR    push_player_sprite_b346
 B345: 39             RTS
+
+push_player_sprite_b346:
 B346: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
-B349: BD 40 7B       JSR    $407B ; [banks=1]
+B349: BD 40 7B       JSR    lb1_push_player_sprite_407b
 B34C: BD FD B2       JSR    restore_previous_bank_fdb2
 B34F: 39             RTS
+
+push_some_sprites_b350:
 B350: 8E 03 A2       LDX    #$03A2
 B353: 0F 2A          CLR    $2A
-B355: BD B3 61       JSR    $B361
-B358: 30 88 5E       LEAX   $5E,X
+B355: BD B3 61       JSR    push_one_sprite_b361
+B358: 30 88 5E       LEAX   $5E,X		; X=$400
 B35B: 0C 2A          INC    $2A
-B35D: BD B3 61       JSR    $B361
+B35D: BD B3 61       JSR    push_one_sprite_b361
 B360: 39             RTS
+
+push_one_sprite_b361:
 B361: A6 84          LDA    ,X
 B363: 2A 6F          BPL    $B3D4
 B365: 96 36          LDA    $36
@@ -5138,6 +5158,7 @@ B3CB: 27 03          BEQ    $B3D0
 B3CD: BD FC 1E       JSR    $FC1E
 B3D0: BD FF 10       JSR    push_one_sprite_entry_ff10
 B3D3: 39             RTS
+
 B3D4: 96 2A          LDA    $2A
 B3D6: 4C             INCA
 B3D7: BA 0E 30       ORA    intro_anim_flag_0e30
@@ -5145,12 +5166,13 @@ B3DA: B7 0E 30       STA    intro_anim_flag_0e30
 B3DD: 39             RTS
 
 B3EC: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
-B3EF: BD 40 87       JSR    $4087 ; [banks=1]
+B3EF: BD 40 87       JSR    lb1_4087
 B3F2: BD FD B2       JSR    restore_previous_bank_fdb2
 B3F5: 39             RTS
 
+push_sprites_in_pre_shadow_memory_b3f6:
 B3F6: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
-B3F9: BD 40 8D       JSR    lb1_408d
+B3F9: BD 40 8D       JSR    lb1_push_sprites_in_pre_shadow_memory_408d
 B3FC: BD FD B2       JSR    restore_previous_bank_fdb2
 B3FF: 39             RTS
 
@@ -7957,7 +7979,7 @@ E19B: D3 01          ADDD   $01
 E19D: ED 88 3A       STD    bank_switch_copy_3a,X
 E1A0: 39             RTS
 E1A1: 32 7C          LEAS   -$4,S
-E1A3: 96 29          LDA    $29
+E1A3: 96 29          LDA    number_of_players_flag_0029
 E1A5: 84 03          ANDA   #$03
 E1A7: 81 03          CMPA   #$03
 E1A9: 26 3B          BNE    $E1E6
@@ -8031,7 +8053,7 @@ E25C: 39             RTS
 E25D: 96 36          LDA    $36
 E25F: 81 03          CMPA   #$03
 E261: 26 2A          BNE    $E28D
-E263: 96 29          LDA    $29
+E263: 96 29          LDA    number_of_players_flag_0029
 E265: 84 03          ANDA   #$03
 E267: 88 03          EORA   #$03
 E269: 26 22          BNE    $E28D
@@ -9181,94 +9203,94 @@ F98B: BD 40 12       JSR    $4012 ; [banks=1]
 F98E: BD BB 4D       JSR    switch_to_bank_0_bb4d
 F991: 39             RTS
 F992: BD FC 82       JSR    switch_to_bank_5_fc82
-F995: BD 40 63       JSR    $4063 ; [banks=5]
+F995: BD 40 63       JSR    lb5_4063
 F998: BD FC 8F       JSR    switch_to_bank_0_fc8f
 F99B: 39             RTS
 F99C: BD BB 40       JSR    switch_to_bank_1_bb40
-F99F: BD 40 15       JSR    $4015 ; [banks=1]
+F99F: BD 40 15       JSR    lb1_4015
 F9A2: BD BB 4D       JSR    switch_to_bank_0_bb4d
 F9A5: 39             RTS
 F9A6: BD FC 82       JSR    switch_to_bank_5_fc82
-F9A9: BD 40 9F       JSR    $409F ; [banks=5]
+F9A9: BD 40 9F       JSR    lb5_409F
 F9AC: BD FC 8F       JSR    switch_to_bank_0_fc8f
 F9AF: 39             RTS
 F9B0: BD BB 40       JSR    switch_to_bank_1_bb40
-F9B3: BD 40 18       JSR    $4018 ; [banks=1]
+F9B3: BD 40 18       JSR    lb1_4018
 F9B6: BD BB 4D       JSR    switch_to_bank_0_bb4d
 F9B9: 39             RTS
 F9BA: BD BB 40       JSR    switch_to_bank_1_bb40
-F9BD: BD 40 1B       JSR    $401B ; [banks=1]
+F9BD: BD 40 1B       JSR    lb1_401B
 F9C0: BD BB 4D       JSR    switch_to_bank_0_bb4d
 F9C3: 39             RTS
 F9C4: BD BB 40       JSR    switch_to_bank_1_bb40
-F9C7: BD 40 1E       JSR    $401E ; [banks=1]
+F9C7: BD 40 1E       JSR    lb1_401E
 F9CA: BD BB 4D       JSR    switch_to_bank_0_bb4d
 F9CD: 39             RTS
 F9CE: BD BB 40       JSR    switch_to_bank_1_bb40
-F9D1: BD 40 21       JSR    $4021 ; [banks=1]
+F9D1: BD 40 21       JSR    lb1_4021
 F9D4: BD BB 4D       JSR    switch_to_bank_0_bb4d
 F9D7: 39             RTS
 F9D8: BD BB 40       JSR    switch_to_bank_1_bb40
-F9DB: BD 40 24       JSR    $4024 ; [banks=1]
+F9DB: BD 40 24       JSR    lb1_4024
 F9DE: BD BB 4D       JSR    switch_to_bank_0_bb4d
 F9E1: 39             RTS
 F9E2: BD BB 40       JSR    switch_to_bank_1_bb40
-F9E5: BD 40 27       JSR    $4027 ; [banks=1]
+F9E5: BD 40 27       JSR    lb1_4027
 F9E8: BD BB 4D       JSR    switch_to_bank_0_bb4d
 F9EB: 39             RTS
 
 l_fa00:
 FA00: BD FC 28       JSR    save_and_switch_to_bank_5_fc28                                      
-FA03: BD 40 57       JSR    $4057   ; [banks=5]
+FA03: BD 40 57       JSR    lb5_4057
 FA06: BD FC 3A       JSR    switch_to_saved_bank_fc3a
 FA09: 39             RTS
 
 FA10: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
-FA13: BD 40 3C       JSR    $403C ; [banks=1]
+FA13: BD 40 3C       JSR    lb1_403C
 FA16: BD FD B2       JSR    restore_previous_bank_fdb2
 FA19: 39             RTS
 FA1A: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
-FA1D: BD 40 54       JSR    $4054 ; [banks=1]
+FA1D: BD 40 54       JSR    lb1_4054
 FA20: BD FD B2       JSR    restore_previous_bank_fdb2
 FA23: 39             RTS
 FA24: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
-FA27: BD 40 51       JSR    $4051 ; [banks=1]
+FA27: BD 40 51       JSR    lb1_4051
 FA2A: BD FD B2       JSR    restore_previous_bank_fdb2
 FA2D: 39             RTS
 FA2E: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
-FA31: BD 40 4E       JSR    $404E ; [banks=1]
+FA31: BD 40 4E       JSR    lb1_404E
 FA34: BD FD B2       JSR    restore_previous_bank_fdb2
 FA37: 39             RTS
 FA38: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
-FA3B: BD 40 4B       JSR    $404B ; [banks=1]
+FA3B: BD 40 4B       JSR    lb1_404B
 FA3E: BD FD B2       JSR    restore_previous_bank_fdb2
 FA41: 39             RTS
 FA42: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
-FA45: BD 40 45       JSR    $4045 ; [banks=1]
+FA45: BD 40 45       JSR    lb1_4045
 FA48: BD FD B2       JSR    restore_previous_bank_fdb2
 FA4B: 39             RTS
 FA4C: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
-FA4F: BD 40 48       JSR    $4048 ; [banks=1]
+FA4F: BD 40 48       JSR    lb1_4048
 FA52: BD FD B2       JSR    restore_previous_bank_fdb2
 FA55: 39             RTS
 FA56: BD FC 82       JSR    switch_to_bank_5_fc82
-FA59: BD 40 1B       JSR    $401B ; [banks=5]
+FA59: BD 40 1B       JSR    lb5_401B
 FA5C: BD FC 8F       JSR    switch_to_bank_0_fc8f
 FA5F: 39             RTS
 FA60: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
-FA63: BD 40 3F       JSR    $403F ; [banks=1]
+FA63: BD 40 3F       JSR    lb1_403F
 FA66: BD FD B2       JSR    restore_previous_bank_fdb2
 FA69: 39             RTS
 
 l_fa70:
 FA70: BD FC 82       JSR    switch_to_bank_5_fc82
-FA73: BD 40 5A       JSR    $405A ; [banks=5]
+FA73: BD 40 5A       JSR    lb5_405A
 FA76: BD FC 8F       JSR    switch_to_bank_0_fc8f
 FA79: 39             RTS
 
 l_fa80:
 FA80: BD FA 8A       JSR    switch_to_bank_4_fa8a
-FA83: BD 78 00       JSR    $7800 ; [banks=4]
+FA83: BD 78 00       JSR    lb4_7800
 FA86: BD FF 9C       JSR    $FF9C
 FA89: 39             RTS
 
@@ -9287,7 +9309,7 @@ FAA2: 84 1F          ANDA   #$1F
 FAA4: 8A 20          ORA    #$20		; bank=1
 FAA6: 97 3A          STA    bank_switch_copy_3a
 FAA8: B7 38 08       STA    bankswitch_3808
-FAAB: 17 45 EE       LBSR   $409C 	; [banks=1]
+FAAB: 17 45 EE       LBSR   lb1_409C
 FAAE: 96 3A          LDA    bank_switch_copy_3a
 FAB0: 84 1F          ANDA   #$1F
 FAB2: 97 3A          STA    bank_switch_copy_3a
@@ -9299,26 +9321,26 @@ FABA: 84 1F          ANDA   #$1F
 FABC: 8A 20          ORA    #$20			; bank=1
 FABE: 97 3A          STA    bank_switch_copy_3a
 FAC0: B7 38 08       STA    bankswitch_3808
-FAC3: 17 45 D9       LBSR   $409F 	; [banks=1]
+FAC3: 17 45 D9       LBSR   lb1_409F
 FAC6: 96 3A          LDA    bank_switch_copy_3a
 FAC8: 84 1F          ANDA   #$1F
 FACA: 97 3A          STA    bank_switch_copy_3a
 FACC: B7 38 08       STA    bankswitch_3808
 FACF: 39             RTS
 FAD0: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
-FAD3: BD 40 42       JSR    $4042 ; [banks=1]
+FAD3: BD 40 42       JSR    lb1_4042
 FAD6: BD FD B2       JSR    restore_previous_bank_fdb2
 FAD9: 39             RTS
 FADA: BD FC 82       JSR    switch_to_bank_5_fc82
-FADD: BD 40 93       JSR    $4093 ; [banks=5]
+FADD: BD 40 93       JSR    lb5_4093
 FAE0: BD FC 8F       JSR    switch_to_bank_0_fc8f
 FAE3: 39             RTS
 FAE4: BD FC 82       JSR    switch_to_bank_5_fc82
-FAE7: BD 40 5A       JSR    $405A ; [banks=5]
+FAE7: BD 40 5A       JSR    lb5_405A
 FAEA: BD FC 8F       JSR    switch_to_bank_0_fc8f
 FAED: 39             RTS
 FAEE: BD FC 82       JSR    switch_to_bank_5_fc82
-FAF1: BD 40 C3       JSR    $40C3 ; [banks=5]
+FAF1: BD 40 C3       JSR    lb5_40C3
 FAF4: BD FC 8F       JSR    switch_to_bank_0_fc8f
 FAF7: 39             RTS
 FAF8: 7E 40 1B       JMP    $401B ; [banks=0,1,5]
@@ -9454,6 +9476,7 @@ FC14: BD FC 28       JSR    save_and_switch_to_bank_5_fc28
 FC17: BD 40 90       JSR    lb5_4090
 FC1A: BD FC 3A       JSR    switch_to_saved_bank_fc3a
 FC1D: 39             RTS
+
 l_fc1e:
 FC1E: BD FC 28       JSR    save_and_switch_to_bank_5_fc28
 FC21: BD 40 0F       JSR    lb5_400F
@@ -9565,8 +9588,7 @@ FCF1: 25 06          BCS    $FCF9
 FCF3: CC FF 00       LDD    #$FF00
 FCF6: FD 0A 44       STD    $0A44
 FCF9: 39             RTS
-FCFA: 44             LSRA
-FCFB: 39             RTS
+
 
 FD00: 7E FB C0       JMP    $FBC0
 FD03: 7E FB CA       JMP    $FBCA

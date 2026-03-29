@@ -196,15 +196,15 @@ def f_handle_main_line(address,lines,i):
         # remove subcpu sync shit
         line = remove_instruction(lines,i)
 
-    elif address == 0x8124:
-        # set 5 credits right away. Problem with the current game architecture is that
-        # credits are inserted from fast irq, but fast irq doesn't return, so it causes us trouble
-        # on the amiga because the interrupts work differently. Here just set 5 credits and jump to the routine
-        # that fastirq calls when there are credits. problem is: with that there's no attract mode anymore
-        line = """\tmoveq    #5,d1
-\tOP_W_ON_DP_ADDRESS    move,nb_credits_0021,d1
-jra        coin_inserted_8158
-"""
+##    elif address == 0x8124:
+##        # set 5 credits right away. Problem with the current game architecture is that
+##        # credits are inserted from fast irq, but fast irq doesn't return, so it causes us trouble
+##        # on the amiga because the interrupts work differently. Here just set 5 credits and jump to the routine
+##        # that fastirq calls when there are credits. problem is: with that there's no attract mode anymore
+##        line = """\tmoveq    #5,d1
+##\tOP_W_ON_DP_ADDRESS    move,nb_credits_0021,d1
+##jra        coin_inserted_8158
+##"""
     elif address == 0xB8AE:
         # replace subcpu irq write by irq call
         line = change_instruction("jbsr\tosd_call_sub_irq",lines,i)

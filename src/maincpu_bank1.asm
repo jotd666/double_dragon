@@ -80,8 +80,8 @@ lb1_4075:   ; [global]
 4075: 7E 5B FD    JMP    $5BFD
 lb1_4078:   ; [global]
 4078: 7E 5C 32    JMP    $5C32
-lb1_407b:   ; [global]
-407B: 7E 61 D5    JMP    $61D5
+lb1_push_player_sprite_407b:   ; [global]
+407B: 7E 61 D5    JMP    lb1_push_player_sprite_61d5
 lb1_407e:   ; [global]
 407E: 7E 63 76    JMP    $6376
 lb1_4081:   ; [global]
@@ -92,8 +92,8 @@ lb1_4087:   ; [global]
 4087: 7E 62 46    JMP    $6246
 lb1_408a:   ; [global]
 408A: 7E 64 86    JMP    $6486
-lb1_408d:   ; [global]
-408D: 7E 62 81    JMP    $6281
+lb1_push_sprites_in_pre_shadow_memory_408d:   ; [global]
+408D: 7E 62 81    JMP    lb1_push_sprites_in_pre_shadow_memory_6281
 lb1_4090:   ; [global]
 4090: 7E 63 0D    JMP    $630D
 lb1_4093:   ; [global]
@@ -156,8 +156,8 @@ lb1_40e4:      ; [global]
 ; < X: pointer on object to push
 lb1_push_one_sprite_entry_4100:
 4100: 34 26       PSHS   Y,D
-4102: 10 8E 03 81 LDY    #untransformed_sprite_coords_0381
-4106: B6 03 A1    LDA    nb_sprites_to_convert_03a1
+4102: 10 8E 03 81 LDY    #logical_objects_array_0381
+4106: B6 03 A1    LDA    nb_objects_to_convert_03a1
 4109: 81 20       CMPA   #$20
 410B: 24 0F       BCC    $411C		; too much: out
 410D: E6 02       LDB    $2,X
@@ -166,7 +166,7 @@ lb1_push_one_sprite_entry_4100:
 4113: 27 07       BEQ    $411C		; inactive: out
 4115: AF A6       STX    A,Y
 4117: 8B 02       ADDA   #$02
-4119: B7 03 A1    STA    nb_sprites_to_convert_03a1
+4119: B7 03 A1    STA    nb_objects_to_convert_03a1
 411C: 35 A6       PULS   D,Y,PC
 
 ; < X
@@ -188,9 +188,9 @@ subcpu_processing_411e:
 413D: 96 2B       LDA    $2B
 413F: B7 21 FE    STA    $21FE
 4142: 7F 21 FD    CLR    $21FD
-4145: 7D 03 A1    TST    nb_sprites_to_convert_03a1
+4145: 7D 03 A1    TST    nb_objects_to_convert_03a1
 4148: 10 27 00 A7 LBEQ   $41F3		; no sprites to transform: out
-414C: 10 8E 03 81 LDY    #untransformed_sprite_coords_0381
+414C: 10 8E 03 81 LDY    #logical_objects_array_0381
 4150: CE 20 01    LDU    #$2001		; fill exchange zone
 4153: 5F          CLRB
 ; loop
@@ -264,7 +264,7 @@ subcpu_processing_411e:
 41E1: A7 C4       STA    ,U
 41E3: 33 48       LEAU   $8,U
 41E5: CB 02       ADDB   #$02
-41E7: F1 03 A1    CMPB   nb_sprites_to_convert_03a1
+41E7: F1 03 A1    CMPB   nb_objects_to_convert_03a1
 41EA: 10 25 FF 66 LBCS   $4154		; loop back
 41EE: 1E 03       EXG    D,U
 41F0: F7 20 00    STB    subcpu_shared_2000			; set data in exchange memory: number of sprites (??) to process
@@ -278,7 +278,7 @@ subcpu_processing_411e:
 4201: 27 F9       BEQ    $41FC
 ; wake up subcpu, let it work in parallel
 4203: B7 38 0F    STA    sub_irq_380f
-4206: 7F 03 A1    CLR    nb_sprites_to_convert_03a1
+4206: 7F 03 A1    CLR    nb_objects_to_convert_03a1
 4209: 35 C0       PULS   U,PC
 
 420B: 34 76       PSHS   U,Y,X,D
@@ -3494,18 +3494,7 @@ subcpu_processing_411e:
 619C: 1C FE       ANDCC  #$FE
 619E: 32 63       LEAS   $3,S
 61A0: 39          RTS
-61A1: 00 00       NEG    $00
-61A3: 00 00       NEG    $00
-61A5: 00 FF       NEG    $FF
-61A7: 00 00       NEG    $00
-61A9: 00 00       NEG    $00
-61AB: 00 00       NEG    $00
-61AD: 00 00       NEG    $00
-61AF: 00 FF       NEG    $FF
-61B1: 00 00       NEG    $00
-61B3: 00 FF       NEG    $FF
-61B5: FF FF 00    STU    $FF00
-61B8: 00 FF       NEG    $FF
+
 61BA: 34 40       PSHS   U
 61BC: 32 71       LEAS   -$F,S
 61BE: DC 3C       LDD    $3C
@@ -3517,6 +3506,9 @@ subcpu_processing_411e:
 61CE: 7E 60 6E    JMP    $606E
 61D1: 7E 60 F5    JMP    $60F5
 61D4: 39          RTS
+
+; < X: shadow sprite zone ($3xx->$7xx ?)
+lb1_push_player_sprite_61d5:
 61D5: 32 7C       LEAS   -$4,S
 61D7: 0D 36       TST    $36
 61D9: 27 04       BEQ    $61DF
@@ -3593,6 +3585,7 @@ subcpu_processing_411e:
 627D: B7 0E 31    STA    $0E31
 6280: 39          RTS
 
+lb1_push_sprites_in_pre_shadow_memory_6281:
 6281: B6 0E 2F    LDA    $0E2F
 6284: 81 05       CMPA   #$05
 6286: 24 2F       BCC    $62B7
@@ -3602,6 +3595,7 @@ subcpu_processing_411e:
 628F: A7 E4       STA    ,S
 6291: 10 8E 62 B8 LDY    #$62B8
 6295: 8E 07 5B    LDX    #$075B
+; put sprites in pre-shadow memory
 6298: A6 84       LDA    ,X
 629A: 2A 12       BPL    $62AE
 629C: B6 0E 31    LDA    $0E31
@@ -3645,6 +3639,7 @@ subcpu_processing_411e:
 6301: C6 04       LDB    #$04
 6303: E7 88 19    STB    $19,X
 6306: 39          RTS
+
 6307: 6F 84       CLR    ,X
 6309: 7C 0E 2F    INC    $0E2F
 630C: 39          RTS

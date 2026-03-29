@@ -1,4 +1,10 @@
 - check first sprite update using subcpu: what's in input from cpu, what's in output from subcpu, compare MAME/amiga
+amiga: 0x400 corrupt with C1??? on MAME B363 A=0
+B363: A=C1, B=21, D=C121, X=0400
+B365: A=C1, B=21, D=C121, X=0400
+B367: A=00, B=21, D=0021, X=0400
+
+61D5 => 61E1 avec X=$3A2 (MAME) mais sur miga rappelé 1 autre fois X=$400 et ça nique tout?
 
 - thug walks but doesn't move left
   track when the game moves the thug left, see why it doesn't happen

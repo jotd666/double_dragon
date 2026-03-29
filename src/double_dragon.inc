@@ -716,7 +716,7 @@ get_bank_address:
 
 	
 	* to trace at some virtual PCs, insert this macro
-	.macro	LOG_REGS__	the_pc,the_bank
+	.macro	LOG_REGS	the_pc,the_bank
 	move.w	sr,-(a7)
 	move.w	#0x\the_pc,-(a7)
 	move.w	#\the_bank,-(a7)
@@ -725,7 +725,7 @@ get_bank_address:
 	move.w	(a7)+,sr
 	.endm
 	
-	.macro	LOG_REGS	the_pc,the_bank
+	.macro	LOG_REGS__	the_pc,the_bank
 	move.w	sr,-(a7)
 
 	move.w	#0x\the_pc,0x100

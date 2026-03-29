@@ -513,29 +513,25 @@ _user:
 	st		cheat_used
 
 0:
-	* set dip switches
-	* (some settings are not modifiable)
-	move.b	#0x20,d0	| demo sounds on
-	tst.b	service_mode_flag
-	jeq		0f
-	bset	#6,d0
-0:
-	not.b	d0
+
+	st.b	d0
 	move.b	d0,dip_switches_1
 
-	lea		lives_table,a0
-	move.b	start_lives+3,d1
-	and.w	#3,d1
-	move.b	(a0,d1.w),d0
+*	lea		lives_table,a0
+*	move.b	start_lives+3,d1
+*	and.w	#3,d1
+*	move.b	(a0,d1.w),d0
 
 
-	lea		difficulty_table,a0
-	move.b	difficulty_level+3,d1
-	and.w	#3,d1
-	move.b	(a0,d1.w),d1
-	lsl.b	#4,d1
-	or.b	d1,d0
-	not.b	d0
+*	lea		difficulty_table,a0
+*	move.b	difficulty_level+3,d1
+*	and.w	#3,d1
+*	move.b	(a0,d1.w),d1
+*	lsl.b	#4,d1
+*	or.b	d1,d0
+*	not.b	d0
+	
+	st.b	d0
 	move.b	d0,dip_switches_2
 	
 	jsr	 _detect_controller_types
@@ -949,7 +945,7 @@ osd_palette_updated:
 0:
 	add.l	(a0)+,d1
 	dbf		d2,0b
-	move.l	d1,0x200
+
 	
 	lea		context_lookup_table,a0
 0:
@@ -961,6 +957,8 @@ osd_palette_updated:
 	addq	#4,a0
 	jra		0b
 0:
+	moveq	#0,d1
+	moveq	#0,d2
 	rts
 
 context_switch_found:
@@ -969,6 +967,8 @@ context_switch_found:
 	move.l	d2,d0
 	jbsr	load_context
 	movem.l	(a7)+,d0-a6
+	moveq	#0,d1
+	moveq	#0,d2
 	rts
 	
 	
@@ -4530,7 +4530,7 @@ decode_joypad_controls:
 
 osd_read_dsw1:
 	* actual dipswitches
-	move.b	dip_switches_1,d0	| what MAME returns by default: demo sounds on. ~0x60: service mode
+	move.b	dip_switches_1,d0	| what MAME returns by default: demo sounds on
 	rts
 
 osd_read_dsw2:
