@@ -175,16 +175,32 @@ interrupt_status_22 = $22
 intro_anim_flag_0e30 = $e30
 sprite_memory_2081 = $2081
 nb_objects_to_convert_03a1 = $3a1
-; contains the array on pointers on object structures, located just after the array, at $3A2
+; contains the array on pointers on logical object structures, located just after the array, at $3A2
+; a logical object is a combination of sprites
 ; in intro:
 ; - 381-38B: garage doors objects
 ; - 38B-38D: players (03A2,0400)
-; - 38F: girl
-; - 391: thug that hits the girl
-; - 393: green punk
-; - 395: thug in white outfit
-; - 397: machine gun boss
-; 
+; - 38F: girl (45E)
+; - 391: thug that hits the girl (4B3)
+; - 393: green punk (508)
+; - 395: thug in white outfit (55D)
+; - 397: machine gun boss (5B2)
+;
+; object structure (?? bytes)
+; 0:
+; 1: object type: examples (from intro)
+;    0: player 1
+;    1: player 2
+;    2: machine gun boss
+;    3: punk
+;    8: tshirt thug with curly hair
+;    9: barechested thug
+;    14: curtain
+;    1F: girl
+; 2:
+; 3:
+; 4: X coordinate
+; 6: Y coordinate
 logical_objects_array_0381 = $381
 number_of_players_flag_0029 = $29
 game_in_play_0026 = $26
@@ -5183,7 +5199,7 @@ B406: 96 4B          LDA    $4B
 B408: 27 0C          BEQ    $B416
 B40A: 17 00 0B       LBSR   $B418
 B40D: 17 01 1D       LBSR   $B52D
-B410: 17 02 33       LBSR   $B646
+B410: 17 02 33       LBSR   init_rest_of_thugs_b646
 B413: 17 03 26       LBSR   $B73C
 B416: 35 FE          PULS   D,DP,X,Y,U,PC
 B418: 8E 04 5E       LDX    #$045E
@@ -5412,10 +5428,12 @@ B630: 86 80          LDA    #$80
 B632: 17 48 81       LBSR   $FEB6
 B635: 39             RTS
 
+; initialize the 3 enemies that don't move during the intro scene
+init_rest_of_thugs_b646:
 B646: 34 7E          PSHS   U,Y,X,DP,D                                   
 B648: 5F             CLRB
-B649: 8E 05 08       LDX    #$0508
-B64C: 17 00 16       LBSR   $B665
+B649: 8E 05 08       LDX    #$0508			; rest of the thugs: punk, barechested, boss
+B64C: 17 00 16       LBSR   set_object_properties_b665
 B64F: 17 00 52       LBSR   $B6A4
 B652: 17 00 83       LBSR   $B6D8
 B655: 17 00 A8       LBSR   $B700
@@ -5426,23 +5444,26 @@ B65F: C1 03          CMPB   #$03
 B661: 25 E9          BCS    $B64C
 B663: 35 FE          PULS   D,DP,X,Y,U,PC
 
+; < D: object number
+set_object_properties_b665:
 B665: 34 7E          PSHS   U,Y,X,DP,D
 B667: A6 88 31       LDA    $31,X
 B66A: 2B 27          BMI    $B693
 B66C: 8A 80          ORA    #$80
 B66E: A7 88 31       STA    $31,X
-B671: A6 61          LDA    $1,S
+; get pushed stack value, times 5
+B671: A6 61          LDA    $1,S	; retrieve pushed object number from stack (D lsb)
 B673: 48             ASLA
 B674: 48             ASLA
 B675: AB 61          ADDA   $1,S
-B677: 10 8E B6 95    LDY    #$B695
+B677: 10 8E B6 95    LDY    #$B695		; get ROM values for object (start enemies)
 B67B: 31 A6          LEAY   A,Y
 B67D: EC A4          LDD    ,Y
-B67F: ED 04          STD    $4,X
+B67F: ED 04          STD    $4,X		; enemy X
 B681: EC 22          LDD    $2,Y
-B683: ED 06          STD    $6,X
+B683: ED 06          STD    $6,X		; enemy Y
 B685: A6 24          LDA    $4,Y
-B687: A7 01          STA    $1,X
+B687: A7 01          STA    $1,X		; enemy type
 B689: CC 01 00       LDD    #$0100
 B68C: ED 08          STD    $8,X
 B68E: 86 00          LDA    #$00
@@ -8754,6 +8775,7 @@ E8BF: BD E8 C8       JSR    $E8C8
 E8C2: 1F 01          TFR    D,X
 E8C4: EC 84          LDD    ,X
 E8C6: 35 B0          PULS   X,Y,PC
+
 E8C8: 34 30          PSHS   Y,X
 E8CA: 96 3A          LDA    bank_switch_copy_3a
 E8CC: 34 02          PSHS   A

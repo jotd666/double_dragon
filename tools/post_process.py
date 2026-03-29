@@ -205,6 +205,12 @@ def f_handle_main_line(address,lines,i):
 ##\tOP_W_ON_DP_ADDRESS    move,nb_credits_0021,d1
 ##jra        coin_inserted_8158
 ##"""
+    elif address == 0xB671:
+        # replace stack pull by direct read of B/D1
+        line = change_instruction("move.b\td1,d0",lines,i)
+    elif address == 0xB675:
+        # replace stack pull by direct read of B/D1
+        line = change_instruction("add.b\td1,d0",lines,i)
     elif address == 0xB8AE:
         # replace subcpu irq write by irq call
         line = change_instruction("jbsr\tosd_call_sub_irq",lines,i)
