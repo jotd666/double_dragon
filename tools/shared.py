@@ -269,7 +269,7 @@ def process_file(input_radix,output_radix,f_handle_line,global_symbols=[],out_he
                 arg = line.split()[1].lower()
                 param = arg.split(",")[0]
                 if param == "d0/d1":
-                    line = "\tsubq.w\t#2,d5\n"+change_instruction("GET_REG_ADDRESS\t0,d5",lines,i) + "\tMAKE_D\nMOVE_W_FROM_REG\td1,a0\n"
+                    line = "\tsubq.w\t#2,d5\n"+change_instruction("GET_REG_ADDRESS\t0,d5",lines,i) + "\tMAKE_D\n\tMOVE_W_FROM_REG\td1,a0\n"
                 else:
                     # native/target byte A/B stack mix goes crashy crashy
                     line = "\tsubq.w\t#1,d5\n" + change_instruction("GET_REG_ADDRESS\t0,d5",lines,i) + f"\tmove.b\t{param},(a0)\n"

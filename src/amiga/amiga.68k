@@ -932,8 +932,6 @@ osd_colors_cycled:
 	OSD_EXIT
 	rts
 
-CTX_MENU = 0xE8997E8A
-CTX_START_GAME = 0x8C9D5BF9
 
 * called when palette is updated
 * can use D1 & D2 as restored just afterwards
@@ -966,9 +964,9 @@ osd_palette_updated:
 
 context_switch_found:
 	move.l	(a0)+,d2		| now d2 is the context
-	*BREAKPOINT	"CONTEXT"
 	movem.l	d0-a6,-(a7)
 	move.l	d2,d0
+
 	jbsr	load_context
 	movem.l	(a7)+,d0-a6
 	moveq	#0,d1

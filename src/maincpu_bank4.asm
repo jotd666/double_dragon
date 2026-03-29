@@ -79,7 +79,7 @@ lb4_4000:   ; [global]
 40B6: 4D             TSTA
 40B7: 27 24          BEQ    $40DD
 40B9: BD 41 54       JSR    $4154
-40BC: 10 AE 9F 0B 56 LDY    [$0B56]
+40BC: 10 AE 9F 0B 56 LDY    [$0B56]		; [bank_address]
 40C1: BD 41 A7       JSR    $41A7
 40C4: BD 41 E0       JSR    $41E0
 40C7: 4D             TSTA
@@ -88,7 +88,7 @@ lb4_4000:   ; [global]
 40CD: 9E 56          LDX    $56
 40CF: 30 02          LEAX   $2,X
 40D1: 9F 56          STX    $56
-40D3: EC 9F 0B 56    LDD    [$0B56]
+40D3: EC 9F 0B 56    LDD    [$0B56]		; [bank_address]
 40D7: 10 83 FF FF    CMPD   #$FFFF
 40DB: 26 DF          BNE    $40BC
 40DD: 0C 58          INC    $58
@@ -161,9 +161,9 @@ lb4_4000:   ; [global]
 4179: 54             LSRB
 417A: 54             LSRB
 417B: 58             ASLB
-417C: E3 84          ADDD   ,X
+417C: E3 84          ADDD   ,X		; [bank_address] 
 417E: 1F 01          TFR    D,X
-4180: 10 AE 84       LDY    ,X
+4180: 10 AE 84       LDY    ,X		; [bank_address] 
 4183: 10 9F 56       STY    $56
 4186: 8E 0B 31       LDX    #$0B31
 4189: 96 37          LDA    $37
@@ -181,16 +181,16 @@ lb4_4000:   ; [global]
 41A3: 12             NOP
 41A4: 35 10          PULS   X
 41A6: 39             RTS
-41A7: EC 22          LDD    $2,Y
+41A7: EC 22          LDD    $2,Y	; [bank_address]
 41A9: DD 64          STD    $64
-41AB: EC 24          LDD    $4,Y
+41AB: EC 24          LDD    $4,Y	; [bank_address]
 41AD: 93 64          SUBD   $64
 41AF: DD 66          STD    $66
-41B1: A6 29          LDA    $9,Y
+41B1: A6 29          LDA    $9,Y	; [bank_address]
 41B3: 84 C0          ANDA   #$C0
 41B5: 81 40          CMPA   #$40
 41B7: 24 0E          BCC    $41C7
-41B9: EC A4          LDD    ,Y
+41B9: EC A4          LDD    ,Y	; [bank_address]
 41BB: 93 64          SUBD   $64
 41BD: DD 62          STD    $62
 41BF: DC 5A          LDD    $5A
@@ -198,33 +198,34 @@ lb4_4000:   ; [global]
 41C3: DD 5C          STD    $5C
 41C5: 20 18          BRA    $41DF
 41C7: 26 0E          BNE    $41D7
-41C9: EC A4          LDD    ,Y
+41C9: EC A4          LDD    ,Y	; [bank_address]
 41CB: D3 64          ADDD   $64
 41CD: DD 62          STD    $62
 41CF: DC 5A          LDD    $5A
 41D1: D3 5E          ADDD   $5E
 41D3: DD 5C          STD    $5C
 41D5: 20 08          BRA    $41DF
-41D7: EC A4          LDD    ,Y
+41D7: EC A4          LDD    ,Y	; [bank_address]
 41D9: DD 62          STD    $62
 41DB: DC 5A          LDD    $5A
 41DD: DD 5C          STD    $5C
 41DF: 39             RTS
+
 41E0: 4F             CLRA
-41E1: E6 28          LDB    $8,Y
+41E1: E6 28          LDB    $8,Y	; [bank_address]
 41E3: 26 01          BNE    $41E6
 41E5: 4C             INCA
-41E6: 34 06          PSHS   D
+41E6: 34 06          PSHS   D		; [manual_stack_push]
 41E8: 4F             CLRA
-41E9: E6 27          LDB    $7,Y
+41E9: E6 27          LDB    $7,Y	; [bank_address]
 41EB: 26 01          BNE    $41EE
 41ED: 4C             INCA
-41EE: 34 06          PSHS   D
+41EE: 34 06          PSHS   D		; [manual_stack_push]
 41F0: 4F             CLRA
-41F1: E6 26          LDB    $6,Y
+41F1: E6 26          LDB    $6,Y	; [bank_address]
 41F3: 26 01          BNE    $41F6
 41F5: 4C             INCA
-41F6: 34 06          PSHS   D
+41F6: 34 06          PSHS   D		; [manual_stack_push]
 41F8: DC 62          LDD    $62
 41FA: 10 93 5C       CMPD   $5C
 41FD: 2E 4E          BGT    $424D
@@ -246,21 +247,21 @@ lb4_4000:   ; [global]
 4222: D6 5D          LDB    $5D
 4224: D0 63          SUBB   $63
 4226: D7 69          STB    $69
-4228: E6 26          LDB    $6,Y
+4228: E6 26          LDB    $6,Y	; [bank_address]
 422A: 5A             DECB
 422B: D0 69          SUBB   $69
 422D: D7 6B          STB    $6B
 422F: D6 5F          LDB    $5F
 4231: D0 65          SUBB   $65
 4233: D7 6A          STB    $6A
-4235: E6 27          LDB    $7,Y
+4235: E6 27          LDB    $7,Y	; [bank_address]
 4237: 5A             DECB
 4238: D0 6A          SUBB   $6A
 423A: D7 6C          STB    $6C
 423C: D6 61          LDB    $61
 423E: D0 67          SUBB   $67
 4240: D7 6D          STB    $6D
-4242: E6 28          LDB    $8,Y
+4242: E6 28          LDB    $8,Y	; [bank_address]
 4244: 5A             DECB
 4245: D0 6D          SUBB   $6D
 4247: D7 68          STB    $68
@@ -269,8 +270,9 @@ lb4_4000:   ; [global]
 424D: 4F             CLRA
 424E: 32 66          LEAS   $6,S
 4250: 39             RTS
+
 4251: C6 06          LDB    #$06
-4253: A6 2A          LDA    $A,Y
+4253: A6 2A          LDA    $A,Y	; [bank_address]
 4255: 8E 0B 68       LDX    #$0B68
 4258: 44             LSRA
 4259: 25 04          BCS    $425F
@@ -317,12 +319,12 @@ lb4_4000:   ; [global]
 42B0: 58             ASLB
 42B1: 3A             ABX
 42B2: DC 4E          LDD    $4E
-42B4: E3 84          ADDD   ,X
+42B4: E3 84          ADDD   ,X	; [bank_address]
 42B6: DD 4E          STD    $4E
 42B8: DC 5A          LDD    $5A
-42BA: E3 84          ADDD   ,X
+42BA: E3 84          ADDD   ,X	; [bank_address]
 42BC: DD 5A          STD    $5A
-42BE: A6 29          LDA    $9,Y
+42BE: A6 29          LDA    $9,Y	; [bank_address]
 42C0: 84 0F          ANDA   #$0F
 42C2: 81 04          CMPA   #$04
 42C4: 24 01          BCC    $42C7
@@ -330,7 +332,7 @@ lb4_4000:   ; [global]
 42C7: BD 44 CA       JSR    $44CA
 42CA: 0C 6F          INC    $6F
 42CC: 20 48          BRA    $4316
-42CE: A6 29          LDA    $9,Y
+42CE: A6 29          LDA    $9,Y	; [bank_address]
 42D0: 84 0F          ANDA   #$0F
 42D2: 81 0F          CMPA   #$0F
 42D4: 26 05          BNE    $42DB
@@ -339,15 +341,15 @@ lb4_4000:   ; [global]
 42DB: 81 0E          CMPA   #$0E
 42DD: 26 08          BNE    $42E7
 42DF: 9E 54          LDX    $54
-42E1: A6 01          LDA    $1,X
+42E1: A6 01          LDA    $1,X		; [bank_address]
 42E3: 81 02          CMPA   #$02
 42E5: 24 2F          BCC    $4316
-42E7: A6 29          LDA    $9,Y
+42E7: A6 29          LDA    $9,Y	; [bank_address]
 42E9: 84 0F          ANDA   #$0F
 42EB: 81 0D          CMPA   #$0D
 42ED: 26 1A          BNE    $4309
 42EF: 9E 54          LDX    $54
-42F1: A6 01          LDA    $1,X
+42F1: A6 01          LDA    $1,X	; [bank_address]
 42F3: 81 02          CMPA   #$02
 42F5: 25 12          BCS    $4309
 42F7: DC 5E          LDD    $5E
@@ -379,13 +381,13 @@ table_4317:
 
 
 4329: 8E 43 3E       LDX    #$433E
-432C: A6 29          LDA    $9,Y
+432C: A6 29          LDA    $9,Y		; [bank_address]
 432E: 84 0F          ANDA   #$0F
 4330: C6 FF          LDB    #$FF
-4332: A1 84          CMPA   ,X
+4332: A1 84          CMPA   ,X				; [bank_address]
 4334: 27 07          BEQ    $433D
-4336: 30 01          LEAX   $1,X
-4338: E1 84          CMPB   ,X
+4336: 30 01          LEAX   $1,X			; [bank_address]
+4338: E1 84          CMPB   ,X				; [bank_address]
 433A: 26 F6          BNE    $4332
 433C: 5F             CLRB
 433D: 39             RTS
@@ -409,7 +411,7 @@ table_4317:
 4364: D6 6A          LDB    $6A
 4366: C1 FF          CMPB   #$FF
 4368: 26 03          BNE    $436D
-436A: BD 45 CF       JSR    $45CF
+436A: BD 45 CF       JSR    fatal_error_45cf
 436D: 34 06          PSHS   D
 436F: 10 8C 57 73    CMPY   #$5773
 4373: 26 0A          BNE    $437F
@@ -450,13 +452,13 @@ table_4317:
 43BD: 39             RTS
 43BE: 8E 43 EB       LDX    #$43EB
 43C1: CC FF FF       LDD    #$FFFF
-43C4: 10 AC 84       CMPY   ,X
+43C4: 10 AC 84       CMPY   ,X				; [bank_address]
 43C7: 27 09          BEQ    $43D2
 43C9: 30 04          LEAX   $4,X
-43CB: 10 A3 84       CMPD   ,X
+43CB: 10 A3 84       CMPD   ,X				; [bank_address]
 43CE: 26 F4          BNE    $43C4
 43D0: 20 04          BRA    $43D6
-43D2: EC 02          LDD    $2,X
+43D2: EC 02          LDD    $2,X				; [bank_address]
 43D4: DD 4E          STD    $4E
 43D6: 8E 41 30       LDX    #$4130
 43D9: D6 59          LDB    $59
@@ -464,10 +466,10 @@ table_4317:
 43DC: 58             ASLB
 43DD: 3A             ABX
 43DE: DC 50          LDD    $50
-43E0: E3 02          ADDD   $2,X
+43E0: E3 02          ADDD   $2,X		; [bank_address]
 43E2: DD 50          STD    $50
 43E4: DC 52          LDD    $52
-43E6: E3 02          ADDD   $2,X
+43E6: E3 02          ADDD   $2,X		; [bank_address]
 43E8: DD 52          STD    $52
 43EA: 39             RTS
 
@@ -480,7 +482,7 @@ table_4317:
 4407: D6 69          LDB    $69
 4409: C1 FF          CMPB   #$FF
 440B: 26 03          BNE    $4410
-440D: BD 45 CF       JSR    $45CF
+440D: BD 45 CF       JSR    fatal_error_45cf
 4410: CB 01          ADDB   #$01
 4412: 34 06          PSHS   D		; [manual_stack_push]
 4414: DC 4E          LDD    $4E
@@ -500,7 +502,7 @@ table_4317:
 442F: D6 6C          LDB    $6C
 4431: C1 FF          CMPB   #$FF
 4433: 26 03          BNE    $4438
-4435: BD 45 CF       JSR    $45CF
+4435: BD 45 CF       JSR    fatal_error_45cf
 4438: 10 8C 57 CB    CMPY   #$57CB
 443C: 26 0A          BNE    $4448
 443E: 9E 54          LDX    $54
@@ -533,7 +535,7 @@ table_4317:
 4471: D6 6B          LDB    $6B
 4473: C1 FF          CMPB   #$FF
 4475: 26 03          BNE    $447A
-4477: BD 45 CF       JSR    $45CF
+4477: BD 45 CF       JSR    fatal_error_45cf
 447A: CB 01          ADDB   #$01
 447C: 34 06          PSHS   D		; [manual_stack_push]
 447E: DC 4E          LDD    $4E
@@ -554,7 +556,7 @@ table_4317:
 449A: D6 6C          LDB    $6C
 449C: C1 FF          CMPB   #$FF
 449E: 26 03          BNE    $44A3
-44A0: BD 45 CF       JSR    $45CF
+44A0: BD 45 CF       JSR    fatal_error_45cf
 44A3: 4F             CLRA
 44A4: C3 00 01       ADDD   #$0001
 44A7: 34 06          PSHS   D
@@ -574,20 +576,21 @@ table_4317:
 44C5: DD 60          STD    $60
 44C7: 32 62          LEAS   $2,S
 44C9: 39             RTS
+
 44CA: 4D             TSTA
 44CB: 27 02          BEQ    $44CF
 44CD: 97 4A          STA    $4A
 44CF: 8E 44 E7       LDX    #$44E7
 44D2: 48             ASLA
 44D3: 30 86          LEAX   A,X
-44D5: A6 01          LDA    $1,X
+44D5: A6 01          LDA    $1,X	; [bank_address]
 44D7: D6 58          LDB    $58
 44D9: 5A             DECB
 44DA: 27 04          BEQ    $44E0
 44DC: 44             LSRA
 44DD: 5A             DECB
 44DE: 26 FC          BNE    $44DC
-44E0: E6 84          LDB    ,X
+44E0: E6 84          LDB    ,X		; [bank_address]
 44E2: AA C5          ORA    B,U
 44E4: A7 C5          STA    B,U
 44E6: 39             RTS
@@ -676,18 +679,20 @@ table_4317:
 45B5: BD 45 46       JSR    $4546
 45B8: 39             RTS
 
+fatal_error_45cf:
 45CF: 34 16          PSHS   X,D
-45D1: AE 64          LDX    $4,S	; [pushed_parameter]
+45D1: AE 64          LDX    $4,S	; program counter
 45D3: CC 25 32       LDD    #$2532
-45D6: FD 21 D0       STD    $21D0
+45D6: FD 21 D0       STD    $21D0	; display on screen
 45D9: F7 21 D2       STB    $21D2
 45DC: 35 06          PULS   D
 45DE: 12             NOP
 45DF: 12             NOP
 45E0: 12             NOP
-45E1: 7E 45 DE       JMP    $45DE
+45E1: 7E 45 DE       JMP    $45DE	; and infinite loop
 45E4: 35 10          PULS   X
 45E6: 39             RTS
+
 45E7: 8A 02          ORA    #$02
 45E9: 97 00          STA    $00
 45EB: CC 00 00       LDD    #$0000

@@ -118,8 +118,6 @@ def f_handle_bank4_line(address,lines,i):
     elif address == 0x452b:
         # temp illegal
         line = '\tBREAKPOINT "figure it out!!"\n'
-    elif address == 0x45D1:
-        line = change_instruction('BREAKPOINT  "45D1_b4"',lines,i)  # TEMP
     lines[i] = line
 
 def f_handle_bank5_line(address,lines,i):
@@ -210,7 +208,7 @@ def f_handle_main_line(address,lines,i):
         line = remove_instruction(lines,i)
 
     # HACK TO BE ABLE TO START GAME MUST BE IMPROVED ELSE DEMO WON'T SHOW
-    elif address == 0x8124:
+    elif address == 0x8124 and True:
         # set 5 credits right away. Problem with the current game architecture is that
         # credits are inserted from fast irq, but fast irq doesn't return, so it causes us trouble
         # on the amiga because the interrupts work differently. Here just set 5 credits and jump to the routine
@@ -268,6 +266,8 @@ jra        coin_inserted_8158
     elif address == 0x89C0:
         # skip coin debounce shit
         line = change_instruction("jra\tl_89ea",lines,i)
+##    elif address == 0x8552:
+##        line = ""  # TEMP
     elif address == 0xeeb0:
         line = change_instruction("jbsr\tosd_wait_vblank_interrupt",lines,i)
         lines[i+1] = remove_instruction(lines,i+1)
