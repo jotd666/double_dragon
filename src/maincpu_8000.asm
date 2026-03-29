@@ -1,7 +1,7 @@
 ;	map(0x0000, 0x0fff).ram().share("rambase");
 ;	map(0x1000, 0x11ff).ram().w(m_palette, FUNC(palette_device::write8)).share("palette");  red and green
 ;	map(0x1200, 0x13ff).ram().w(m_palette, FUNC(palette_device::write8_ext)).share("palette_ext");  blue
-;   0x1000-0x1080: foreground tiles layer
+;   0x1000-0x1080: foreground tiles layer (10x0/12x0: black background for each of the 16 palettes)
 ;   0x1080-0x1100: sprites layer
 ;   0x1100-0x1180: background tiles layer
 ;

@@ -54,6 +54,9 @@ def f_handle_bank0_line(address,lines,i):
     elif address == 0x4A47:
         line = "\tjbsr\tosd_set_flash_color\n"+line
     ### replace current line
+    elif address == 0x489D:
+        line = change_instruction('BREAKPOINT  "489D_b0"',lines,i)  # TEMP
+
     lines[i] = line
 
 def f_handle_bank1_line(address,lines,i):
@@ -84,6 +87,8 @@ def f_handle_bank1_line(address,lines,i):
     elif address == 0x4203:
         # replace subcpu irq write by irq call
         line = change_instruction("jbsr\tosd_call_sub_irq",lines,i)
+    elif address == 0x61D0:
+        line = change_instruction('BREAKPOINT  "61D0_b1"',lines,i)  # TEMP
     lines[i] = line
 
 
@@ -113,6 +118,8 @@ def f_handle_bank4_line(address,lines,i):
     elif address == 0x452b:
         # temp illegal
         line = '\tBREAKPOINT "figure it out!!"\n'
+    elif address == 0x45D1:
+        line = change_instruction('BREAKPOINT  "45D1_b4"',lines,i)  # TEMP
     lines[i] = line
 
 def f_handle_bank5_line(address,lines,i):
@@ -125,6 +132,8 @@ def f_handle_bank5_line(address,lines,i):
         # jcc has been handled above
         line = change_instruction("jra\tlb5_6d17",lines,i)
         lines[i+1] = remove_error(lines[i+1])
+    elif address == 0x6D12:
+        line = change_instruction('BREAKPOINT  "6D12_b5"',lines,i)  # TEMP
     lines[i] = line
 
 def f_handle_sub_line(address,lines,i):
@@ -211,7 +220,7 @@ def f_handle_main_line(address,lines,i):
 \tmoveq\t#1,d1
 \tOP_W_ON_DP_ADDRESS    move,game_in_play_0026,d1
 jra        coin_inserted_8158
-"""
+#"""
     elif address == 0xB671:
         # replace stack pull by direct read of B/D1
         line = change_instruction("move.b\td1,d0",lines,i)

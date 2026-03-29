@@ -1,14 +1,14 @@
-- solve stack parameter issue (at first, put breakpoints!)
-  489D bank 0 bank 1 6D10, bank 4 45D1  bank 5 6D12
-- double buffering paste dragon pic on both buffers
 - sprite clipping too soon on the right
-- at start (intro) remove players cluts to save memory/palette as they're not displayed until curtain rises
   
-- hack OSD palette to make black appear (character heads)
+- context change: BA3267F2 972B4DF4 7C2231AE => D265AE25
+
+- no context 2 load, looks like already loaded???
+- level start: characters move forward and nothing happens
 - set DSW difficulty lives, etc.
 - cache subcontext (loaded fg/bg/sprite files)
-
-
+- don't forget temp breakpoints for stack params!
+- converter: maybe find a leas +/- stack size pattern, then scan the lines in-between to find
+  stack references above the reserved limit (parameters)
 - title fading in not supported
 
   

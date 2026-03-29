@@ -490,7 +490,7 @@ lb0_4449:   ; [global]
 4467: 84 3F          ANDA   #$3F
 4469: 1F 89          TFR    A,B
 446B: 84 30          ANDA   #$30
-446D: 34 02          PSHS   A
+446D: 34 02          PSHS   A		; [manual_stack_push]
 446F: 4F             CLRA
 4470: 54             LSRB
 4471: 49             ROLA
@@ -516,6 +516,7 @@ lb0_4449:   ; [global]
 448D: AA E4          ORA    ,S
 448F: 32 61          LEAS   $1,S
 4491: 39             RTS
+
 4492: A7 88 5A       STA    $5A,X
 4495: A1 88 5B       CMPA   $5B,X
 4498: 26 0E          BNE    $44A8

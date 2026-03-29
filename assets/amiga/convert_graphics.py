@@ -733,7 +733,7 @@ for context in context_list:
 ###############
 
 
-context_list = ["intro"]
+context_list = ["intro","level_1"]
 for context in context_list:
     bob_plane_cache = {}
     sprite_palette = set()

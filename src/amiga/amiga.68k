@@ -946,6 +946,9 @@ osd_palette_updated:
 	add.l	(a0)+,d1
 	dbf		d2,0b
 
+	.ifndef	RELEASE
+	move.l	D1,0x200	| store current color checksum in ZP
+	.endif
 	
 	lea		context_lookup_table,a0
 0:
@@ -957,15 +960,13 @@ osd_palette_updated:
 	addq	#4,a0
 	jra		0b
 0:
-	.ifndef	RELEASE
-	move.l	D1,0x200	| store current color checksum in ZP
-	.endif
 	moveq	#0,d1
 	moveq	#0,d2
 	rts
 
 context_switch_found:
 	move.l	(a0)+,d2		| now d2 is the context
+	*BREAKPOINT	"CONTEXT"
 	movem.l	d0-a6,-(a7)
 	move.l	d2,d0
 	jbsr	load_context
@@ -1064,8 +1065,9 @@ load_context:
 	jbsr	load_palette
 
 0:	
-	tst		current_context
+	cmp.w	#CTX_TITLE,current_context
 	jne		0f
+	* load title pic if title context
 	jbsr	load_title_picture
 0:
 
@@ -4258,7 +4260,7 @@ empty_row:
 		
 blit_title_pic:
 	.ifne	OPT_ENABLE_DOUBLE_BUFFERING
-	lea		playfield_displayed_screen_ptr,a1
+	move.l	playfield_displayed_screen_ptr,a1
 	jbsr	0f
 	.endif
 	move.l	playfield_drawed_screen_ptr,a1
