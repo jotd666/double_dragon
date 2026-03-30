@@ -2885,7 +2885,7 @@ subcpu_processing_411e:
 5B98: 84 01       ANDA   #$01
 5B9A: 10 8E 5B A4 LDY    #$5BA4
 5B9E: E6 43       LDB    $3,U
-5BA0: E1 A6       CMPB   A,Y
+5BA0: E1 A6       CMPB   A,Y		; [bank_address]
 5BA2: 35 F6       PULS   D,X,Y,U,PC
 
 5BA4: 80 00       SUBA   #$00

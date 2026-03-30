@@ -118,6 +118,8 @@ def f_handle_bank4_line(address,lines,i):
     elif address == 0x452b:
         # temp illegal
         line = '\tBREAKPOINT "figure it out!!"\n'
+    elif address == 0x41a1:
+        line = change_instruction("addq\t#8,sp",lines,i) + "\trts\n"
     lines[i] = line
 
 def f_handle_bank5_line(address,lines,i):

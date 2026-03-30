@@ -170,7 +170,7 @@ lb5_40e7:      ; [global]
 4117: 31 A6          LEAY   A,Y
 4119: BD 4D B3       JSR    $4DB3
 411C: 84 07          ANDA   #$07
-411E: A6 A6          LDA    A,Y
+411E: A6 A6          LDA    A,Y		; [bank_address]
 4120: 39             RTS
 
 4257: 34 40          PSHS   U
@@ -200,7 +200,7 @@ lb5_40e7:      ; [global]
 4290: 84 07          ANDA   #$07
 4292: AA 61          ORA    $1,S
 4294: 10 9E 00       LDY    $00
-4297: E6 A6          LDB    A,Y
+4297: E6 A6          LDB    A,Y		; [bank_address]
 4299: E7 88 1C       STB    $1C,X
 429C: BD 43 8E       JSR    $438E
 429F: BD 42 B1       JSR    $42B1
@@ -1316,7 +1316,7 @@ jump_table_5839:
 58CA: 86 04          LDA    #$04
 58CC: A7 88 19       STA    $19,X
 58CF: 86 87          LDA    #$87
-58D1: BD 66 E6       JSR    $66E6
+58D1: BD 66 E6       JSR    flip_screen_if_needed_66e6
 58D4: 32 64          LEAS   $4,S
 58D6: 39             RTS
 
@@ -1352,7 +1352,7 @@ jump_table_5839:
 5945: 6F 88 18       CLR    $18,X
 5948: 6F 03          CLR    $3,X
 594A: 86 8B          LDA    #$8B
-594C: BD 66 E6       JSR    $66E6
+594C: BD 66 E6       JSR    flip_screen_if_needed_66e6
 594F: 32 61          LEAS   $1,S
 5951: 39             RTS
 
@@ -1696,7 +1696,7 @@ jump_table_5caf:
 5D40: 5A             DECB
 5D41: 26 FD          BNE    $5D40
 5D43: 86 03          LDA    #$03
-5D45: BD 66 E6       JSR    $66E6
+5D45: BD 66 E6       JSR    flip_screen_if_needed_66e6
 5D48: B6 0E 1A       LDA    $0E1A
 5D4B: 84 03          ANDA   #$03
 5D4D: 81 03          CMPA   #$03
@@ -1709,7 +1709,7 @@ jump_table_5caf:
 5D5C: 8A 80          ORA    #$80
 5D5E: A7 88 1B       STA    $1B,X
 5D61: 86 10          LDA    #$10
-5D63: BD 66 E6       JSR    $66E6
+5D63: BD 66 E6       JSR    flip_screen_if_needed_66e6
 5D66: EC 08          LDD    $8,X
 5D68: 83 00 02       SUBD   #$0002
 5D6B: ED 08          STD    $8,X
@@ -1723,7 +1723,7 @@ jump_table_5caf:
 5D80: 8A 04          ORA    #$04
 5D82: B7 0E 1A       STA    $0E1A
 5D85: 86 FE          LDA    #$FE
-5D87: BD 66 E6       JSR    $66E6
+5D87: BD 66 E6       JSR    flip_screen_if_needed_66e6
 5D8A: 86 02          LDA    #$02
 5D8C: 97 4B          STA    $4B
 5D8E: EC 08          LDD    $8,X
@@ -1863,7 +1863,7 @@ jump_table_5caf:
 5EE6: 8A 20          ORA    #$20
 5EE8: B7 0E 16       STA    $0E16
 5EEB: 86 11          LDA    #$11
-5EED: BD 66 E6       JSR    $66E6
+5EED: BD 66 E6       JSR    flip_screen_if_needed_66e6
 5EF0: 20 01          BRA    $5EF3
 5EF2: 39             RTS
 5EF3: 6A 88 19       DEC    $19,X
@@ -2263,7 +2263,7 @@ jump_table_5f4f:
 65D3: 7C 0E 5F       INC    $0E5F
 65D6: 96 55          LDA    $55
 65D8: 10 8E 66 46    LDY    #$6646
-65DC: E6 A6          LDB    A,Y
+65DC: E6 A6          LDB    A,Y		; [bank_address]
 65DE: F1 0E 5F       CMPB   $0E5F
 65E1: 24 1E          BCC    $6601
 65E3: 7F 0E 5F       CLR    $0E5F
@@ -2285,6 +2285,7 @@ jump_table_5f4f:
 6608: 39             RTS
 6609: 1C FE          ANDCC  #$FE
 660B: 39             RTS
+
 660C: 34 10          PSHS   X
 660E: B6 03 EA       LDA    $03EA
 6611: 81 09          CMPA   #$09
@@ -2339,18 +2340,20 @@ jump_table_5f4f:
 669E: 6D E4          TST    ,S
 66A0: 27 0E          BEQ    $66B0
 66A2: C6 61          LDB    #$61
-66A4: ED C1          STD    ,U++
+; energy bar
+66A4: ED C1          STD    ,U++	; [video_address_word]
 66A6: 6A 61          DEC    $1,S
 66A8: 6A E4          DEC    ,S
 66AA: 26 F8          BNE    $66A4
 66AC: 6D 61          TST    $1,S
 66AE: 27 08          BEQ    $66B8
 66B0: C6 60          LDB    #$60
-66B2: ED C1          STD    ,U++
+66B2: ED C1          STD    ,U++	; [video_address_word]
 66B4: 6A 61          DEC    $1,S
 66B6: 26 FA          BNE    $66B2
 66B8: 32 62          LEAS   $2,S
 66BA: 35 D0          PULS   X,U,PC
+
 66BC: 5F             CLRB
 66BD: 4D             TSTA
 66BE: 27 0D          BEQ    $66CD
@@ -2372,13 +2375,16 @@ jump_table_5f4f:
 66DE: A7 A8 1F       STA    $1F,Y
 66E1: BD 66 68       JSR    $6668
 66E4: 35 82          PULS   A,PC
-66E6: D6 26          LDB    $26
+
+flip_screen_if_needed_66e6:
+66E6: D6 26          LDB    game_in_play_0026
 66E8: 26 07          BNE    $66F1
-66EA: F6 38 04       LDB    $3804
+66EA: F6 38 04       LDB    dsw_1_3804
 66ED: C4 04          ANDB   #$04
 66EF: 27 03          BEQ    $66F4
 66F1: B7 38 0E       STA    $380E
 66F4: 39             RTS
+
 66F5: 34 40          PSHS   U
 66F7: 10 AE 88 35    LDY    $35,X
 66FB: A6 A8 16       LDA    $16,Y
@@ -2404,6 +2410,7 @@ jump_table_5f4f:
 6729: 85 08          BITA   #$08
 672B: 26 03          BNE    $6730
 672D: 7E 67 F8       JMP    $67F8
+
 6730: 32 62          LEAS   $2,S
 6732: 35 C0          PULS   U,PC
 6734: 34 40          PSHS   U
@@ -3579,7 +3586,7 @@ jump_table_5f4f:
 723E: 7C 0E 42       INC    $0E42
 7241: 34 02          PSHS   A
 7243: 86 12          LDA    #$12
-7245: BD 66 E6       JSR    $66E6
+7245: BD 66 E6       JSR    flip_screen_if_needed_66e6
 7248: 35 02          PULS   A
 724A: BD 72 5E       JSR    $725E
 724D: B6 0E 42       LDA    $0E42
@@ -3997,7 +4004,7 @@ jump_table_72a9:
 77AC: A6 88 31       LDA    $31,X
 77AF: 26 0A          BNE    $77BB
 77B1: 86 96          LDA    #$96
-77B3: BD 66 E6       JSR    $66E6
+77B3: BD 66 E6       JSR    flip_screen_if_needed_66e6
 77B6: 86 01          LDA    #$01
 77B8: A7 88 31       STA    $31,X
 77BB: 6A 88 19       DEC    $19,X

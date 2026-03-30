@@ -153,7 +153,7 @@ lb4_4000:   ; [global]
 416A: 1F 01          TFR    D,X
 416C: EC 84          LDD    ,X		; [bank_address]
 416E: 26 03          BNE    $4173
-4170: BD 41 A1       JSR    $41A1
+4170: BD 41 A1       JSR    pop_2_levels_41a1
 4173: DC 60          LDD    $60
 4175: D3 5E          ADDD   $5E
 4177: 4F             CLRA
@@ -169,18 +169,21 @@ lb4_4000:   ; [global]
 4189: 96 37          LDA    $37
 418B: 81 20          CMPA   #$20
 418D: 25 03          BCS    $4192
-418F: BD 41 A1       JSR    $41A1
+418F: BD 41 A1       JSR    pop_2_levels_41a1
 4192: 96 3B          LDA    $3B
 4194: 26 03          BNE    $4199
-4196: BD 41 A1       JSR    $41A1
+4196: BD 41 A1       JSR    pop_2_levels_41a1
 4199: 81 04          CMPA   #$04
 419B: 25 03          BCS    $41A0
-419D: BD 41 A1       JSR    $41A1
+419D: BD 41 A1       JSR    pop_2_levels_41a1
 41A0: 39             RTS
+
+pop_2_levels_41a1:
 41A1: 35 10          PULS   X
 41A3: 12             NOP
 41A4: 35 10          PULS   X
 41A6: 39             RTS
+
 41A7: EC 22          LDD    $2,Y	; [bank_address]
 41A9: DD 64          STD    $64
 41AB: EC 24          LDD    $4,Y	; [bank_address]
