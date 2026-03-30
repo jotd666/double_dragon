@@ -271,7 +271,7 @@ pop_2_levels_41a1:
 4249: 86 FF          LDA    #$FF
 424B: 20 01          BRA    $424E
 424D: 4F             CLRA
-424E: 32 66          LEAS   $6,S
+424E: 32 66          LEAS   $6,S   ; [free_locals]
 4250: 39             RTS
 
 4251: C6 06          LDB    #$06
@@ -451,7 +451,7 @@ table_4317:
 43B5: DC 52          LDD    $52
 43B7: A3 E4          SUBD   ,S
 43B9: DD 52          STD    $52
-43BB: 32 62          LEAS   $2,S
+43BB: 32 62          LEAS   $2,S   ; [free_locals]
 43BD: 39             RTS
 43BE: 8E 43 EB       LDX    #$43EB
 43C1: CC FF FF       LDD    #$FFFF
@@ -526,7 +526,7 @@ table_4317:
 445B: DC 52          LDD    $52
 445D: E3 E4          ADDD   ,S
 445F: DD 52          STD    $52
-4461: 32 62          LEAS   $2,S
+4461: 32 62          LEAS   $2,S   ; [free_locals]
 4463: 86 08          LDA    #$08
 4465: 97 4B          STA    $4B
 4467: 39             RTS
@@ -577,7 +577,7 @@ table_4317:
 44C0: DC 60          LDD    $60
 44C2: 83 00 01       SUBD   #$0001
 44C5: DD 60          STD    $60
-44C7: 32 62          LEAS   $2,S
+44C7: 32 62          LEAS   $2,S   ; [free_locals]
 44C9: 39             RTS
 
 44CA: 4D             TSTA
@@ -749,7 +749,7 @@ fatal_error_45cf:
 464F: 35 FE          PULS   D,DP,X,Y,U,PC
 
 4651: 34 7E          PSHS   U,Y,X,DP,D
-4653: 32 71          LEAS   -$F,S
+4653: 32 71          LEAS   -$F,S   ; [alloc_locals]
 4655: BD 45 D6       JSR    $45D6
 4658: BD 46 A2       JSR    $46A2
 465B: 25 3D          BCS    $469A
@@ -783,12 +783,12 @@ fatal_error_45cf:
 4694: A6 A6          LDA    A,Y		; [bank_address]
 4696: AB 65          ADDA   $5,S
 4698: 1C FE          ANDCC  #$FE
-469A: 32 6F          LEAS   $F,S
+469A: 32 6F          LEAS   $F,S   ; [free_locals]
 469C: 35 FE          PULS   D,DP,X,Y,U,PC
 
 469E: 00 40          NEG    $40
 46A0: C0 80          SUBB   #$80
-46A2: 32 7C          LEAS   -$4,S
+46A2: 32 7C          LEAS   -$4,S   ; [alloc_locals]
 46A4: EC 04          LDD    $4,X
 46A6: ED E4          STD    ,S
 46A8: EC 06          LDD    $6,X
@@ -813,10 +813,10 @@ fatal_error_45cf:
 46D4: DC 3F          LDD    $3F
 46D6: C3 01 20       ADDD   #$0120
 46D9: 10 A3 62       CMPD   $2,S
-46DC: 32 64          LEAS   $4,S
+46DC: 32 64          LEAS   $4,S   ; [free_locals]
 46DE: 39             RTS
 46DF: 34 34          PSHS   Y,X,B
-46E1: 32 7B          LEAS   -$5,S
+46E1: 32 7B          LEAS   -$5,S   ; [alloc_locals]
 46E3: BD 45 D6       JSR    $45D6
 46E6: 96 00          LDA    $00
 46E8: 1F 89          TFR    A,B
@@ -849,7 +849,7 @@ fatal_error_45cf:
 4719: 10 8E 47 25    LDY    #$4725
 471D: D6 00          LDB    $00
 471F: A6 A5          LDA    B,Y		; [bank_address]
-4721: 32 65          LEAS   $5,S
+4721: 32 65          LEAS   $5,S   ; [free_locals]
 4723: 35 B4          PULS   B,X,Y,PC
 
 ; not reached?
@@ -914,7 +914,7 @@ fatal_error_45cf:
 47BE: 3D             MUL
 47BF: 10 AF CB       STY    D,U
 47C2: 7C 03 A1       INC    $03A1
-47C5: 32 61          LEAS   $1,S
+47C5: 32 61          LEAS   $1,S   ; [free_locals]
 47C7: 35 E6          PULS   D,Y,U,PC
 47C9: 34 36          PSHS   Y,X,D
 47CB: D6 35          LDB    $35
@@ -1105,7 +1105,7 @@ lb4_7bb4:  ; [global]
 7E35: 8C 0A CD       CMPX   #$0ACD
 7E38: 26 DD          BNE    $7E17
 7E3A: 39             RTS
-7E3B: 32 78          LEAS   -$8,S
+7E3B: 32 78          LEAS   -$8,S   ; [alloc_locals]
 7E3D: 96 51          LDA    $51
 7E3F: 84 01          ANDA   #$01
 7E41: 26 5F          BNE    $7EA2
@@ -1151,5 +1151,5 @@ lb4_7bb4:  ; [global]
 7E9B: 30 08          LEAX   $8,X
 7E9D: 8C 0A CD       CMPX   #$0ACD
 7EA0: 26 A4          BNE    $7E46
-7EA2: 32 68          LEAS   $8,S
+7EA2: 32 68          LEAS   $8,S   ; [free_locals]
 7EA4: 39             RTS

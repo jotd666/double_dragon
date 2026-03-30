@@ -2,7 +2,9 @@
   
 - context change: BA3267F2 972B4DF4 7C2231AE => D265AE25
 
-- level start: ends up with fatal error
+- full review of all stack operations ,S (except LEA) with "ok" tagging
+- level start: ends up with fatal error / lockup (patch lockup to break)
+
   
 - set DSW difficulty lives, etc.
 - cache subcontext (loaded fg/bg/sprite files)

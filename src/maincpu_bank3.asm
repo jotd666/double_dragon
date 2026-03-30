@@ -262,7 +262,7 @@ jump_table_6cdc:
 6E59: 39             RTS
 
 6E5A: 34 7E          PSHS   U,Y,X,DP,D
-6E5C: 32 71          LEAS   -$F,S	; alloc auto memory
+6E5C: 32 71          LEAS   -$F,S	; alloc auto memory   ; [alloc_locals]
 6E5E: CE 0E 76       LDU    #$0E76
 6E61: 6F E4          CLR    ,S
 6E63: 6F 61          CLR    $1,S
@@ -306,7 +306,7 @@ jump_table_6cdc:
 6EBB: A6 E4          LDA    ,S
 6EBD: 81 05          CMPA   #$05
 6EBF: 25 EB          BCS    $6EAC
-6EC1: 32 6F          LEAS   $F,S
+6EC1: 32 6F          LEAS   $F,S   ; [free_locals]
 6EC3: 35 FE          PULS   D,DP,X,Y,U,PC
 
 
@@ -815,7 +815,7 @@ jump_table_7290:
 73C6: 6F 80          CLR    ,X+
 73C8: 8C 20 00       CMPX   #$2000
 73CB: 25 F9          BCS    $73C6
-73CD: 32 7F          LEAS   -$1,S
+73CD: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 73CF: C6 20          LDB    #$20
 73D1: E7 E4          STB    ,S
 73D3: 8E 18 42       LDX    #$1842
@@ -836,10 +836,10 @@ jump_table_7290:
 73FA: 31 A8 40       LEAY   $40,Y
 73FD: 6A E4          DEC    ,S
 73FF: 26 EF          BNE    $73F0
-7401: 32 61          LEAS   $1,S
+7401: 32 61          LEAS   $1,S   ; [free_locals]
 7403: 86 1E          LDA    #$1E
 7405: 17 8B C1       LBSR   $FFC9
-7408: 32 7F          LEAS   -$1,S
+7408: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 740A: 6F E4          CLR    ,S
 740C: 10 8E 07 5B    LDY    #$075B
 7410: 6F A4          CLR    ,Y
@@ -848,7 +848,7 @@ jump_table_7290:
 7417: A6 E4          LDA    ,S
 7419: 81 10          CMPA   #$10
 741B: 25 F3          BCS    $7410
-741D: 32 61          LEAS   $1,S
+741D: 32 61          LEAS   $1,S   ; [free_locals]
 741F: 39             RTS
 7420: 34 7E          PSHS   U,Y,X,DP,D
 7422: 10 8E 09 6B    LDY    #$096B
@@ -1099,7 +1099,7 @@ jump_table_748f:
 7654: 86 55          LDA    #$55
 7656: B7 34 16       STA    $3416
 7659: 39             RTS
-765A: 32 7C          LEAS   -$4,S
+765A: 32 7C          LEAS   -$4,S   ; [alloc_locals]
 765C: BD 76 79       JSR    $7679
 765F: BD 76 91       JSR    $7691
 7662: BD 76 A6       JSR    $76A6
@@ -1110,7 +1110,7 @@ jump_table_748f:
 766F: F6 0A 5F       LDB    $0A5F
 7672: C1 10          CMPB   #$10
 7674: 26 F2          BNE    $7668
-7676: 32 64          LEAS   $4,S
+7676: 32 64          LEAS   $4,S   ; [free_locals]
 7678: 39             RTS
 7679: 96 00          LDA    $00
 767B: 84 01          ANDA   #$01

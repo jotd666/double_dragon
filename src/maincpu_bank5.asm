@@ -174,7 +174,7 @@ lb5_40e7:      ; [global]
 4120: 39             RTS
 
 4257: 34 40          PSHS   U
-4259: 32 7D          LEAS   -$3,S
+4259: 32 7D          LEAS   -$3,S   ; [alloc_locals]
 425B: E6 01          LDB    $1,X
 425D: C1 22          CMPB   #$22
 425F: 25 02          BCS    $4263
@@ -208,7 +208,7 @@ lb5_40e7:      ; [global]
 42A5: A6 88 13       LDA    $13,X
 42A8: 8A 20          ORA    #$20
 42AA: A7 88 13       STA    $13,X
-42AD: 32 63          LEAS   $3,S
+42AD: 32 63          LEAS   $3,S   ; [free_locals]
 42AF: 35 C0          PULS   U,PC
 
 42B1: A6 88 21       LDA    $21,X
@@ -398,7 +398,7 @@ jump_table_42bf:
 4485: 86 07          LDA    #$07
 4487: A7 88 1B       STA    $1B,X
 448A: 39             RTS
-448B: 32 7E          LEAS   -$2,S
+448B: 32 7E          LEAS   -$2,S   ; [alloc_locals]
 448D: A7 61          STA    $1,S
 448F: 10 8E 44 E0    LDY    #$44E0
 4493: 6F E4          CLR    ,S
@@ -436,7 +436,7 @@ jump_table_42bf:
 44D7: 1A 01          ORCC   #$01
 44D9: 20 02          BRA    $44DD
 44DB: 1C FE          ANDCC  #$FE
-44DD: 32 62          LEAS   $2,S
+44DD: 32 62          LEAS   $2,S   ; [free_locals]
 44DF: 39             RTS
 
 4DB3: 34 0C          PSHS   DP,B                                        
@@ -460,7 +460,7 @@ jump_table_42bf:
 4DD5: 99 45          ADCA   $45
 4DD7: 35 8C          PULS   B,DP,PC
 4DD9: 34 40          PSHS   U
-4DDB: 32 7A          LEAS   -$6,S
+4DDB: 32 7A          LEAS   -$6,S   ; [alloc_locals]
 4DDD: A6 88 13       LDA    $13,X
 4DE0: 84 20          ANDA   #$20
 4DE2: 10 27 01 0C    LBEQ   $4EF2
@@ -565,18 +565,18 @@ jump_table_42bf:
 4EDC: A6 88 13       LDA    $13,X
 4EDF: 84 DF          ANDA   #$DF
 4EE1: A7 88 13       STA    $13,X
-4EE4: 32 66          LEAS   $6,S
+4EE4: 32 66          LEAS   $6,S   ; [free_locals]
 4EE6: 1A 01          ORCC   #$01
 4EE8: 35 C0          PULS   U,PC
 4EEA: A6 88 13       LDA    $13,X
 4EED: 84 DF          ANDA   #$DF
 4EEF: A7 88 13       STA    $13,X
-4EF2: 32 66          LEAS   $6,S
+4EF2: 32 66          LEAS   $6,S   ; [free_locals]
 4EF4: 1C FE          ANDCC  #$FE
 4EF6: 35 C0          PULS   U,PC
 
 510F: 34 76          PSHS   U,Y,X,D
-5111: 32 7F          LEAS   -$1,S
+5111: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 5113: 10 BE 0E 4B    LDY    $0E4B
 5117: A6 88 13       LDA    $13,X
 511A: 84 20          ANDA   #$20
@@ -659,7 +659,7 @@ jump_table_42bf:
 51C9: A6 88 38       LDA    $38,X
 51CC: 84 BF          ANDA   #$BF
 51CE: A7 88 38       STA    $38,X
-51D1: 32 61          LEAS   $1,S
+51D1: 32 61          LEAS   $1,S   ; [free_locals]
 51D3: 35 F6          PULS   D,X,Y,U,PC
 
 5217: 34 3C          PSHS   Y,X,DP,B
@@ -765,7 +765,7 @@ jump_table_42bf:
 5375: A7 88 37       STA    $37,X
 5378: 39             RTS
 
-5391: 32 7C          LEAS   -$4,S
+5391: 32 7C          LEAS   -$4,S   ; [alloc_locals]
 5393: EC 08          LDD    $8,X
 5395: E3 06          ADDD   $6,X
 5397: ED E4          STD    ,S
@@ -788,7 +788,7 @@ jump_table_42bf:
 53BF: C3 00 28       ADDD   #$0028
 53C2: 10 93 3F       CMPD   $3F
 53C5: 25 03          BCS    $53CA
-53C7: 32 64          LEAS   $4,S
+53C7: 32 64          LEAS   $4,S   ; [free_locals]
 53C9: 39             RTS
 53CA: 6F 84          CLR    ,X
 53CC: A6 88 4C       LDA    $4C,X
@@ -852,7 +852,7 @@ jump_table_5435:
 5452: CC 01 20       LDD    #$0120
 5455: ED 06          STD    $6,X
 5457: 39             RTS
-5458: 32 7F          LEAS   -$1,S
+5458: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 545A: 6F E4          CLR    ,S
 545C: DC 3C          LDD    $3C
 545E: 10 83 05 40    CMPD   #$0540
@@ -897,10 +897,10 @@ jump_table_5435:
 54C1: ED 06          STD    $6,X
 54C3: EC A4          LDD    ,Y		; [bank_address]
 54C5: ED 08          STD    $8,X
-54C7: 32 61          LEAS   $1,S
+54C7: 32 61          LEAS   $1,S   ; [free_locals]
 54C9: 39             RTS
 
-54E6: 32 7F          LEAS   -$1,S
+54E6: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 54E8: 6F E4          CLR    ,S
 54EA: DC 3C          LDD    $3C
 54EC: 10 83 0D B6    CMPD   #$0DB6
@@ -949,10 +949,10 @@ jump_table_5435:
 5559: ED 06          STD    $6,X
 555B: EC A4          LDD    ,Y		; [bank_address]
 555D: ED 08          STD    $8,X
-555F: 32 61          LEAS   $1,S
+555F: 32 61          LEAS   $1,S   ; [free_locals]
 5561: 39             RTS
 
-5576: 32 7F          LEAS   -$1,S
+5576: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 5578: 6F E4          CLR    ,S
 557A: DC 3C          LDD    $3C
 557C: 10 83 18 70    CMPD   #$1870
@@ -970,7 +970,7 @@ jump_table_5435:
 5597: ED 06          STD    $6,X
 5599: EC A4          LDD    ,Y		; [bank_address]
 559B: ED 08          STD    $8,X
-559D: 32 61          LEAS   $1,S
+559D: 32 61          LEAS   $1,S   ; [free_locals]
 559F: 39             RTS
 
 55A8: 39             RTS
@@ -996,7 +996,7 @@ jump_table_5435:
 55D2: 35 C0          PULS   U,PC
 
 55D4: 34 60          PSHS   U,Y
-55D6: 32 7A          LEAS   -$6,S
+55D6: 32 7A          LEAS   -$6,S   ; [alloc_locals]
 55D8: 7D 09 F2       TST    $09F2
 55DB: 10 2B 00 B5    LBMI   $5694
 55DF: A6 88 1B       LDA    $1B,X
@@ -1074,7 +1074,7 @@ jump_table_5435:
 5690: 1A 01          ORCC   #$01
 5692: 20 02          BRA    $5696
 5694: 1C FE          ANDCC  #$FE
-5696: 32 66          LEAS   $6,S
+5696: 32 66          LEAS   $6,S   ; [free_locals]
 5698: 35 E0          PULS   Y,U,PC
 
 56AC: 34 40          PSHS   U
@@ -1110,10 +1110,10 @@ jump_table_5435:
 56F1: A7 88 1D       STA    $1D,X
 56F4: 35 C0          PULS   U,PC
 
-570C: 32 6F          LEAS   $F,S
+570C: 32 6F          LEAS   $F,S   ; [free_locals]
 570E: 35 FE          PULS   D,DP,X,Y,U,PC
 5710: 34 7E          PSHS   U,Y,X,DP,D
-5712: 32 71          LEAS   -$F,S
+5712: 32 71          LEAS   -$F,S   ; [alloc_locals]
 5714: 96 36          LDA    $36
 5716: 81 03          CMPA   #$03
 5718: 26 F2          BNE    $570C
@@ -1227,11 +1227,11 @@ jump_table_5435:
 57FE: CA 80          ORB    #$80
 5800: EA E4          ORB    ,S
 5802: E7 A6          STB    A,Y
-5804: 32 6F          LEAS   $F,S
+5804: 32 6F          LEAS   $F,S   ; [free_locals]
 5806: 35 FE          PULS   D,DP,X,Y,U,PC
 
 580E: 34 6E          PSHS   U,Y,DP,D
-5810: 32 7F          LEAS   -$1,S
+5810: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 5812: 8E 07 5B       LDX    #$075B
 5815: 6F E4          CLR    ,S
 5817: A6 84          LDA    ,X
@@ -1245,7 +1245,7 @@ jump_table_5435:
 5826: 81 10          CMPA   #$10
 5828: 25 ED          BCS    $5817
 582A: 1C FE          ANDCC  #$FE
-582C: 32 61          LEAS   $1,S
+582C: 32 61          LEAS   $1,S   ; [free_locals]
 582E: 35 EE          PULS   D,DP,Y,U,PC
 5830: 96 36          LDA    $36
 5832: 48             ASLA
@@ -1284,7 +1284,7 @@ jump_table_5839:
 5880: BD 5C 08       JSR    $5C08
 5883: BD 5C 70       JSR    $5C70
 5886: 39             RTS
-5887: 32 7C          LEAS   -$4,S
+5887: 32 7C          LEAS   -$4,S   ; [alloc_locals]
 5889: 96 36          LDA    $36
 588B: 27 04          BEQ    $5891
 588D: 81 03          CMPA   #$03
@@ -1317,7 +1317,7 @@ jump_table_5839:
 58CC: A7 88 19       STA    $19,X
 58CF: 86 87          LDA    #$87
 58D1: BD 66 E6       JSR    flip_screen_if_needed_66e6
-58D4: 32 64          LEAS   $4,S
+58D4: 32 64          LEAS   $4,S   ; [free_locals]
 58D6: 39             RTS
 
 5907: 96 36          LDA    $36
@@ -1328,7 +1328,7 @@ jump_table_5839:
 5914: E6 A6          LDB    A,Y
 5916: 2B 01          BMI    $5919
 5918: 39             RTS
-5919: 32 7F          LEAS   -$1,S
+5919: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 591B: E7 E4          STB    ,S
 591D: BD 58 0E       JSR    $580E
 5920: 24 2D          BCC    $594F
@@ -1353,7 +1353,7 @@ jump_table_5839:
 5948: 6F 03          CLR    $3,X
 594A: 86 8B          LDA    #$8B
 594C: BD 66 E6       JSR    flip_screen_if_needed_66e6
-594F: 32 61          LEAS   $1,S
+594F: 32 61          LEAS   $1,S   ; [free_locals]
 5951: 39             RTS
 
 59E2: B6 0E 17       LDA    $0E17
@@ -1469,14 +1469,14 @@ jump_table_5839:
 5B01: 6F 88 1B       CLR    $1B,X
 5B04: 39             RTS
 
-5B0D: 32 7F          LEAS   -$1,S
+5B0D: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 5B0F: 96 36          LDA    $36
 5B11: 81 03          CMPA   #$03
 5B13: 26 08          BNE    $5B1D
 5B15: DC 3C          LDD    $3C
 5B17: 10 83 16 10    CMPD   #$1610
 5B1B: 24 03          BCC    $5B20
-5B1D: 32 61          LEAS   $1,S
+5B1D: 32 61          LEAS   $1,S   ; [free_locals]
 5B1F: 39             RTS
 5B20: B6 0E 32       LDA    $0E32
 5B23: 84 07          ANDA   #$07
@@ -1514,10 +1514,10 @@ jump_table_5839:
 5B64: 31 A5          LEAY   B,Y
 5B66: AA 23          ORA    $3,Y
 5B68: B7 0E 32       STA    $0E32
-5B6B: 32 61          LEAS   $1,S
+5B6B: 32 61          LEAS   $1,S   ; [free_locals]
 5B6D: 39             RTS
 
-5B92: 32 7F          LEAS   -$1,S
+5B92: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 5B94: 86 80          LDA    #$80
 5B96: A7 E4          STA    ,S
 5B98: 96 36          LDA    $36
@@ -1544,7 +1544,7 @@ jump_table_5839:
 5BC7: B6 0E 33       LDA    $0E33
 5BCA: AA E4          ORA    ,S
 5BCC: B7 0E 33       STA    $0E33
-5BCF: 32 61          LEAS   $1,S
+5BCF: 32 61          LEAS   $1,S   ; [free_locals]
 5BD1: 39             RTS
 
 5BE6: EC A1          LDD    ,Y++		; [bank_address]
@@ -1562,9 +1562,9 @@ jump_table_5839:
 5BFF: A7 84          STA    ,X
 5C01: 6F 88 1B       CLR    $1B,X
 5C04: 39             RTS
-5C05: 32 61          LEAS   $1,S
+5C05: 32 61          LEAS   $1,S   ; [free_locals]
 5C07: 39             RTS
-5C08: 32 7F          LEAS   -$1,S
+5C08: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 5C0A: 96 36          LDA    $36
 5C0C: 81 03          CMPA   #$03
 5C0E: 26 F5          BNE    $5C05
@@ -1598,7 +1598,7 @@ jump_table_5839:
 5C49: 31 A5          LEAY   B,Y
 5C4B: AA 22          ORA    $2,Y		; [bank_address]
 5C4D: B7 0E 36       STA    $0E36
-5C50: 32 61          LEAS   $1,S
+5C50: 32 61          LEAS   $1,S   ; [free_locals]
 5C52: 39             RTS
 
 5C70: B6 0E 33       LDA    $0E33
@@ -1908,7 +1908,7 @@ jump_table_5f4f:
      dc.w	$5f53 
 	 dc.w	$5fc6
 
-5F53: 32 71          LEAS   -$F,S                                     
+5F53: 32 71          LEAS   -$F,S                                        ; [alloc_locals]
 5F55: 6F 62          CLR    $2,S                                      
 5F57: 6F 65          CLR    $5,S                                      
 5F59: DC 3C          LDD    $3C                                       
@@ -1956,7 +1956,7 @@ jump_table_5f4f:
 5FBC: 26 05          BNE    $5FC3
 5FBE: 86 01          LDA    #$01
 5FC0: A7 88 1B       STA    $1B,X
-5FC3: 32 6F          LEAS   $F,S
+5FC3: 32 6F          LEAS   $F,S   ; [free_locals]
 5FC5: 39             RTS
 
 5FC6: 10 8E 5F FE    LDY    #$5FFE
@@ -1986,7 +1986,7 @@ jump_table_5f4f:
 5FFD: 39             RTS
 
 6006: 34 7F          PSHS   U,Y,X,DP,D,CC
-6008: 32 71          LEAS   -$F,S
+6008: 32 71          LEAS   -$F,S   ; [alloc_locals]
 600A: 1F 43          TFR    S,U
 600C: A7 47          STA    $7,U
 600E: 84 3F          ANDA   #$3F
@@ -2039,7 +2039,7 @@ jump_table_5f4f:
 6067: 20 C4          BRA    $602D
 6069: BD 60 72       JSR    $6072
 606C: 20 BF          BRA    $602D
-606E: 32 6F          LEAS   $F,S
+606E: 32 6F          LEAS   $F,S   ; [free_locals]
 6070: 35 FF          PULS   CC,D,DP,X,Y,U,PC
 
 6072: A6 47          LDA    $7,U
@@ -2089,7 +2089,7 @@ jump_table_5f4f:
 60CE: DA D8          ORB    $D8
 60D0: DD DB          STD    $DB
 60D2: DE DC          LDU    $DC
-60D4: 32 7F          LEAS   -$1,S
+60D4: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 60D6: C6 20          LDB    #$20
 60D8: E7 E4          STB    ,S
 60DA: 8E 18 42       LDX    #$1842
@@ -2110,11 +2110,11 @@ jump_table_5f4f:
 6101: 31 A8 40       LEAY   $40,Y
 6104: 6A E4          DEC    ,S
 6106: 26 EF          BNE    $60F7
-6108: 32 61          LEAS   $1,S
+6108: 32 61          LEAS   $1,S   ; [free_locals]
 610A: 39             RTS
 
 6450: 34 7F          PSHS   U,Y,X,DP,D,CC                                
-6452: 32 71          LEAS   -$F,S                                        
+6452: 32 71          LEAS   -$F,S                                           ; [alloc_locals]
 6454: 1F 43          TFR    S,U			; strange!!
 6456: A7 47          STA    $7,U
 6458: 6F 42          CLR    $2,U
@@ -2168,7 +2168,7 @@ jump_table_5f4f:
 64AD: A6 4E          LDA    $E,U
 64AF: A1 4B          CMPA   $B,U
 64B1: 25 E2          BCS    $6495
-64B3: 32 6F          LEAS   $F,S
+64B3: 32 6F          LEAS   $F,S   ; [free_locals]
 64B5: 35 FF          PULS   CC,D,DP,X,Y,U,PC
 
 64B7: 34 02          PSHS   A
@@ -2329,7 +2329,7 @@ jump_table_5f4f:
 6687: BD 66 8B       JSR    $668B
 668A: 39             RTS
 668B: 34 50          PSHS   U,X
-668D: 32 7E          LEAS   -$2,S
+668D: 32 7E          LEAS   -$2,S   ; [alloc_locals]
 668F: 96 00          LDA    $00
 6691: BD 66 BC       JSR    $66BC
 6694: E7 E4          STB    ,S
@@ -2351,7 +2351,7 @@ jump_table_5f4f:
 66B2: ED C1          STD    ,U++	; [video_address_word]
 66B4: 6A 61          DEC    $1,S
 66B6: 26 FA          BNE    $66B2
-66B8: 32 62          LEAS   $2,S
+66B8: 32 62          LEAS   $2,S   ; [free_locals]
 66BA: 35 D0          PULS   X,U,PC
 
 66BC: 5F             CLRB
@@ -2397,7 +2397,7 @@ flip_screen_if_needed_66e6:
 670C: BD 75 61       JSR    $7561
 670F: 85 02          BITA   #$02
 6711: 27 1F          BEQ    $6732
-6713: 32 7E          LEAS   -$2,S
+6713: 32 7E          LEAS   -$2,S   ; [alloc_locals]
 6715: 6F E4          CLR    ,S
 6717: A6 A8 17       LDA    $17,Y
 671A: 81 07          CMPA   #$07
@@ -2411,7 +2411,7 @@ flip_screen_if_needed_66e6:
 672B: 26 03          BNE    $6730
 672D: 7E 67 F8       JMP    $67F8
 
-6730: 32 62          LEAS   $2,S
+6730: 32 62          LEAS   $2,S   ; [free_locals]
 6732: 35 C0          PULS   U,PC
 6734: 34 40          PSHS   U
 6736: A6 88 1B       LDA    $1B,X
@@ -2464,9 +2464,9 @@ flip_screen_if_needed_66e6:
 67A7: A7 88 1B       STA    $1B,X
 67AA: 10 AF 88 41    STY    $41,X
 67AE: 7E 68 83       JMP    $6883
-67B1: 32 62          LEAS   $2,S
+67B1: 32 62          LEAS   $2,S   ; [free_locals]
 67B3: 35 C0          PULS   U,PC
-67B5: 32 7E          LEAS   -$2,S
+67B5: 32 7E          LEAS   -$2,S   ; [alloc_locals]
 67B7: A6 88 1B       LDA    $1B,X
 67BA: 84 3F          ANDA   #$3F
 67BC: 81 07          CMPA   #$07
@@ -2556,7 +2556,7 @@ flip_screen_if_needed_66e6:
 6878: ED C8 41       STD    $41,U
 687B: A7 C8 21       STA    $21,U
 687E: 7A 0E 37       DEC    $0E37
-6881: 32 62          LEAS   $2,S
+6881: 32 62          LEAS   $2,S   ; [free_locals]
 6883: 35 C0          PULS   U,PC
 
 68A6: A6 88 34       LDA    $34,X                                      
@@ -2578,7 +2578,7 @@ flip_screen_if_needed_66e6:
 68CE: 86 02          LDA    #$02
 68D0: A7 A8 31       STA    $31,Y
 68D3: 39             RTS
-68D4: 32 7C          LEAS   -$4,S
+68D4: 32 7C          LEAS   -$4,S   ; [alloc_locals]
 68D6: B6 0E 2D       LDA    $0E2D
 68D9: 26 6B          BNE    $6946
 68DB: A6 84          LDA    ,X
@@ -2625,7 +2625,7 @@ flip_screen_if_needed_66e6:
 693D: 6F A8 20       CLR    $20,Y
 6940: 6F 88 21       CLR    $21,X
 6943: 6F 88 42       CLR    $42,X
-6946: 32 64          LEAS   $4,S
+6946: 32 64          LEAS   $4,S   ; [free_locals]
 6948: 39             RTS
 6949: A6 88 21       LDA    $21,X
 694C: 81 01          CMPA   #$01
@@ -2764,7 +2764,7 @@ flip_screen_if_needed_66e6:
 6ABE: 6A A4          DEC    ,Y
 6AC0: 39             RTS
 6AC1: 34 40          PSHS   U
-6AC3: 32 7D          LEAS   -$3,S
+6AC3: 32 7D          LEAS   -$3,S   ; [alloc_locals]
 6AC5: 96 38          LDA    $38
 6AC7: 27 5A          BEQ    $6B23
 6AC9: A6 01          LDA    $1,X
@@ -2807,13 +2807,13 @@ flip_screen_if_needed_66e6:
 6B1E: 46             RORA
 6B1F: 84 80          ANDA   #$80
 6B21: A7 03          STA    $3,X
-6B23: 32 63          LEAS   $3,S
+6B23: 32 63          LEAS   $3,S   ; [free_locals]
 6B25: 35 C0          PULS   U,PC
 6B27: 00 00          NEG    $00
 6B29: 00 00          NEG    $00
 6B2B: 00 00          NEG    $00
 6B2D: 00 00          NEG    $00
-6B2F: 32 7F          LEAS   -$1,S
+6B2F: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 6B31: B6 09 F2       LDA    $09F2
 6B34: 2A 37          BPL    $6B6D
 6B36: B6 0E 2D       LDA    $0E2D
@@ -2840,7 +2840,7 @@ flip_screen_if_needed_66e6:
 6B67: A6 E4          LDA    ,S
 6B69: 81 09          CMPA   #$09
 6B6B: 25 D3          BCS    $6B40
-6B6D: 32 61          LEAS   $1,S
+6B6D: 32 61          LEAS   $1,S   ; [free_locals]
 6B6F: 39             RTS
 6B70: 34 16          PSHS   X,D
 6B72: 10 AE 88 41    LDY    $41,X
@@ -2890,7 +2890,7 @@ flip_screen_if_needed_66e6:
 6BDE: 7A 0E 38       DEC    $0E38
 6BE1: 6F A4          CLR    ,Y
 6BE3: 35 96          PULS   D,X,PC
-6BE5: 32 7D          LEAS   -$3,S
+6BE5: 32 7D          LEAS   -$3,S   ; [alloc_locals]
 6BE7: 6F 88 37       CLR    $37,X
 6BEA: B6 0E 4A       LDA    $0E4A
 6BED: 85 02          BITA   #$02
@@ -2913,7 +2913,7 @@ flip_screen_if_needed_66e6:
 6C15: 27 02          BEQ    $6C19
 6C17: CA 80          ORB    #$80
 6C19: E7 03          STB    $3,X
-6C1B: 32 63          LEAS   $3,S
+6C1B: 32 63          LEAS   $3,S   ; [free_locals]
 6C1D: 39             RTS
 
 6C1E: 34 7E          PSHS   U,Y,X,DP,D
@@ -2934,7 +2934,7 @@ flip_screen_if_needed_66e6:
 
 
 6C4F: 34 20          PSHS   Y
-6C51: 32 7C          LEAS   -$4,S
+6C51: 32 7C          LEAS   -$4,S   ; [alloc_locals]
 6C53: 86 02          LDA    #$02
 6C55: A7 E4          STA    ,S
 6C57: EC 28          LDD    $8,Y
@@ -3016,7 +3016,7 @@ flip_screen_if_needed_66e6:
 6D0F: A7 88 31       STA    $31,X
 6D12: EC 64          LDD    $4,S		; [pushed_parameter]
 6D14: ED 88 2D       STD    $2D,X
-6D17: 32 64          LEAS   $4,S
+6D17: 32 64          LEAS   $4,S   ; [free_locals]
 6D19: 35 A0          PULS   Y,PC
 
 6D1B: 96 36          LDA    $36
@@ -3598,7 +3598,7 @@ flip_screen_if_needed_66e6:
 725B: 39             RTS
 
 725E: 34 40          PSHS   U
-7260: 32 7C          LEAS   -$4,S
+7260: 32 7C          LEAS   -$4,S   ; [alloc_locals]
 7262: A7 E4          STA    ,S
 7264: 86 04          LDA    #$04
 7266: A7 61          STA    $1,S
@@ -3618,7 +3618,7 @@ flip_screen_if_needed_66e6:
 7283: 33 C8 38       LEAU   $38,U
 7286: 6A 61          DEC    $1,S
 7288: 26 E5          BNE    $726F
-728A: 32 64          LEAS   $4,S
+728A: 32 64          LEAS   $4,S   ; [free_locals]
 728C: 35 C0          PULS   U,PC
 
 729E: 39             RTS                                                 
@@ -3635,7 +3635,7 @@ jump_table_72a9:
 	dc.w	$72b1 
 	dc.w	$72b1
 	
-72B1: 32 7F          LEAS   -$1,S
+72B1: 32 7F          LEAS   -$1,S			; [alloc_stack]   ; [alloc_locals]
 72B3: 8E 07 5B       LDX    #$075B
 72B6: 6F E4          CLR    ,S
 72B8: A6 84          LDA    ,X
@@ -3666,10 +3666,10 @@ jump_table_72a9:
 72F4: A6 E4          LDA    ,S
 72F6: 81 10          CMPA   #$10
 72F8: 25 BE          BCS    $72B8
-72FA: 32 61          LEAS   $1,S
+72FA: 32 61          LEAS   $1,S			; [free_stack]   ; [free_locals]
 72FC: 39             RTS
 
-72FD: 32 7C          LEAS   -$4,S
+72FD: 32 7C          LEAS   -$4,S			; [alloc_stack]   ; [alloc_locals]
 72FF: 8E 07 5B       LDX    #$075B
 7302: 6F E4          CLR    ,S
 7304: A6 84          LDA    ,X
@@ -3681,7 +3681,7 @@ jump_table_72a9:
 7313: 2B 2C          BMI    $7341
 7315: EC 08          LDD    $8,X
 7317: E3 06          ADDD   $6,X
-7319: ED 61          STD    $1,S
+7319: ED 61          STD    $1,S		; [local]
 731B: DC 3F          LDD    $3F
 731D: C3 01 10       ADDD   #$0110
 7320: 10 A3 61       CMPD   $1,S
@@ -3703,7 +3703,7 @@ jump_table_72a9:
 7346: A6 E4          LDA    ,S
 7348: 81 10          CMPA   #$10
 734A: 25 B8          BCS    $7304
-734C: 32 64          LEAS   $4,S
+734C: 32 64          LEAS   $4,S			; [free_stack]   ; [free_locals]
 734E: 39             RTS
 
 7360: 34 36          PSHS   Y,X,D
@@ -3760,6 +3760,7 @@ jump_table_72a9:
 755B: 6F 88 3E       CLR    $3E,X
 755E: 1A 01          ORCC   #$01
 7560: 39             RTS
+
 7561: 34 7E          PSHS   U,Y,X,DP,D
 7563: 5F             CLRB
 7564: 10 8E 07 5B    LDY    #$075B

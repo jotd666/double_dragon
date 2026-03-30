@@ -911,7 +911,7 @@ subcpu_processing_411e:
 47CA: 86 40       LDA    #$40
 47CC: A7 0D       STA    $D,X
 47CE: 39          RTS
-47CF: 32 7F       LEAS   -$1,S
+47CF: 32 7F       LEAS   -$1,S   ; [alloc_locals]
 47D1: 86 10       LDA    #$10
 47D3: A7 0E       STA    $E,X
 47D5: BD 52 9F    JSR    $529F
@@ -938,9 +938,9 @@ subcpu_processing_411e:
 480A: 26 04       BNE    $4810
 480C: 86 40       LDA    #$40
 480E: A7 0D       STA    $D,X
-4810: 32 61       LEAS   $1,S
+4810: 32 61       LEAS   $1,S   ; [free_locals]
 4812: 39          RTS
-4813: 32 7F       LEAS   -$1,S
+4813: 32 7F       LEAS   -$1,S   ; [alloc_locals]
 4815: BD 59 9A    JSR    $599A
 4818: 25 3E       BCS    $4858
 481A: A6 88 50    LDA    $50,X
@@ -967,7 +967,7 @@ subcpu_processing_411e:
 4851: 81 20       CMPA   #$20
 4853: 25 03       BCS    $4858
 4855: 6F 88 38    CLR    $38,X
-4858: 32 61       LEAS   $1,S
+4858: 32 61       LEAS   $1,S   ; [free_locals]
 485A: 39          RTS
 485B: BD 59 EB    JSR    $59EB
 485E: 24 01       BCC    $4861
@@ -1003,7 +1003,7 @@ subcpu_processing_411e:
 48B5: 39          RTS
 48B6: 6F 88 38    CLR    $38,X
 48B9: 39          RTS
-48BA: 32 7F       LEAS   -$1,S
+48BA: 32 7F       LEAS   -$1,S   ; [alloc_locals]
 48BC: 10 BE 0E 4B LDY    $0E4B
 48C0: A6 A8 1B    LDA    $1B,Y
 48C3: 84 3F       ANDA   #$3F
@@ -1020,7 +1020,7 @@ subcpu_processing_411e:
 48DE: 25 05       BCS    $48E5
 48E0: 86 04       LDA    #$04
 48E2: A7 88 38    STA    $38,X
-48E5: 32 61       LEAS   $1,S
+48E5: 32 61       LEAS   $1,S   ; [free_locals]
 48E7: 39          RTS
 48E8: 96 36       LDA    $36
 48EA: 81 03       CMPA   #$03
@@ -1058,7 +1058,7 @@ subcpu_processing_411e:
 4936: 27 03       BEQ    $493B
 4938: 7A 0A B5    DEC    $0AB5
 493B: 39          RTS
-493C: 32 7D       LEAS   -$3,S
+493C: 32 7D       LEAS   -$3,S   ; [alloc_locals]
 493E: B6 0A EC    LDA    $0AEC
 4941: 85 40       BITA   #$40
 4943: 26 09       BNE    $494E
@@ -1114,7 +1114,7 @@ subcpu_processing_411e:
 49B7: BD FB 58    JSR    $FB58
 49BA: BD F9 3C    JSR    $F93C
 49BD: BD FC 1E    JSR    $FC1E
-49C0: 32 63       LEAS   $3,S
+49C0: 32 63       LEAS   $3,S   ; [free_locals]
 49C2: 39          RTS
 
 49C9: 34 66       PSHS   U,Y,D
@@ -1183,7 +1183,7 @@ subcpu_processing_411e:
 4A72: BD FB 9E    JSR    $FB9E
 4A75: 39          RTS
 
-4A7A: 32 7E       LEAS   -$2,S
+4A7A: 32 7E       LEAS   -$2,S   ; [alloc_locals]
 4A7C: 86 40       LDA    #$40
 4A7E: 97 00       STA    $00
 4A80: EC 04       LDD    $4,X
@@ -1232,7 +1232,7 @@ subcpu_processing_411e:
 4AED: 84 08       ANDA   #$08
 4AEF: 27 03       BEQ    $4AF4
 4AF1: 6F 88 38    CLR    $38,X
-4AF4: 32 62       LEAS   $2,S
+4AF4: 32 62       LEAS   $2,S   ; [free_locals]
 4AF6: 39          RTS
 4AF7: 10 AE 88 2D LDY    $2D,X
 4AFB: A6 88 1B    LDA    $1B,X
@@ -1463,7 +1463,7 @@ subcpu_processing_411e:
 4DB7: BE 4D BE    LDX    $4DBE
 4DBA: 4F          CLRA
 4DBB: 7E 4F FD    JMP    $4FFD
-4DBE: 32 7C       LEAS   -$4,S
+4DBE: 32 7C       LEAS   -$4,S   ; [alloc_locals]
 4DC0: 6F 0E       CLR    $E,X
 4DC2: 10 AE 88 2D LDY    $2D,X
 4DC6: A6 A8 37    LDA    $37,Y
@@ -1523,9 +1523,9 @@ subcpu_processing_411e:
 4E3D: 10 83 00 30 CMPD   #$0030
 4E41: 10 25 00 03 LBCS   $4E48
 4E45: BD 4E 4B    JSR    $4E4B
-4E48: 32 64       LEAS   $4,S
+4E48: 32 64       LEAS   $4,S   ; [free_locals]
 4E4A: 39          RTS
-4E4B: 32 71       LEAS   -$F,S
+4E4B: 32 71       LEAS   -$F,S   ; [alloc_locals]
 4E4D: A6 88 18    LDA    $18,X
 4E50: E6 02       LDB    $2,X
 4E52: ED E4       STD    ,S
@@ -1566,7 +1566,7 @@ subcpu_processing_411e:
 4EA1: 48          ASLA
 4EA2: 10 8E 4E AB LDY    #jump_table_4eab
 4EA6: 6E B6       JMP    [A,Y]		; [indirect_jump] [nb_entries=6]
-4EA8: 32 6F       LEAS   $F,S
+4EA8: 32 6F       LEAS   $F,S   ; [free_locals]
 4EAA: 39          RTS
 4EB7: B6 0B 4B    LDA    $0B4B        
 4EBA: 85 0F       BITA   #$0F         
@@ -1825,7 +1825,7 @@ subcpu_processing_411e:
 5142: A7 0D       STA    $D,X
 5144: 39          RTS
 
-5145: 32 7F       LEAS   -$1,S
+5145: 32 7F       LEAS   -$1,S   ; [alloc_locals]
 5147: 6F E4       CLR    ,S
 5149: EC 06       LDD    $6,X
 514B: E3 08       ADDD   $8,X
@@ -1836,7 +1836,7 @@ subcpu_processing_411e:
 5157: A7 E4       STA    ,S
 5159: A6 E4       LDA    ,S
 515B: A7 0D       STA    $D,X
-515D: 32 61       LEAS   $1,S
+515D: 32 61       LEAS   $1,S   ; [free_locals]
 515F: 39          RTS
 5160: B6 0E 4A    LDA    $0E4A
 5163: 84 02       ANDA   #$02
@@ -2014,11 +2014,11 @@ subcpu_processing_411e:
 531E: 34 7E       PSHS   U,Y,X,DP,D
 5320: 10 8E 0D FB LDY    #$0DFB
 5324: 20 EA       BRA    $5310
-5326: 32 64       LEAS   $4,S
+5326: 32 64       LEAS   $4,S   ; [free_locals]
 5328: 1C FE       ANDCC  #$FE
 532A: 35 FE       PULS   D,DP,X,Y,U,PC
 532C: 34 7E       PSHS   U,Y,X,DP,D
-532E: 32 7C       LEAS   -$4,S
+532E: 32 7C       LEAS   -$4,S   ; [alloc_locals]
 5330: A6 88 21    LDA    $21,X
 5333: 81 03       CMPA   #$03
 5335: 27 EF       BEQ    $5326
@@ -2113,7 +2113,7 @@ subcpu_processing_411e:
 53FE: 86 0E       LDA    #$0E
 5400: A7 88 38    STA    $38,X
 5403: 1C FE       ANDCC  #$FE
-5405: 32 64       LEAS   $4,S
+5405: 32 64       LEAS   $4,S   ; [free_locals]
 5407: 35 FE       PULS   D,DP,X,Y,U,PC
 5409: 34 22       PSHS   Y,A
 540B: EC 04       LDD    $4,X
@@ -2432,7 +2432,7 @@ subcpu_processing_411e:
 574E: BD 57 55    JSR    $5755
 5751: BD F9 14    JSR    $F914
 5754: 39          RTS
-5755: 32 71       LEAS   -$F,S
+5755: 32 71       LEAS   -$F,S   ; [alloc_locals]
 5757: EC 24       LDD    $4,Y
 5759: ED E4       STD    ,S
 575B: EC 04       LDD    $4,X
@@ -2502,7 +2502,7 @@ subcpu_processing_411e:
 57ED: ED 24       STD    $4,Y
 57EF: EC 62       LDD    $2,S
 57F1: ED 04       STD    $4,X
-57F3: 32 6F       LEAS   $F,S
+57F3: 32 6F       LEAS   $F,S   ; [free_locals]
 57F5: 39          RTS
 57F6: 34 7E       PSHS   U,Y,X,DP,D
 57F8: CC 00 00    LDD    #$0000
@@ -2820,7 +2820,7 @@ subcpu_processing_411e:
 5AC8: 1C FE       ANDCC  #$FE
 5ACA: 35 FE       PULS   D,DP,X,Y,U,PC
 
-5B07: 32 7C       LEAS   -$4,S
+5B07: 32 7C       LEAS   -$4,S   ; [alloc_locals]
 5B09: A6 88 21    LDA    $21,X
 5B0C: 81 03       CMPA   #$03
 5B0E: 25 0A       BCS    $5B1A
@@ -2871,11 +2871,11 @@ subcpu_processing_411e:
 5B74: 26 0A       BNE    $5B80
 5B76: C6 04       LDB    #$04
 5B78: E7 88 1B    STB    $1B,X
-5B7B: 32 64       LEAS   $4,S
+5B7B: 32 64       LEAS   $4,S   ; [free_locals]
 5B7D: 1A 01       ORCC   #$01
 5B7F: 39          RTS
 
-5B80: 32 64       LEAS   $4,S
+5B80: 32 64       LEAS   $4,S   ; [free_locals]
 5B82: 1C FE       ANDCC  #$FE
 5B84: 39          RTS
 
@@ -3313,7 +3313,7 @@ subcpu_processing_411e:
 5F7A: 35 FE       PULS   D,DP,X,Y,U,PC
 
 5F90: 34 76       PSHS   U,Y,X,D                                    
-5F92: 32 7C       LEAS   -$4,S                                      
+5F92: 32 7C       LEAS   -$4,S                                         ; [alloc_locals]
 5F94: A6 88 21    LDA    $21,X
 5F97: 26 74       BNE    $600D
 5F99: FE 0E 4B    LDU    $0E4B
@@ -3370,11 +3370,11 @@ subcpu_processing_411e:
 6009: 1A 01       ORCC   #$01
 600B: 20 02       BRA    $600F
 600D: 1C FE       ANDCC  #$FE
-600F: 32 64       LEAS   $4,S
+600F: 32 64       LEAS   $4,S   ; [free_locals]
 6011: 35 F6       PULS   D,X,Y,U,PC
 
 6033: 34 40       PSHS   U
-6035: 32 71       LEAS   -$F,S
+6035: 32 71       LEAS   -$F,S   ; [alloc_locals]
 6037: 6F E4       CLR    ,S
 6039: A6 04       LDA    $4,X
 603B: 81 FF       CMPA   #$FF
@@ -3453,11 +3453,11 @@ subcpu_processing_411e:
 60EF: 26 04       BNE    $60F5
 60F1: 86 0E       LDA    #$0E
 60F3: A7 0E       STA    $E,X
-60F5: 32 6F       LEAS   $F,S
+60F5: 32 6F       LEAS   $F,S   ; [free_locals]
 60F7: 35 C0       PULS   U,PC
 
 60FB: 34 36       PSHS   Y,X,D
-60FD: 32 7F       LEAS   -$1,S
+60FD: 32 7F       LEAS   -$1,S   ; [alloc_locals]
 60FF: BD FB 76    JSR    $FB76
 6102: 84 0F       ANDA   #$0F
 6104: A7 E4       STA    ,S
@@ -3467,10 +3467,10 @@ subcpu_processing_411e:
 610D: 10 8E 61 19 LDY    #$6119
 6111: C6 10       LDB    #$10
 6113: E1 A6       CMPB   A,Y
-6115: 32 61       LEAS   $1,S
+6115: 32 61       LEAS   $1,S   ; [free_locals]
 6117: 35 B6       PULS   D,X,Y,PC
 
-6169: 32 7D       LEAS   -$3,S
+6169: 32 7D       LEAS   -$3,S   ; [alloc_locals]
 616B: B6 0E 49    LDA    $0E49
 616E: 81 04       CMPA   #$04
 6170: 24 2A       BCC    $619C
@@ -3492,11 +3492,11 @@ subcpu_processing_411e:
 6198: 1A 01       ORCC   #$01
 619A: 20 02       BRA    $619E
 619C: 1C FE       ANDCC  #$FE
-619E: 32 63       LEAS   $3,S
+619E: 32 63       LEAS   $3,S   ; [free_locals]
 61A0: 39          RTS
 
 61BA: 34 40       PSHS   U
-61BC: 32 71       LEAS   -$F,S
+61BC: 32 71       LEAS   -$F,S   ; [alloc_locals]
 61BE: DC 3C       LDD    $3C
 61C0: 10 83 19 06 CMPD   #$1906
 61C4: 25 0B       BCS    $61D1
@@ -3509,7 +3509,7 @@ subcpu_processing_411e:
 
 ; < X: shadow sprite zone ($3xx->$7xx ?)
 lb1_push_player_sprite_61d5:
-61D5: 32 7C       LEAS   -$4,S
+61D5: 32 7C       LEAS   -$4,S   ; [alloc_locals]
 61D7: 0D 36       TST    $36
 61D9: 27 04       BEQ    $61DF
 61DB: 6D 84       TST    ,X
@@ -3553,10 +3553,10 @@ lb1_push_player_sprite_61d5:
 6230: EC A1       LDD    ,Y++		; [bank_address]
 6232: ED 08       STD    $8,X
 6234: 7F 0E 30    CLR    $0E30
-6237: 32 64       LEAS   $4,S
+6237: 32 64       LEAS   $4,S   ; [free_locals]
 6239: 39          RTS
 
-6246: 32 7F       LEAS   -$1,S
+6246: 32 7F       LEAS   -$1,S   ; [alloc_locals]
 6248: 8E 07 5B    LDX    #$075B
 624B: 86 05       LDA    #$05
 624D: A7 E4       STA    ,S
@@ -3580,7 +3580,7 @@ lb1_push_player_sprite_61d5:
 6274: 3A          ABX
 6275: 6A E4       DEC    ,S
 6277: 26 D6       BNE    $624F
-6279: 32 61       LEAS   $1,S
+6279: 32 61       LEAS   $1,S   ; [free_locals]
 627B: 86 10       LDA    #$10
 627D: B7 0E 31    STA    $0E31
 6280: 39          RTS
@@ -3590,7 +3590,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 6284: 81 05       CMPA   #$05
 6286: 24 2F       BCC    $62B7
 6288: B6 0E 31    LDA    $0E31
-628B: 32 7F       LEAS   -$1,S
+628B: 32 7F       LEAS   -$1,S   ; [alloc_locals]
 628D: 86 04       LDA    #$04
 628F: A7 E4       STA    ,S
 6291: 10 8E 62 B8 LDY    #$62B8
@@ -3609,7 +3609,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 62B0: 3A          ABX
 62B1: 6A E4       DEC    ,S
 62B3: 2A E3       BPL    $6298
-62B5: 32 61       LEAS   $1,S
+62B5: 32 61       LEAS   $1,S   ; [free_locals]
 62B7: 39          RTS
 
 62C8: A6 88 1B    LDA    $1B,X
@@ -3833,7 +3833,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 64C7: CC 00 55    LDD    #$0055
 64CA: ED 06       STD    $6,X
 64CC: 39          RTS
-64CD: 32 7E       LEAS   -$2,S
+64CD: 32 7E       LEAS   -$2,S   ; [alloc_locals]
 64CF: 96 36       LDA    $36
 64D1: 81 01       CMPA   #$01
 64D3: 26 29       BNE    $64FE
@@ -3854,7 +3854,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 64F7: C3 00 04    ADDD   #$0004
 64FA: A3 08       SUBD   $8,X
 64FC: ED 06       STD    $6,X
-64FE: 32 62       LEAS   $2,S
+64FE: 32 62       LEAS   $2,S   ; [free_locals]
 6500: 39          RTS
 6501: 10 8E 70 00 LDY    #$7000
 6505: 8C 03 A2    CMPX   #$03A2
@@ -4014,7 +4014,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 6688: 39          RTS
 
 6689: 34 50       PSHS   U,X
-668B: 32 7E       LEAS   -$2,S
+668B: 32 7E       LEAS   -$2,S   ; [alloc_locals]
 668D: 96 00       LDA    $00
 668F: BD 66 BA    JSR    $66BA
 6692: E7 E4       STB    ,S
@@ -4035,7 +4035,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 66B0: ED C1       STD    ,U++
 66B2: 6A 61       DEC    $1,S
 66B4: 26 FA       BNE    $66B0
-66B6: 32 62       LEAS   $2,S
+66B6: 32 62       LEAS   $2,S   ; [free_locals]
 66B8: 35 D0       PULS   X,U,PC
 66BA: 5F          CLRB
 66BB: 4D          TSTA
@@ -4078,7 +4078,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 670A: BD 75 5F    JSR    $755F		; [bogus]
 670D: 85 02       BITA   #$02
 670F: 27 1F       BEQ    $6730
-6711: 32 7E       LEAS   -$2,S
+6711: 32 7E       LEAS   -$2,S   ; [alloc_locals]
 6713: 6F E4       CLR    ,S
 6715: A6 A8 17    LDA    $17,Y
 6718: 81 07       CMPA   #$07
@@ -4091,7 +4091,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 6727: 85 08       BITA   #$08
 6729: 26 03       BNE    $672E
 672B: 7E 67 F6    JMP    $67F6
-672E: 32 62       LEAS   $2,S
+672E: 32 62       LEAS   $2,S   ; [free_locals]
 6730: 35 C0       PULS   U,PC
 6732: 34 40       PSHS   U
 6734: A6 88 1B    LDA    $1B,X
@@ -4144,9 +4144,9 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 67A5: A7 88 1B    STA    $1B,X
 67A8: 10 AF 88 41 STY    $41,X
 67AC: 7E 68 81    JMP    $6881
-67AF: 32 62       LEAS   $2,S
+67AF: 32 62       LEAS   $2,S   ; [free_locals]
 67B1: 35 C0       PULS   U,PC
-67B3: 32 7E       LEAS   -$2,S
+67B3: 32 7E       LEAS   -$2,S   ; [alloc_locals]
 67B5: A6 88 1B    LDA    $1B,X
 67B8: 84 3F       ANDA   #$3F
 67BA: 81 07       CMPA   #$07
@@ -4236,7 +4236,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 6876: ED C8 41    STD    $41,U
 6879: A7 C8 21    STA    $21,U
 687C: 7A 0E 37    DEC    $0E37
-687F: 32 62       LEAS   $2,S
+687F: 32 62       LEAS   $2,S   ; [free_locals]
 6881: 35 C0       PULS   U,PC
 
 ; unreached for now
@@ -4259,7 +4259,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 68CC: 86 02       LDA    #$02
 68CE: A7 A8 31    STA    $31,Y
 68D1: 39          RTS
-68D2: 32 7C       LEAS   -$4,S
+68D2: 32 7C       LEAS   -$4,S   ; [alloc_locals]
 68D4: B6 0E 2D    LDA    $0E2D
 68D7: 26 6B       BNE    $6944
 68D9: A6 84       LDA    ,X
@@ -4306,7 +4306,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 693B: 6F A8 20    CLR    $20,Y
 693E: 6F 88 21    CLR    $21,X
 6941: 6F 88 42    CLR    $42,X
-6944: 32 64       LEAS   $4,S
+6944: 32 64       LEAS   $4,S   ; [free_locals]
 6946: 39          RTS
 6947: A6 88 21    LDA    $21,X
 694A: 81 01       CMPA   #$01
@@ -4443,7 +4443,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 6ABC: 6A A4       DEC    ,Y
 6ABE: 39          RTS
 6ABF: 34 40       PSHS   U
-6AC1: 32 7D       LEAS   -$3,S
+6AC1: 32 7D       LEAS   -$3,S   ; [alloc_locals]
 6AC3: 96 38       LDA    $38
 6AC5: 27 5A       BEQ    $6B21
 6AC7: A6 01       LDA    $1,X
@@ -4486,10 +4486,10 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 6B1C: 46          RORA
 6B1D: 84 80       ANDA   #$80
 6B1F: A7 03       STA    $3,X
-6B21: 32 63       LEAS   $3,S
+6B21: 32 63       LEAS   $3,S   ; [free_locals]
 6B23: 35 C0       PULS   U,PC
 
-6B2D: 32 7F       LEAS   -$1,S
+6B2D: 32 7F       LEAS   -$1,S   ; [alloc_locals]
 6B2F: B6 09 F2    LDA    $09F2
 6B32: 2A 37       BPL    $6B6B
 6B34: B6 0E 2D    LDA    $0E2D
@@ -4516,7 +4516,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 6B65: A6 E4       LDA    ,S
 6B67: 81 09       CMPA   #$09
 6B69: 25 D3       BCS    $6B3E
-6B6B: 32 61       LEAS   $1,S
+6B6B: 32 61       LEAS   $1,S   ; [free_locals]
 6B6D: 39          RTS
 6B6E: 34 16       PSHS   X,D
 6B70: 10 AE 88 41 LDY    $41,X
@@ -4566,7 +4566,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 6BDC: 7A 0E 38    DEC    $0E38
 6BDF: 6F A4       CLR    ,Y
 6BE1: 35 96       PULS   D,X,PC
-6BE3: 32 7D       LEAS   -$3,S
+6BE3: 32 7D       LEAS   -$3,S   ; [alloc_locals]
 6BE5: 6F 88 37    CLR    $37,X
 6BE8: B6 0E 4A    LDA    $0E4A
 6BEB: 85 02       BITA   #$02
@@ -4589,7 +4589,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 6C13: 27 02       BEQ    $6C17
 6C15: CA 80       ORB    #$80
 6C17: E7 03       STB    $3,X
-6C19: 32 63       LEAS   $3,S
+6C19: 32 63       LEAS   $3,S   ; [free_locals]
 6C1B: 39          RTS
 
 6C1C: 34 7E       PSHS   U,Y,X,DP,D
@@ -4609,7 +4609,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 6C3E: 35 FE       PULS   D,DP,X,Y,U,PC
 
 6C4D: 34 20       PSHS   Y
-6C4F: 32 7C       LEAS   -$4,S
+6C4F: 32 7C       LEAS   -$4,S   ; [alloc_locals]
 6C51: 86 02       LDA    #$02
 6C53: A7 E4       STA    ,S
 6C55: EC 28       LDD    $8,Y
@@ -4691,7 +4691,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 6D0D: A7 88 31    STA    $31,X
 6D10: EC 64       LDD    $4,S		; [pushed_parameter]
 6D12: ED 88 2D    STD    $2D,X
-6D15: 32 64       LEAS   $4,S
+6D15: 32 64       LEAS   $4,S   ; [free_locals]
 6D17: 35 A0       PULS   Y,PC
 
 6D19: 96 36       LDA    $36

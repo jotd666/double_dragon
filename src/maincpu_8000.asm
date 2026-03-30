@@ -851,7 +851,7 @@ play_intro_animation_84f8:
 85C1: 96 36          LDA    $36
 85C3: 10 8E 86 E8    LDY    #$86E8
 85C7: A6 A6          LDA    A,Y
-85C9: 34 02          PSHS   A
+85C9: 34 02          PSHS   A			; [manual_stack_push]
 85CB: 8E 03 A2       LDX    #$03A2
 85CE: F6 03 A2       LDB    $03A2
 85D1: 2A 03          BPL    $85D6
@@ -859,9 +859,9 @@ play_intro_animation_84f8:
 85D6: 30 88 5E       LEAX   $5E,X
 85D9: F6 04 00       LDB    $0400
 85DC: 2A 05          BPL    $85E3
-85DE: A6 E4          LDA    ,S
+85DE: A6 E4          LDA    ,S			; [manual_stack_read]
 85E0: BD FA F8       JSR    $FAF8
-85E3: 35 02          PULS   A
+85E3: 35 02          PULS   A			; [manual_stack_pull]
 85E5: 96 36          LDA    $36
 85E7: 81 02          CMPA   #$02
 85E9: 26 04          BNE    $85EF
@@ -1061,7 +1061,7 @@ play_intro_animation_84f8:
 87CA: BD FC BE       JSR    $FCBE
 87CD: 35 B6          PULS   D,X,Y,PC
 
-87D5: 32 7D          LEAS   -$3,S
+87D5: 32 7D          LEAS   -$3,S   ; [alloc_locals]
 87D7: 7C 0E 34       INC    $0E34
 87DA: B6 0E 34       LDA    $0E34
 87DD: 10 8E 88 41    LDY    #$8841
@@ -1072,7 +1072,7 @@ play_intro_animation_84f8:
 87E8: A1 A5          CMPA   B,Y
 87EA: 25 52          BCS    $883E
 87EC: 7F 0E 34       CLR    $0E34
-87EF: E7 E4          STB    ,S
+87EF: E7 E4          STB    ,S		; [local]
 87F1: 10 8E 88 43    LDY    #$8843
 87F5: 0D 29          TST    number_of_players_flag_0029
 87F7: 2B 0A          BMI    $8803
@@ -1087,16 +1087,16 @@ play_intro_animation_84f8:
 8808: 96 2A          LDA    $2A
 880A: 48             ASLA
 880B: 9B 2A          ADDA   $2A
-880D: A7 61          STA    $1,S
+880D: A7 61          STA    $1,S		; [local]
 880F: 1F 98          TFR    B,A
-8811: EB 61          ADDB   $1,S
+8811: EB 61          ADDB   $1,S		; [local]
 8813: 4D             TSTA
 8814: 27 05          BEQ    $881B
 8816: 0D 21          TST    nb_credits_0021
 8818: 27 01          BEQ    $881B
 881A: 5C             INCB
 881B: A6 A5          LDA    B,Y
-881D: 6D E4          TST    ,S
+881D: 6D E4          TST    ,S		; [local]
 881F: 26 12          BNE    $8833
 8821: 86 8B          LDA    #$8B
 8823: 0D 2A          TST    $2A
@@ -1110,7 +1110,7 @@ play_intro_animation_84f8:
 8836: C8 80          EORB   #$80
 8838: F7 0E 35       STB    $0E35
 883B: BD FE B0       JSR    display_credit_feb0
-883E: 32 63          LEAS   $3,S
+883E: 32 63          LEAS   $3,S   ; [free_locals]
 8840: 39             RTS
 
 884B: 7F 0E 71       CLR    nmi_active_flag_0e71
@@ -1213,7 +1213,7 @@ play_intro_animation_84f8:
 893D: B6 0E 52       LDA    $0E52
 8940: 10 26 FC B8    LBNE   $85FC
 8944: 7E 83 7E       JMP    activate_nmi_flag_837e
-8947: 32 7E          LEAS   -$2,S
+8947: 32 7E          LEAS   -$2,S   ; [alloc_locals]
 8949: 7C 0E 34       INC    $0E34
 894C: B6 0E 34       LDA    $0E34
 894F: 10 8E 88 41    LDY    #$8841
@@ -1222,32 +1222,32 @@ play_intro_animation_84f8:
 8958: A1 A5          CMPA   B,Y
 895A: 25 2C          BCS    $8988
 895C: 86 21          LDA    #$21
-895E: A7 E4          STA    ,S
+895E: A7 E4          STA    ,S	; [local]
 8960: 86 22          LDA    #$22
-8962: A7 61          STA    $1,S
+8962: A7 61          STA    $1,S	; [local]
 8964: 5D             TSTB
 8965: 26 08          BNE    $896F
 8967: 86 A1          LDA    #$A1
-8969: A7 E4          STA    ,S
+8969: A7 E4          STA    ,S	; [local]
 896B: 86 A2          LDA    #$A2
 896D: A7 61          STA    $1,S
 896F: 7F 0E 34       CLR    $0E34
 8972: B6 0E 35       LDA    $0E35
 8975: 88 01          EORA   #$01
 8977: B7 0E 35       STA    $0E35
-897A: A6 E4          LDA    ,S
+897A: A6 E4          LDA    ,S	; [local]
 897C: BD FE B0       JSR    display_credit_feb0
 897F: 0D 29          TST    number_of_players_flag_0029
 8981: 2A 05          BPL    $8988
-8983: A6 61          LDA    $1,S
+8983: A6 61          LDA    $1,S	; [local]
 8985: BD FE B0       JSR    display_credit_feb0
 8988: 86 04          LDA    #$04
 898A: BD FE B3       JSR    $FEB3
-898D: 32 62          LEAS   $2,S
+898D: 32 62          LEAS   $2,S   ; [free_locals]
 898F: 39             RTS
 
 check_for_coin_inserted_8990:    ; [global]
-8990: 32 7E          LEAS   -$2,S
+8990: 32 7E          LEAS   -$2,S   ; [alloc_locals]
 8992: B6 0E 71       LDA    nmi_active_flag_0e71
 8995: B7 0E 72       STA    $0E72
 8998: B6 38 01       LDA    port_2_3801		; bits 6 & 7 hold "coin inserted" bits
@@ -1292,7 +1292,7 @@ check_for_coin_inserted_8990:    ; [global]
 l_89ea:
 89EA: 86 02          LDA    #$02
 89EC: B7 38 0E       STA    sound_irq_380e
-89EF: 6F E4          CLR    ,S
+89EF: 6F E4          CLR    ,S	; [local]
 89F1: 5F             CLRB
 89F2: 96 20          LDA    $20
 89F4: 2B 0F          BMI    $8A05
@@ -1302,16 +1302,16 @@ l_89ea:
 89FC: 48             ASLA
 89FD: 48             ASLA
 89FE: 24 05          BCC    $8A05
-8A00: 6C E4          INC    ,S
+8A00: 6C E4          INC    ,S	; [local]
 8A02: 54             LSRB
 8A03: 54             LSRB
 8A04: 54             LSRB
 8A05: C4 07          ANDB   #$07
-8A07: E7 61          STB    $1,S
+8A07: E7 61          STB    $1,S	; [local]
 8A09: 0F CC          CLR    $CC
 8A0B: 10 8E 00 2D    LDY    #$002D
 8A0F: 8E 8A 98       LDX    #$8A98
-8A12: A6 E4          LDA    ,S
+8A12: A6 E4          LDA    ,S	; [local]
 8A14: E6 A6          LDB    A,Y
 8A16: CB 01          ADDB   #$01
 8A18: E7 A6          STB    A,Y
@@ -1319,7 +1319,7 @@ l_89ea:
 8A1C: E6 61          LDB    $1,S
 8A1E: A1 85          CMPA   B,X
 8A20: 25 56          BCS    no_coin_inserted_8a78
-8A22: A6 E4          LDA    ,S
+8A22: A6 E4          LDA    ,S	; [local]
 8A24: 6F A6          CLR    A,Y
 8A26: 8E 8A A0       LDX    #$8AA0
 8A29: 96 21          LDA    nb_credits_0021
@@ -1357,7 +1357,7 @@ l_89ea:
 8A72: B7 38 08       STA    bankswitch_3808
 8A75: 7E 81 58       JMP    coin_inserted_8158
 no_coin_inserted_8a78:
-8A78: 32 62          LEAS   $2,S
+8A78: 32 62          LEAS   $2,S   ; [free_locals]
 8A7A: F6 0E 72       LDB    $0E72
 8A7D: F7 0E 71       STB    nmi_active_flag_0e71
 8A80: 39             RTS
@@ -1597,7 +1597,7 @@ wait_subcpu_reply_8ab5:
 8D11: 39             RTS
 
 8D12: 34 7E          PSHS   U,Y,X,DP,D
-8D14: 32 7A          LEAS   -$6,S
+8D14: 32 7A          LEAS   -$6,S   ; [alloc_locals]
 8D16: A6 05          LDA    $5,X
 8D18: E6 0A          LDB    $A,X
 8D1A: 93 3D          SUBD   $3D
@@ -1653,7 +1653,7 @@ wait_subcpu_reply_8ab5:
 8D97: 10 A3 04       CMPD   $4,X
 8D9A: 25 02          BCS    $8D9E
 8D9C: ED 04          STD    $4,X
-8D9E: 32 66          LEAS   $6,S
+8D9E: 32 66          LEAS   $6,S   ; [free_locals]
 8DA0: 35 FE          PULS   D,DP,X,Y,U,PC
 
 8DA2: B6 0B 4D       LDA    $0B4D
@@ -1747,7 +1747,7 @@ wait_subcpu_reply_8ab5:
 8E87: 35 81          PULS   CC,PC
 
 8E89: 34 7E          PSHS   U,Y,X,DP,D
-8E8B: 32 7F          LEAS   -$1,S
+8E8B: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 8E8D: A6 88 40       LDA    $40,X
 8E90: AA 88 51       ORA    $51,X
 8E93: A7 88 51       STA    $51,X
@@ -1796,7 +1796,7 @@ wait_subcpu_reply_8ab5:
 8EF9: 6F 88 18       CLR    $18,X
 8EFC: 6F 88 51       CLR    $51,X
 8EFF: 6F 88 53       CLR    $53,X
-8F02: 32 61          LEAS   $1,S
+8F02: 32 61          LEAS   $1,S   ; [free_locals]
 8F04: 35 FE          PULS   D,DP,X,Y,U,PC
 8F06: 34 20          PSHS   Y
 8F08: 5F             CLRB
@@ -3730,7 +3730,7 @@ A435: 27 05          BEQ    $A43C
 A437: 86 00          LDA    #$00
 A439: A7 88 1B       STA    $1B,X
 A43C: 39             RTS
-A43D: 32 7C          LEAS   -$4,S
+A43D: 32 7C          LEAS   -$4,S   ; [alloc_locals]
 A43F: 10 8E A4 9D    LDY    #$A49D
 A443: A6 88 1B       LDA    $1B,X
 A446: 2B 2F          BMI    $A477
@@ -3765,7 +3765,7 @@ A48B: E7 02          STB    $2,X
 A48D: 4C             INCA
 A48E: E6 A6          LDB    A,Y
 A490: E7 88 19       STB    $19,X
-A493: 32 64          LEAS   $4,S
+A493: 32 64          LEAS   $4,S   ; [free_locals]
 A495: 39             RTS
 A496: 86 00          LDA    #$00
 A498: A7 88 1B       STA    $1B,X
@@ -3846,11 +3846,11 @@ A559: 85 40          BITA   #$40
 A55B: 26 27          BNE    $A584
 A55D: EC 0F          LDD    $F,X
 A55F: 2A 0B          BPL    $A56C
-A561: 32 7E          LEAS   -$2,S
+A561: 32 7E          LEAS   -$2,S   ; [alloc_locals]
 A563: ED E4          STD    ,S
 A565: CC 00 00       LDD    #$0000
 A568: A3 E4          SUBD   ,S
-A56A: 32 62          LEAS   $2,S
+A56A: 32 62          LEAS   $2,S   ; [free_locals]
 A56C: 10 83 04 00    CMPD   #$0400
 A570: 24 12          BCC    $A584
 A572: 10 8E A5 87    LDY    #$A587
@@ -3864,7 +3864,7 @@ A583: 39             RTS
 A584: 1C FE          ANDCC  #$FE
 A586: 39             RTS
 
-A594: 32 7F          LEAS   -$1,S
+A594: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 A596: A6 88 1B       LDA    $1B,X
 A599: 2B 7B          BMI    $A616
 A59B: BD A5 29       JSR    $A529
@@ -3905,9 +3905,9 @@ A5E8: ED 06          STD    $6,X
 A5EA: 10 8E A6 19    LDY    #$A619
 A5EE: A6 88 32       LDA    $32,X
 A5F1: 84 03          ANDA   #$03
-A5F3: A7 E4          STA    ,S
+A5F3: A7 E4          STA    ,S	; [local]
 A5F5: 48             ASLA
-A5F6: AB E4          ADDA   ,S
+A5F6: AB E4          ADDA   ,S	; [local]
 A5F8: 48             ASLA
 A5F9: 31 A6          LEAY   A,Y
 A5FB: EC A1          LDD    ,Y++
@@ -3922,7 +3922,7 @@ A60D: 81 11          CMPA   #$11
 A60F: 27 05          BEQ    $A616
 A611: 86 02          LDA    #$02
 A613: A7 88 18       STA    $18,X
-A616: 32 61          LEAS   $1,S
+A616: 32 61          LEAS   $1,S   ; [free_locals]
 A618: 39             RTS
 
 A643: 34 40          PSHS   U
@@ -5954,7 +5954,7 @@ BB7B: BD 40 84       JSR    $4084 ; [banks=1]
 BB7E: BD BB 4D       JSR    switch_to_bank_0_bb4d
 BB81: 39             RTS
 
-BB82: 32 7F          LEAS   -$1,S
+BB82: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 BB84: 6F E4          CLR    ,S
 BB86: 8E 07 5B       LDX    #$075B
 BB89: A6 84          LDA    ,X
@@ -5998,7 +5998,7 @@ BBE0: 96 51          LDA    $51
 BBE2: 84 01          ANDA   #$01
 BBE4: 97 2A          STA    $2A
 BBE6: BD BC 59       JSR    $BC59
-BBE9: 32 61          LEAS   $1,S
+BBE9: 32 61          LEAS   $1,S   ; [free_locals]
 BBEB: 39             RTS
 
 
@@ -6062,7 +6062,7 @@ BCDA: A7 84          STA    ,X
 BCDC: 86 10          LDA    #$10
 BCDE: A7 0E          STA    $E,X
 BCE0: 39             RTS
-BCE1: 32 7F          LEAS   -$1,S
+BCE1: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 BCE3: 6F E4          CLR    ,S
 BCE5: A6 0F          LDA    $F,X
 BCE7: 2A 09          BPL    $BCF2
@@ -6080,7 +6080,7 @@ BD00: 26 07          BNE    $BD09
 BD02: CC 00 00       LDD    #$0000
 BD05: A3 0F          SUBD   $F,X
 BD07: ED 0F          STD    $F,X
-BD09: 32 61          LEAS   $1,S
+BD09: 32 61          LEAS   $1,S   ; [free_locals]
 BD0B: A6 03          LDA    $3,X
 BD0D: 88 80          EORA   #$80
 BD0F: A7 03          STA    $3,X
@@ -6352,7 +6352,7 @@ BFF1: A7 84          STA    ,X
 BFF3: 86 10          LDA    #$10
 BFF5: A7 0E          STA    $E,X
 BFF7: 39             RTS
-BFF8: 32 7F          LEAS   -$1,S
+BFF8: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 BFFA: 6F E4          CLR    ,S
 BFFC: A6 0F          LDA    $F,X
 BFFE: 2A 09          BPL    $C009
@@ -6370,7 +6370,7 @@ C017: 26 07          BNE    $C020
 C019: CC 00 00       LDD    #$0000
 C01C: A3 0F          SUBD   $F,X
 C01E: ED 0F          STD    $F,X
-C020: 32 61          LEAS   $1,S
+C020: 32 61          LEAS   $1,S   ; [free_locals]
 C022: A6 03          LDA    $3,X
 C024: 88 80          EORA   #$80
 C026: A7 03          STA    $3,X
@@ -6611,7 +6611,7 @@ C2A3: A7 84          STA    ,X
 C2A5: 86 18          LDA    #$18
 C2A7: A7 0E          STA    $E,X
 C2A9: 39             RTS
-C2AA: 32 7F          LEAS   -$1,S
+C2AA: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 C2AC: 6F E4          CLR    ,S
 C2AE: A6 0F          LDA    $F,X
 C2B0: 2A 09          BPL    $C2BB
@@ -6629,7 +6629,7 @@ C2C9: 26 07          BNE    $C2D2
 C2CB: CC 00 00       LDD    #$0000
 C2CE: A3 0F          SUBD   $F,X
 C2D0: ED 0F          STD    $F,X
-C2D2: 32 61          LEAS   $1,S
+C2D2: 32 61          LEAS   $1,S   ; [free_locals]
 C2D4: A6 03          LDA    $3,X
 C2D6: 88 80          EORA   #$80
 C2D8: A7 03          STA    $3,X
@@ -7760,7 +7760,7 @@ CD73: A7 88 1B       STA    $1B,X
 CD76: 86 8C          LDA    #$8C
 CD78: 17 31 3B       LBSR   $FEB6
 CD7B: 39             RTS
-CD7C: 32 71          LEAS   -$F,S
+CD7C: 32 71          LEAS   -$F,S   ; [alloc_locals]
 CD7E: A7 E4          STA    ,S
 CD80: 1F 89          TFR    A,B
 CD82: 58             ASLB
@@ -7784,7 +7784,7 @@ CDA5: A6 84          LDA    ,X
 CDA7: 84 F0          ANDA   #$F0
 CDA9: 8A 02          ORA    #$02
 CDAB: A7 84          STA    ,X
-CDAD: 32 6F          LEAS   $F,S
+CDAD: 32 6F          LEAS   $F,S   ; [free_locals]
 CDAF: 39             RTS
 
 CE1C: 34 7E          PSHS   U,Y,X,DP,D                                   
@@ -7800,7 +7800,7 @@ CE31: 86 03          LDA    #$03
 CE33: A7 88 1B       STA    $1B,X
 CE36: 35 FE          PULS   D,DP,X,Y,U,PC
 CE38: 34 7E          PSHS   U,Y,X,DP,D
-CE3A: 32 71          LEAS   -$F,S
+CE3A: 32 71          LEAS   -$F,S   ; [alloc_locals]
 CE3C: EE 88 1F       LDU    $1F,X
 CE3F: 10 8E CE D5    LDY    #$CED5
 CE43: A6 41          LDA    $1,U
@@ -7874,7 +7874,7 @@ CEC9: 81 31          CMPA   #$31
 CECB: 27 04          BEQ    $CED1
 CECD: 86 7F          LDA    #$7F
 CECF: A7 02          STA    $2,X
-CED1: 32 6F          LEAS   $F,S
+CED1: 32 6F          LEAS   $F,S   ; [free_locals]
 CED3: 35 FE          PULS   D,DP,X,Y,U,PC
 
 
@@ -8004,7 +8004,7 @@ E199: D3 03          ADDD   $03
 E19B: D3 01          ADDD   $01
 E19D: ED 88 3A       STD    bank_switch_copy_3a,X
 E1A0: 39             RTS
-E1A1: 32 7C          LEAS   -$4,S
+E1A1: 32 7C          LEAS   -$4,S   ; [alloc_locals]
 E1A3: 96 29          LDA    number_of_players_flag_0029
 E1A5: 84 03          ANDA   #$03
 E1A7: 81 03          CMPA   #$03
@@ -8032,7 +8032,7 @@ E1DB: 10 A3 62       CMPD   $2,S
 E1DE: 26 06          BNE    $E1E6
 E1E0: CC 00 00       LDD    #$0000
 E1E3: FD 0A 44       STD    $0A44
-E1E6: 32 64          LEAS   $4,S
+E1E6: 32 64          LEAS   $4,S   ; [free_locals]
 E1E8: 39             RTS
 
 E1F1: 96 36          LDA    $36
@@ -8193,7 +8193,7 @@ E37F: CC FF 00       LDD    #$FF00
 E382: FD 0A 44       STD    $0A44
 E385: 39             RTS
 E386: 34 36          PSHS   Y,X,D
-E388: 32 7C          LEAS   -$4,S
+E388: 32 7C          LEAS   -$4,S   ; [alloc_locals]
 E38A: 6D 84          TST    ,X
 E38C: 2A 4E          BPL    $E3DC
 E38E: 96 36          LDA    $36
@@ -8230,10 +8230,10 @@ E3D2: CC 01 00       LDD    #$0100
 E3D5: 20 03          BRA    $E3DA
 E3D7: CC FF 00       LDD    #$FF00
 E3DA: ED A4          STD    ,Y
-E3DC: 32 64          LEAS   $4,S
+E3DC: 32 64          LEAS   $4,S   ; [free_locals]
 E3DE: 35 B6          PULS   D,X,Y,PC
 
-E3F0: 32 E8 ED       LEAS   -$13,S
+E3F0: 32 E8 ED       LEAS   -$13,S   ; [alloc_locals]
 E3F3: FC 0A 42       LDD    $0A42
 E3F6: 10 27 00 C2    LBEQ   $E4BC
 E3FA: FC 0A 42       LDD    $0A42
@@ -8326,9 +8326,9 @@ E4C8: 20 08          BRA    $E4D2
 E4CA: FD 0A 46       STD    $0A46
 E4CD: 7F 0A 48       CLR    $0A48
 E4D0: 20 00          BRA    $E4D2
-E4D2: 32 E8 13       LEAS   $13,S
+E4D2: 32 E8 13       LEAS   $13,S   ; [free_locals]
 E4D5: 39             RTS
-E4D6: 32 E8 ED       LEAS   -$13,S		; allocate auto variable zone
+E4D6: 32 E8 ED       LEAS   -$13,S		; allocate auto variable zone   ; [alloc_locals]
 E4D9: FC 0A 44       LDD    $0A44
 E4DC: 10 27 00 C3    LBEQ   $E5A3
 E4E0: FC 0A 44       LDD    $0A44
@@ -8421,11 +8421,11 @@ E5AF: 20 08          BRA    $E5B9
 E5B1: FD 0A 49       STD    $0A49
 E5B4: 7F 0A 4B       CLR    $0A4B
 E5B7: 20 00          BRA    $E5B9
-E5B9: 32 E8 13       LEAS   $13,S		; free auto variables
+E5B9: 32 E8 13       LEAS   $13,S		; free auto variables   ; [free_locals]
 E5BC: 39             RTS
 E5BD: 96 3A          LDA    bank_switch_copy_3a
 E5BF: 34 02          PSHS   A
-E5C1: 32 E8 EE       LEAS   -$12,S
+E5C1: 32 E8 EE       LEAS   -$12,S   ; [alloc_locals]
 E5C4: FC 0A 46       LDD    $0A46
 E5C7: C4 F0          ANDB   #$F0
 E5C9: 34 06          PSHS   D		; [manual_stack_push]
@@ -8518,13 +8518,13 @@ E695: FC 0A 46       LDD    $0A46
 E698: FD 0A 5F       STD    $0A5F
 E69B: B6 0A 48       LDA    $0A48
 E69E: B7 0A 61       STA    $0A61
-E6A1: 32 E8 12       LEAS   $12,S
+E6A1: 32 E8 12       LEAS   $12,S   ; [free_locals]
 E6A4: 35 02          PULS   A
 E6A6: BD E8 FB       JSR    set_bank_e8fb
 E6A9: 39             RTS
 E6AA: 96 3A          LDA    bank_switch_copy_3a
 E6AC: 34 02          PSHS   A
-E6AE: 32 E8 EE       LEAS   -$12,S
+E6AE: 32 E8 EE       LEAS   -$12,S   ; [alloc_locals]
 E6B1: FC 0A 49       LDD    $0A49
 E6B4: C4 F0          ANDB   #$F0
 E6B6: 34 06          PSHS   D		; [manual_stack_push]
@@ -8618,7 +8618,7 @@ E785: FC 0A 49       LDD    $0A49
 E788: FD 0A 62       STD    $0A62
 E78B: B6 0A 4B       LDA    $0A4B
 E78E: B7 0A 64       STA    $0A64
-E791: 32 E8 12       LEAS   $12,S
+E791: 32 E8 12       LEAS   $12,S   ; [free_locals]
 E794: 35 02          PULS   A
 E796: BD E8 FB       JSR    set_bank_e8fb
 E799: 39             RTS
@@ -8631,7 +8631,7 @@ E7A5: 3D             MUL
 E7A6: 30 8B          LEAX   D,X
 E7A8: A6 80          LDA    ,X+
 E7AA: 39             RTS
-E7AB: 32 7C          LEAS   -$4,S
+E7AB: 32 7C          LEAS   -$4,S   ; [alloc_locals]
 E7AD: AF E4          STX    ,S
 E7AF: 10 AF 62       STY    $2,S
 E7B2: A6 E4          LDA    ,S
@@ -8641,9 +8641,9 @@ E7B9: BD E8 98       JSR    $E898
 E7BC: AE E4          LDX    ,S
 E7BE: 10 AE 62       LDY    $2,S
 E7C1: BD E7 C7       JSR    $E7C7
-E7C4: 32 64          LEAS   $4,S
+E7C4: 32 64          LEAS   $4,S   ; [free_locals]
 E7C6: 39             RTS
-E7C7: 32 79          LEAS   -$7,S
+E7C7: 32 79          LEAS   -$7,S   ; [alloc_locals]
 E7C9: AF E4          STX    ,S
 E7CB: 10 AF 62       STY    $2,S
 E7CE: BD E8 A4       JSR    $E8A4
@@ -8665,14 +8665,14 @@ E7E7: 49             ROLA
 E7E8: E3 64          ADDD   $4,S
 E7EA: 1F 01          TFR    D,X
 E7EC: A6 66          LDA    $6,S
-E7EE: 32 67          LEAS   $7,S
+E7EE: 32 67          LEAS   $7,S   ; [free_locals]
 E7F0: 39             RTS
 E7F1: 34 36          PSHS   Y,X,D
 E7F3: 1F 01          TFR    D,X
 E7F5: 96 3A          LDA    bank_switch_copy_3a
 E7F7: 34 02          PSHS   A
 E7F9: 1F 10          TFR    X,D
-E7FB: 32 7D          LEAS   -$3,S
+E7FB: 32 7D          LEAS   -$3,S   ; [alloc_locals]
 E7FD: A7 E4          STA    ,S
 E7FF: E7 61          STB    $1,S
 E801: BD E8 A4       JSR    $E8A4
@@ -8688,13 +8688,13 @@ E814: BD E9 72       JSR    $E972
 E817: ED 81          STD    ,X++
 E819: 6C 62          INC    $2,S
 E81B: 26 F5          BNE    $E812
-E81D: 32 63          LEAS   $3,S
+E81D: 32 63          LEAS   $3,S   ; [free_locals]
 E81F: 35 02          PULS   A
 E821: 97 3A          STA    bank_switch_copy_3a
 E823: BD E8 FB       JSR    set_bank_e8fb
 E826: 35 B6          PULS   D,X,Y,PC
 E828: 34 30          PSHS   Y,X
-E82A: 32 7A          LEAS   -$6,S
+E82A: 32 7A          LEAS   -$6,S   ; [alloc_locals]
 E82C: AF E4          STX    ,S
 E82E: 10 AF 62       STY    $2,S
 E831: A6 E4          LDA    ,S
@@ -8716,7 +8716,7 @@ E84B: C4 F0          ANDB   #$F0
 E84D: 58             ASLB
 E84E: 49             ROLA
 E84F: E3 64          ADDD   $4,S
-E851: 32 66          LEAS   $6,S
+E851: 32 66          LEAS   $6,S   ; [free_locals]
 E853: 35 B0          PULS   X,Y,PC
 
 E855: 34 10          PSHS   X
@@ -8735,7 +8735,7 @@ E86C: 34 10          PSHS   X
 E86E: EC 84          LDD    ,X
 E870: 35 90          PULS   X,PC
 E872: 34 10          PSHS   X
-E874: 32 7E          LEAS   -$2,S
+E874: 32 7E          LEAS   -$2,S   ; [alloc_locals]
 E876: A7 E4          STA    ,S
 E878: E7 61          STB    $1,S
 E87A: 8E EA 44       LDX    #$EA44
@@ -8754,7 +8754,7 @@ E88F: 44             LSRA
 E890: 44             LSRA
 E891: 44             LSRA
 E892: C4 1F          ANDB   #$1F
-E894: 32 62          LEAS   $2,S
+E894: 32 62          LEAS   $2,S   ; [free_locals]
 E896: 35 90          PULS   X,PC
 E898: 34 10          PSHS   X
 E89A: 8E EC 24       LDX    #$EC24
@@ -8785,7 +8785,7 @@ E8C6: 35 B0          PULS   X,Y,PC
 E8C8: 34 30          PSHS   Y,X
 E8CA: 96 3A          LDA    bank_switch_copy_3a
 E8CC: 34 02          PSHS   A
-E8CE: 32 7A          LEAS   -$6,S
+E8CE: 32 7A          LEAS   -$6,S   ; [alloc_locals]
 E8D0: AF E4          STX    ,S
 E8D2: 10 AF 62       STY    $2,S
 E8D5: BD E8 A4       JSR    $E8A4
@@ -8804,7 +8804,7 @@ E8EB: EB E0          ADDB   ,S+
 E8ED: 86 10          LDA    #$10
 E8EF: 3D             MUL
 E8F0: E3 64          ADDD   $4,S
-E8F2: 32 66          LEAS   $6,S
+E8F2: 32 66          LEAS   $6,S   ; [free_locals]
 E8F4: 35 02          PULS   A
 E8F6: BD E8 FB       JSR    set_bank_e8fb
 E8F9: 35 B0          PULS   X,Y,PC
@@ -8888,7 +8888,7 @@ E97D: AA E0          ORA    ,S+
 E97F: 35 04          PULS   B
 E981: 39             RTS
 
-E982: 32 7F          LEAS   -$1,S
+E982: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 E984: 6F E4          CLR    ,S
 E986: E6 E4          LDB    ,S
 E988: 58             ASLB
@@ -8918,9 +8918,9 @@ E9BF: B6 0A 5D       LDA    $0A5D
 E9C2: B7 0A 5E       STA    $0A5E
 E9C5: F6 0A 5B       LDB    $0A5B
 E9C8: F7 0A 5C       STB    $0A5C
-E9CB: 32 61          LEAS   $1,S
+E9CB: 32 61          LEAS   $1,S   ; [free_locals]
 E9CD: 39             RTS
-E9CE: 32 7F          LEAS   -$1,S
+E9CE: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 E9D0: 86 81          LDA    #$81
 E9D2: 97 02          STA    $02
 E9D4: 8E F2 15       LDX    #$F215
@@ -8959,7 +8959,7 @@ EA09: 6C E4          INC    ,S
 EA0B: E6 E4          LDB    ,S
 EA0D: C1 08          CMPB   #$08
 EA0F: 26 E8          BNE    $E9F9
-EA11: 32 61          LEAS   $1,S
+EA11: 32 61          LEAS   $1,S   ; [free_locals]
 EA13: 39             RTS
 
 
@@ -9053,7 +9053,7 @@ EDA4: 10 9F 00       STY    $00
 EDA7: BD FE 89       JSR    $FE89
 EDAA: 35 90          PULS   X,PC
 
-EDDE: 32 7F          LEAS   -$1,S
+EDDE: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 EDE0: FC 0B 04       LDD    $0B04
 EDE3: 10 83 02 04    CMPD   #$0204
 EDE7: 26 24          BNE    $EE0D
@@ -9071,7 +9071,7 @@ EE03: 26 F4          BNE    $EDF9
 EE05: B6 0B 20       LDA    $0B20
 EE08: 8A 80          ORA    #$80
 EE0A: B7 0B 20       STA    $0B20
-EE0D: 32 61          LEAS   $1,S
+EE0D: 32 61          LEAS   $1,S   ; [free_locals]
 EE0F: 39             RTS
 
 set_palettes_ee30:
@@ -9084,7 +9084,7 @@ EE3A: 97 4E          STA    $4E
 EE3C: 97 50          STA    $50
 set_palettes_ee3e:
 EE3E: 34 40          PSHS   U
-EE40: 32 7F          LEAS   -$1,S
+EE40: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 EE42: 96 4B          LDA    $4B
 EE44: 91 4C          CMPA   $4C
 EE46: 27 1C          BEQ    $EE64
@@ -9136,10 +9136,10 @@ EEA1: 5C             INCB
 EEA2: 1F 98          TFR    B,A
 EEA4: 84 0F          ANDA   #$0F
 EEA6: 26 F2          BNE    $EE9A
-EEA8: 32 61          LEAS   $1,S
+EEA8: 32 61          LEAS   $1,S   ; [free_locals]
 EEAA: 35 C0          PULS   U,PC
 EEAC: 34 14          PSHS   X,B
-EEAE: 32 7D          LEAS   -$3,S
+EEAE: 32 7D          LEAS   -$3,S   ; [alloc_locals]
 ; vblank wait
 EEB0: B6 38 02       LDA    extra_3802
 EEB3: 84 08          ANDA   #$08
@@ -9161,7 +9161,7 @@ EEC9: A7 A0          STA    ,Y+
 EECB: 33 42          LEAU   $2,U
 EECD: 6A 62          DEC    $2,S
 EECF: 26 EA          BNE    $EEBB
-EED1: 32 63          LEAS   $3,S
+EED1: 32 63          LEAS   $3,S   ; [free_locals]
 EED3: 35 94          PULS   B,X,PC
 
 l_f900:
