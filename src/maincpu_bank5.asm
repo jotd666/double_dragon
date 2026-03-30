@@ -1004,7 +1004,7 @@ jump_table_5435:
 55E4: 81 08          CMPA   #$08
 55E6: 10 24 00 AA    LBCC   $5694
 55EA: 10 8E 56 9A    LDY    #$569A
-55EE: A6 A6          LDA    A,Y
+55EE: A6 A6          LDA    A,Y		; [bank_address]
 55F0: 10 26 00 A0    LBNE   $5694
 55F4: A6 C4          LDA    ,U
 55F6: 84 C0          ANDA   #$C0

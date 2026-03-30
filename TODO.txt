@@ -2,10 +2,7 @@
   
 - context change: BA3267F2 972B4DF4 7C2231AE => D265AE25
 
-- level start: need to trace/compare as ends up with fatal error
-  (variant: characters move forward and nothing happens)
-  original: character goes down then right, amiga: character goes right (and then fatal error)
-  ==> trace code from end of intro
+- level start: ends up with fatal error
   
 - set DSW difficulty lives, etc.
 - cache subcontext (loaded fg/bg/sprite files)
@@ -13,7 +10,7 @@
 - converter: maybe find a leas +/- stack size pattern, then scan the lines in-between to find
   stack references above the reserved limit (parameters)
 - title fading in not supported
-
+- will probably have to use 64+64 colors, 32+32 don't cut it
   
   optim for 6809 generator:
  	xxx_W_TO_REG	a0,d2                         	| [$5bd5: pulu   x,y]

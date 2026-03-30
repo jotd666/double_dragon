@@ -1369,7 +1369,7 @@ subcpu_processing_411e:
 4C74: E3 06       ADDD   $6,X
 4C76: ED 06       STD    $6,X
 4C78: 35 04       PULS   B
-4C7A: A6 C5       LDA    B,U
+4C7A: A6 C5       LDA    B,U	; [bank_address] 
 4C7C: 34 02       PSHS   A
 4C7E: A6 88 13    LDA    $13,X
 4C81: 85 40       BITA   #$40
@@ -1383,10 +1383,10 @@ subcpu_processing_411e:
 4C92: 84 F0       ANDA   #$F0
 4C94: 8A 02       ORA    #$02
 4C96: A7 84       STA    ,X
-4C98: A6 A0       LDA    ,Y+
+4C98: A6 A0       LDA    ,Y+		; [bank_address]
 4C9A: AA 03       ORA    $3,X
 4C9C: A7 02       STA    $2,X
-4C9E: A6 A4       LDA    ,Y
+4C9E: A6 A4       LDA    ,Y			; [bank_address]
 4CA0: A7 88 19    STA    $19,X
 4CA3: A6 88 15    LDA    $15,X
 4CA6: 8A 40       ORA    #$40
@@ -3867,10 +3867,11 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 6516: 31 AB       LEAY   D,Y
 6518: A6 A4       LDA    ,Y		; [bank_address]
 651A: A7 88 5A    STA    $5A,X
-651D: A6 21       LDA    $1,Y
+651D: A6 21       LDA    $1,Y	; [bank_address]
 651F: A7 88 5C    STA    $5C,X
 6522: 6C 88 5D    INC    $5D,X
 6525: 39          RTS
+
 6526: 10 8E 70 00 LDY    #$7000
 652A: 8C 03 A2    CMPX   #$03A2
 652D: 27 04       BEQ    $6533
