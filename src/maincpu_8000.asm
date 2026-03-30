@@ -774,7 +774,7 @@ play_intro_animation_84f8:
 8516: 34 04          PSHS   B
 8518: BD FF 1A       JSR    subcpu_processing_ff1a
 851B: BD B3 F6       JSR    push_sprites_in_pre_shadow_memory_b3f6
-851E: BD B3 50       JSR    push_some_sprites_b350
+851E: BD B3 50       JSR    push_players_sprites_b350
 8521: BD B4 00       JSR    $B400
 8524: BD FE AD       JSR    clear_sprite_slots_fead
 8527: BD FD F9       JSR    $FDF9
@@ -5113,16 +5113,16 @@ B349: BD 40 7B       JSR    lb1_push_player_sprite_407b
 B34C: BD FD B2       JSR    restore_previous_bank_fdb2
 B34F: 39             RTS
 
-push_some_sprites_b350:
+push_players_sprites_b350:
 B350: 8E 03 A2       LDX    #$03A2
 B353: 0F 2A          CLR    $2A
-B355: BD B3 61       JSR    push_one_sprite_b361
+B355: BD B3 61       JSR    push_player_sprite_b361		; blue player
 B358: 30 88 5E       LEAX   $5E,X		; X=$400
 B35B: 0C 2A          INC    $2A
-B35D: BD B3 61       JSR    push_one_sprite_b361
+B35D: BD B3 61       JSR    push_player_sprite_b361		; red player
 B360: 39             RTS
 
-push_one_sprite_b361:
+push_player_sprite_b361:
 B361: A6 84          LDA    ,X
 B363: 2A 6F          BPL    $B3D4
 B365: 96 36          LDA    $36
@@ -5130,6 +5130,7 @@ B367: 26 0B          BNE    $B374
 B369: B6 0E 2F       LDA    $0E2F
 B36C: 81 05          CMPA   #$05
 B36E: 25 60          BCS    $B3D0
+; auto-guided character, go down
 B370: 86 80          LDA    #$80
 B372: 20 0A          BRA    $B37E
 B374: 86 90          LDA    #$90
@@ -5148,14 +5149,15 @@ B38E: BD FE B0       JSR    display_credit_feb0
 B391: 10 8E B3 E0    LDY    #$B3E0
 B395: 96 36          LDA    $36
 B397: 84 02          ANDA   #$02
-B399: 34 02          PSHS   A
+B399: 34 02          PSHS   A		; [manual_stack_push]
 B39B: 48             ASLA
 B39C: AB E4          ADDA   ,S
 B39E: 31 A6          LEAY   A,Y
-B3A0: 35 02          PULS   A
+B3A0: 35 02          PULS   A		; [manual_stack_pull]
 B3A2: EC 06          LDD    $6,X
 B3A4: 10 A3 A1       CMPD   ,Y++
 B3A7: 24 1B          BCC    $B3C4
+; auto-guided character, go right
 B3A9: 86 40          LDA    #$40
 B3AB: A7 0D          STA    $D,X
 B3AD: 96 2A          LDA    $2A

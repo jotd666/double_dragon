@@ -148,8 +148,8 @@ def remove_code_range(lines,i,address,start,end):
             line = remove_instruction(lines,i)
     return line
 
-def remove_instruction(lines,i):
-    return change_instruction("",lines,i)
+def remove_instruction(lines,i,continuing_lines=True):
+    return change_instruction("",lines,i,continuing_lines=continuing_lines)
 
 def remove_continuing_lines(lines,i):
     for j in range(i+1,i+4):
@@ -164,12 +164,13 @@ def remove_error(line):
     else:
         raise Exception(f"No ERROR to remove in {line}")
 
-def change_instruction(code,lines,i):
+def change_instruction(code,lines,i,continuing_lines=True):
     line = lines[i]
     toks = line.split("|")
     if len(toks)==2:
         toks[0] = f"\t{code}"
-        remove_continuing_lines(lines,i)
+        if continuing_lines:
+            remove_continuing_lines(lines,i)
         return " | ".join(toks)
     return line
 
@@ -273,6 +274,17 @@ def process_file(input_radix,output_radix,f_handle_line,global_symbols=[],out_he
                 else:
                     # native/target byte A/B stack mix goes crashy crashy
                     line = "\tsubq.w\t#1,d5\n" + change_instruction("GET_REG_ADDRESS\t0,d5",lines,i) + f"\tmove.b\t{param},(a0)\n"
+
+            elif "[manual_stack_pull]" in line:
+                # native/target word D, or byte A,B stack mix goes crashy crashy
+                arg = line.split()[1].lower()
+                param = arg.split(",")[1]
+                line = change_instruction("GET_REG_ADDRESS\t0,d5",lines,i)
+                if param == "d0/d1":
+                     line += "\tMAKE_D\n\tMOVE_W_TO_REG\ta0,d1\n\taddq.w\t#2,d5\n"
+                else:
+                    # native/target byte A/B stack mix goes crashy crashy
+                    line += f"\tmove.b\t(a0),{param}\n\taddq.w\t#1,d5\n"
 
             if "[6309_instruction]" in line:
                 line = change_instruction("illegal",lines,i)  # TEMP TEMP we'll see when we reach that

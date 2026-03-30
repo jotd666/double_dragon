@@ -204,8 +204,11 @@ def f_handle_main_line(address,lines,i):
         line = "\tPOP_SR\n"+line
         lines[i+1] = remove_error(lines[i+1])
     elif address in {0xB8AC,0xB89C}:
-        # remove subcpu sync shit
+        # remove subcpu sync shit / optims
         line = remove_instruction(lines,i)
+    elif address in {0Xb39c,0Xb3a0}:
+        # remove subcpu sync shit / optims
+        line = remove_instruction(lines,i,continuing_lines=False)
 
     # HACK TO BE ABLE TO START GAME MUST BE IMPROVED ELSE DEMO WON'T SHOW
     elif address == 0x8124 and True:

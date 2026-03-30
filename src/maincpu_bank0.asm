@@ -62,10 +62,11 @@ lb0_401e:   ; [global]
 406F: A7 08          STA    $8,X
 4071: 35 FE          PULS   D,DP,X,Y,U,PC
 
+; < X object structure
 4073: 34 7E          PSHS   U,Y,X,DP,D
 4075: E6 0E          LDB    $E,X
 4077: A6 0D          LDA    $D,X
-4079: 17 00 DD       LBSR   $4159
+4079: 17 00 DD       LBSR   lb0_move_character_4159
 407C: A6 05          LDA    $5,X
 407E: E6 0A          LDB    $A,X
 4080: D3 00          ADDD   $00		; add X direction
@@ -81,7 +82,7 @@ lb0_401e:   ; [global]
 4094: A7 04          STA    $4,X
 4096: E6 0B          LDB    $B,X
 4098: A6 07          LDA    $7,X
-409A: D3 02          ADDD   $02
+409A: D3 02          ADDD   $02		; add Y direction
 409C: E7 0B          STB    $B,X
 409E: A7 07          STA    $7,X
 40A0: A6 06          LDA    $6,X
@@ -93,6 +94,7 @@ lb0_401e:   ; [global]
 40AC: 8B FF          ADDA   #$FF
 40AE: A7 06          STA    $6,X
 40B0: 35 FE          PULS   D,DP,X,Y,U,PC
+
 40B2: 34 7E          PSHS   U,Y,X,DP,D
 40B4: E6 0A          LDB    $A,X
 40B6: A6 05          LDA    $5,X
@@ -145,7 +147,7 @@ lb0_401e:   ; [global]
 411A: 34 7E          PSHS   U,Y,X,DP,D
 411C: E6 0E          LDB    $E,X
 411E: A6 0D          LDA    $D,X
-4120: 17 00 36       LBSR   $4159
+4120: 17 00 36       LBSR   lb0_move_character_4159
 4123: A6 05          LDA    $5,X
 4125: E6 0A          LDB    $A,X
 4127: D3 00          ADDD   $00
@@ -174,7 +176,9 @@ lb0_401e:   ; [global]
 4155: A7 08          STA    $8,X
 4157: 35 FE          PULS   D,DP,X,Y,U,PC
 
-; < D (read from stack)
+; < D: (read from stack)
+; < X: character structure
+lb0_move_character_4159:
 4159: 34 36          PSHS   Y,X,D
 415B: 32 78          LEAS   -$8,S	; alloc auto-memory
 415D: 44             LSRA
@@ -2957,34 +2961,34 @@ lb0_5f85:  ; [global]
 60F7: B6 0B 04       LDA    $0B04
 60FA: 48             ASLA
 60FB: 10 8E 65 52    LDY    #$6552
-60FF: 10 AE A6       LDY    A,Y
+60FF: 10 AE A6       LDY    A,Y		; [bank_address]
 6102: B6 0B 05       LDA    $0B05
 6105: 48             ASLA
-6106: 10 AE A6       LDY    A,Y
+6106: 10 AE A6       LDY    A,Y		; [bank_address]
 6109: 8E 04 5E       LDX    #$045E
-610C: A6 A4          LDA    ,Y
+610C: A6 A4          LDA    ,Y		; [bank_address]
 610E: 81 FF          CMPA   #$FF
 6110: 10 27 00 C6    LBEQ   $61DA
 6114: 81 FE          CMPA   #$FE
 6116: 26 11          BNE    $6129
 6118: B6 0A AE       LDA    $0AAE
 611B: 84 F0          ANDA   #$F0
-611D: AA 21          ORA    $1,Y
+611D: AA 21          ORA    $1,Y		; [bank_address]
 611F: 8A 10          ORA    #$10
 6121: B7 0A AE       STA    $0AAE
-6124: 31 22          LEAY   $2,Y
+6124: 31 22          LEAY   $2,Y		; [bank_address]
 6126: 16 FF E3       LBRA   $610C
 6129: 81 FD          CMPA   #$FD
 612B: 26 04          BNE    $6131
-612D: 31 21          LEAY   $1,Y
+612D: 31 21          LEAY   $1,Y		; [bank_address]
 612F: 20 DB          BRA    $610C
 6131: 81 FC          CMPA   #$FC
 6133: 26 04          BNE    $6139
-6135: 31 21          LEAY   $1,Y
+6135: 31 21          LEAY   $1,Y		; [bank_address]
 6137: 20 D3          BRA    $610C
 6139: 81 FB          CMPA   #$FB
 613B: 26 05          BNE    $6142
-613D: 10 AE 21       LDY    $1,Y
+613D: 10 AE 21       LDY    $1,Y		; [bank_address]
 6140: 20 CA          BRA    $610C
 6142: B6 0A AE       LDA    $0AAE
 6145: 84 40          ANDA   #$40
@@ -3012,7 +3016,7 @@ lb0_5f85:  ; [global]
 617B: 27 06          BEQ    $6183
 617D: 6A 88 45       DEC    $45,X
 6180: 7C 0A B5       INC    $0AB5
-6183: A6 24          LDA    $4,Y
+6183: A6 24          LDA    $4,Y		; [bank_address]
 6185: 84 40          ANDA   #$40
 6187: 1C FE          ANDCC  #$FE
 6189: 48             ASLA
@@ -3036,7 +3040,7 @@ lb0_5f85:  ; [global]
 61B5: 84 EF          ANDA   #$EF
 61B7: B7 0A AE       STA    $0AAE
 61BA: 7F 0A B3       CLR    $0AB3
-61BD: 31 2A          LEAY   $A,Y
+61BD: 31 2A          LEAY   $A,Y		; [bank_address]
 61BF: 16 FF 4A       LBRA   $610C
 61C2: 30 88 55       LEAX   $55,X
 61C5: 8C 07 06       CMPX   #$0706
@@ -3053,6 +3057,7 @@ lb0_5f85:  ; [global]
 61E5: 8A 80          ORA    #$80
 61E7: B7 0A AE       STA    $0AAE
 61EA: 35 C0          PULS   U,PC
+
 61EC: 34 50          PSHS   U,X
 61EE: 32 7C          LEAS   -$4,S
 61F0: 10 AE 88 43    LDY    $43,X
