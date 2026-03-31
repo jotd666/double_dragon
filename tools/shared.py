@@ -281,11 +281,15 @@ def process_file(input_radix,output_radix,f_handle_line,global_symbols=[],out_he
                 param = arg.split(",")[1]
                 line = change_instruction("GET_REG_ADDRESS\t0,d5",lines,i)
                 if param == "d0/d1":
-                     line += "\tMAKE_D\n\tMOVE_W_TO_REG\ta0,d1\n\taddq.w\t#2,d5\n"
+                     line += "\taddq.w\t#2,d5\n\tMOVE_W_TO_REG\ta0,d1\n"
                 else:
                     # native/target byte A/B stack mix goes crashy crashy
-                    line += f"\tmove.b\t(a0),{param}\n\taddq.w\t#1,d5\n"
-
+                    line += f"\taddq.w\t#1,d5\n\tmove.b\t(a0),{param}\n"
+                if ",pc" in lines[i].lower():  # puls ...,pc
+                    line += "\trts\n"
+            elif "[breakpoint]" in line:
+                address = get_line_address(line)
+                line = change_instruction(f'BREAKPOINT  "{address:04x}"',lines,i)
             if "[6309_instruction]" in line:
                 line = change_instruction("illegal",lines,i)  # TEMP TEMP we'll see when we reach that
             if "[bogus]" in line:

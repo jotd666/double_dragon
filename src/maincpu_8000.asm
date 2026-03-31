@@ -1230,7 +1230,7 @@ play_intro_animation_84f8:
 8967: 86 A1          LDA    #$A1
 8969: A7 E4          STA    ,S	; [local]
 896B: 86 A2          LDA    #$A2
-896D: A7 61          STA    $1,S
+896D: A7 61          STA    $1,S	; [local]
 896F: 7F 0E 34       CLR    $0E34
 8972: B6 0E 35       LDA    $0E35
 8975: 88 01          EORA   #$01
@@ -1316,7 +1316,7 @@ l_89ea:
 8A16: CB 01          ADDB   #$01
 8A18: E7 A6          STB    A,Y
 8A1A: 1F 98          TFR    B,A
-8A1C: E6 61          LDB    $1,S
+8A1C: E6 61          LDB    $1,S	; [local]
 8A1E: A1 85          CMPA   B,X
 8A20: 25 56          BCS    no_coin_inserted_8a78
 8A22: A6 E4          LDA    ,S	; [local]
@@ -1463,15 +1463,15 @@ wait_subcpu_reply_8ab5:
 8B90: 1F 89          TFR    A,B
 8B92: 84 70          ANDA   #$70
 8B94: A7 88 43       STA    $43,X
-8B97: A7 E4          STA    ,S
+8B97: A7 E4          STA    ,S     ; [breakpoint]
 8B99: A8 88 44       EORA   $44,X
-8B9C: A4 E4          ANDA   ,S
+8B9C: A4 E4          ANDA   ,S     ; [breakpoint]
 8B9E: 44             LSRA
 8B9F: 44             LSRA
 8BA0: 44             LSRA
 8BA1: 44             LSRA
 8BA2: A7 88 40       STA    $40,X
-8BA5: A6 E4          LDA    ,S
+8BA5: A6 E4          LDA    ,S     ; [breakpoint]
 8BA7: A7 88 44       STA    $44,X
 8BAA: C4 0F          ANDB   #$0F
 8BAC: 10 8E 8B BD    LDY    #$8BBD
@@ -1602,26 +1602,26 @@ wait_subcpu_reply_8ab5:
 8D18: E6 0A          LDB    $A,X
 8D1A: 93 3D          SUBD   $3D
 8D1C: ED 88 38       STD    $38,X
-8D1F: 6F E4          CLR    ,S
+8D1F: 6F E4          CLR    ,S	; [local]
 8D21: A6 07          LDA    $7,X
 8D23: E6 0B          LDB    $B,X
-8D25: ED 61          STD    $1,S
+8D25: ED 61          STD    $1,S	; [local]
 8D27: A6 09          LDA    $9,X
 8D29: E6 0C          LDB    $C,X
-8D2B: E3 61          ADDD   $1,S
-8D2D: ED 61          STD    $1,S
+8D2B: E3 61          ADDD   $1,S	; [local]
+8D2D: ED 61          STD    $1,S	; [local]
 8D2F: A6 06          LDA    $6,X
 8D31: 89 00          ADCA   #$00
 8D33: AB 08          ADDA   $8,X
-8D35: A7 E4          STA    ,S
-8D37: EC 61          LDD    $1,S
+8D35: A7 E4          STA    ,S	; [local]
+8D37: EC 61          LDD    $1,S	; [local]
 8D39: 93 40          SUBD   $40
-8D3B: ED 61          STD    $1,S
-8D3D: A6 E4          LDA    ,S
+8D3B: ED 61          STD    $1,S	; [local]
+8D3D: A6 E4          LDA    ,S	; [local]
 8D3F: 82 00          SBCA   #$00
 8D41: 90 3F          SUBA   $3F
-8D43: A7 E4          STA    ,S
-8D45: EC 61          LDD    $1,S
+8D43: A7 E4          STA    ,S	; [local]
+8D45: EC 61          LDD    $1,S	; [local]
 8D47: ED 88 3A       STD    bank_switch_copy_3a,X
 8D4A: EC 88 38       LDD    $38,X
 8D4D: 10 83 C1 00    CMPD   #$C100
@@ -2761,13 +2761,14 @@ wait_subcpu_reply_8ab5:
 9A8D: A7 03          STA    $3,X
 9A8F: 20 9A          BRA    $9A2B
 9A91: 39             RTS
+
 9A92: BD 9F 83       JSR    $9F83
 9A95: 10 8E 9B 2E    LDY    #$9B2E
-9A99: 34 04          PSHS   B
+9A99: 34 04          PSHS   B	; [manual_stack_push]
 9A9B: 58             ASLB
-9A9C: EB E4          ADDB   ,S
+9A9C: EB E4          ADDB   ,S		; [handled]
 9A9E: 31 A5          LEAY   B,Y
-9AA0: 35 04          PULS   B
+9AA0: 35 04          PULS   B	; [manual_stack_pull]
 9AA2: A6 88 1B       LDA    $1B,X
 9AA5: 2B 0E          BMI    $9AB5
 9AA7: BD A5 29       JSR    $A529
@@ -2898,11 +2899,11 @@ wait_subcpu_reply_8ab5:
 9BDB: BD A5 29       JSR    $A529
 9BDE: BD 9F 83       JSR    $9F83
 9BE1: 10 8E 93 FC    LDY    #$93FC
-9BE5: 34 04          PSHS   B
+9BE5: 34 04          PSHS   B		; [manual_stack_push]
 9BE7: 58             ASLB
-9BE8: EB E4          ADDB   ,S
+9BE8: EB E4          ADDB   ,S		; [handled]
 9BEA: 31 A5          LEAY   B,Y
-9BEC: 35 04          PULS   B
+9BEC: 35 04          PULS   B		; [manual_stack_pull]
 9BEE: 86 02          LDA    #$02
 9BF0: A7 88 18       STA    $18,X
 9BF3: E6 A6          LDB    A,Y
@@ -3322,11 +3323,11 @@ A01C: 86 05          LDA    #$05
 A01E: A7 88 1A       STA    $1A,X
 A021: BD 9F 83       JSR    $9F83
 A024: 10 8E A2 AC    LDY    #$A2AC
-A028: 34 04          PSHS   B
+A028: 34 04          PSHS   B	; [manual_stack_push]
 A02A: 58             ASLB
-A02B: EB E4          ADDB   ,S
+A02B: EB E4          ADDB   ,S	; [handled]
 A02D: 31 A5          LEAY   B,Y
-A02F: 35 04          PULS   B
+A02F: 35 04          PULS   B	; [manual_stack_pull]
 A031: A6 A0          LDA    ,Y+
 A033: AA 03          ORA    $3,X
 A035: A7 02          STA    $2,X
@@ -3343,17 +3344,18 @@ A04C: A7 88 1A       STA    $1A,X
 A04F: 6F 88 18       CLR    $18,X
 A052: BD 9F 83       JSR    $9F83
 A055: 10 8E A2 BB    LDY    #$A2BB
-A059: 34 04          PSHS   B
+A059: 34 04          PSHS   B	; [manual_stack_push]
 A05B: 58             ASLB
-A05C: EB E4          ADDB   ,S
+A05C: EB E4          ADDB   ,S	; [handled]
 A05E: 31 A5          LEAY   B,Y
-A060: 35 04          PULS   B
+A060: 35 04          PULS   B	; [manual_stack_pull]
 A062: A6 A0          LDA    ,Y+
 A064: AA 03          ORA    $3,X
 A066: A7 02          STA    $2,X
 A068: 86 08          LDA    #$08
 A06A: A7 88 19       STA    $19,X
 A06D: 35 C0          PULS   U,PC
+
 A06F: 7E FF 68       JMP    $FF68
 A072: BD A3 0F       JSR    $A30F
 A075: 24 25          BCC    $A09C
@@ -3362,17 +3364,18 @@ A079: A7 88 2F       STA    $2F,X
 A07C: 6F 88 18       CLR    $18,X
 A07F: BD 9F 83       JSR    $9F83
 A082: 10 8E A2 AC    LDY    #$A2AC
-A086: 34 04          PSHS   B
+A086: 34 04          PSHS   B	; [manual_stack_push]
 A088: 58             ASLB
-A089: EB E4          ADDB   ,S
+A089: EB E4          ADDB   ,S	; [handled]
 A08B: 31 A5          LEAY   B,Y
-A08D: 35 04          PULS   B
+A08D: 35 04          PULS   B	; [manual_stack_pull]
 A08F: A6 A0          LDA    ,Y+
 A091: AA 03          ORA    $3,X
 A093: A7 02          STA    $2,X
 A095: 86 04          LDA    #$04
 A097: A7 88 19       STA    $19,X
 A09A: 35 C0          PULS   U,PC
+
 A09C: 96 29          LDA    number_of_players_flag_0029
 A09E: 84 03          ANDA   #$03
 A0A0: 81 03          CMPA   #$03
@@ -3422,11 +3425,11 @@ A101: A7 88 2F       STA    $2F,X
 A104: 6F 88 18       CLR    $18,X
 A107: BD 9F 83       JSR    $9F83
 A10A: 10 8E A2 BB    LDY    #$A2BB
-A10E: 34 04          PSHS   B
+A10E: 34 04          PSHS   B		; [manual_stack_push]
 A110: 58             ASLB
-A111: EB E4          ADDB   ,S
+A111: EB E4          ADDB   ,S		; [handled]
 A113: 31 A5          LEAY   B,Y
-A115: 35 04          PULS   B
+A115: 35 04          PULS   B		; [manual_stack_pull]
 A117: A6 A0          LDA    ,Y+
 A119: AA 03          ORA    $3,X
 A11B: A7 02          STA    $2,X
@@ -3440,11 +3443,11 @@ A12B: 6A 88 19       DEC    $19,X
 A12E: 26 4A          BNE    $A17A
 A130: BD 9F 83       JSR    $9F83
 A133: 10 8E A2 AC    LDY    #$A2AC
-A137: 34 04          PSHS   B
+A137: 34 04          PSHS   B		; [manual_stack_push]
 A139: 58             ASLB
-A13A: EB E4          ADDB   ,S
+A13A: EB E4          ADDB   ,S		; [handled]
 A13C: 31 A5          LEAY   B,Y
-A13E: 35 04          PULS   B
+A13E: 35 04          PULS   B		; [manual_stack_pull]
 A140: 6C 88 18       INC    $18,X
 A143: A6 88 18       LDA    $18,X
 A146: 81 03          CMPA   #$03
@@ -3475,11 +3478,11 @@ A17E: 6A 88 19       DEC    $19,X
 A181: 26 2D          BNE    $A1B0
 A183: BD 9F 83       JSR    $9F83
 A186: 10 8E A2 BB    LDY    #$A2BB
-A18A: 34 04          PSHS   B
+A18A: 34 04          PSHS   B		; [manual_stack_push]
 A18C: 58             ASLB
-A18D: EB E4          ADDB   ,S
+A18D: EB E4          ADDB   ,S		; [handled]
 A18F: 31 A5          LEAY   B,Y
-A191: 35 04          PULS   B
+A191: 35 04          PULS   B		; [manual_stack_pull]
 A193: A6 88 18       LDA    $18,X
 A196: E6 A6          LDB    A,Y
 A198: EA 03          ORB    $3,X
@@ -3734,14 +3737,14 @@ A43D: 32 7C          LEAS   -$4,S   ; [alloc_locals]
 A43F: 10 8E A4 9D    LDY    #$A49D
 A443: A6 88 1B       LDA    $1B,X
 A446: 2B 2F          BMI    $A477
-A448: 10 AF E4       STY    ,S
+A448: 10 AF E4       STY    ,S		; [local]
 A44B: 10 AE 88 41    LDY    $41,X
 A44F: A6 A8 16       LDA    $16,Y
 A452: 2B 42          BMI    $A496
 A454: EC 28          LDD    $8,Y
 A456: 10 A3 08       CMPD   $8,X
 A459: 26 3B          BNE    $A496
-A45B: 10 AE E4       LDY    ,S
+A45B: 10 AE E4       LDY    ,S		; [local]
 A45E: BD A5 29       JSR    $A529
 A461: A6 A0          LDA    ,Y+
 A463: AA 03          ORA    $3,X
@@ -3847,9 +3850,9 @@ A55B: 26 27          BNE    $A584
 A55D: EC 0F          LDD    $F,X
 A55F: 2A 0B          BPL    $A56C
 A561: 32 7E          LEAS   -$2,S   ; [alloc_locals]
-A563: ED E4          STD    ,S
+A563: ED E4          STD    ,S		; [local]
 A565: CC 00 00       LDD    #$0000
-A568: A3 E4          SUBD   ,S
+A568: A3 E4          SUBD   ,S		; [local]
 A56A: 32 62          LEAS   $2,S   ; [free_locals]
 A56C: 10 83 04 00    CMPD   #$0400
 A570: 24 12          BCC    $A584
@@ -4417,11 +4420,11 @@ ABF6: 26 34          BNE    $AC2C
 ABF8: EC 04          LDD    $4,X
 ABFA: A3 44          SUBD   $4,U
 ABFC: 2A 0B          BPL    $AC09
-ABFE: 34 06          PSHS   D
+ABFE: 34 06          PSHS   D		; [manual_stack_push]
 AC00: CC 00 00       LDD    #$0000
-AC03: A3 E4          SUBD   ,S
-AC05: ED E4          STD    ,S
-AC07: 35 06          PULS   D
+AC03: A3 E4          SUBD   ,S      ; [handled]
+AC05: ED E4          STD    ,S      ; [handled]
+AC07: 35 06          PULS   D		; [manual_stack_pull]
 AC09: 10 83 00 20    CMPD   #$0020
 AC0D: 24 18          BCC    $AC27
 AC0F: 10 83 00 10    CMPD   #$0010
@@ -5151,7 +5154,7 @@ B395: 96 36          LDA    $36
 B397: 84 02          ANDA   #$02
 B399: 34 02          PSHS   A		; [manual_stack_push]
 B39B: 48             ASLA
-B39C: AB E4          ADDA   ,S
+B39C: AB E4          ADDA   ,S	; [handled]
 B39E: 31 A6          LEAY   A,Y
 B3A0: 35 02          PULS   A		; [manual_stack_pull]
 B3A2: EC 06          LDD    $6,X
@@ -5558,11 +5561,12 @@ B75C: 4A             DECA
 B75D: 26 F9          BNE    $B758
 B75F: 35 84          PULS   B,PC
 
+; not used
 vbl_delay_b761:
 B761: 34 76          PSHS   U,Y,X,D
 B763: 8D 10          BSR    wait_vbl_off_b775
 B765: 8D 06          BSR    wait_vbl_on_b76d
-B767: 6A E4          DEC    ,S
+B767: 6A E4          DEC    ,S 	; [breakpoint]
 B769: 26 F8          BNE    $B763
 B76B: 35 F6          PULS   D,X,Y,U,PC
 
@@ -5990,8 +5994,8 @@ BBCF: BD FF 10       JSR    push_one_sprite_entry_ff10
 BBD2: BD BC 4F       JSR    $BC4F
 BBD5: C6 21          LDB    #$21
 BBD7: 3A             ABX
-BBD8: 6C E4          INC    ,S
-BBDA: A6 E4          LDA    ,S
+BBD8: 6C E4          INC    ,S		; [local]
+BBDA: A6 E4          LDA    ,S		; [local]
 BBDC: 81 10          CMPA   #$10
 BBDE: 25 A9          BCS    $BB89
 BBE0: 96 51          LDA    $51
@@ -6062,20 +6066,21 @@ BCDA: A7 84          STA    ,X
 BCDC: 86 10          LDA    #$10
 BCDE: A7 0E          STA    $E,X
 BCE0: 39             RTS
+
 BCE1: 32 7F          LEAS   -$1,S   ; [alloc_locals]
-BCE3: 6F E4          CLR    ,S
+BCE3: 6F E4          CLR    ,S		; [local]
 BCE5: A6 0F          LDA    $F,X
 BCE7: 2A 09          BPL    $BCF2
 BCE9: CC 00 00       LDD    #$0000
 BCEC: A3 0F          SUBD   $F,X
 BCEE: ED 0F          STD    $F,X
-BCF0: 6C E4          INC    ,S
+BCF0: 6C E4          INC    ,S		; [local]
 BCF2: EC 0F          LDD    $F,X
 BCF4: 83 02 00       SUBD   #$0200
 BCF7: 2A 03          BPL    $BCFC
 BCF9: CC 01 00       LDD    #$0100
 BCFC: ED 0F          STD    $F,X
-BCFE: A6 E4          LDA    ,S
+BCFE: A6 E4          LDA    ,S		; [local]
 BD00: 26 07          BNE    $BD09
 BD02: CC 00 00       LDD    #$0000
 BD05: A3 0F          SUBD   $F,X
@@ -6353,19 +6358,19 @@ BFF3: 86 10          LDA    #$10
 BFF5: A7 0E          STA    $E,X
 BFF7: 39             RTS
 BFF8: 32 7F          LEAS   -$1,S   ; [alloc_locals]
-BFFA: 6F E4          CLR    ,S
+BFFA: 6F E4          CLR    ,S		; [local]
 BFFC: A6 0F          LDA    $F,X
 BFFE: 2A 09          BPL    $C009
 C000: CC 00 00       LDD    #$0000
 C003: A3 0F          SUBD   $F,X
 C005: ED 0F          STD    $F,X
-C007: 6C E4          INC    ,S
+C007: 6C E4          INC    ,S		; [local]
 C009: EC 0F          LDD    $F,X
 C00B: 83 02 00       SUBD   #$0200
 C00E: 2A 03          BPL    $C013
 C010: CC 01 00       LDD    #$0100
 C013: ED 0F          STD    $F,X
-C015: A6 E4          LDA    ,S
+C015: A6 E4          LDA    ,S		; [local]
 C017: 26 07          BNE    $C020
 C019: CC 00 00       LDD    #$0000
 C01C: A3 0F          SUBD   $F,X
@@ -6612,19 +6617,19 @@ C2A5: 86 18          LDA    #$18
 C2A7: A7 0E          STA    $E,X
 C2A9: 39             RTS
 C2AA: 32 7F          LEAS   -$1,S   ; [alloc_locals]
-C2AC: 6F E4          CLR    ,S
+C2AC: 6F E4          CLR    ,S		; [local]
 C2AE: A6 0F          LDA    $F,X
 C2B0: 2A 09          BPL    $C2BB
 C2B2: CC 00 00       LDD    #$0000
 C2B5: A3 0F          SUBD   $F,X
 C2B7: ED 0F          STD    $F,X
-C2B9: 6C E4          INC    ,S
+C2B9: 6C E4          INC    ,S		; [local]
 C2BB: EC 0F          LDD    $F,X
 C2BD: 83 02 00       SUBD   #$0200
 C2C0: 2A 03          BPL    $C2C5
 C2C2: CC 01 00       LDD    #$0100
 C2C5: ED 0F          STD    $F,X
-C2C7: A6 E4          LDA    ,S
+C2C7: A6 E4          LDA    ,S		; [local]
 C2C9: 26 07          BNE    $C2D2
 C2CB: CC 00 00       LDD    #$0000
 C2CE: A3 0F          SUBD   $F,X
@@ -7761,10 +7766,10 @@ CD76: 86 8C          LDA    #$8C
 CD78: 17 31 3B       LBSR   $FEB6
 CD7B: 39             RTS
 CD7C: 32 71          LEAS   -$F,S   ; [alloc_locals]
-CD7E: A7 E4          STA    ,S
+CD7E: A7 E4          STA    ,S		; [local]
 CD80: 1F 89          TFR    A,B
 CD82: 58             ASLB
-CD83: EB E4          ADDB   ,S
+CD83: EB E4          ADDB   ,S		; [local]
 CD85: 58             ASLB
 CD86: 4F             CLRA
 CD87: 10 8E CD B0    LDY    #$CDB0
@@ -8192,6 +8197,7 @@ E37D: 20 03          BRA    $E382
 E37F: CC FF 00       LDD    #$FF00
 E382: FD 0A 44       STD    $0A44
 E385: 39             RTS
+
 E386: 34 36          PSHS   Y,X,D
 E388: 32 7C          LEAS   -$4,S   ; [alloc_locals]
 E38A: 6D 84          TST    ,X
@@ -8211,18 +8217,18 @@ E3A8: 8E E3 E0       LDX    #$E3E0
 E3AB: 96 36          LDA    $36
 E3AD: 48             ASLA
 E3AE: EC 86          LDD    A,X
-E3B0: ED E4          STD    ,S
+E3B0: ED E4          STD    ,S		; [local]
 E3B2: 8E E3 E8       LDX    #$E3E8
 E3B5: 96 36          LDA    $36
 E3B7: 48             ASLA
 E3B8: EC 86          LDD    A,X
-E3BA: ED 62          STD    $2,S
+E3BA: ED 62          STD    $2,S		; [local]
 E3BC: 37 10          PULU   X		; using "user" stack as S is used as local vars
 E3BE: EC 88 3A       LDD    bank_switch_copy_3a,X
 E3C1: ED 22          STD    $2,Y
-E3C3: 10 A3 E4       CMPD   ,S
+E3C3: 10 A3 E4       CMPD   ,S		; [local]
 E3C6: 24 0A          BCC    $E3D2
-E3C8: 10 A3 62       CMPD   $2,S
+E3C8: 10 A3 62       CMPD   $2,S		; [local]
 E3CB: 23 0A          BLS    $E3D7
 E3CD: CC 00 00       LDD    #$0000
 E3D0: 20 08          BRA    $E3DA
@@ -8238,84 +8244,84 @@ E3F3: FC 0A 42       LDD    $0A42
 E3F6: 10 27 00 C2    LBEQ   $E4BC
 E3FA: FC 0A 42       LDD    $0A42
 E3FD: F3 0A 60       ADDD   $0A60
-E400: ED 61          STD    $1,S
+E400: ED 61          STD    $1,S		; [local]
 E402: F6 0A 42       LDB    $0A42
 E405: 1D             SEX
 E406: 89 00          ADCA   #$00
 E408: BB 0A 5F       ADDA   $0A5F
-E40B: A7 E4          STA    ,S
+E40B: A7 E4          STA    ,S		; [local]
 E40D: 2A 0A          BPL    $E419
 E40F: CC 00 00       LDD    #$0000
-E412: ED E4          STD    ,S
-E414: E7 62          STB    $2,S
+E412: ED E4          STD    ,S		; [local]
+E414: E7 62          STB    $2,S		; [local]
 E416: 16 00 97       LBRA   $E4B0
 E419: B6 0A 5F       LDA    $0A5F
 E41C: F6 0A 62       LDB    $0A62
 E41F: BD E7 9A       JSR    $E79A
 E422: B6 0A 62       LDA    $0A62
 E425: E6 80          LDB    ,X+
-E427: ED 63          STD    $3,S
+E427: ED 63          STD    $3,S		; [local]
 E429: E6 80          LDB    ,X+
-E42B: ED 65          STD    $5,S
+E42B: ED 65          STD    $5,S		; [local]
 E42D: B6 0A 5F       LDA    $0A5F
 E430: E6 80          LDB    ,X+
-E432: ED 67          STD    $7,S
+E432: ED 67          STD    $7,S		; [local]
 E434: E6 80          LDB    ,X+
-E436: ED 69          STD    $9,S
-E438: A6 E4          LDA    ,S
+E436: ED 69          STD    $9,S		; [local]
+E438: A6 E4          LDA    ,S		; [local]
 E43A: F6 0A 62       LDB    $0A62
 E43D: BD E7 9A       JSR    $E79A
 E440: B6 0A 62       LDA    $0A62
 E443: E6 80          LDB    ,X+
-E445: ED 6B          STD    $B,S
+E445: ED 6B          STD    $B,S		; [local]
 E447: E6 80          LDB    ,X+
-E449: ED 6D          STD    $D,S
-E44B: A6 E4          LDA    ,S
+E449: ED 6D          STD    $D,S		; [local]
+E44B: A6 E4          LDA    ,S		; [local]
 E44D: E6 80          LDB    ,X+
-E44F: ED 6F          STD    $F,S
+E44F: ED 6F          STD    $F,S		; [local]
 E451: E6 80          LDB    ,X+
-E453: ED E8 11       STD    $11,S
+E453: ED E8 11       STD    $11,S		; [local]
 E456: 7D 0A 42       TST    $0A42
 E459: 2B 2A          BMI    $E485
 E45B: B6 0A 5F       LDA    $0A5F
-E45E: A1 E4          CMPA   ,S
+E45E: A1 E4          CMPA   ,S		; [local]
 E460: 26 09          BNE    $E46B
-E462: EC 69          LDD    $9,S
-E464: 10 A3 E4       CMPD   ,S
+E462: EC 69          LDD    $9,S		; [local]
+E464: 10 A3 E4       CMPD   ,S		; [local]
 E467: 25 61          BCS    $E4CA
 E469: 20 45          BRA    $E4B0
-E46B: EC E4          LDD    ,S
-E46D: 10 A3 6F       CMPD   $F,S
+E46B: EC E4          LDD    ,S		; [local]
+E46D: 10 A3 6F       CMPD   $F,S		; [local]
 E470: 22 0F          BHI    $E481
 E472: FC 0A 62       LDD    $0A62
-E475: 10 A3 6B       CMPD   $B,S
+E475: 10 A3 6B       CMPD   $B,S		; [local]
 E478: 22 07          BHI    $E481
-E47A: 10 A3 6D       CMPD   $D,S
+E47A: 10 A3 6D       CMPD   $D,S		; [local]
 E47D: 25 02          BCS    $E481
 E47F: 20 2F          BRA    $E4B0
-E481: EC 69          LDD    $9,S
+E481: EC 69          LDD    $9,S		; [local]
 E483: 20 45          BRA    $E4CA
 E485: B6 0A 5F       LDA    $0A5F
-E488: A1 E4          CMPA   ,S
+E488: A1 E4          CMPA   ,S		; [local]
 E48A: 26 09          BNE    $E495
-E48C: EC 67          LDD    $7,S
-E48E: 10 A3 E4       CMPD   ,S
+E48C: EC 67          LDD    $7,S		; [local]
+E48E: 10 A3 E4       CMPD   ,S		; [local]
 E491: 22 37          BHI    $E4CA
 E493: 20 1B          BRA    $E4B0
-E495: EC E4          LDD    ,S
-E497: 10 A3 E8 11    CMPD   $11,S
+E495: EC E4          LDD    ,S		; [local]
+E497: 10 A3 E8 11    CMPD   $11,S		; [local]
 E49B: 22 0F          BHI    $E4AC
 E49D: FC 0A 62       LDD    $0A62
-E4A0: 10 A3 6B       CMPD   $B,S
+E4A0: 10 A3 6B       CMPD   $B,S		; [local]
 E4A3: 22 07          BHI    $E4AC
-E4A5: 10 A3 6D       CMPD   $D,S
+E4A5: 10 A3 6D       CMPD   $D,S		; [local]
 E4A8: 25 02          BCS    $E4AC
 E4AA: 20 04          BRA    $E4B0
-E4AC: EC 67          LDD    $7,S
+E4AC: EC 67          LDD    $7,S		; [local]
 E4AE: 20 1A          BRA    $E4CA
-E4B0: EC E4          LDD    ,S
+E4B0: EC E4          LDD    ,S		; [local]
 E4B2: FD 0A 46       STD    $0A46
-E4B5: A6 62          LDA    $2,S
+E4B5: A6 62          LDA    $2,S		; [local]
 E4B7: B7 0A 48       STA    $0A48
 E4BA: 20 16          BRA    $E4D2
 E4BC: FC 0A 5F       LDD    $0A5F
@@ -8328,89 +8334,89 @@ E4CD: 7F 0A 48       CLR    $0A48
 E4D0: 20 00          BRA    $E4D2
 E4D2: 32 E8 13       LEAS   $13,S   ; [free_locals]
 E4D5: 39             RTS
-E4D6: 32 E8 ED       LEAS   -$13,S		; allocate auto variable zone   ; [alloc_locals]
+E4D6: 32 E8 ED       LEAS   -$13,S		; [alloc_locals]
 E4D9: FC 0A 44       LDD    $0A44
 E4DC: 10 27 00 C3    LBEQ   $E5A3
 E4E0: FC 0A 44       LDD    $0A44
 E4E3: F3 0A 63       ADDD   $0A63
-E4E6: ED 61          STD    $1,S
+E4E6: ED 61          STD    $1,S		; [local]
 E4E8: F6 0A 44       LDB    $0A44
 E4EB: 1D             SEX
 E4EC: 89 00          ADCA   #$00
 E4EE: BB 0A 62       ADDA   $0A62
-E4F1: A7 E4          STA    ,S
+E4F1: A7 E4          STA    ,S		; [local]
 E4F3: 2A 0A          BPL    $E4FF
 E4F5: CC 00 00       LDD    #$0000
-E4F8: ED E4          STD    ,S
-E4FA: E7 62          STB    $2,S
+E4F8: ED E4          STD    ,S		; [local]
+E4FA: E7 62          STB    $2,S		; [local]
 E4FC: 16 00 98       LBRA   $E597
 E4FF: B6 0A 5F       LDA    $0A5F
 E502: F6 0A 62       LDB    $0A62
 E505: BD E7 9A       JSR    $E79A
 E508: B6 0A 62       LDA    $0A62
 E50B: E6 80          LDB    ,X+
-E50D: ED 63          STD    $3,S
+E50D: ED 63          STD    $3,S		; [local]
 E50F: E6 80          LDB    ,X+
-E511: ED 65          STD    $5,S
+E511: ED 65          STD    $5,S		; [local]
 E513: B6 0A 5F       LDA    $0A5F
 E516: E6 80          LDB    ,X+
-E518: ED 67          STD    $7,S
+E518: ED 67          STD    $7,S		; [local]
 E51A: E6 80          LDB    ,X+
-E51C: ED 69          STD    $9,S
+E51C: ED 69          STD    $9,S		; [local]
 E51E: B6 0A 5F       LDA    $0A5F
-E521: E6 E4          LDB    ,S
+E521: E6 E4          LDB    ,S		; [local]
 E523: BD E7 9A       JSR    $E79A
-E526: A6 E4          LDA    ,S
+E526: A6 E4          LDA    ,S		; [local]
 E528: E6 80          LDB    ,X+
-E52A: ED 6B          STD    $B,S
+E52A: ED 6B          STD    $B,S		; [local]
 E52C: E6 80          LDB    ,X+
-E52E: ED 6D          STD    $D,S
+E52E: ED 6D          STD    $D,S		; [local]
 E530: B6 0A 5F       LDA    $0A5F
 E533: E6 80          LDB    ,X+
-E535: ED 6F          STD    $F,S
+E535: ED 6F          STD    $F,S		; [local]
 E537: E6 80          LDB    ,X+
-E539: ED E8 11       STD    $11,S
+E539: ED E8 11       STD    $11,S		; [local]
 E53C: 7D 0A 44       TST    $0A44
 E53F: 2B 2B          BMI    $E56C
 E541: B6 0A 62       LDA    $0A62
-E544: A1 E4          CMPA   ,S
+E544: A1 E4          CMPA   ,S		; [local]
 E546: 26 09          BNE    $E551
-E548: EC 63          LDD    $3,S
+E548: EC 63          LDD    $3,S		; [local]
 E54A: 10 A3 E4       CMPD   ,S
 E54D: 25 62          BCS    $E5B1
 E54F: 20 46          BRA    $E597
-E551: EC E4          LDD    ,S
-E553: 10 A3 6D       CMPD   $D,S
+E551: EC E4          LDD    ,S		; [local]
+E553: 10 A3 6D       CMPD   $D,S		; [local]
 E556: 22 10          BHI    $E568
 E558: FC 0A 5F       LDD    $0A5F
-E55B: 10 A3 E8 11    CMPD   $11,S
+E55B: 10 A3 E8 11    CMPD   $11,S		; [local]
 E55F: 22 07          BHI    $E568
-E561: 10 A3 6F       CMPD   $F,S
+E561: 10 A3 6F       CMPD   $F,S		; [local]
 E564: 25 02          BCS    $E568
 E566: 20 2F          BRA    $E597
-E568: EC 63          LDD    $3,S
+E568: EC 63          LDD    $3,S		; [local]
 E56A: 20 45          BRA    $E5B1
 E56C: B6 0A 62       LDA    $0A62
-E56F: A1 E4          CMPA   ,S
+E56F: A1 E4          CMPA   ,S		; [local]
 E571: 26 09          BNE    $E57C
-E573: EC 65          LDD    $5,S
-E575: 10 A3 E4       CMPD   ,S
+E573: EC 65          LDD    $5,S		; [local]
+E575: 10 A3 E4       CMPD   ,S		; [local]
 E578: 22 37          BHI    $E5B1
 E57A: 20 1B          BRA    $E597
-E57C: EC E4          LDD    ,S
-E57E: 10 A3 6B       CMPD   $B,S
+E57C: EC E4          LDD    ,S		; [local]
+E57E: 10 A3 6B       CMPD   $B,S		; [local]
 E581: 22 10          BHI    $E593
 E583: FC 0A 5F       LDD    $0A5F
-E586: 10 A3 E8 11    CMPD   $11,S
+E586: 10 A3 E8 11    CMPD   $11,S		; [local]
 E58A: 22 07          BHI    $E593
-E58C: 10 A3 6F       CMPD   $F,S
+E58C: 10 A3 6F       CMPD   $F,S		; [local]
 E58F: 25 02          BCS    $E593
 E591: 20 04          BRA    $E597
-E593: EC 65          LDD    $5,S
+E593: EC 65          LDD    $5,S		; [local]
 E595: 20 1A          BRA    $E5B1
-E597: EC E4          LDD    ,S
+E597: EC E4          LDD    ,S		; [local]
 E599: FD 0A 49       STD    $0A49
-E59C: A6 62          LDA    $2,S
+E59C: A6 62          LDA    $2,S		; [local]
 E59E: B7 0A 4B       STA    $0A4B
 E5A1: 20 16          BRA    $E5B9
 E5A3: FC 0A 62       LDD    $0A62
@@ -8421,7 +8427,7 @@ E5AF: 20 08          BRA    $E5B9
 E5B1: FD 0A 49       STD    $0A49
 E5B4: 7F 0A 4B       CLR    $0A4B
 E5B7: 20 00          BRA    $E5B9
-E5B9: 32 E8 13       LEAS   $13,S		; free auto variables   ; [free_locals]
+E5B9: 32 E8 13       LEAS   $13,S		; [free_locals]
 E5BC: 39             RTS
 E5BD: 96 3A          LDA    bank_switch_copy_3a
 E5BF: 34 02          PSHS   A
@@ -8438,70 +8444,70 @@ E5DA: 10 B3 0A 46    CMPD   $0A46
 E5DE: 23 10          BLS    $E5F0
 E5E0: FC 0A 46       LDD    $0A46
 E5E3: C4 F0          ANDB   #$F0
-E5E5: ED E4          STD    ,S
+E5E5: ED E4          STD    ,S		; [local]
 E5E7: FC 0A 5F       LDD    $0A5F
 E5EA: C4 F0          ANDB   #$F0
-E5EC: ED 62          STD    $2,S
+E5EC: ED 62          STD    $2,S		; [local]
 E5EE: 20 17          BRA    $E607
 E5F0: FC 0A 65       LDD    $0A65
 E5F3: C4 F0          ANDB   #$F0
-E5F5: ED E4          STD    ,S
+E5F5: ED E4          STD    ,S		; [local]
 E5F7: FC 0A 65       LDD    $0A65
 E5FA: F3 0A 46       ADDD   $0A46
 E5FD: B3 0A 5F       SUBD   $0A5F
 E600: C3 00 0F       ADDD   #$000F
 E603: C4 F0          ANDB   #$F0
-E605: ED 62          STD    $2,S
+E605: ED 62          STD    $2,S		; [local]
 E607: FC 0A 62       LDD    $0A62
 E60A: C4 F0          ANDB   #$F0
-E60C: ED 64          STD    $4,S
+E60C: ED 64          STD    $4,S		; [local]
 E60E: FC 0A 68       LDD    $0A68
 E611: C4 F0          ANDB   #$F0
-E613: ED 66          STD    $6,S
+E613: ED 66          STD    $6,S		; [local]
 E615: EC E4          LDD    ,S
-E617: ED 68          STD    $8,S
-E619: EC 64          LDD    $4,S
-E61B: ED 6A          STD    $A,S
-E61D: AE 68          LDX    $8,S
-E61F: 10 AE 6A       LDY    $A,S
+E617: ED 68          STD    $8,S		; [local]
+E619: EC 64          LDD    $4,S		; [local]
+E61B: ED 6A          STD    $A,S		; [local]
+E61D: AE 68          LDX    $8,S		; [local]
+E61F: 10 AE 6A       LDY    $A,S		; [local]
 E622: BD E8 28       JSR    $E828
-E625: ED 6C          STD    $C,S
+E625: ED 6C          STD    $C,S		; [local]
 E627: BD E7 AB       JSR    $E7AB
-E62A: AF 6E          STX    $E,S
-E62C: A7 E8 10       STA    $10,S
-E62F: A6 E8 10       LDA    $10,S
+E62A: AF 6E          STX    $E,S		; [local]
+E62C: A7 E8 10       STA    $10,S		; [local]
+E62F: A6 E8 10       LDA    $10,S		; [local]
 E632: BD E8 FB       JSR    set_bank_e8fb
-E635: AE 6E          LDX    $E,S
+E635: AE 6E          LDX    $E,S		; [local]
 E637: EC 84          LDD    ,X		; [bank_address]
 E639: AE 6C          LDX    $C,S
 E63B: BD E9 72       JSR    $E972
 E63E: ED 84          STD    ,X		; [video_address_word]
-E640: EC 6A          LDD    $A,S
+E640: EC 6A          LDD    $A,S		; [local]
 E642: C3 00 10       ADDD   #$0010
-E645: ED 6A          STD    $A,S
-E647: EC 6A          LDD    $A,S
-E649: 10 A3 66       CMPD   $6,S
+E645: ED 6A          STD    $A,S		; [local]
+E647: EC 6A          LDD    $A,S		; [local]
+E649: 10 A3 66       CMPD   $6,S		; [local]
 E64C: 27 1F          BEQ    $E66D
-E64E: E6 6B          LDB    $B,S
+E64E: E6 6B          LDB    $B,S		; [local]
 E650: 5D             TSTB
 E651: 27 CA          BEQ    $E61D
-E653: EC 6E          LDD    $E,S
+E653: EC 6E          LDD    $E,S		; [local]
 E655: 83 00 20       SUBD   #$0020
-E658: ED 6E          STD    $E,S
-E65A: E6 6D          LDB    $D,S
+E658: ED 6E          STD    $E,S		; [local]
+E65A: E6 6D          LDB    $D,S		; [local]
 E65C: C0 20          SUBB   #$20
-E65E: E7 6D          STB    $D,S
+E65E: E7 6D          STB    $D,S		; [local]
 E660: 24 CD          BCC    $E62F
-E662: A6 6C          LDA    $C,S
+E662: A6 6C          LDA    $C,S		; [local]
 E664: 4A             DECA
 E665: 84 F7          ANDA   #$F7
 E667: 8A 10          ORA    #$10
-E669: A7 6C          STA    $C,S
+E669: A7 6C          STA    $C,S		; [local]
 E66B: 20 C2          BRA    $E62F
-E66D: EC 68          LDD    $8,S
+E66D: EC 68          LDD    $8,S		; [local]
 E66F: C3 00 10       ADDD   #$0010
-E672: ED 68          STD    $8,S
-E674: 10 A3 62       CMPD   $2,S
+E672: ED 68          STD    $8,S		; [local]
+E674: 10 A3 62       CMPD   $2,S		; [local]
 E677: 27 02          BEQ    $E67B
 E679: 20 9E          BRA    $E619
 E67B: FC 0A 5F       LDD    $0A5F
@@ -8510,7 +8516,7 @@ E680: 34 06          PSHS   D		; [manual_stack_push]
 E682: FC 0A 46       LDD    $0A46
 E685: C4 F0          ANDB   #$F0
 E687: F3 0A 65       ADDD   $0A65
-E68A: A3 E1          SUBD   ,S++
+E68A: A3 E1          SUBD   ,S++		; [handled]
 E68C: FD 0A 65       STD    $0A65
 E68F: B6 0A 48       LDA    $0A48
 E692: B7 0A 67       STA    $0A67
@@ -8530,78 +8536,78 @@ E6B4: C4 F0          ANDB   #$F0
 E6B6: 34 06          PSHS   D		; [manual_stack_push]
 E6B8: FC 0A 62       LDD    $0A62
 E6BB: C4 F0          ANDB   #$F0
-E6BD: 10 A3 E1       CMPD   ,S++
+E6BD: 10 A3 E1       CMPD   ,S++     ; [handled]
 E6C0: 10 27 00 CD    LBEQ   $E791
 E6C4: FC 0A 62       LDD    $0A62
 E6C7: 10 B3 0A 49    CMPD   $0A49
 E6CB: 23 10          BLS    $E6DD
 E6CD: FC 0A 49       LDD    $0A49
 E6D0: C4 F0          ANDB   #$F0
-E6D2: ED 64          STD    $4,S
+E6D2: ED 64          STD    $4,S     ; [local]
 E6D4: FC 0A 62       LDD    $0A62
 E6D7: C4 F0          ANDB   #$F0
-E6D9: ED 66          STD    $6,S
+E6D9: ED 66          STD    $6,S     ; [local]
 E6DB: 20 17          BRA    $E6F4
 E6DD: FC 0A 68       LDD    $0A68
 E6E0: C4 F0          ANDB   #$F0
-E6E2: ED 64          STD    $4,S
+E6E2: ED 64          STD    $4,S     ; [local]
 E6E4: FC 0A 68       LDD    $0A68
 E6E7: F3 0A 49       ADDD   $0A49
 E6EA: B3 0A 62       SUBD   $0A62
 E6ED: C3 00 0F       ADDD   #$000F
 E6F0: C4 F0          ANDB   #$F0
-E6F2: ED 66          STD    $6,S
+E6F2: ED 66          STD    $6,S     ; [local]
 E6F4: FC 0A 5F       LDD    $0A5F
 E6F7: C4 F0          ANDB   #$F0
-E6F9: ED E4          STD    ,S
+E6F9: ED E4          STD    ,S     ; [local]
 E6FB: FC 0A 65       LDD    $0A65
 E6FE: C4 F0          ANDB   #$F0
-E700: ED 62          STD    $2,S
-E702: EC 64          LDD    $4,S
-E704: ED 6A          STD    $A,S
-E706: EC E4          LDD    ,S
-E708: ED 68          STD    $8,S
-E70A: AE 68          LDX    $8,S
-E70C: 10 AE 6A       LDY    $A,S
+E700: ED 62          STD    $2,S     ; [local]
+E702: EC 64          LDD    $4,S     ; [local]
+E704: ED 6A          STD    $A,S     ; [local]
+E706: EC E4          LDD    ,S     ; [local]
+E708: ED 68          STD    $8,S     ; [local]
+E70A: AE 68          LDX    $8,S     ; [local]
+E70C: 10 AE 6A       LDY    $A,S     ; [local]
 E70F: BD E8 28       JSR    $E828
-E712: ED 6C          STD    $C,S
+E712: ED 6C          STD    $C,S     ; [local]
 E714: BD E7 AB       JSR    $E7AB
-E717: AF 6E          STX    $E,S
-E719: A7 E8 10       STA    $10,S
-E71C: A6 E8 10       LDA    $10,S
+E717: AF 6E          STX    $E,S     ; [local]
+E719: A7 E8 10       STA    $10,S     ; [local]
+E71C: A6 E8 10       LDA    $10,S     ; [local]
 E71F: BD E8 FB       JSR    set_bank_e8fb
-E722: AE 6E          LDX    $E,S
+E722: AE 6E          LDX    $E,S     ; [local]
 E724: EC 84          LDD    ,X
-E726: AE 6C          LDX    $C,S
+E726: AE 6C          LDX    $C,S     ; [local]
 E728: BD E9 72       JSR    $E972
 E72B: ED 84          STD    ,X
-E72D: EC 68          LDD    $8,S
+E72D: EC 68          LDD    $8,S     ; [local]
 E72F: C3 00 10       ADDD   #$0010
-E732: ED 68          STD    $8,S
-E734: EC 68          LDD    $8,S
-E736: 10 A3 62       CMPD   $2,S
+E732: ED 68          STD    $8,S     ; [local]
+E734: EC 68          LDD    $8,S     ; [local]
+E736: 10 A3 62       CMPD   $2,S     ; [local]
 E739: 27 22          BEQ    $E75D
-E73B: E6 69          LDB    $9,S
+E73B: E6 69          LDB    $9,S     ; [local]
 E73D: 5D             TSTB
 E73E: 27 CA          BEQ    $E70A
-E740: EC 6E          LDD    $E,S
+E740: EC 6E          LDD    $E,S     ; [local]
 E742: C3 00 02       ADDD   #$0002
-E745: ED 6E          STD    $E,S
-E747: E6 6D          LDB    $D,S
+E745: ED 6E          STD    $E,S     ; [local]
+E747: E6 6D          LDB    $D,S     ; [local]
 E749: 1F 98          TFR    B,A
 E74B: CB 02          ADDB   #$02
-E74D: E7 6D          STB    $D,S
+E74D: E7 6D          STB    $D,S     ; [local]
 E74F: 84 1F          ANDA   #$1F
 E751: 81 1E          CMPA   #$1E
 E753: 26 C7          BNE    $E71C
-E755: A6 6C          LDA    $C,S
+E755: A6 6C          LDA    $C,S     ; [local]
 E757: 88 02          EORA   #$02
-E759: A7 6C          STA    $C,S
+E759: A7 6C          STA    $C,S     ; [local]
 E75B: 20 BF          BRA    $E71C
-E75D: EC 6A          LDD    $A,S
+E75D: EC 6A          LDD    $A,S     ; [local]
 E75F: C3 00 10       ADDD   #$0010
-E762: ED 6A          STD    $A,S
-E764: 10 A3 66       CMPD   $6,S
+E762: ED 6A          STD    $A,S     ; [local]
+E764: 10 A3 66       CMPD   $6,S     ; [local]
 E767: 27 02          BEQ    $E76B
 E769: 20 9B          BRA    $E706
 E76B: FC 0A 62       LDD    $0A62
@@ -8610,7 +8616,7 @@ E770: 34 06          PSHS   D		; [manual_stack_push]
 E772: FC 0A 49       LDD    $0A49
 E775: C4 F0          ANDB   #$F0
 E777: F3 0A 68       ADDD   $0A68
-E77A: A3 E1          SUBD   ,S++
+E77A: A3 E1          SUBD   ,S++     ; [handled]
 E77C: FD 0A 68       STD    $0A68
 E77F: B6 0A 4B       LDA    $0A4B
 E782: B7 0A 6A       STA    $0A6A
@@ -8632,39 +8638,39 @@ E7A6: 30 8B          LEAX   D,X
 E7A8: A6 80          LDA    ,X+
 E7AA: 39             RTS
 E7AB: 32 7C          LEAS   -$4,S   ; [alloc_locals]
-E7AD: AF E4          STX    ,S
-E7AF: 10 AF 62       STY    $2,S
-E7B2: A6 E4          LDA    ,S
-E7B4: E6 62          LDB    $2,S
+E7AD: AF E4          STX    ,S     ; [local]
+E7AF: 10 AF 62       STY    $2,S     ; [local]
+E7B2: A6 E4          LDA    ,S     ; [local]
+E7B4: E6 62          LDB    $2,S     ; [local]
 E7B6: BD E8 72       JSR    $E872
 E7B9: BD E8 98       JSR    $E898
-E7BC: AE E4          LDX    ,S
-E7BE: 10 AE 62       LDY    $2,S
+E7BC: AE E4          LDX    ,S     ; [local]
+E7BE: 10 AE 62       LDY    $2,S     ; [local]
 E7C1: BD E7 C7       JSR    $E7C7
 E7C4: 32 64          LEAS   $4,S   ; [free_locals]
 E7C6: 39             RTS
 E7C7: 32 79          LEAS   -$7,S   ; [alloc_locals]
 E7C9: AF E4          STX    ,S
-E7CB: 10 AF 62       STY    $2,S
+E7CB: 10 AF 62       STY    $2,S     ; [local]
 E7CE: BD E8 A4       JSR    $E8A4
-E7D1: 10 AF 64       STY    $4,S
-E7D4: A7 66          STA    $6,S
-E7D6: A6 61          LDA    $1,S
+E7D1: 10 AF 64       STY    $4,S     ; [local]
+E7D4: A7 66          STA    $6,S     ; [local]
+E7D6: A6 61          LDA    $1,S     ; [local]
 E7D8: 44             LSRA
 E7D9: 44             LSRA
 E7DA: 44             LSRA
 E7DB: 44             LSRA
-E7DC: E6 63          LDB    $3,S
+E7DC: E6 63          LDB    $3,S     ; [local]
 E7DE: 53             COMB
 E7DF: C4 F0          ANDB   #$F0
 E7E1: 34 02          PSHS   A		; [manual_stack_push]
-E7E3: EB E0          ADDB   ,S+
+E7E3: EB E0          ADDB   ,S+     ; [handled]
 E7E5: 4F             CLRA
 E7E6: 58             ASLB
 E7E7: 49             ROLA
-E7E8: E3 64          ADDD   $4,S
+E7E8: E3 64          ADDD   $4,S     ; [local]
 E7EA: 1F 01          TFR    D,X
-E7EC: A6 66          LDA    $6,S
+E7EC: A6 66          LDA    $6,S     ; [local]
 E7EE: 32 67          LEAS   $7,S   ; [free_locals]
 E7F0: 39             RTS
 E7F1: 34 36          PSHS   Y,X,D
@@ -8673,20 +8679,20 @@ E7F5: 96 3A          LDA    bank_switch_copy_3a
 E7F7: 34 02          PSHS   A
 E7F9: 1F 10          TFR    X,D
 E7FB: 32 7D          LEAS   -$3,S   ; [alloc_locals]
-E7FD: A7 E4          STA    ,S
-E7FF: E7 61          STB    $1,S
+E7FD: A7 E4          STA    ,S     ; [local]
+E7FF: E7 61          STB    $1,S     ; [local]
 E801: BD E8 A4       JSR    $E8A4
 E804: BD E8 FB       JSR    set_bank_e8fb
-E807: A6 E4          LDA    ,S
+E807: A6 E4          LDA    ,S     ; [local]
 E809: 48             ASLA
 E80A: 5F             CLRB
 E80B: C3 30 00       ADDD   #$3000
 E80E: 1F 01          TFR    D,X
-E810: 6F 62          CLR    $2,S
+E810: 6F 62          CLR    $2,S     ; [local]
 E812: EC A1          LDD    ,Y++
 E814: BD E9 72       JSR    $E972
 E817: ED 81          STD    ,X++
-E819: 6C 62          INC    $2,S
+E819: 6C 62          INC    $2,S     ; [local]
 E81B: 26 F5          BNE    $E812
 E81D: 32 63          LEAS   $3,S   ; [free_locals]
 E81F: 35 02          PULS   A
@@ -8695,27 +8701,27 @@ E823: BD E8 FB       JSR    set_bank_e8fb
 E826: 35 B6          PULS   D,X,Y,PC
 E828: 34 30          PSHS   Y,X
 E82A: 32 7A          LEAS   -$6,S   ; [alloc_locals]
-E82C: AF E4          STX    ,S
-E82E: 10 AF 62       STY    $2,S
-E831: A6 E4          LDA    ,S
-E833: E6 62          LDB    $2,S
+E82C: AF E4          STX    ,S     ; [local]
+E82E: 10 AF 62       STY    $2,S     ; [local]
+E831: A6 E4          LDA    ,S     ; [local]
+E833: E6 62          LDB    $2,S     ; [local]
 E835: BD E8 55       JSR    $E855
 E838: C3 30 00       ADDD   #$3000
-E83B: ED 64          STD    $4,S
+E83B: ED 64          STD    $4,S     ; [local]
 E83D: 4F             CLRA
-E83E: E6 61          LDB    $1,S
+E83E: E6 61          LDB    $1,S     ; [local]
 E840: 54             LSRB
 E841: 54             LSRB
 E842: 54             LSRB
-E843: E3 64          ADDD   $4,S
-E845: ED 64          STD    $4,S
+E843: E3 64          ADDD   $4,S     ; [local]
+E845: ED 64          STD    $4,S     ; [local]
 E847: 4F             CLRA
-E848: E6 63          LDB    $3,S
+E848: E6 63          LDB    $3,S     ; [local]
 E84A: 53             COMB
 E84B: C4 F0          ANDB   #$F0
 E84D: 58             ASLB
 E84E: 49             ROLA
-E84F: E3 64          ADDD   $4,S
+E84F: E3 64          ADDD   $4,S     ; [local]
 E851: 32 66          LEAS   $6,S   ; [free_locals]
 E853: 35 B0          PULS   X,Y,PC
 
@@ -8797,13 +8803,13 @@ E8E1: 44             LSRA
 E8E2: 44             LSRA
 E8E3: 44             LSRA
 E8E4: 34 02          PSHS   A			; [manual_stack_push]
-E8E6: E6 63          LDB    $3,S
+E8E6: E6 63          LDB    $3,S		; [local]
 E8E8: 53             COMB
 E8E9: C4 F0          ANDB   #$F0
-E8EB: EB E0          ADDB   ,S+
+E8EB: EB E0          ADDB   ,S+	; [handled]
 E8ED: 86 10          LDA    #$10
 E8EF: 3D             MUL
-E8F0: E3 64          ADDD   $4,S
+E8F0: E3 64          ADDD   $4,S		; [local]
 E8F2: 32 66          LEAS   $6,S   ; [free_locals]
 E8F4: 35 02          PULS   A
 E8F6: BD E8 FB       JSR    set_bank_e8fb
@@ -8867,8 +8873,10 @@ E95E: 89 00          ADCA   #$00
 E960: AB A4          ADDA   ,Y
 E962: A7 A4          STA    ,Y
 E964: 39             RTS
+
 E965: 34 76          PSHS   U,Y,X,D
 E967: 35 F6          PULS   D,X,Y,U,PC
+
 E969: 58             ASLB
 E96A: 49             ROLA
 E96B: 58             ASLB
@@ -8878,19 +8886,20 @@ E96E: 49             ROLA
 E96F: 58             ASLB
 E970: 49             ROLA
 E971: 39             RTS
+
 E972: 34 04          PSHS   B
 E974: 1F 89          TFR    A,B
 E976: C4 07          ANDB   #$07
 E978: 34 04          PSHS   B		; [manual_stack_push]
 E97A: 84 F0          ANDA   #$F0
 E97C: 44             LSRA
-E97D: AA E0          ORA    ,S+
+E97D: AA E0          ORA    ,S+		; [handled]
 E97F: 35 04          PULS   B
 E981: 39             RTS
 
 E982: 32 7F          LEAS   -$1,S   ; [alloc_locals]
-E984: 6F E4          CLR    ,S
-E986: E6 E4          LDB    ,S
+E984: 6F E4          CLR    ,S	; [local]
+E986: E6 E4          LDB    ,S	; [local]
 E988: 58             ASLB
 E989: 58             ASLB
 E98A: 8E EA 14       LDX    #$EA14
@@ -8898,9 +8907,9 @@ E98D: 30 85          LEAX   B,X
 E98F: FC 0A 5F       LDD    $0A5F
 E992: 10 A3 89 00 00 CMPD   $0000,X
 E997: 25 04          BCS    $E99D
-E999: 6C E4          INC    ,S
+E999: 6C E4          INC    ,S	; [local]
 E99B: 20 E9          BRA    $E986
-E99D: E6 E4          LDB    ,S
+E99D: E6 E4          LDB    ,S	; [local]
 E99F: 5A             DECB
 E9A0: F7 0A 5B       STB    $0A5B
 E9A3: E1 89 00 03    CMPB   $0003,X
@@ -8947,16 +8956,16 @@ E9F2: 49             ROLA
 E9F3: 58             ASLB
 E9F4: 49             ROLA
 E9F5: 31 AB          LEAY   D,Y
-E9F7: 6F E4          CLR    ,S
+E9F7: 6F E4          CLR    ,S	; [local]
 E9F9: EC 81          LDD    ,X++
 E9FB: 10 A3 A1       CMPD   ,Y++
 E9FE: 27 09          BEQ    $EA09
 EA00: DD 00          STD    $00
-EA02: A6 E4          LDA    ,S
+EA02: A6 E4          LDA    ,S	; [local]
 EA04: 97 03          STA    $03
 EA06: BD FE 89       JSR    $FE89
-EA09: 6C E4          INC    ,S
-EA0B: E6 E4          LDB    ,S
+EA09: 6C E4          INC    ,S	; [local]
+EA0B: E6 E4          LDB    ,S	; [local]
 EA0D: C1 08          CMPB   #$08
 EA0F: 26 E8          BNE    $E9F9
 EA11: 32 61          LEAS   $1,S   ; [free_locals]
@@ -9062,11 +9071,11 @@ EDEC: 2B 1F          BMI    $EE0D
 EDEE: 8E EE 10       LDX    #$EE10
 EDF1: 10 8E 10 B0    LDY    #$10B0
 EDF5: C6 10          LDB    #$10
-EDF7: E7 E4          STB    ,S
+EDF7: E7 E4          STB    ,S	; [local]
 EDF9: EC 81          LDD    ,X++
 EDFB: E7 A9 02 00    STB    $0200,Y
 EDFF: A7 A0          STA    ,Y+
-EE01: 6A E4          DEC    ,S
+EE01: 6A E4          DEC    ,S	; [local]
 EE03: 26 F4          BNE    $EDF9
 EE05: B6 0B 20       LDA    $0B20
 EE08: 8A 80          ORA    #$80
@@ -9108,10 +9117,10 @@ EE68: 27 1C          BEQ    $EE86
 EE6A: 97 4E          STA    $4E
 EE6C: C6 10          LDB    #$10
 EE6E: 3D             MUL
-EE6F: A7 E4          STA    ,S
+EE6F: A7 E4          STA    ,S	; [local]
 EE71: 8E F7 E5       LDX    #$F7E5
 EE74: 10 8E 10 00    LDY    #fg_tiles_palette_1000
-EE78: A6 E4          LDA    ,S
+EE78: A6 E4          LDA    ,S	; [local]
 EE7A: EE 8B          LDU    D,X
 EE7C: 8D 2E          BSR    $EEAC
 EE7E: 5C             INCB
@@ -9124,11 +9133,11 @@ EE88: 91 50          CMPA   $50
 EE8A: 27 1C          BEQ    $EEA8
 EE8C: 97 50          STA    $50
 EE8E: C6 10          LDB    #$10
-EE90: 3D             MUL
-EE91: A7 E4          STA    ,S
+EE90: 3D             MUL	; [local]
+EE91: A7 E4          STA    ,S	; [local]
 EE93: 10 8E 11 00    LDY    #bg_tiles_palette_1100
 EE97: 8E F2 15       LDX    #$F215
-EE9A: A6 E4          LDA    ,S
+EE9A: A6 E4          LDA    ,S	; [local]
 EE9C: EE 8B          LDU    D,X
 EE9E: 8D 0C          BSR    $EEAC
 EEA0: 5C             INCB
@@ -9144,9 +9153,9 @@ EEAE: 32 7D          LEAS   -$3,S   ; [alloc_locals]
 EEB0: B6 38 02       LDA    extra_3802
 EEB3: 84 08          ANDA   #$08
 EEB5: 27 F9          BEQ    $EEB0
-; 
+;
 EEB7: 86 10          LDA    #$10
-EEB9: A7 62          STA    $2,S
+EEB9: A7 62          STA    $2,S	; [local]
 EEBB: EC C4          LDD    ,U
 EEBD: E7 A9 02 00    STB    $0200,Y
 EEC1: 58             ASLB
@@ -9159,7 +9168,7 @@ EEC7: 58             ASLB
 EEC8: 49             ROLA
 EEC9: A7 A0          STA    ,Y+
 EECB: 33 42          LEAU   $2,U
-EECD: 6A 62          DEC    $2,S
+EECD: 6A 62          DEC    $2,S	; [local]
 EECF: 26 EA          BNE    $EEBB
 EED1: 32 63          LEAS   $3,S   ; [free_locals]
 EED3: 35 94          PULS   B,X,PC

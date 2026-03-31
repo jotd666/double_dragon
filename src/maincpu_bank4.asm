@@ -232,19 +232,19 @@ pop_2_levels_41a1:
 41F8: DC 62          LDD    $62
 41FA: 10 93 5C       CMPD   $5C
 41FD: 2E 4E          BGT    $424D
-41FF: E3 E4          ADDD   ,S
+41FF: E3 E4          ADDD   ,S	; [handled]
 4201: 10 93 5C       CMPD   $5C
 4204: 2F 47          BLE    $424D
 4206: DC 64          LDD    $64
 4208: 10 93 5E       CMPD   $5E
 420B: 2E 40          BGT    $424D
-420D: E3 62          ADDD   $2,S
+420D: E3 62          ADDD   $2,S	; [handled]
 420F: 10 93 5E       CMPD   $5E
 4212: 2F 39          BLE    $424D
 4214: DC 66          LDD    $66
 4216: 10 93 60       CMPD   $60
 4219: 2E 32          BGT    $424D
-421B: E3 64          ADDD   $4,S
+421B: E3 64          ADDD   $4,S	; [handled]
 421D: 10 93 60       CMPD   $60
 4220: 2F 2B          BLE    $424D
 4222: D6 5D          LDB    $5D
@@ -415,7 +415,7 @@ table_4317:
 4366: C1 FF          CMPB   #$FF
 4368: 26 03          BNE    $436D
 436A: BD 45 CF       JSR    fatal_error_45cf
-436D: 34 06          PSHS   D
+436D: 34 06          PSHS   D		; [manual_stack_push]
 436F: 10 8C 57 73    CMPY   #$5773
 4373: 26 0A          BNE    $437F
 4375: 9E 54          LDX    $54
@@ -423,7 +423,7 @@ table_4317:
 4379: 84 0F          ANDA   #$0F
 437B: 81 02          CMPA   #$02
 437D: 27 3C          BEQ    $43BB
-437F: A6 29          LDA    $9,Y
+437F: A6 29          LDA    $9,Y	; [bank_address]
 4381: 84 0F          ANDA   #$0F
 4383: 27 18          BEQ    $439D
 4385: 81 04          CMPA   #$04
@@ -439,20 +439,21 @@ table_4317:
 439D: 0C 70          INC    $70
 439F: 86 02          LDA    #$02
 43A1: 97 4B          STA    $4B
-43A3: A6 61          LDA    $1,S
+43A3: A6 61          LDA    $1,S	; [handled]
 43A5: 8B 01          ADDA   #$01
-43A7: A7 61          STA    $1,S
+43A7: A7 61          STA    $1,S	; [handled]
 43A9: DC 50          LDD    $50
-43AB: A3 E4          SUBD   ,S
+43AB: A3 E4          SUBD   ,S	; [handled]
 43AD: DD 50          STD    $50
 43AF: DC 5E          LDD    $5E
-43B1: A3 E4          SUBD   ,S
+43B1: A3 E4          SUBD   ,S	; [handled]
 43B3: DD 5E          STD    $5E
 43B5: DC 52          LDD    $52
-43B7: A3 E4          SUBD   ,S
+43B7: A3 E4          SUBD   ,S	; [handled]
 43B9: DD 52          STD    $52
 43BB: 32 62          LEAS   $2,S   ; [free_locals]
 43BD: 39             RTS
+
 43BE: 8E 43 EB       LDX    #$43EB
 43C1: CC FF FF       LDD    #$FFFF
 43C4: 10 AC 84       CMPY   ,X				; [bank_address]
@@ -489,10 +490,10 @@ table_4317:
 4410: CB 01          ADDB   #$01
 4412: 34 06          PSHS   D		; [manual_stack_push]
 4414: DC 4E          LDD    $4E
-4416: A3 E4          SUBD   ,S
+4416: A3 E4          SUBD   ,S	; [handled]
 4418: DD 4E          STD    $4E
 441A: DC 5A          LDD    $5A
-441C: A3 E1          SUBD   ,S++
+441C: A3 E1          SUBD   ,S++	; [handled]
 441E: DD 5A          STD    $5A
 4420: 86 01          LDA    #$01
 4422: 97 4B          STA    $4B
@@ -515,16 +516,16 @@ table_4317:
 4446: 27 1F          BEQ    $4467
 4448: 4F             CLRA
 4449: CB 01          ADDB   #$01
-444B: 34 06          PSHS   D
+444B: 34 06          PSHS   D	; [manual_stack_push]
 444D: 0C 70          INC    $70
 444F: DC 50          LDD    $50
-4451: E3 E4          ADDD   ,S
+4451: E3 E4          ADDD   ,S	; [handled]
 4453: DD 50          STD    $50
 4455: DC 5E          LDD    $5E
-4457: E3 E4          ADDD   ,S
+4457: E3 E4          ADDD   ,S	; [handled]
 4459: DD 5E          STD    $5E
 445B: DC 52          LDD    $52
-445D: E3 E4          ADDD   ,S
+445D: E3 E4          ADDD   ,S	; [handled]
 445F: DD 52          STD    $52
 4461: 32 62          LEAS   $2,S   ; [free_locals]
 4463: 86 08          LDA    #$08
@@ -542,10 +543,10 @@ table_4317:
 447A: CB 01          ADDB   #$01
 447C: 34 06          PSHS   D		; [manual_stack_push]
 447E: DC 4E          LDD    $4E
-4480: E3 E4          ADDD   ,S
+4480: E3 E4          ADDD   ,S	; [handled]
 4482: DD 4E          STD    $4E
 4484: DC 5A          LDD    $5A
-4486: E3 E1          ADDD   ,S++
+4486: E3 E1          ADDD   ,S++	; [handled]
 4488: DD 5A          STD    $5A
 448A: 86 04          LDA    #$04
 448C: 97 4B          STA    $4B
@@ -565,13 +566,13 @@ table_4317:
 44A7: 34 06          PSHS   D
 44A9: 0C 6E          INC    $6E
 44AB: DC 50          LDD    $50
-44AD: E3 E4          ADDD   ,S
+44AD: E3 E4          ADDD   ,S	; [local]
 44AF: DD 50          STD    $50
 44B1: DC 5E          LDD    $5E
-44B3: E3 E4          ADDD   ,S
+44B3: E3 E4          ADDD   ,S	; [local]
 44B5: DD 5E          STD    $5E
 44B7: DC 52          LDD    $52
-44B9: E3 E4          ADDD   ,S
+44B9: E3 E4          ADDD   ,S	; [local]
 44BB: 83 00 01       SUBD   #$0001
 44BE: DD 52          STD    $52
 44C0: DC 60          LDD    $60
@@ -614,7 +615,7 @@ table_4317:
 4524: 26 F6          BNE    $451C
 4526: 20 06          BRA    $452E
 4528: 10 AE 03       LDY    $3,X		; [bank_address]
-452B: AD 98 01       JSR    [$01,X]
+452B: AD 98 01       JSR    [$01,X]		; [breakpoint]
 452E: 9E 56          LDX    $56
 4530: 30 88 21       LEAX   $21,X
 4533: 9F 56          STX    $56
@@ -758,16 +759,16 @@ fatal_error_45cf:
 4661: 27 02          BEQ    $4665
 4663: C6 FF          LDB    #$FF
 4665: 4F             CLRA
-4666: ED E4          STD    ,S
+4666: ED E4          STD    ,S	; [local]
 4668: D6 04          LDB    $04
 466A: 0D 03          TST    $03
 466C: 27 02          BEQ    $4670
 466E: C6 FF          LDB    #$FF
 4670: 4F             CLRA
-4671: ED 62          STD    $2,S
-4673: E3 E4          ADDD   ,S
-4675: ED 64          STD    $4,S
-4677: E6 61          LDB    $1,S
+4671: ED 62          STD    $2,S	; [local]
+4673: E3 E4          ADDD   ,S	; [local]
+4675: ED 64          STD    $4,S	; [local]
+4677: E6 61          LDB    $1,S	; [local]
 4679: 96 00          LDA    $00
 467B: 27 06          BEQ    $4683
 467D: 81 03          CMPA   #$03
@@ -775,26 +776,25 @@ fatal_error_45cf:
 4681: E6 63          LDB    $3,S
 4683: 86 40          LDA    #$40
 4685: 3D             MUL
-4686: 10 AE 64       LDY    $4,S
+4686: 10 AE 64       LDY    $4,S	; [local]
 4689: BD 48 B0       JSR    $48B0		; [bogus]
-468C: ED 64          STD    $4,S
+468C: ED 64          STD    $4,S	; [local]
 468E: 10 8E 46 9E    LDY    #$469E
 4692: 96 00          LDA    $00
 4694: A6 A6          LDA    A,Y		; [bank_address]
-4696: AB 65          ADDA   $5,S
+4696: AB 65          ADDA   $5,S	; [local]
 4698: 1C FE          ANDCC  #$FE
 469A: 32 6F          LEAS   $F,S   ; [free_locals]
 469C: 35 FE          PULS   D,DP,X,Y,U,PC
 
-469E: 00 40          NEG    $40
-46A0: C0 80          SUBB   #$80
+
 46A2: 32 7C          LEAS   -$4,S   ; [alloc_locals]
 46A4: EC 04          LDD    $4,X
-46A6: ED E4          STD    ,S
+46A6: ED E4          STD    ,S	; [local]
 46A8: EC 06          LDD    $6,X
 46AA: E3 08          ADDD   $8,X
-46AC: ED 62          STD    $2,S
-46AE: EC E4          LDD    ,S
+46AC: ED 62          STD    $2,S	; [local]
+46AE: EC E4          LDD    ,S	; [local]
 46B0: C3 00 20       ADDD   #$0020
 46B3: 81 FF          CMPA   #$FF
 46B5: 27 25          BEQ    $46DC
@@ -802,9 +802,9 @@ fatal_error_45cf:
 46BA: 25 20          BCS    $46DC
 46BC: DC 3C          LDD    $3C
 46BE: C3 01 20       ADDD   #$0120
-46C1: 10 A3 E4       CMPD   ,S
+46C1: 10 A3 E4       CMPD   ,S	; [local]
 46C4: 25 16          BCS    $46DC
-46C6: EC 62          LDD    $2,S
+46C6: EC 62          LDD    $2,S	; [local]
 46C8: C3 00 20       ADDD   #$0020
 46CB: 81 FF          CMPA   #$FF
 46CD: 27 0D          BEQ    $46DC
@@ -812,7 +812,7 @@ fatal_error_45cf:
 46D2: 25 08          BCS    $46DC
 46D4: DC 3F          LDD    $3F
 46D6: C3 01 20       ADDD   #$0120
-46D9: 10 A3 62       CMPD   $2,S
+46D9: 10 A3 62       CMPD   $2,S	; [local]
 46DC: 32 64          LEAS   $4,S   ; [free_locals]
 46DE: 39             RTS
 46DF: 34 34          PSHS   Y,X,B
@@ -1118,31 +1118,31 @@ lb4_7bb4:  ; [global]
 7E52: A6 06          LDA    $6,X
 7E54: 48             ASLA
 7E55: 10 AE A6       LDY    A,Y		; [bank_address]
-7E58: 10 AF 66       STY    $6,S
+7E58: 10 AF 66       STY    $6,S	; [local]
 7E5B: 10 8E 7E D9    LDY    #$7ED9
 7E5F: D6 00          LDB    $00
 7E61: 58             ASLB
 7E62: EC A5          LDD    B,Y		; [bank_address]
-7E64: A7 61          STA    $1,S
-7E66: E7 63          STB    $3,S
-7E68: 6F E4          CLR    ,S
-7E6A: 6F 62          CLR    $2,S
+7E64: A7 61          STA    $1,S	; [local]
+7E66: E7 63          STB    $3,S	; [local]
+7E68: 6F E4          CLR    ,S	; [local]
+7E6A: 6F 62          CLR    $2,S	; [local]
 7E6C: EC 01          LDD    $1,X
-7E6E: E3 E4          ADDD   ,S
-7E70: ED E4          STD    ,S
+7E6E: E3 E4          ADDD   ,S	; [local]
+7E70: ED E4          STD    ,S	; [local]
 7E72: EC 03          LDD    $3,X
-7E74: E3 62          ADDD   $2,S
-7E76: ED 62          STD    $2,S
+7E74: E3 62          ADDD   $2,S	; [local]
+7E76: ED 62          STD    $2,S	; [local]
 7E78: 9F 01          STX    $01
-7E7A: AE E4          LDX    ,S
-7E7C: 10 AE 62       LDY    $2,S
+7E7A: AE E4          LDX    ,S	; [local]
+7E7C: 10 AE 62       LDY    $2,S	; [local]
 7E7F: BD FE 30       JSR    $FE30
-7E82: ED 64          STD    $4,S
+7E82: ED 64          STD    $4,S	; [local]
 7E84: 9E 01          LDX    $01
-7E86: 10 AE 66       LDY    $6,S
+7E86: 10 AE 66       LDY    $6,S	; [local]
 7E89: EC A1          LDD    ,Y++
-7E8B: 10 AF 66       STY    $6,S
-7E8E: 10 AE 64       LDY    $4,S
+7E8B: 10 AF 66       STY    $6,S	; [local]
+7E8E: 10 AE 64       LDY    $4,S	; [local]
 7E91: ED A4          STD    ,Y
 7E93: 0C 00          INC    $00
 7E95: D6 00          LDB    $00

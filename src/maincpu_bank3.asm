@@ -232,20 +232,21 @@ jump_table_6cdc:
 6E07: 81 05          CMPA   #$05
 6E09: 25 D2          BCS    $6DDD
 6E0B: 35 FE          PULS   D,DP,X,Y,U,PC
+
 6E0D: 34 7E          PSHS   U,Y,X,DP,D
 6E0F: 17 91 C1       LBSR   $FFD3
 6E12: 1F 89          TFR    A,B
 6E14: 84 70          ANDA   #$70
 6E16: A7 88 43       STA    $43,X
-6E19: A7 E4          STA    ,S
+6E19: A7 E4          STA    ,S		; [breakpoint]
 6E1B: A8 88 44       EORA   $44,X
-6E1E: A4 E4          ANDA   ,S
+6E1E: A4 E4          ANDA   ,S		; [breakpoint]
 6E20: 44             LSRA
 6E21: 44             LSRA
 6E22: 44             LSRA
 6E23: 44             LSRA
 6E24: A7 88 40       STA    $40,X
-6E27: A6 E4          LDA    ,S
+6E27: A6 E4          LDA    ,S		; [breakpoint]
 6E29: A7 88 44       STA    $44,X
 6E2C: C4 0F          ANDB   #$0F
 6E2E: 10 8E 6E 39    LDY    #$6E39
@@ -262,48 +263,48 @@ jump_table_6cdc:
 6E59: 39             RTS
 
 6E5A: 34 7E          PSHS   U,Y,X,DP,D
-6E5C: 32 71          LEAS   -$F,S	; alloc auto memory   ; [alloc_locals]
+6E5C: 32 71          LEAS   -$F,S	; [alloc_locals]
 6E5E: CE 0E 76       LDU    #$0E76
-6E61: 6F E4          CLR    ,S
-6E63: 6F 61          CLR    $1,S
+6E61: 6F E4          CLR    ,S	; [local]
+6E63: 6F 61          CLR    $1,S	; [local]
 6E65: 8E 1A 94       LDX    #$1A94
-6E68: A6 E4          LDA    ,S
+6E68: A6 E4          LDA    ,S	; [local]
 6E6A: E6 C6          LDB    A,U
 6E6C: C0 21          SUBB   #$21
 6E6E: 17 00 5E       LBSR   $6ECF
 6E71: 30 04          LEAX   $4,X
-6E73: 6C E4          INC    ,S
-6E75: A6 E4          LDA    ,S
+6E73: 6C E4          INC    ,S	; [local]
+6E75: A6 E4          LDA    ,S	; [local]
 6E77: 81 03          CMPA   #$03
 6E79: 25 ED          BCS    $6E68
 6E7B: 30 89 00 F4    LEAX   $00F4,X
 6E7F: 33 46          LEAU   $6,U
-6E81: 6F E4          CLR    ,S
-6E83: 6C 61          INC    $1,S
-6E85: A6 61          LDA    $1,S	; auto-memory
+6E81: 6F E4          CLR    ,S	; [local]
+6E83: 6C 61          INC    $1,S	; [local]
+6E85: A6 61          LDA    $1,S		; [local]
 6E87: 81 05          CMPA   #$05
 6E89: 25 DD          BCS    $6E68
-6E8B: 6F E4          CLR    ,S
+6E8B: 6F E4          CLR    ,S	; [local]
 6E8D: 8E 19 0E       LDX    #$190E
 6E90: 10 8E 6E C5    LDY    #$6EC5
-6E94: A6 E4          LDA    ,S
+6E94: A6 E4          LDA    ,S	; [local]
 6E96: E6 A6          LDB    A,Y		; [bank_address]
 6E98: C0 21          SUBB   #$21
 6E9A: 17 00 32       LBSR   $6ECF
 6E9D: 30 04          LEAX   $4,X
-6E9F: 6C E4          INC    ,S
-6EA1: A6 E4          LDA    ,S
+6E9F: 6C E4          INC    ,S	; [local]
+6EA1: A6 E4          LDA    ,S	; [local]
 6EA3: 81 0A          CMPA   #$0A
 6EA5: 25 ED          BCS    $6E94
-6EA7: 6F E4          CLR    ,S
+6EA7: 6F E4          CLR    ,S	; [local]
 6EA9: 8E 1A 8C       LDX    #$1A8C
 6EAC: C6 3D          LDB    #$3D
-6EAE: EB E4          ADDB   ,S
+6EAE: EB E4          ADDB   ,S	; [local]
 6EB0: C0 21          SUBB   #$21
 6EB2: 17 00 1A       LBSR   $6ECF
 6EB5: 30 89 01 00    LEAX   $0100,X
-6EB9: 6C E4          INC    ,S
-6EBB: A6 E4          LDA    ,S
+6EB9: 6C E4          INC    ,S	; [local]
+6EBB: A6 E4          LDA    ,S	; [local]
 6EBD: 81 05          CMPA   #$05
 6EBF: 25 EB          BCS    $6EAC
 6EC1: 32 6F          LEAS   $F,S   ; [free_locals]
@@ -817,35 +818,35 @@ jump_table_7290:
 73CB: 25 F9          BCS    $73C6
 73CD: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 73CF: C6 20          LDB    #$20
-73D1: E7 E4          STB    ,S
+73D1: E7 E4          STB    ,S		; [local]
 73D3: 8E 18 42       LDX    #$1842
 73D6: 10 8E 1F 82    LDY    #$1F82
 73DA: CC 00 62       LDD    #$0062
 73DD: ED 81          STD    ,X++
 73DF: ED A1          STD    ,Y++
-73E1: 6A E4          DEC    ,S
+73E1: 6A E4          DEC    ,S			; [local]
 73E3: 26 F5          BNE    $73DA
 73E5: 8E 18 00       LDX    #$1800
 73E8: 10 8E 18 3E    LDY    #$183E
 73EC: C6 20          LDB    #$20
-73EE: E7 E4          STB    ,S
+73EE: E7 E4          STB    ,S			; [local]
 73F0: CC 00 62       LDD    #$0062
 73F3: ED 84          STD    ,X
 73F5: ED A4          STD    ,Y
 73F7: 30 88 40       LEAX   $40,X
 73FA: 31 A8 40       LEAY   $40,Y
-73FD: 6A E4          DEC    ,S
+73FD: 6A E4          DEC    ,S			; [local]
 73FF: 26 EF          BNE    $73F0
 7401: 32 61          LEAS   $1,S   ; [free_locals]
 7403: 86 1E          LDA    #$1E
 7405: 17 8B C1       LBSR   $FFC9
 7408: 32 7F          LEAS   -$1,S   ; [alloc_locals]
-740A: 6F E4          CLR    ,S
+740A: 6F E4          CLR    ,S	; [handled]
 740C: 10 8E 07 5B    LDY    #$075B
 7410: 6F A4          CLR    ,Y
 7412: 31 A8 21       LEAY   $21,Y
-7415: 6C E4          INC    ,S
-7417: A6 E4          LDA    ,S
+7415: 6C E4          INC    ,S	; [handled]
+7417: A6 E4          LDA    ,S	; [handled]
 7419: 81 10          CMPA   #$10
 741B: 25 F3          BCS    $7410
 741D: 32 61          LEAS   $1,S   ; [free_locals]

@@ -186,31 +186,31 @@ lb0_move_character_4159:
 415F: 44             LSRA
 4160: 44             LSRA
 4161: 44             LSRA
-4162: A7 E4          STA    ,S
+4162: A7 E4          STA    ,S		; [local]
 4164: 1F 89          TFR    A,B
 4166: A6 68          LDA    $8,S		; [pushed_parameter]
 4168: 84 1F          ANDA   #$1F
-416A: A7 61          STA    $1,S
+416A: A7 61          STA    $1,S		; [local]
 416C: 8E 41 B7       LDX    #$41B7
 416F: E6 85          LDB    B,X	; [bank_address]
-4171: E7 62          STB    $2,S
+4171: E7 62          STB    $2,S		; [local]
 4173: C4 01          ANDB   #$01
 4175: CB 03          ADDB   #$03
-4177: A6 61          LDA    $1,S
-4179: 6D 62          TST    $2,S
+4177: A6 61          LDA    $1,S		; [local]
+4179: 6D 62          TST    $2,S		; [local]
 417B: 2A 04          BPL    $4181
 417D: 43             COMA
 417E: 84 1F          ANDA   #$1F
 4180: 4C             INCA
-4181: A7 E5          STA    B,S
+4181: A7 E5          STA    B,S		; [local]
 4183: C8 07          EORB   #$07
 4185: 86 20          LDA    #$20
-4187: A7 E5          STA    B,S
-4189: A6 64          LDA    $4,S
+4187: A7 E5          STA    B,S		; [local]
+4189: A6 64          LDA    $4,S		; [local]
 418B: E6 69          LDB    $9,S		; [pushed_parameter]
 418D: 3D             MUL
 418E: DD 02          STD    $02
-4190: A6 63          LDA    $3,S
+4190: A6 63          LDA    $3,S		; [local]
 4192: E6 69          LDB    $9,S			; [pushed_parameter]
 4194: 3D             MUL
 4195: DD 00          STD    $00
@@ -225,7 +225,7 @@ lb0_move_character_4159:
 41A8: 81 C0          CMPA   #$C0
 41AA: 24 07          BCC    $41B3
 41AC: CC 00 00       LDD    #$0000
-41AF: 93 02          SUBD   $02		; change Y direction ?
+41AF: 93 02          SUBD   $02		; change Y direction
 41B1: DD 02          STD    $02
 41B3: 32 68          LEAS   $8,S	; restore stack   ; [free_locals]
 41B5: 35 B6          PULS   D,X,Y,PC
@@ -306,8 +306,8 @@ lb0_4242:   ; [global]
 4244: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 4246: 4F             CLRA
 4247: 1F 8B          TFR    A,DP
-4249: A7 E4          STA    ,S
-424B: A6 E4          LDA    ,S
+4249: A7 E4          STA    ,S		; [local]
+424B: A6 E4          LDA    ,S		; [local]
 424D: C6 04          LDB    #$04
 424F: 3D             MUL
 4250: C3 00 60       ADDD   #$0060
@@ -329,8 +329,8 @@ lb0_4242:   ; [global]
 4271: A7 C4          STA    ,U
 4273: 2B 02          BMI    $4277
 4275: 6F C4          CLR    ,U
-4277: 6C E4          INC    ,S
-4279: E6 E4          LDB    ,S
+4277: 6C E4          INC    ,S		; [local]
+4279: E6 E4          LDB    ,S		; [local]
 427B: C1 04          CMPB   #$04
 427D: 10 25 FF CA    LBCS   $424B
 4281: 32 61          LEAS   $1,S   ; [free_locals]
@@ -606,7 +606,7 @@ lb0_44dc:    ; [global]
 4540: 33 CB          LEAU   D,U
 4542: EF A1          STU    ,Y++
 4544: 86 10          LDA    #$10
-4546: A7 62          STA    $2,S
+4546: A7 62          STA    $2,S		; [local]
 4548: EC 81          LDD    ,X++
 454A: 34 04          PSHS   B
 454C: 58             ASLB
@@ -619,7 +619,7 @@ lb0_44dc:    ; [global]
 4553: 49             ROLA
 4554: 35 04          PULS   B
 4556: ED A1          STD    ,Y++
-4558: 6A 62          DEC    $2,S
+4558: 6A 62          DEC    $2,S		; [local]
 455A: 26 EC          BNE    $4548
 455C: 32 68          LEAS   $8,S   ; [free_locals]
 455E: 35 F6          PULS   D,X,Y,U,PC
@@ -753,30 +753,30 @@ lb0_4652:  ; [global]
 4662: 27 02          BEQ    $4666
 4664: C6 FF          LDB    #$FF
 4666: 4F             CLRA
-4667: ED E4          STD    ,S
+4667: ED E4          STD    ,S		; [local]
 4669: D6 04          LDB    $04
 466B: 0D 03          TST    $03
 466D: 27 02          BEQ    $4671
 466F: C6 FF          LDB    #$FF
 4671: 4F             CLRA
-4672: ED 62          STD    $2,S
-4674: E3 E4          ADDD   ,S
-4676: ED 64          STD    $4,S
-4678: E6 61          LDB    $1,S
+4672: ED 62          STD    $2,S		; [local]
+4674: E3 E4          ADDD   ,S		; [local]
+4676: ED 64          STD    $4,S		; [local]
+4678: E6 61          LDB    $1,S		; [local]
 467A: 96 00          LDA    $00
 467C: 27 06          BEQ    $4684
 467E: 81 03          CMPA   #$03
 4680: 27 02          BEQ    $4684
-4682: E6 63          LDB    $3,S
+4682: E6 63          LDB    $3,S		; [local]
 4684: 86 40          LDA    #$40
 4686: 3D             MUL
-4687: 10 AE 64       LDY    $4,S
+4687: 10 AE 64       LDY    $4,S		; [local]
 468A: BD 48 B1       JSR    $48B1
-468D: ED 64          STD    $4,S
+468D: ED 64          STD    $4,S		; [local]
 468F: 10 8E 46 9F    LDY    #$469F
 4693: 96 00          LDA    $00
 4695: A6 A6          LDA    A,Y	; [bank_address]
-4697: AB 65          ADDA   $5,S
+4697: AB 65          ADDA   $5,S		; [local]
 4699: 1C FE          ANDCC  #$FE
 469B: 32 6F          LEAS   $F,S   ; [free_locals]
 469D: 35 FE          PULS   D,DP,X,Y,U,PC
@@ -787,7 +787,7 @@ lb0_46a3:   ; [global]
 46A7: ED E4          STD    ,S
 46A9: EC 06          LDD    $6,X
 46AB: E3 08          ADDD   $8,X
-46AD: ED 62          STD    $2,S
+46AD: ED 62          STD    $2,S		; [local]
 46AF: EC E4          LDD    ,S
 46B1: C3 00 20       ADDD   #$0020
 46B4: 81 FF          CMPA   #$FF
@@ -796,9 +796,9 @@ lb0_46a3:   ; [global]
 46BB: 25 20          BCS    $46DD
 46BD: DC 3C          LDD    $3C
 46BF: C3 01 20       ADDD   #$0120
-46C2: 10 A3 E4       CMPD   ,S
+46C2: 10 A3 E4       CMPD   ,S		; [local]
 46C5: 25 16          BCS    $46DD
-46C7: EC 62          LDD    $2,S
+46C7: EC 62          LDD    $2,S		; [local]
 46C9: C3 00 20       ADDD   #$0020
 46CC: 81 FF          CMPA   #$FF
 46CE: 27 0D          BEQ    $46DD
@@ -806,7 +806,7 @@ lb0_46a3:   ; [global]
 46D3: 25 08          BCS    $46DD
 46D5: DC 3F          LDD    $3F
 46D7: C3 01 20       ADDD   #$0120
-46DA: 10 A3 62       CMPD   $2,S
+46DA: 10 A3 62       CMPD   $2,S		; [local]
 46DD: 32 64          LEAS   $4,S   ; [free_locals]
 46DF: 39             RTS
 
@@ -1005,21 +1005,21 @@ lb0_48b1:  ; [global]
 48B7: 10 8C 00 00    CMPY   #$0000
 48BB: 27 27          BEQ    $48E4
 48BD: 32 7B          LEAS   -$5,S   ; [alloc_locals]
-48BF: ED E4          STD    ,S
-48C1: 10 AF 62       STY    $2,S
+48BF: ED E4          STD    ,S	; [local]
+48C1: 10 AF 62       STY    $2,S	; [local]
 48C4: 86 10          LDA    #$10
-48C6: A7 64          STA    $4,S
+48C6: A7 64          STA    $4,S	; [local]
 48C8: 4F             CLRA
 48C9: 5F             CLRB
-48CA: 68 61          ASL    $1,S
-48CC: 69 E4          ROL    ,S
+48CA: 68 61          ASL    $1,S	; [local]
+48CC: 69 E4          ROL    ,S	; [local]
 48CE: 59             ROLB
 48CF: 49             ROLA
-48D0: 10 A3 62       CMPD   $2,S
+48D0: 10 A3 62       CMPD   $2,S	; [local]
 48D3: 25 04          BCS    $48D9
-48D5: A3 62          SUBD   $2,S
-48D7: 6C 61          INC    $1,S
-48D9: 6A 64          DEC    $4,S
+48D5: A3 62          SUBD   $2,S	; [local]
+48D7: 6C 61          INC    $1,S	; [local]
+48D9: 6A 64          DEC    $4,S	; [local]
 48DB: 26 ED          BNE    $48CA
 48DD: 1F 02          TFR    D,Y
 48DF: EC E4          LDD    ,S
@@ -1062,24 +1062,24 @@ lb0_48eb:  ; [global]
 4923: 27 28          BEQ    $494D
 4925: C1 00          CMPB   #$00
 4927: 27 24          BEQ    $494D
-4929: 32 71          LEAS   -$F,S		; alloc auto-memory   ; [alloc_locals]
-492B: A7 E4          STA    ,S
-492D: E7 61          STB    $1,S
+4929: 32 71          LEAS   -$F,S	 ; [alloc_locals]
+492B: A7 E4          STA    ,S		; [local]
+492D: E7 61          STB    $1,S	; [local]
 492F: 86 08          LDA    #$08
-4931: A7 62          STA    $2,S
-4933: 6F 63          CLR    $3,S
+4931: A7 62          STA    $2,S		; [local]
+4933: 6F 63          CLR    $3,S	; [local]
 4935: 4F             CLRA
-4936: 68 63          ASL    $3,S
+4936: 68 63          ASL    $3,S		; [local]
 4938: 58             ASLB
 4939: 49             ROLA
-493A: A1 E4          CMPA   ,S
+493A: A1 E4          CMPA   ,S	; [local]
 493C: 25 04          BCS    $4942
-493E: A0 E4          SUBA   ,S
-4940: 6C 63          INC    $3,S
-4942: 6A 62          DEC    $2,S
+493E: A0 E4          SUBA   ,S	; [local]
+4940: 6C 63          INC    $3,S	; [local]
+4942: 6A 62          DEC    $2,S	; [local]
 4944: 26 F0          BNE    $4936
 4946: 1F 89          TFR    A,B
-4948: A6 63          LDA    $3,S
+4948: A6 63          LDA    $3,S	; [local]
 494A: 32 6F          LEAS   $F,S   ; [free_locals]
 494C: 39             RTS
 494D: 4F             CLRA
@@ -1089,36 +1089,36 @@ lb0_48eb:  ; [global]
 4953: 27 43          BEQ    $4998
 4955: 10 8C 00 00    CMPY   #$0000
 4959: 27 3D          BEQ    $4998
-495B: 32 71          LEAS   -$F,S		; alloc auto-memory   ; [alloc_locals]
-495D: 6F 64          CLR    $4,S
-495F: 6F 65          CLR    $5,S
-4961: 6F 66          CLR    $6,S
-4963: 6F 67          CLR    $7,S
-4965: AF E4          STX    ,S
-4967: 10 AF 62       STY    $2,S
-496A: A6 61          LDA    $1,S
-496C: E6 63          LDB    $3,S
+495B: 32 71          LEAS   -$F,S	; [alloc_locals]
+495D: 6F 64          CLR    $4,S    ; [local]
+495F: 6F 65          CLR    $5,S    ; [local]
+4961: 6F 66          CLR    $6,S    ; [local]
+4963: 6F 67          CLR    $7,S    ; [local]
+4965: AF E4          STX    ,S      ; [local]
+4967: 10 AF 62       STY    $2,S    ; [local]
+496A: A6 61          LDA    $1,S    ; [local]
+496C: E6 63          LDB    $3,S    ; [local]
 496E: 3D             MUL
-496F: ED 66          STD    $6,S
-4971: A6 E4          LDA    ,S
-4973: E6 63          LDB    $3,S
+496F: ED 66          STD    $6,S  ; [local]
+4971: A6 E4          LDA    ,S   ; [local] 
+4973: E6 63          LDB    $3,S	; [local]
 4975: 3D             MUL
-4976: E3 65          ADDD   $5,S
-4978: ED 65          STD    $5,S
-497A: A6 61          LDA    $1,S
-497C: E6 62          LDB    $2,S
+4976: E3 65          ADDD   $5,S   ; [local]
+4978: ED 65          STD    $5,S   ; [local]
+497A: A6 61          LDA    $1,S   ; [local]
+497C: E6 62          LDB    $2,S   ; [local]
 497E: 3D             MUL
-497F: E3 65          ADDD   $5,S
-4981: ED 65          STD    $5,S
+497F: E3 65          ADDD   $5,S    ; [local]
+4981: ED 65          STD    $5,S    ; [local]
 4983: 24 02          BCC    $4987
-4985: 6C 64          INC    $4,S
-4987: A6 E4          LDA    ,S
-4989: E6 62          LDB    $2,S
+4985: 6C 64          INC    $4,S	; [local]
+4987: A6 E4          LDA    ,S	; [local]
+4989: E6 62          LDB    $2,S	; [local]
 498B: 3D             MUL
-498C: E3 64          ADDD   $4,S
-498E: ED 64          STD    $4,S
-4990: 10 AE 64       LDY    $4,S
-4993: AE 66          LDX    $6,S
+498C: E3 64          ADDD   $4,S   ; [local]
+498E: ED 64          STD    $4,S   ; [local]
+4990: 10 AE 64       LDY    $4,S   ; [local]
+4993: AE 66          LDX    $6,S   ; [local]
 4995: 32 6F          LEAS   $F,S   ; [free_locals]
 4997: 39             RTS
 4998: 8E 00 00       LDX    #$0000
@@ -1272,7 +1272,7 @@ display_title_tiles_4ac7:
 4AE6: 8E 4D 4C       LDX    #$4D4C
 4AE9: 10 8E 28 00    LDY    #sprite_memory_2800
 4AED: 86 0D          LDA    #$0D
-4AEF: A7 E4          STA    ,S
+4AEF: A7 E4          STA    ,S	; [local]
 4AF1: 86 0D          LDA    #$0D
 4AF3: A7 61          STA    $1,S
 4AF5: A6 84          LDA    ,X				; [bank_address]
@@ -1280,7 +1280,7 @@ display_title_tiles_4ac7:
 4AF9: 26 04          BNE    $4AFF
 4AFB: 30 01          LEAX   $1,X
 4AFD: 20 1C          BRA    $4B1B
-4AFF: A6 E4          LDA    ,S
+4AFF: A6 E4          LDA    ,S	; [local]
 4B01: 48             ASLA
 4B02: 48             ASLA
 4B03: 48             ASLA
@@ -1292,18 +1292,18 @@ display_title_tiles_4ac7:
 4B0D: A7 A0          STA    ,Y+
 4B0F: A6 80          LDA    ,X+				; [bank_address]
 4B11: A7 A0          STA    ,Y+
-4B13: A6 61          LDA    $1,S
+4B13: A6 61          LDA    $1,S	; [local]
 4B15: 48             ASLA
 4B16: 48             ASLA
 4B17: 48             ASLA
 4B18: 48             ASLA
 4B19: A7 A0          STA    ,Y+
-4B1B: 6A 61          DEC    $1,S
-4B1D: A6 61          LDA    $1,S
+4B1B: 6A 61          DEC    $1,S	; [local]
+4B1D: A6 61          LDA    $1,S	; [local]
 4B1F: 81 04          CMPA   #$04
 4B21: 26 D2          BNE    $4AF5
-4B23: 6A E4          DEC    ,S
-4B25: A6 E4          LDA    ,S
+4B23: 6A E4          DEC    ,S	; [local]
+4B25: A6 E4          LDA    ,S	; [local]
 4B27: 81 04          CMPA   #$04
 4B29: 26 C6          BNE    $4AF1
 4B2B: 32 62          LEAS   $2,S   ; [free_locals]
@@ -1791,14 +1791,14 @@ lb0_51e5:    ; [global]
 5266: C6 03          LDB    #$03
 5268: 3D             MUL
 5269: 31 AB          LEAY   D,Y		; [bank_address]
-526B: 10 AF E4       STY    ,S
+526B: 10 AF E4       STY    ,S	; [local]
 526E: 10 8E 53 1C    LDY    #$531C
 5272: 96 36          LDA    $36
 5274: 27 04          BEQ    $527A
 5276: 10 8E 53 2E    LDY    #$532E
-527A: 10 AF 62       STY    $2,S
+527A: 10 AF 62       STY    $2,S	; [local]
 527D: 86 01          LDA    #$01
-527F: A7 64          STA    $4,S
+527F: A7 64          STA    $4,S	; [local]
 5281: 8E 04 5E       LDX    #$045E
 5284: 6D 84          TST    ,X
 5286: 2A 0A          BPL    $5292
@@ -1810,23 +1810,23 @@ lb0_51e5:    ; [global]
 5294: A7 84          STA    ,X
 5296: BD 63 50       JSR    $6350
 5299: 6F 88 45       CLR    $45,X
-529C: 10 AE E4       LDY    ,S
-529F: A6 A0          LDA    ,Y+
+529C: 10 AE E4       LDY    ,S	; [local]
+529F: A6 A0          LDA    ,Y+	; [bank_address]
 52A1: A7 01          STA    $1,X
 52A3: BD 64 80       JSR    $6480
 52A6: 80 02          SUBA   #$02
 52A8: A7 88 17       STA    $17,X
-52AB: 10 AF E4       STY    ,S
+52AB: 10 AF E4       STY    ,S	; [local]
 52AE: 86 57          LDA    #$57
 52B0: A7 88 1B       STA    $1B,X
-52B3: 10 AE 62       LDY    $2,S
+52B3: 10 AE 62       LDY    $2,S	; [local]
 52B6: EC A1          LDD    ,Y++
 52B8: ED 04          STD    $4,X
 52BA: EC A1          LDD    ,Y++
 52BC: ED 06          STD    $6,X
 52BE: EC A1          LDD    ,Y++
 52C0: ED 08          STD    $8,X
-52C2: 10 AF 62       STY    $2,S
+52C2: 10 AF 62       STY    $2,S	; [local]
 52C5: A6 01          LDA    $1,X
 52C7: BD 64 19       JSR    $6419
 52CA: E7 88 1F       STB    $1F,X
@@ -1913,24 +1913,24 @@ lb0_51e5:    ; [global]
 53BD: 48             ASLA
 53BE: AE 86          LDX    A,X	; [bank_address]
 53C0: EC 84          LDD    ,X
-53C2: ED E4          STD    ,S
+53C2: ED E4          STD    ,S	; [local]
 53C4: EC 04          LDD    $4,X
-53C6: ED 62          STD    $2,S
-53C8: 6F 66          CLR    $6,S
-53CA: A6 66          LDA    $6,S
+53C6: ED 62          STD    $2,S	; [local]
+53C8: 6F 66          CLR    $6,S	; [local]
+53CA: A6 66          LDA    $6,S	; [local]
 53CC: 48             ASLA
 53CD: 10 8E 54 1F    LDY    #$541F
 53D1: 31 A6          LEAY   A,Y
 53D3: 4F             CLRA
 53D4: E6 A0          LDB    ,Y+	; [bank_address]
-53D6: E3 E4          ADDD   ,S
+53D6: E3 E4          ADDD   ,S	; [local]
 53D8: 1F 01          TFR    D,X
 53DA: 4F             CLRA
 53DB: E6 A0          LDB    ,Y+	; [bank_address]
-53DD: E3 62          ADDD   $2,S
+53DD: E3 62          ADDD   $2,S	; [local]
 53DF: 1F 02          TFR    D,Y
 53E1: BD FE 30       JSR    $FE30
-53E4: ED 64          STD    $4,S
+53E4: ED 64          STD    $4,S	; [local]
 53E6: 10 8E 54 3D    LDY    #$543D
 53EA: 96 36          LDA    $36
 53EC: 48             ASLA
@@ -1938,13 +1938,13 @@ lb0_51e5:    ; [global]
 53F0: B6 0A FC       LDA    $0AFC
 53F3: 48             ASLA
 53F4: 10 AE A6       LDY    A,Y
-53F7: A6 66          LDA    $6,S
+53F7: A6 66          LDA    $6,S	; [local]
 53F9: 48             ASLA
 53FA: EC A6          LDD    A,Y
-53FC: AE 64          LDX    $4,S
+53FC: AE 64          LDX    $4,S	; [local]
 53FE: ED 84          STD    ,X
-5400: 6C 66          INC    $6,S
-5402: A6 66          LDA    $6,S
+5400: 6C 66          INC    $6,S	; [local]
+5402: A6 66          LDA    $6,S	; [local]
 5404: 81 0F          CMPA   #$0F
 5406: 26 C2          BNE    $53CA
 5408: 32 67          LEAS   $7,S   ; [free_locals]
@@ -2501,18 +2501,18 @@ lb0_5b1f:    ; [global]
 5BC2: 4F             CLRA
 5BC3: E6 21          LDB    $1,Y
 5BC5: E3 04          ADDD   $4,X	; [bank_address]
-5BC7: ED 62          STD    $2,S
+5BC7: ED 62          STD    $2,S	; [local]
 5BC9: 36 30          PSHU   Y,X
 5BCB: AE E4          LDX    ,S
-5BCD: 10 AE 62       LDY    $2,S
+5BCD: 10 AE 62       LDY    $2,S	; [local]
 5BD0: BD FE 30       JSR    $FE30
-5BD3: ED 64          STD    $4,S
+5BD3: ED 64          STD    $4,S	; [local]
 5BD5: 37 30          PULU   X,Y
 5BD7: 10 AE 09       LDY    $9,X	; [bank_address]
 5BDA: 96 00          LDA    $00
 5BDC: 48             ASLA
 5BDD: EC A6          LDD    A,Y
-5BDF: 10 AE 64       LDY    $4,S
+5BDF: 10 AE 64       LDY    $4,S	; [local]
 5BE2: ED A4          STD    ,Y
 5BE4: 0A 00          DEC    $00
 5BE6: 2A CB          BPL    $5BB3
@@ -4082,23 +4082,23 @@ lb0_6d64:   ; [global]
 6E71: 36 04          PSHU   B
 6E73: 1F 89          TFR    A,B
 6E75: 1D             SEX
-6E76: ED E4          STD    ,S
+6E76: ED E4          STD    ,S	; [local]
 6E78: 37 04          PULU   B
-6E7A: 6F 62          CLR    $2,S
-6E7C: E7 63          STB    $3,S
+6E7A: 6F 62          CLR    $2,S	; [local]
+6E7C: E7 63          STB    $3,S	; [local]
 6E7E: EC 04          LDD    $4,X
-6E80: ED 64          STD    $4,S
+6E80: ED 64          STD    $4,S	; [local]
 6E82: A6 03          LDA    $3,X
 6E84: 2A 10          BPL    $6E96
-6E86: EC 62          LDD    $2,S
+6E86: EC 62          LDD    $2,S	; [local]
 6E88: BD 6E 9D       JSR    $6E9D
-6E8B: E3 64          ADDD   $4,S
-6E8D: ED 64          STD    $4,S
-6E8F: EC E4          LDD    ,S
+6E8B: E3 64          ADDD   $4,S	; [local]
+6E8D: ED 64          STD    $4,S	; [local]
+6E8F: EC E4          LDD    ,S	; [local]
 6E91: BD 6E 9D       JSR    $6E9D
-6E94: ED E4          STD    ,S
-6E96: EC 64          LDD    $4,S
-6E98: E3 E4          ADDD   ,S
+6E94: ED E4          STD    ,S	; [local]
+6E96: EC 64          LDD    $4,S	; [local]
+6E98: E3 E4          ADDD   ,S	; [local]
 6E9A: 32 66          LEAS   $6,S   ; [free_locals]
 6E9C: 39             RTS
 6E9D: 43             COMA

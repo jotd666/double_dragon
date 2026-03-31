@@ -56,7 +56,10 @@ def f_handle_bank0_line(address,lines,i):
     ### replace current line
     elif address == 0x489D:
         line = change_instruction('BREAKPOINT  "489D_b0"',lines,i)  # TEMP
-
+    elif address == 0x46Da:
+        # stack add just after cmp!
+        line += "\taddq.w\t#4,d5\n"
+        lines[i+1] += "\trts\n"
     lines[i] = line
 
 def f_handle_bank1_line(address,lines,i):
@@ -87,8 +90,7 @@ def f_handle_bank1_line(address,lines,i):
     elif address == 0x4203:
         # replace subcpu irq write by irq call
         line = change_instruction("jbsr\tosd_call_sub_irq",lines,i)
-    elif address == 0x61D0:
-        line = change_instruction('BREAKPOINT  "61D0_b1"',lines,i)  # TEMP
+
     lines[i] = line
 
 
@@ -115,11 +117,13 @@ def f_handle_bank4_line(address,lines,i):
     elif address in [0x446e,0x442d]:
         # remove useless jra to next instruction
         line = remove_instruction(lines,i)
-    elif address == 0x452b:
-        # temp illegal
-        line = '\tBREAKPOINT "figure it out!!"\n'
+
     elif address == 0x41a1:
         line = change_instruction("addq\t#8,sp",lines,i) + "\trts\n"
+    elif address == 0x46d9:
+        # stack add just after cmp!
+        line += "\taddq.w\t#4,d5\n"
+        lines[i+1] += "\trts\n"
     lines[i] = line
 
 def f_handle_bank5_line(address,lines,i):
