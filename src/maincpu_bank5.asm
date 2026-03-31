@@ -2235,7 +2235,7 @@ jump_table_5f4f:
 6585: BD 60 06       JSR    $6006
 6588: B6 0E 5F       LDA    $0E5F
 658B: 10 26 00 3D    LBNE   $65CC
-658F: B6 0E 5E       LDA    $0E5E
+658F: B6 0E 5E       LDA    time_0e5e
 6592: 1F 89          TFR    A,B
 6594: 44             LSRA
 6595: 44             LSRA
@@ -2274,14 +2274,14 @@ jump_table_5f4f:
 65DE: F1 0E 5F       CMPB   $0E5F
 65E1: 24 1E          BCC    $6601
 65E3: 7F 0E 5F       CLR    $0E5F
-65E6: B6 0E 5E       LDA    $0E5E
+65E6: B6 0E 5E       LDA    time_0e5e
 65E9: 8B 99          ADDA   #$99
 65EB: 19             DAA
-65EC: B7 0E 5E       STA    $0E5E
+65EC: B7 0E 5E       STA    time_0e5e
 65EF: 81 99          CMPA   #$99
 65F1: 26 0E          BNE    $6601
 65F3: 86 59          LDA    #$59
-65F5: B7 0E 5E       STA    $0E5E
+65F5: B7 0E 5E       STA    time_0e5e
 65F8: B6 0E 5D       LDA    $0E5D
 65FB: 8B 99          ADDA   #$99
 65FD: 19             DAA

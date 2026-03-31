@@ -4,6 +4,7 @@
 
 - demo: characters do stupid moves and end locking up. In the process they get damage
   get energy address from trainer, see which routine is called and why?
+  game starts running at 833D (game loop)
 - level start: ends up with fatal error / lockup (patch lockup to break)
 
   

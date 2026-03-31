@@ -201,9 +201,15 @@ nb_objects_to_convert_03a1 = $3a1
 ; 3:
 ; 4.W: X coordinate
 ; 6.W: Y coordinate
+; $1F: energy (P1 energy: 3C1, P2: 41F)
 logical_objects_array_0381 = $381
 number_of_players_flag_0029 = $29
 game_in_play_0026 = $26
+time_0e5e = $e5e
+player_2_nb_lives_0448 = $448
+player_1_nb_lives_03ea = $3ea
+player_1_energy_03c1 = $3c1
+player_2_energy_041f = $41f
 
 reset_8000:     ; [global]
 8000: 4F             CLRA
@@ -469,11 +475,11 @@ demo_8215:
 821F: 97 00          STA    $00
 8221: 8D 4C          BSR    $826F
 8223: DC 00          LDD    $00
-8225: B7 03 EA       STA    $03EA
-8228: F7 04 48       STB    $0448
+8225: B7 03 EA       STA    player_1_nb_lives_03ea
+8228: F7 04 48       STB    player_2_nb_lives_0448
 822B: 0D 29          TST    number_of_players_flag_0029
 822D: 2B 03          BMI    $8232
-822F: 7F 04 48       CLR    $0448
+822F: 7F 04 48       CLR    player_2_nb_lives_0448
 8232: B6 38 04       LDA    dsw_1_3804
 8235: 43             COMA
 8236: 84 03          ANDA   #$03
@@ -481,8 +487,8 @@ demo_8215:
 823B: A6 86          LDA    A,X
 823D: 97 55          STA    $55
 823F: 86 40          LDA    #$40
-8241: B7 03 C1       STA    $03C1
-8244: B7 04 1F       STA    $041F
+8241: B7 03 C1       STA    player_1_energy_03c1
+8244: B7 04 1F       STA    player_2_energy_041f
 8247: 7F 03 EF       CLR    $03EF
 824A: 7F 04 4D       CLR    $044D
 824D: 0D 26          TST    game_in_play_0026
@@ -516,8 +522,8 @@ demo_8215:
 828B: 97 01          STA    $01
 828D: 35 90          PULS   X,PC
 
-8293: B6 03 EA       LDA    $03EA
-8296: F6 04 48       LDB    $0448
+8293: B6 03 EA       LDA    player_1_nb_lives_03ea
+8296: F6 04 48       LDB    player_2_nb_lives_0448
 8299: 34 06          PSHS   D
 829B: 7F 0E 71       CLR    nmi_active_flag_0e71
 829E: 8E 03 A2       LDX    #$03A2
@@ -531,8 +537,8 @@ demo_8215:
 82B8: BD FE 9B       JSR    clear_bg_screen_fe9b
 82BB: BD FE A1       JSR    set_screen_orientation_fea1
 82BE: 35 06          PULS   D
-82C0: B7 03 EA       STA    $03EA
-82C3: F7 04 48       STB    $0448
+82C0: B7 03 EA       STA    player_1_nb_lives_03ea
+82C3: F7 04 48       STB    player_2_nb_lives_0448
 82C6: 7F 0B C0       CLR    $0BC0
 82C9: BD FD F0       JSR    set_palettes_fdf0
 82CC: B6 03 EE       LDA    $03EE
@@ -541,16 +547,16 @@ demo_8215:
 82D4: B6 04 4C       LDA    $044C
 82D7: 84 83          ANDA   #$83
 82D9: B7 04 4C       STA    $044C
-82DC: B6 03 EA       LDA    $03EA
-82DF: F6 04 48       LDB    $0448
+82DC: B6 03 EA       LDA    player_1_nb_lives_03ea
+82DF: F6 04 48       LDB    player_2_nb_lives_0448
 82E2: 34 06          PSHS   D
 82E4: BD FE 9B       JSR    clear_bg_screen_fe9b
 82E7: 8E 03 A2       LDX    #$03A2
 82EA: 10 8E 0A CF    LDY    #$0ACF
 82EE: BD FE AA       JSR    $FEAA
 82F1: 35 06          PULS   D
-82F3: B7 03 EA       STA    $03EA
-82F6: F7 04 48       STB    $0448
+82F3: B7 03 EA       STA    player_1_nb_lives_03ea
+82F6: F7 04 48       STB    player_2_nb_lives_0448
 82F9: 8E 83 76       LDX    #$8376
 82FC: D6 36          LDB    $36
 82FE: A6 85          LDA    B,X
@@ -579,16 +585,17 @@ demo_8215:
 8336: 81 03          CMPA   #$03
 8338: 26 03          BNE    $833D
 833A: BD 84 F8       JSR    play_intro_animation_84f8
+; players are now in control
 833D: 86 80          LDA    #$80
-833F: C6 35          LDB    #$35
+833F: C6 35          LDB    #$35		; max energy
 8341: 7D 03 A2       TST    $03A2
 8344: 2A 06          BPL    $834C
 8346: B7 09 AD       STA    $09AD
-8349: F7 03 C1       STB    $03C1
+8349: F7 03 C1       STB    player_1_energy_03c1
 834C: 7D 04 00       TST    $0400
 834F: 2A 06          BPL    $8357
 8351: B7 09 CE       STA    $09CE
-8354: F7 04 1F       STB    $041F
+8354: F7 04 1F       STB    player_2_energy_041f
 8357: 96 26          LDA    game_in_play_0026
 8359: 26 0A          BNE    $8365
 835B: CC 04 58       LDD    #$0458
@@ -627,7 +634,7 @@ gameloop_8389:
 83BD: BD FF 5E       JSR    $FF5E
 83C0: BD 84 4A       JSR    $844A
 83C3: BD FD F9       JSR    $FDF9
-83C6: BD 8A A8       JSR    $8AA8
+83C6: BD 8A A8       JSR    put_max_energy_to_demo_players_8aa8
 83C9: 96 36          LDA    $36
 83CB: 81 03          CMPA   #$03
 83CD: 26 06          BNE    $83D5
@@ -711,7 +718,7 @@ gameloop_8389:
 8487: BD 84 B0       JSR    $84B0
 848A: 86 80          LDA    #$80
 848C: B7 04 4C       STA    $044C
-848F: 7F 04 48       CLR    $0448
+848F: 7F 04 48       CLR    player_2_nb_lives_0448
 8492: 30 88 5E       LEAX   $5E,X
 8495: 0C 2A          INC    $2A
 8497: BD 87 5F       JSR    $875F
@@ -913,8 +920,8 @@ play_intro_animation_84f8:
 865B: B6 03 A2       LDA    $03A2
 865E: BA 04 00       ORA    $0400
 8661: 2B 0A          BMI    $866D
-8663: B6 03 EA       LDA    $03EA
-8666: BA 04 48       ORA    $0448
+8663: B6 03 EA       LDA    player_1_nb_lives_03ea
+8666: BA 04 48       ORA    player_2_nb_lives_0448
 8669: 10 27 02 45    LBEQ   $88B2
 866D: 0C 51          INC    $51
 866F: B6 0E 2D       LDA    $0E2D
@@ -1119,12 +1126,12 @@ play_intro_animation_84f8:
 8852: BA 04 4C       ORA    $044C
 8855: 84 60          ANDA   #$60
 8857: 26 08          BNE    $8861
-8859: B6 03 EA       LDA    $03EA
-885C: BA 04 48       ORA    $0448
+8859: B6 03 EA       LDA    player_1_nb_lives_03ea
+885C: BA 04 48       ORA    player_2_nb_lives_0448
 885F: 27 51          BEQ    $88B2
 8861: 8E 03 A2       LDX    #$03A2
 8864: 0F 2A          CLR    $2A
-8866: B6 03 EA       LDA    $03EA
+8866: B6 03 EA       LDA    player_1_nb_lives_03ea
 8869: 27 05          BEQ    $8870
 886B: BD 84 D6       JSR    $84D6
 886E: 20 0A          BRA    $887A
@@ -1134,7 +1141,7 @@ play_intro_animation_84f8:
 8877: BD FF 54       JSR    $FF54
 887A: 30 88 5E       LEAX   $5E,X
 887D: 0C 2A          INC    $2A
-887F: B6 04 48       LDA    $0448
+887F: B6 04 48       LDA    player_2_nb_lives_0448
 8882: 27 05          BEQ    $8889
 8884: BD 84 D6       JSR    $84D6
 8887: 20 0A          BRA    $8893
@@ -1145,13 +1152,13 @@ play_intro_animation_84f8:
 8893: 0F 2A          CLR    $2A
 8895: 85 40          BITA   #$40
 8897: 27 08          BEQ    $88A1
-8899: 7D 03 EA       TST    $03EA
+8899: 7D 03 EA       TST    player_1_nb_lives_03ea
 889C: 26 03          BNE    $88A1
 889E: BD 87 19       JSR    $8719
 88A1: 0C 2A          INC    $2A
 88A3: 85 20          BITA   #$20
 88A5: 27 08          BEQ    $88AF
-88A7: 7D 04 48       TST    $0448
+88A7: 7D 04 48       TST    player_2_nb_lives_0448
 88AA: 26 03          BNE    $88AF
 88AC: BD 87 19       JSR    $8719
 88AF: 7E 83 7E       JMP    activate_nmi_flag_837e
@@ -1376,11 +1383,13 @@ coin_debounce_8a81:
 8A95: 94 20          ANDA   $20
 8A97: 39             RTS
 
+put_max_energy_to_demo_players_8aa8:
 8AA8: 96 26          LDA    game_in_play_0026
 8AAA: 26 08          BNE    $8AB4
+; put max energy to both players (demo mode)
 8AAC: 86 99          LDA    #$99
-8AAE: B7 03 C1       STA    $03C1
-8AB1: B7 04 1F       STA    $041F
+8AAE: B7 03 C1       STA    player_1_energy_03c1
+8AB1: B7 04 1F       STA    player_2_energy_041f
 8AB4: 39             RTS
 
 wait_subcpu_reply_8ab5:
@@ -4891,11 +4900,11 @@ B07A: 86 FF          LDA    #$FF
 B07C: B7 0E 2D       STA    $0E2D
 B07F: 7F 0E 2E       CLR    $0E2E
 B082: 0C 37          INC    $37
-B084: 7F 03 EA       CLR    $03EA
-B087: 7F 04 48       CLR    $0448
+B084: 7F 03 EA       CLR    player_1_nb_lives_03ea
+B087: 7F 04 48       CLR    player_2_nb_lives_0448
 B08A: 86 40          LDA    #$40
-B08C: B7 03 C1       STA    $03C1
-B08F: B7 04 1F       STA    $041F
+B08C: B7 03 C1       STA    player_1_energy_03c1
+B08F: B7 04 1F       STA    player_2_energy_041f
 B092: BD FC BE       JSR    $FCBE
 B095: BD FA E4       JSR    $FAE4
 B098: 7F 03 A5       CLR    $03A5

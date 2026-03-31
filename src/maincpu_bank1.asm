@@ -3917,7 +3917,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 6583: BD 5F FF    JSR    $5FFF		; [bogus]
 6586: B6 0E 5F    LDA    $0E5F
 6589: 10 26 00 3D LBNE   $65CA
-658D: B6 0E 5E    LDA    $0E5E
+658D: B6 0E 5E    LDA    time_0e5e
 6590: 1F 89       TFR    A,B
 6592: 44          LSRA
 6593: 44          LSRA
@@ -3956,14 +3956,14 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 65DC: F1 0E 5F    CMPB   $0E5F
 65DF: 24 1E       BCC    $65FF
 65E1: 7F 0E 5F    CLR    $0E5F
-65E4: B6 0E 5E    LDA    $0E5E
+65E4: B6 0E 5E    LDA    time_0e5e
 65E7: 8B 99       ADDA   #$99
 65E9: 19          DAA
-65EA: B7 0E 5E    STA    $0E5E
+65EA: B7 0E 5E    STA    time_0e5e
 65ED: 81 99       CMPA   #$99
 65EF: 26 0E       BNE    $65FF
 65F1: 86 59       LDA    #$59
-65F3: B7 0E 5E    STA    $0E5E
+65F3: B7 0E 5E    STA    time_0e5e
 65F6: B6 0E 5D    LDA    $0E5D
 65F9: 8B 99       ADDA   #$99
 65FB: 19          DAA
