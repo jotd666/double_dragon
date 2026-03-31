@@ -90,6 +90,10 @@ def f_handle_bank1_line(address,lines,i):
     elif address == 0x4203:
         # replace subcpu irq write by irq call
         line = change_instruction("jbsr\tosd_call_sub_irq",lines,i)
+    elif address == 0x5409:
+        line += '\tmove.b\td0,d6  | "push" d0 in d6\n'
+    elif address == 0x5413:
+        line = change_instruction("tst.b\td6",lines,i)
 
     lines[i] = line
 
@@ -277,6 +281,13 @@ jra        coin_inserted_8158
         line = change_instruction("jra\tl_89ea",lines,i)
 ##    elif address == 0x8552:
 ##        line = ""  # TEMP
+    elif address == 0x8B8B:
+        # allocate 1 byte on target stack
+        line += "\tsubq.w\t#1,d5   | allocate in target stack, routine fiddles with pushed A\n"
+    elif address == 0x8bbb:
+        # free 1 byte on target stack, restore stored value for A
+        line += "\tGET_REG_ADDRESS\t0,d5\n\tmove.b\t(a0),d0 | restore stored value for A\n\taddq.w\t#1,d5\n"
+
     elif address == 0xeeb0:
         line = change_instruction("jbsr\tosd_wait_vblank_interrupt",lines,i)
         lines[i+1] = remove_instruction(lines,i+1)

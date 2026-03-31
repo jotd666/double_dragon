@@ -857,7 +857,7 @@ jump_table_5435:
 5457: 39             RTS
 
 5458: 32 7F          LEAS   -$1,S   ; [alloc_locals]
-545A: 6F E4          CLR    ,S
+545A: 6F E4          CLR    ,S		; [local]
 545C: DC 3C          LDD    $3C
 545E: 10 83 05 40    CMPD   #$0540
 5462: 25 2C          BCS    $5490

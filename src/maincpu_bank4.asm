@@ -773,7 +773,7 @@ fatal_error_45cf:
 467B: 27 06          BEQ    $4683
 467D: 81 03          CMPA   #$03
 467F: 27 02          BEQ    $4683
-4681: E6 63          LDB    $3,S
+4681: E6 63          LDB    $3,S	; [local]
 4683: 86 40          LDA    #$40
 4685: 3D             MUL
 4686: 10 AE 64       LDY    $4,S	; [local]

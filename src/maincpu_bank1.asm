@@ -1574,11 +1574,11 @@ subcpu_processing_411e:
 4EC0: B6 0B 4D    LDA    $0B4D        
 4EC3: 84 0F       ANDA   #$0F         
 4EC5: 27 09       BEQ    $4ED0        
-4EC7: EC 66       LDD    $6,S         
+4EC7: EC 66       LDD    $6,S  		; [local]       
 4EC9: C3 00 0A    ADDD   #$000A       
 4ECC: ED 08       STD    $8,X
 4ECE: 20 15       BRA    $4EE5
-4ED0: EC 66       LDD    $6,S
+4ED0: EC 66       LDD    $6,S		; [local]
 4ED2: C3 00 19    ADDD   #$0019
 4ED5: ED 08       STD    $8,X
 4ED7: 86 08       LDA    #$08
@@ -1606,13 +1606,13 @@ subcpu_processing_411e:
 4F0B: 8A 40       ORA    #$40
 4F0D: A7 88 13    STA    $13,X
 4F10: 20 0D       BRA    $4F1F
-4F12: EC 66       LDD    $6,S
+4F12: EC 66       LDD    $6,S		; [local]
 4F14: C3 FF F6    ADDD   #$FFF6
 4F17: ED 08       STD    $8,X
-4F19: EC 64       LDD    $4,S
+4F19: EC 64       LDD    $4,S		; [local]
 4F1B: ED 06       STD    $6,X
 4F1D: 20 11       BRA    $4F30
-4F1F: EC 66       LDD    $6,S
+4F1F: EC 66       LDD    $6,S		; [local]
 4F21: C3 FF F8    ADDD   #$FFF8
 4F24: ED 08       STD    $8,X
 4F26: 86 09       LDA    #$09
@@ -1635,7 +1635,7 @@ subcpu_processing_411e:
 4F4D: A6 21       LDA    $1,Y
 4F4F: 84 05       ANDA   #$05
 4F51: 27 24       BEQ    $4F77
-4F53: EC E4       LDD    ,S
+4F53: EC E4       LDD    ,S		; [local]
 4F55: A7 88 18    STA    $18,X
 4F58: E7 02       STB    $2,X
 4F5A: 20 1B       BRA    $4F77
@@ -2055,7 +2055,7 @@ subcpu_processing_411e:
 537B: 2A 07       BPL    $5384
 537D: ED 61       STD    $1,S		; [local]
 537F: CC 00 00    LDD    #$0000
-5382: A3 61       SUBD   $1,S
+5382: A3 61       SUBD   $1,S		; [local]
 5384: F1 0E 48    CMPB   $0E48
 5387: 24 9D       BCC    $5326
 5389: A6 88 15    LDA    $15,X
@@ -2120,7 +2120,7 @@ subcpu_processing_411e:
 540B: EC 04       LDD    $4,X
 540D: ED C4       STD    ,U
 540F: 10 8E 54 3B LDY    #$543B
-5413: 6D E4       TST    ,S		; [breakpoint]
+5413: 6D E4       TST    ,S		; [handled] tests passed value of A
 5415: 27 04       BEQ    $541B
 5417: 10 8E 54 5B LDY    #$545B
 541B: A6 0D       LDA    $D,X
@@ -2433,9 +2433,10 @@ subcpu_processing_411e:
 574E: BD 57 55    JSR    $5755
 5751: BD F9 14    JSR    $F914
 5754: 39          RTS
+
 5755: 32 71       LEAS   -$F,S   ; [alloc_locals]
 5757: EC 24       LDD    $4,Y
-5759: ED E4       STD    ,S
+5759: ED E4       STD    ,S		; [local]
 575B: EC 04       LDD    $4,X
 575D: ED 62       STD    $2,S		; [local]
 575F: A6 A8 1B    LDA    $1B,Y
@@ -2501,7 +2502,7 @@ subcpu_processing_411e:
 57E8: A7 88 3D    STA    $3D,X
 57EB: EC E4       LDD    ,S		; [local]
 57ED: ED 24       STD    $4,Y
-57EF: EC 62       LDD    $2,S
+57EF: EC 62       LDD    $2,S		; [local]
 57F1: ED 04       STD    $4,X
 57F3: 32 6F       LEAS   $F,S   ; [free_locals]
 57F5: 39          RTS
@@ -3324,7 +3325,7 @@ subcpu_processing_411e:
 5FA0: 2B 6B       BMI    $600D
 5FA2: 4D          TSTA
 5FA3: 26 68       BNE    $600D
-5FA5: E7 62       STB    $2,S
+5FA5: E7 62       STB    $2,S		; [local]
 5FA7: A6 01       LDA    $1,X
 5FA9: 81 04       CMPA   #$04
 5FAB: 25 60       BCS    $600D
@@ -3336,7 +3337,7 @@ subcpu_processing_411e:
 5FB8: B6 0E 48    LDA    $0E48
 5FBB: 81 24       CMPA   #$24
 5FBD: 24 4E       BCC    $600D
-5FBF: A6 62       LDA    $2,S
+5FBF: A6 62       LDA    $2,S		; [local]
 5FC1: 81 10       CMPA   #$10
 5FC3: 24 48       BCC    $600D
 5FC5: 10 8E 60 13 LDY    #$6013
@@ -3345,12 +3346,12 @@ subcpu_processing_411e:
 5FCD: 48          ASLA
 5FCE: 48          ASLA
 5FCF: 48          ASLA
-5FD0: 34 02       PSHS   A
+5FD0: 34 02       PSHS   A		; [manual_stack_push]
 5FD2: BD FB 76    JSR    $FB76
 5FD5: 84 07       ANDA   #$07
-5FD7: AA E4       ORA    ,S
+5FD7: AA E4       ORA    ,S		; [handled]
 5FD9: E6 A6       LDB    A,Y
-5FDB: 35 02       PULS   A
+5FDB: 35 02       PULS   A	; [manual_stack_pull]
 5FDD: E7 88 1E    STB    $1E,X
 5FE0: 86 07       LDA    #$07
 5FE2: A7 88 1B    STA    $1B,X
@@ -3377,7 +3378,7 @@ subcpu_processing_411e:
 
 6033: 34 40       PSHS   U
 6035: 32 71       LEAS   -$F,S   ; [alloc_locals]
-6037: 6F E4       CLR    ,S
+6037: 6F E4       CLR    ,S		; [local]
 6039: A6 04       LDA    $4,X
 603B: 81 FF       CMPA   #$FF
 603D: 10 27 00 8E LBEQ   $60CF
@@ -3594,7 +3595,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 6288: B6 0E 31    LDA    $0E31
 628B: 32 7F       LEAS   -$1,S   ; [alloc_locals]
 628D: 86 04       LDA    #$04
-628F: A7 E4       STA    ,S
+628F: A7 E4       STA    ,S		; [local]
 6291: 10 8E 62 B8 LDY    #$62B8
 6295: 8E 07 5B    LDX    #$075B
 ; put sprites in pre-shadow memory
@@ -3835,6 +3836,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 64C7: CC 00 55    LDD    #$0055
 64CA: ED 06       STD    $6,X
 64CC: 39          RTS
+
 64CD: 32 7E       LEAS   -$2,S   ; [alloc_locals]
 64CF: 96 36       LDA    $36
 64D1: 81 01       CMPA   #$01
@@ -3847,10 +3849,10 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 64E3: 25 19       BCS    $64FE
 64E5: EC 06       LDD    $6,X
 64E7: E3 08       ADDD   $8,X
-64E9: ED E4       STD    ,S
+64E9: ED E4       STD    ,S		; [local]
 64EB: DC 3F       LDD    $3F
 64ED: C3 00 04    ADDD   #$0004
-64F0: 10 A3 E4    CMPD   ,S
+64F0: 10 A3 E4    CMPD   ,S		; [local]
 64F3: 25 09       BCS    $64FE
 64F5: DC 3F       LDD    $3F
 64F7: C3 00 04    ADDD   #$0004
@@ -4022,16 +4024,16 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 6692: E7 E4       STB    ,S		; [local]
 6694: DE 01       LDU    $01
 6696: 86 05       LDA    #$05
-6698: A7 61       STA    $1,S
+6698: A7 61       STA    $1,S		; [local]
 669A: 96 03       LDA    $03
 669C: 6D E4       TST    ,S		; [local]
 669E: 27 0E       BEQ    $66AE
 66A0: C6 61       LDB    #$61
 66A2: ED C1       STD    ,U++
-66A4: 6A 61       DEC    $1,S
+66A4: 6A 61       DEC    $1,S		; [local]
 66A6: 6A E4       DEC    ,S		; [local]
 66A8: 26 F8       BNE    $66A2
-66AA: 6D 61       TST    $1,S
+66AA: 6D 61       TST    $1,S		; [local]
 66AC: 27 08       BEQ    $66B6
 66AE: C6 60       LDB    #$60
 66B0: ED C1       STD    ,U++
@@ -4055,7 +4057,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 66CE: 10 AE 88 2D LDY    $2D,X
 66D2: A6 A8 1F    LDA    $1F,Y
 66D5: 27 08       BEQ    $66DF
-66D7: A0 E4       SUBA   ,S
+66D7: A0 E4       SUBA   ,S		; [handled]
 66D9: 24 01       BCC    $66DC
 66DB: 4F          CLRA
 66DC: A7 A8 1F    STA    $1F,Y
@@ -4194,11 +4196,11 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 680A: A6 03       LDA    $3,X
 680C: A8 E4       EORA   ,S		; [local]
 680E: 27 02       BEQ    $6812
-6810: 6C 61       INC    $1,S
+6810: 6C 61       INC    $1,S		; [local]
 6812: A6 0F       LDA    $F,X
 6814: A8 E4       EORA   ,S		; [local]
 6816: 26 06       BNE    $681E
-6818: A6 61       LDA    $1,S
+6818: A6 61       LDA    $1,S		; [local]
 681A: 88 01       EORA   #$01
 681C: A7 61       STA    $1,S		; [local]
 681E: 86 01       LDA    #$01
@@ -4518,7 +4520,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 6B60: C6 55       LDB    #$55
 6B62: 3A          ABX
 6B63: 6C E4       INC    ,S		; [local]
-6B65: A6 E4       LDA    ,S
+6B65: A6 E4       LDA    ,S		; [local]
 6B67: 81 09       CMPA   #$09
 6B69: 25 D3       BCS    $6B3E
 6B6B: 32 61       LEAS   $1,S   ; [free_locals]
@@ -4685,7 +4687,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 6CF2: 6C A5       INC    B,Y
 6CF4: A6 61       LDA    $1,S		; [local]
 6CF6: A7 88 38    STA    $38,X
-6CF9: A6 E4       LDA    ,S
+6CF9: A6 E4       LDA    ,S		; [local]
 6CFB: A7 88 37    STA    $37,X
 6CFE: 86 12       LDA    #$12
 6D00: A7 88 1B    STA    $1B,X
@@ -4887,11 +4889,11 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 6EDA: 24 27       BCC    $6F03
 6EDC: 1F 89       TFR    A,B
 6EDE: 3D          MUL
-6EDF: 34 06       PSHS   D
+6EDF: 34 06       PSHS   D		; [manual_stack_push]
 6EE1: A6 88 3B    LDA    $3B,X
 6EE4: 1F 89       TFR    A,B
 6EE6: 3D          MUL
-6EE7: E3 E4       ADDD   ,S
+6EE7: E3 E4       ADDD   ,S		; [handled]
 6EE9: 34 02       PSHS   A
 6EEB: 10 8E 00 81 LDY    #$0081
 6EEF: 96 80       LDA    $80
@@ -4903,7 +4905,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 6EFA: B6 09 F0    LDA    $09F0
 6EFD: A7 A4       STA    ,Y
 6EFF: 0C 80       INC    $80
-6F01: 35 86       PULS   D,PC
+6F01: 35 86       PULS   D,PC	; [manual_stack_pull]
 6F03: 34 02       PSHS   A
 6F05: 10 8E 00 94 LDY    #$0094
 6F09: 96 93       LDA    $93

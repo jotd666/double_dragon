@@ -1463,15 +1463,16 @@ wait_subcpu_reply_8ab5:
 8B90: 1F 89          TFR    A,B
 8B92: 84 70          ANDA   #$70
 8B94: A7 88 43       STA    $43,X
-8B97: A7 E4          STA    ,S     ; [breakpoint]
+; will change A on return
+8B97: A7 E4          STA    ,S		; [handled]
 8B99: A8 88 44       EORA   $44,X
-8B9C: A4 E4          ANDA   ,S     ; [breakpoint]
+8B9C: A4 E4          ANDA   ,S		; [handled]
 8B9E: 44             LSRA
 8B9F: 44             LSRA
 8BA0: 44             LSRA
 8BA1: 44             LSRA
 8BA2: A7 88 40       STA    $40,X
-8BA5: A6 E4          LDA    ,S     ; [breakpoint]
+8BA5: A6 E4          LDA    ,S		; [handled]
 8BA7: A7 88 44       STA    $44,X
 8BAA: C4 0F          ANDB   #$0F
 8BAC: 10 8E 8B BD    LDY    #$8BBD
@@ -5959,11 +5960,11 @@ BB7E: BD BB 4D       JSR    switch_to_bank_0_bb4d
 BB81: 39             RTS
 
 BB82: 32 7F          LEAS   -$1,S   ; [alloc_locals]
-BB84: 6F E4          CLR    ,S
+BB84: 6F E4          CLR    ,S		; [handled]
 BB86: 8E 07 5B       LDX    #$075B
 BB89: A6 84          LDA    ,X
 BB8B: 10 2A 00 46    LBPL   $BBD5
-BB8F: A6 E4          LDA    ,S
+BB8F: A6 E4          LDA    ,S		; [handled]
 BB91: 98 51          EORA   $51
 BB93: 84 01          ANDA   #$01
 BB95: 27 33          BEQ    $BBCA
@@ -8009,6 +8010,7 @@ E199: D3 03          ADDD   $03
 E19B: D3 01          ADDD   $01
 E19D: ED 88 3A       STD    bank_switch_copy_3a,X
 E1A0: 39             RTS
+
 E1A1: 32 7C          LEAS   -$4,S   ; [alloc_locals]
 E1A3: 96 29          LDA    number_of_players_flag_0029
 E1A5: 84 03          ANDA   #$03
@@ -8019,7 +8021,7 @@ E1AD: 8E E1 E9       LDX    #$E1E9
 E1B0: 96 36          LDA    $36
 E1B2: 48             ASLA
 E1B3: EC 86          LDD    A,X
-E1B5: ED 62          STD    $2,S
+E1B5: ED 62          STD    $2,S		; [handled]
 E1B7: 37 10          PULU   X		; using "user" stack as S is used as local vars
 E1B9: FC 03 A6       LDD    $03A6
 E1BC: B3 04 04       SUBD   $0404
@@ -8033,7 +8035,7 @@ E1D0: FC 03 A8       LDD    $03A8
 E1D3: B3 04 06       SUBD   $0406
 E1D6: 2A 03          BPL    $E1DB
 E1D8: BD E9 4F       JSR    $E94F
-E1DB: 10 A3 62       CMPD   $2,S
+E1DB: 10 A3 62       CMPD   $2,S		; [handled]
 E1DE: 26 06          BNE    $E1E6
 E1E0: CC 00 00       LDD    #$0000
 E1E3: FD 0A 44       STD    $0A44
@@ -8382,7 +8384,7 @@ E541: B6 0A 62       LDA    $0A62
 E544: A1 E4          CMPA   ,S		; [local]
 E546: 26 09          BNE    $E551
 E548: EC 63          LDD    $3,S		; [local]
-E54A: 10 A3 E4       CMPD   ,S
+E54A: 10 A3 E4       CMPD   ,S			; [local]
 E54D: 25 62          BCS    $E5B1
 E54F: 20 46          BRA    $E597
 E551: EC E4          LDD    ,S		; [local]
@@ -8464,7 +8466,7 @@ E60C: ED 64          STD    $4,S		; [local]
 E60E: FC 0A 68       LDD    $0A68
 E611: C4 F0          ANDB   #$F0
 E613: ED 66          STD    $6,S		; [local]
-E615: EC E4          LDD    ,S
+E615: EC E4          LDD    ,S			; [local]
 E617: ED 68          STD    $8,S		; [local]
 E619: EC 64          LDD    $4,S		; [local]
 E61B: ED 6A          STD    $A,S		; [local]
@@ -8479,7 +8481,7 @@ E62F: A6 E8 10       LDA    $10,S		; [local]
 E632: BD E8 FB       JSR    set_bank_e8fb
 E635: AE 6E          LDX    $E,S		; [local]
 E637: EC 84          LDD    ,X		; [bank_address]
-E639: AE 6C          LDX    $C,S
+E639: AE 6C          LDX    $C,S	; [local]
 E63B: BD E9 72       JSR    $E972
 E63E: ED 84          STD    ,X		; [video_address_word]
 E640: EC 6A          LDD    $A,S		; [local]
@@ -8650,7 +8652,7 @@ E7C1: BD E7 C7       JSR    $E7C7
 E7C4: 32 64          LEAS   $4,S   ; [free_locals]
 E7C6: 39             RTS
 E7C7: 32 79          LEAS   -$7,S   ; [alloc_locals]
-E7C9: AF E4          STX    ,S
+E7C9: AF E4          STX    ,S		; [local]
 E7CB: 10 AF 62       STY    $2,S     ; [local]
 E7CE: BD E8 A4       JSR    $E8A4
 E7D1: 10 AF 64       STY    $4,S     ; [local]
@@ -8742,14 +8744,14 @@ E86E: EC 84          LDD    ,X
 E870: 35 90          PULS   X,PC
 E872: 34 10          PSHS   X
 E874: 32 7E          LEAS   -$2,S   ; [alloc_locals]
-E876: A7 E4          STA    ,S
-E878: E7 61          STB    $1,S
+E876: A7 E4          STA    ,S		; [handled]
+E878: E7 61          STB    $1,S		; [handled]
 E87A: 8E EA 44       LDX    #$EA44
 E87D: EC 81          LDD    ,X++
 E87F: 5A             DECB
-E880: E0 61          SUBB   $1,S
+E880: E0 61          SUBB   $1,S		; [handled]
 E882: 3D             MUL
-E883: EB E4          ADDB   ,S
+E883: EB E4          ADDB   ,S		; [handled]
 E885: 89 00          ADCA   #$00
 E887: EC 8B          LDD    D,X
 E889: 1F 89          TFR    A,B
@@ -8792,12 +8794,12 @@ E8C8: 34 30          PSHS   Y,X
 E8CA: 96 3A          LDA    bank_switch_copy_3a
 E8CC: 34 02          PSHS   A
 E8CE: 32 7A          LEAS   -$6,S   ; [alloc_locals]
-E8D0: AF E4          STX    ,S
-E8D2: 10 AF 62       STY    $2,S
+E8D0: AF E4          STX    ,S		; [local]
+E8D2: 10 AF 62       STY    $2,S		; [local]
 E8D5: BD E8 A4       JSR    $E8A4
-E8D8: 10 AF 64       STY    $4,S
+E8D8: 10 AF 64       STY    $4,S		; [local]
 E8DB: BD E8 FB       JSR    set_bank_e8fb
-E8DE: A6 61          LDA    $1,S
+E8DE: A6 61          LDA    $1,S		; [local]
 E8E0: 44             LSRA
 E8E1: 44             LSRA
 E8E2: 44             LSRA
@@ -9100,10 +9102,10 @@ EE46: 27 1C          BEQ    $EE64
 EE48: 97 4C          STA    $4C
 EE4A: C6 10          LDB    #$10
 EE4C: 3D             MUL
-EE4D: A7 E4          STA    ,S
+EE4D: A7 E4          STA    ,S		; [handled]
 EE4F: 10 8E 10 80    LDY    #sprites_palette_1080
 EE53: 8E EE D5       LDX    #$EED5
-EE56: A6 E4          LDA    ,S
+EE56: A6 E4          LDA    ,S		; [handled]
 EE58: EE 8B          LDU    D,X
 EE5A: 8D 50          BSR    $EEAC
 EE5C: 5C             INCB
