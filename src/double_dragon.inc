@@ -440,6 +440,7 @@ end_\@:
 	\inst\().b    \reg,(a5,\offset\().W)
 	.endm
 
+	* when we restore a DP pointer we need to memorize it so the next manual load loads that value
 	.macro	STORE_DP_IN_MEMORY
 	move.l	a5,m6809_direct_page_pointer
 	.endm

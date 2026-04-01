@@ -175,6 +175,8 @@ interrupt_status_22 = $22
 intro_anim_flag_0e30 = $e30
 sprite_memory_2081 = $2081
 nb_objects_to_convert_03a1 = $3a1
+attract_mode_timer_0e50 = $e50
+
 ; contains the array on pointers on logical object structures, located just after the array, at $3A2
 ; a logical object is a combination of sprites
 ; in intro:
@@ -220,7 +222,7 @@ reset_8000:     ; [global]
 800C: B7 38 0B       STA    nmi_ack_380b
 800F: B7 38 0C       STA    firq_ack_380c
 8012: 4F             CLRA
-8013: 1F 8B          TFR    A,DP
+8013: 1F 8B          TFR    A,DP		; direct page 0
 8015: CE 0E FF       LDU    #$0EFF		; set U stack
 8018: 10 CE 0F FF    LDS    #$0FFF		; set S stack
 801C: BD FE 95       JSR    $FE95
@@ -285,7 +287,7 @@ nmi_8056:   ; [global]
 firq_8092:   ; [global]
 8092: 34 7F          PSHS   U,Y,X,DP,D,CC
 8094: 4F             CLRA
-8095: 1F 8B          TFR    A,DP
+8095: 1F 8B          TFR    A,DP		; direct page 0
 8097: 96 22          LDA    interrupt_status_22
 8099: 85 20          BITA   #$20
 809B: 26 0D          BNE    $80AA
@@ -374,6 +376,7 @@ insert_coin_loop_8124:
 8142: 86 20          LDA    #$20
 8144: BD B7 56       JSR    vbl_delay_b756
 ; then start the attract mode/demo
+start_attract_mode_8147:
 8147: BD FE 9B       JSR    clear_bg_screen_fe9b
 814A: BD FE 98       JSR    clear_fg_screen_fe98
 814D: BD FE 9E       JSR    clear_sprite_memory_fe9e
@@ -586,6 +589,7 @@ demo_8215:
 8338: 26 03          BNE    $833D
 833A: BD 84 F8       JSR    play_intro_animation_84f8
 ; players are now in control
+; initialize stuff
 833D: 86 80          LDA    #$80
 833F: C6 35          LDB    #$35		; max energy
 8341: 7D 03 A2       TST    $03A2
@@ -594,12 +598,14 @@ demo_8215:
 8349: F7 03 C1       STB    player_1_energy_03c1
 834C: 7D 04 00       TST    $0400
 834F: 2A 06          BPL    $8357
+; 2 players
 8351: B7 09 CE       STA    $09CE
 8354: F7 04 1F       STB    player_2_energy_041f
 8357: 96 26          LDA    game_in_play_0026
 8359: 26 0A          BNE    $8365
+; initialize timer so attract mode doesn't last too long
 835B: CC 04 58       LDD    #$0458
-835E: FD 0E 50       STD    $0E50
+835E: FD 0E 50       STD    attract_mode_timer_0e50
 8361: 86 01          LDA    #$01
 8363: 20 08          BRA    $836D
 8365: 10 8E 83 72    LDY    #$8372
@@ -681,9 +687,9 @@ gameloop_8389:
 842D: 10 26 01 33    LBNE   $8564
 8431: 96 26          LDA    game_in_play_0026
 8433: 10 26 FF 52    LBNE   gameloop_8389
-8437: FC 0E 50       LDD    $0E50
+8437: FC 0E 50       LDD    attract_mode_timer_0e50
 843A: 83 00 01       SUBD   #$0001
-843D: FD 0E 50       STD    $0E50
+843D: FD 0E 50       STD    attract_mode_timer_0e50
 8440: 27 0E          BEQ    $8450
 8442: 7E 83 89       JMP    gameloop_8389
 
@@ -1019,6 +1025,7 @@ play_intro_animation_84f8:
 8757: BD 87 D5       JSR    $87D5
 875A: BD 87 5F       JSR    $875F
 875D: 35 F6          PULS   D,X,Y,U,PC
+
 875F: 34 36          PSHS   Y,X,D
 8761: 0D 21          TST    nb_credits_0021
 8763: 27 68          BEQ    $87CD
@@ -1405,7 +1412,7 @@ wait_subcpu_reply_8ab5:
 
 8AC6: 34 7E          PSHS   U,Y,X,DP,D
 8AC8: 5F             CLRB
-8AC9: 1F 9B          TFR    B,DP
+8AC9: 1F 9B          TFR    B,DP		; direct page 0
 8ACB: 17 00 BD       LBSR   $8B8B
 8ACE: D6 51          LDB    $51
 8AD0: C4 01          ANDB   #$01

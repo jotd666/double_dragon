@@ -25,7 +25,7 @@ lb0_401b:   ; [global]
 lb0_401e:   ; [global]
 401E: 34 7E          PSHS   U,Y,X,DP,D
 4020: 4F             CLRA
-4021: 1F 8B          TFR    A,DP
+4021: 1F 8B          TFR    A,DP		; direct page 0
 4023: A6 84          LDA    ,X
 4025: 84 0F          ANDA   #$0F
 4027: 48             ASLA
@@ -305,7 +305,7 @@ lb0_4242:   ; [global]
 4242: 34 48          PSHS   U,DP
 4244: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 4246: 4F             CLRA
-4247: 1F 8B          TFR    A,DP
+4247: 1F 8B          TFR    A,DP	; direct page 0
 4249: A7 E4          STA    ,S		; [local]
 424B: A6 E4          LDA    ,S		; [local]
 424D: C6 04          LDB    #$04
@@ -663,7 +663,7 @@ lb0_4566:   ; [global]
 lb0_45b1:   ; [global]
 45B1: 34 0C          PSHS   DP,B
 45B3: 4F             CLRA
-45B4: 1F 8B          TFR    A,DP
+45B4: 1F 8B          TFR    A,DP	; direct page 0
 45B6: C6 04          LDB    #$04
 45B8: 0C 43          INC    $43
 45BA: 0C 45          INC    $45

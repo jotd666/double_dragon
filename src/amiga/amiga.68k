@@ -847,7 +847,8 @@ demo_game:
 	moveq	#0,d5			| D5 too
 	moveq	#0,d0
 	jbsr	osd_set_bank
-	GET_MEMORY_START_AND_DP	
+	GET_MEMORY_START_AND_DP
+	move.l	a6,a5		| DP=0 at start
 	jmp		reset_8000								| pass control to the mpatrol core
 	
 
@@ -5322,7 +5323,6 @@ osd_log_cpu:
 	CHECK_ZERO_MSW	d4		| U
 	CHECK_ZERO_MSW	d5		| S
 
-
 	move.w	(4,a7),last_declared_bank
 	move.w	(6,a7),last_known_m6809_pc
 	
@@ -5330,6 +5330,17 @@ osd_log_cpu:
 	move.w	last_declared_bank,0x102
 	
 	movem.l	d1/a6,-(a7)
+
+	move.l	a5,-(a7)
+	cmp.l	a6,a5
+	jeq		0f
+	sub.l	a6,a5
+	cmp.l	#0xB00,a5
+	jeq		0f
+	BREAKPOINT	"unexpected DP in A5"
+0:
+	move.l	(a7)+,a5
+
 	* check if cpu log is enabled
 	tst.b	cpu_log_enable
 	jeq		445f

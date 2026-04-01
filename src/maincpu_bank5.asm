@@ -442,7 +442,7 @@ jump_table_42bf:
 
 4DB3: 34 0C          PSHS   DP,B                                        
 4DB5: 4F             CLRA                                               
-4DB6: 1F 8B          TFR    A,DP
+4DB6: 1F 8B          TFR    A,DP	; direct page 0
 4DB8: C6 04          LDB    #$04
 4DBA: 0C 43          INC    $43
 4DBC: 0C 45          INC    $45

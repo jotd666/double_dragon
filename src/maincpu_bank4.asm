@@ -1,8 +1,8 @@
 lb4_4000:   ; [global]
 4000: 34 7E          PSHS   U,Y,X,DP,D
 4002: CE 0B 4A       LDU    #$0B4A
-4005: 86 0B          LDA    #$0B
-4007: 1F 8B          TFR    A,DP
+4005: 86 0B          LDA    #$0B	
+4007: 1F 8B          TFR    A,DP	; direct page = $B (only time where it's not 0)
 4009: 0F 4A          CLR    $4A
 400B: 0F 4B          CLR    $4B
 400D: 0F 4C          CLR    $4C
@@ -684,7 +684,7 @@ table_4317:
 45B8: 39             RTS
 
 fatal_error_45cf:
-45CF: 34 16          PSHS   X,D
+45CF: 34 16          PSHS   X,D		; [breakpoint]
 45D1: AE 64          LDX    $4,S	; program counter
 45D3: CC 25 32       LDD    #$2532
 45D6: FD 21 D0       STD    $21D0	; display on screen
