@@ -337,7 +337,7 @@ lb0_4242:   ; [global]
 4283: 35 C8          PULS   DP,U,PC
 
 4285: 34 37          PSHS   Y,X,D,CC
-4287: D6 26          LDB    $26
+4287: D6 26          LDB    game_in_play_0026
 4289: 26 09          BNE    $4294
 428B: F6 38 04       LDB    $3804
 428E: C4 04          ANDB   #$04
@@ -378,7 +378,7 @@ lb0_42b4:   ; [global]
 42D1: 35 87          PULS   CC,D,PC
 
 42D3: 34 77          PSHS   U,Y,X,D,CC
-42D5: D6 26          LDB    $26
+42D5: D6 26          LDB    game_in_play_0026
 42D7: 10 27 00 D6    LBEQ   $43B1
 42DB: C6 03          LDB    #$03
 42DD: 3D             MUL
@@ -402,7 +402,7 @@ lb0_42b4:   ; [global]
 4306: A7 88 4A       STA    $4A,X
 4309: 86 90          LDA    #$90
 430B: A7 88 4B       STA    $4B,X
-430E: 96 26          LDA    $26
+430E: 96 26          LDA    game_in_play_0026
 4310: 10 27 00 9D    LBEQ   $43B1
 4314: 4F             CLRA
 4315: BD FC 78       JSR    $FC78
@@ -477,9 +477,11 @@ lb0_42b4:   ; [global]
 43AE: BD FC 78       JSR    $FC78
 43B1: 35 F7          PULS   CC,D,X,Y,U,PC
 
-lb0_4449:   ; [global]
-4449: 96 26          LDA    $26
-444B: 26 11          BNE    $445E
+; > A: command (either from controls or pre-recorded)
+lb0_read_player_commands_4449:   ; [global]
+4449: 96 26          LDA    game_in_play_0026
+444B: 26 11          BNE    read_from_controllers_445e
+; automatic (demo)
 444D: A6 88 5C       LDA    $5C,X
 4450: 27 05          BEQ    $4457
 4452: 6A 88 5C       DEC    $5C,X
@@ -488,15 +490,19 @@ lb0_4449:   ; [global]
 445A: A6 88 5A       LDA    $5A,X
 445D: 39             RTS
 
-445E: 10 8E 38 00    LDY    #$3800
-4462: D6 2A          LDB    $2A
-4464: A6 A5          LDA    B,Y
+; this reads both ports and merges the result in only one byte
+; for all controls, directions, and 3 buttons (punch is on another port
+; shared by both players)
+read_from_controllers_445e:
+445E: 10 8E 38 00    LDY    #port_1_3800
+4462: D6 2A          LDB    current_player_002a
+4464: A6 A5          LDA    B,Y		; select port 3800 or 3801
 4466: 43             COMA
-4467: 84 3F          ANDA   #$3F
-4469: 1F 89          TFR    A,B
-446B: 84 30          ANDA   #$30
+4467: 84 3F          ANDA   #$3F	; controls (directions & buttons)
+4469: 1F 89          TFR    A,B		; separate directions & buttons
+446B: 84 30          ANDA   #$30	; A: buttons (kick & jump)
 446D: 34 02          PSHS   A		; [manual_stack_push]
-446F: 4F             CLRA
+446F: 4F             CLRA			; now decode directions
 4470: 54             LSRB
 4471: 49             ROLA
 4472: 54             LSRB
@@ -507,16 +513,16 @@ lb0_4449:   ; [global]
 4477: 49             ROLA
 4478: AA E4          ORA    ,S		; [handled]
 447A: A7 E4          STA    ,S		; [handled]
-447C: B6 38 02       LDA    $3802
+447C: B6 38 02       LDA    extra_3802
 447F: 43             COMA
-4480: 84 06          ANDA   #$06
+4480: 84 06          ANDA   #$06	; punch buttons
 4482: 44             LSRA
 4483: 44             LSRA
 4484: 46             RORA
 4485: 46             RORA
-4486: 0D 2A          TST    $2A
+4486: 0D 2A          TST    current_player_002a
 4488: 27 01          BEQ    $448B
-448A: 46             RORA
+448A: 46             RORA	; select another bit if 2P
 448B: 84 40          ANDA   #$40
 448D: AA E4          ORA    ,S		; [handled]
 448F: 32 61          LEAS   $1,S   ; [free_locals]
@@ -545,7 +551,7 @@ lb0_4449:   ; [global]
 44C8: 25 DA          BCS    $44A4
 44CA: 7E 44 CA       JMP    $44CA
 lb0_44cd:   ; [global]
-44CD: D6 26          LDB    $26
+44CD: D6 26          LDB    game_in_play_0026
 44CF: 26 07          BNE    $44D8
 44D1: F6 38 04       LDB    $3804
 44D4: C4 04          ANDB   #$04
@@ -3753,10 +3759,10 @@ lb0_681b:  ; [global]
 6AE9: 10 27 02 74    LBEQ   $6D61
 6AED: BE 0A 76       LDX    $0A76
 6AF0: 10 BE 0A 83    LDY    $0A83
-6AF4: EC A8 2A       LDD    $2A,Y
+6AF4: EC A8 2A       LDD    current_player_002a,Y
 6AF7: 10 B3 0A 76    CMPD   $0A76
 6AFB: 26 2C          BNE    $6B29
-6AFD: AE A8 2A       LDX    $2A,Y
+6AFD: AE A8 2A       LDX    current_player_002a,Y
 6B00: A6 88 1B       LDA    $1B,X
 6B03: 84 7F          ANDA   #$7F
 6B05: 81 00          CMPA   #$00
@@ -3986,7 +3992,7 @@ lb0_681b:  ; [global]
 6D40: 10 BE 0A 76    LDY    $0A76
 6D44: A6 A8 1D       LDA    $1D,Y
 6D47: A7 88 29       STA    $29,X
-6D4A: 10 AF 88 2A    STY    $2A,X
+6D4A: 10 AF 88 2A    STY    current_player_002a,X
 6D4E: B6 0A 75       LDA    $0A75
 6D51: 81 01          CMPA   #$01
 6D53: 23 08          BLS    $6D5D

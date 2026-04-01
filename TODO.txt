@@ -2,8 +2,9 @@
   
 - context change: BA3267F2 972B4DF4 7C2231AE => D265AE25
 
-- play 1p reverse directions, see player reactions to movement in MAME
-  in port, player crouches all the time (play & demo) which is not normal!
+- player crouches all the time (play & demo) which is not normal!
+  movements seem to work but are parasited by the crouches, then bank error
+  use CPU trace from read player inputs & compare
 
   
 - set DSW difficulty lives, etc.

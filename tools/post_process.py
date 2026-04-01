@@ -225,7 +225,7 @@ def f_handle_main_line(address,lines,i):
         line = remove_instruction(lines,i,continuing_lines=False)
 
     # HACK TO BE ABLE TO START GAME MUST BE IMPROVED ELSE DEMO WON'T SHOW
-    elif address == 0x8124 and False:
+    elif address == 0x8124 and True:
         # set 5 credits right away. Problem with the current game architecture is that
         # credits are inserted from fast irq, but fast irq doesn't return, so it causes us trouble
         # on the amiga because the interrupts work differently. Here just set 5 credits and jump to the routine

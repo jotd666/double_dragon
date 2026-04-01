@@ -206,7 +206,8 @@ attract_mode_timer_0e50 = $e50
 ; $1F: energy (P1 energy: 3C1, P2: 41F)
 logical_objects_array_0381 = $381
 number_of_players_flag_0029 = $29
-game_in_play_0026 = $26
+current_player_002a = $002a
+game_in_play_0026 = $0026
 time_0e5e = $e5e
 player_2_nb_lives_0448 = $448
 player_1_nb_lives_03ea = $3ea
@@ -719,22 +720,22 @@ gameloop_8389:
 847B: 7E 80 BA       JMP    $80BA
 847E: 96 29          LDA    number_of_players_flag_0029
 8480: 2B 1D          BMI    two_players_849f
-8482: 0F 2A          CLR    $2A
+8482: 0F 2A          CLR    current_player_002a
 8484: 8E 03 A2       LDX    #$03A2
 8487: BD 84 B0       JSR    $84B0
 848A: 86 80          LDA    #$80
 848C: B7 04 4C       STA    $044C
 848F: 7F 04 48       CLR    player_2_nb_lives_0448
 8492: 30 88 5E       LEAX   $5E,X
-8495: 0C 2A          INC    $2A
+8495: 0C 2A          INC    current_player_002a
 8497: BD 87 5F       JSR    $875F
 849A: BD 87 D5       JSR    $87D5
 849D: 20 10          BRA    $84AF
 two_players_849f:
-849F: 0F 2A          CLR    $2A
+849F: 0F 2A          CLR    current_player_002a
 84A1: 8E 03 A2       LDX    #$03A2
 84A4: BD 84 B0       JSR    $84B0
-84A7: 0C 2A          INC    $2A
+84A7: 0C 2A          INC    current_player_002a
 84A9: 30 88 5E       LEAX   $5E,X
 84AC: BD 84 B0       JSR    $84B0
 84AF: 39             RTS
@@ -984,13 +985,13 @@ play_intro_animation_84f8:
 86F6: 81 03          CMPA   #$03
 86F8: 27 1E          BEQ    $8718
 86FA: 8E 03 A2       LDX    #$03A2
-86FD: 0F 2A          CLR    $2A
+86FD: 0F 2A          CLR    current_player_002a
 86FF: A6 88 4C       LDA    $4C,X
 8702: 85 20          BITA   #$20
 8704: 27 03          BEQ    $8709
 8706: BD FF 54       JSR    $FF54
 8709: 30 88 5E       LEAX   $5E,X
-870C: 0C 2A          INC    $2A
+870C: 0C 2A          INC    current_player_002a
 870E: A6 88 4C       LDA    $4C,X
 8711: 85 20          BITA   #$20
 8713: 27 03          BEQ    $8718
@@ -1000,7 +1001,7 @@ play_intro_animation_84f8:
 8719: 34 76          PSHS   U,Y,X,D
 871B: 8E 03 A2       LDX    #$03A2
 871E: CE 04 00       LDU    #$0400
-8721: 0D 2A          TST    $2A
+8721: 0D 2A          TST    current_player_002a
 8723: 27 06          BEQ    $872B
 8725: 30 88 5E       LEAX   $5E,X
 8728: CE 03 A2       LDU    #$03A2
@@ -1012,7 +1013,7 @@ play_intro_animation_84f8:
 8737: BD FF 54       JSR    $FF54
 873A: 20 21          BRA    $875D
 873C: 96 29          LDA    number_of_players_flag_0029
-873E: D6 2A          LDB    $2A
+873E: D6 2A          LDB    current_player_002a
 8740: 10 8E 87 D1    LDY    #$87D1
 8744: A4 A5          ANDA   B,Y
 8746: 97 29          STA    number_of_players_flag_0029
@@ -1033,7 +1034,8 @@ play_intro_animation_84f8:
 8768: 53             COMB
 8769: C4 C0          ANDB   #$C0
 876B: 27 60          BEQ    $87CD
-876D: 0D 2A          TST    $2A
+; start 1P or 2P
+876D: 0D 2A          TST    current_player_002a
 876F: 26 06          BNE    $8777
 8771: C1 40          CMPB   #$40
 8773: 26 58          BNE    $87CD
@@ -1044,11 +1046,11 @@ play_intro_animation_84f8:
 877D: 8B 99          ADDA   #$99
 877F: 19             DAA
 8780: 97 21          STA    nb_credits_0021
-8782: 96 2A          LDA    $2A
+8782: 96 2A          LDA    current_player_002a
 8784: 97 00          STA    $00
 8786: BD 82 6F       JSR    $826F
 8789: 10 8E 00 00    LDY    #$0000
-878D: 96 2A          LDA    $2A
+878D: 96 2A          LDA    current_player_002a
 878F: E6 A6          LDB    A,Y
 8791: E7 88 48       STB    $48,X
 8794: CC 00 00       LDD    #$0000
@@ -1057,18 +1059,18 @@ play_intro_animation_84f8:
 879D: ED 88 49       STD    $49,X
 87A0: A7 88 4B       STA    $4B,X
 87A3: 86 00          LDA    #$00
-87A5: 0D 2A          TST    $2A
+87A5: 0D 2A          TST    current_player_002a
 87A7: 27 02          BEQ    $87AB
 87A9: 86 05          LDA    #$05
 87AB: BD FE B3       JSR    $FEB3
 87AE: 96 29          LDA    number_of_players_flag_0029
-87B0: D6 2A          LDB    $2A
+87B0: D6 2A          LDB    current_player_002a
 87B2: 10 8E 87 D1    LDY    #$87D1
 87B6: CB 02          ADDB   #$02
 87B8: AA A5          ORA    B,Y
 87BA: 97 29          STA    number_of_players_flag_0029
 87BC: 10 8E 87 CF    LDY    #$87CF
-87C0: D6 2A          LDB    $2A
+87C0: D6 2A          LDB    current_player_002a
 87C2: A6 A5          LDA    B,Y
 87C4: BD FE B0       JSR    display_credit_feb0
 87C7: BD FC AA       JSR    $FCAA
@@ -1098,9 +1100,9 @@ play_intro_animation_84f8:
 8801: 20 18          BRA    $881B
 8803: F6 0E 35       LDB    $0E35
 8806: C4 01          ANDB   #$01
-8808: 96 2A          LDA    $2A
+8808: 96 2A          LDA    current_player_002a
 880A: 48             ASLA
-880B: 9B 2A          ADDA   $2A
+880B: 9B 2A          ADDA   current_player_002a
 880D: A7 61          STA    $1,S		; [local]
 880F: 1F 98          TFR    B,A
 8811: EB 61          ADDB   $1,S		; [local]
@@ -1113,7 +1115,7 @@ play_intro_animation_84f8:
 881D: 6D E4          TST    ,S		; [local]
 881F: 26 12          BNE    $8833
 8821: 86 8B          LDA    #$8B
-8823: 0D 2A          TST    $2A
+8823: 0D 2A          TST    current_player_002a
 8825: 27 02          BEQ    $8829
 8827: 86 8C          LDA    #$8C
 8829: F6 0E 35       LDB    $0E35
@@ -1137,7 +1139,7 @@ play_intro_animation_84f8:
 885C: BA 04 48       ORA    player_2_nb_lives_0448
 885F: 27 51          BEQ    $88B2
 8861: 8E 03 A2       LDX    #$03A2
-8864: 0F 2A          CLR    $2A
+8864: 0F 2A          CLR    current_player_002a
 8866: B6 03 EA       LDA    player_1_nb_lives_03ea
 8869: 27 05          BEQ    $8870
 886B: BD 84 D6       JSR    $84D6
@@ -1147,7 +1149,7 @@ play_intro_animation_84f8:
 8875: 27 03          BEQ    $887A
 8877: BD FF 54       JSR    $FF54
 887A: 30 88 5E       LEAX   $5E,X
-887D: 0C 2A          INC    $2A
+887D: 0C 2A          INC    current_player_002a
 887F: B6 04 48       LDA    player_2_nb_lives_0448
 8882: 27 05          BEQ    $8889
 8884: BD 84 D6       JSR    $84D6
@@ -1156,13 +1158,13 @@ play_intro_animation_84f8:
 888C: 84 20          ANDA   #$20
 888E: 27 03          BEQ    $8893
 8890: BD FF 54       JSR    $FF54
-8893: 0F 2A          CLR    $2A
+8893: 0F 2A          CLR    current_player_002a
 8895: 85 40          BITA   #$40
 8897: 27 08          BEQ    $88A1
 8899: 7D 03 EA       TST    player_1_nb_lives_03ea
 889C: 26 03          BNE    $88A1
 889E: BD 87 19       JSR    $8719
-88A1: 0C 2A          INC    $2A
+88A1: 0C 2A          INC    current_player_002a
 88A3: 85 20          BITA   #$20
 88A5: 27 08          BEQ    $88AF
 88A7: 7D 04 48       TST    player_2_nb_lives_0448
@@ -1194,14 +1196,14 @@ play_intro_animation_84f8:
 88E8: 0D 37          TST    $37
 88EA: 26 31          BNE    $891D
 88EC: BD 89 47       JSR    $8947
-88EF: 0F 2A          CLR    $2A
+88EF: 0F 2A          CLR    current_player_002a
 88F1: 8E 03 A2       LDX    #$03A2
 88F4: BD 87 5F       JSR    $875F
 88F7: B6 03 A2       LDA    $03A2
 88FA: 2B 35          BMI    $8931
 88FC: 96 29          LDA    number_of_players_flag_0029
 88FE: 2A 0D          BPL    $890D
-8900: 0C 2A          INC    $2A
+8900: 0C 2A          INC    current_player_002a
 8902: 30 88 5E       LEAX   $5E,X
 8905: BD 87 5F       JSR    $875F
 8908: B6 04 00       LDA    $0400
@@ -1414,15 +1416,15 @@ wait_subcpu_reply_8ab5:
 8AC6: 34 7E          PSHS   U,Y,X,DP,D
 8AC8: 5F             CLRB
 8AC9: 1F 9B          TFR    B,DP		; direct page 0
-8ACB: 17 00 BD       LBSR   $8B8B
+8ACB: 17 00 BD       LBSR   read_player_commands_8b8b
 8ACE: D6 51          LDB    $51
 8AD0: C4 01          ANDB   #$01
-8AD2: D1 2A          CMPB   $2A
+8AD2: D1 2A          CMPB   current_player_002a
 8AD4: 27 13          BEQ    $8AE9
 8AD6: A6 01          LDA    $1,X
 8AD8: 81 16          CMPA   #$16
 8ADA: 27 04          BEQ    $8AE0
-8ADC: 96 2A          LDA    $2A
+8ADC: 96 2A          LDA    current_player_002a
 8ADE: A7 01          STA    $1,X
 8AE0: BD A8 F6       JSR    $A8F6
 8AE3: BD A8 E1       JSR    $A8E1
@@ -1444,7 +1446,7 @@ wait_subcpu_reply_8ab5:
 8B0B: 20 08          BRA    $8B15
 8B0D: D6 51          LDB    $51
 8B0F: C4 01          ANDB   #$01
-8B11: D1 2A          CMPB   $2A
+8B11: D1 2A          CMPB   current_player_002a
 8B13: 27 1E          BEQ    $8B33
 8B15: 48             ASLA
 8B16: 10 8E 8B 59    LDY   #jump_table_8b59
@@ -1475,12 +1477,13 @@ wait_subcpu_reply_8ab5:
 8B54: A7 88 34       STA    $34,X
 8B57: 35 FE          PULS   D,DP,X,Y,U,PC
 
+read_player_commands_8b8b:
 8B8B: 34 7E          PSHS   U,Y,X,DP,D
-8B8D: 17 73 29       LBSR   $FEB9
+8B8D: 17 73 29       LBSR   read_player_commands_feb9
 8B90: 1F 89          TFR    A,B
-8B92: 84 70          ANDA   #$70
+8B92: 84 70          ANDA   #$70		; separate directions from buttons
 8B94: A7 88 43       STA    $43,X
-; will change A on return
+; will change A on return but it's ignored
 8B97: A7 E4          STA    ,S		; [handled]
 8B99: A8 88 44       EORA   $44,X
 8B9C: A4 E4          ANDA   ,S		; [handled]
@@ -1496,7 +1499,7 @@ wait_subcpu_reply_8ab5:
 8BB0: A6 A5          LDA    B,Y
 8BB2: A7 88 45       STA    $45,X
 8BB5: A7 88 50       STA    $50,X
-8BB8: BD FE 86       JSR    lb0_random_fe86
+8BB8: BD FE 86       JSR    lb0_random_fe86		; consume one random value
 8BBB: 35 FE          PULS   D,DP,X,Y,U,PC
 
 8BCD: 34 7E          PSHS   U,Y,X,DP,D                                   
@@ -4302,7 +4305,7 @@ AA5D: 81 03          CMPA   #$03
 AA5F: 27 04          BEQ    $AA65
 AA61: 81 0A          CMPA   #$0A
 AA63: 26 2D          BNE    $AA92
-AA65: AC A8 2A       CMPX   $2A,Y
+AA65: AC A8 2A       CMPX   current_player_002a,Y
 AA68: 26 28          BNE    $AA92
 AA6A: A6 01          LDA    $1,X
 AA6C: 81 08          CMPA   #$08
@@ -4971,7 +4974,7 @@ B104: 27 08          BEQ    $B10E
 B106: BD 99 67       JSR    $9967
 B109: 86 01          LDA    #$01
 B10B: A7 A8 1B       STA    $1B,Y
-B10E: 0F 2A          CLR    $2A
+B10E: 0F 2A          CLR    current_player_002a
 B110: BD B1 37       JSR    $B137
 B113: 30 88 5E       LEAX   $5E,X
 B116: A6 88 21       LDA    nb_credits_0021,X
@@ -4979,7 +4982,7 @@ B119: 27 08          BEQ    $B123
 B11B: BD 99 67       JSR    $9967
 B11E: 86 01          LDA    #$01
 B120: A7 A8 1B       STA    $1B,Y
-B123: 0C 2A          INC    $2A
+B123: 0C 2A          INC    current_player_002a
 B125: BD B1 37       JSR    $B137
 B128: B6 0E 2E       LDA    $0E2E
 B12B: 84 03          ANDA   #$03
@@ -4997,7 +5000,7 @@ B142: BD 84 D6       JSR    $84D6
 B145: 96 51          LDA    $51
 B147: 84 01          ANDA   #$01
 B149: 10 27 00 DC    LBEQ   $B229
-B14D: BD 8B 8B       JSR    $8B8B
+B14D: BD 8B 8B       JSR    read_player_commands_8b8b
 B150: A6 88 1B       LDA    $1B,X
 B153: 1F 89          TFR    A,B
 B155: 84 3F          ANDA   #$3F
@@ -5029,7 +5032,7 @@ B18F: 96 36          LDA    $36
 B191: 1F 89          TFR    A,B
 B193: 48             ASLA
 B194: 48             ASLA
-B195: 0D 2A          TST    $2A
+B195: 0D 2A          TST    current_player_002a
 B197: 27 02          BEQ    $B19B
 B199: 8B 02          ADDA   #$02
 B19B: C1 02          CMPB   #$02
@@ -5092,14 +5095,14 @@ B213: CC 00 00       LDD    #$0000
 B216: 93 00          SUBD   $00
 B218: 10 83 00 04    CMPD   #$0004
 B21C: 24 0B          BCC    $B229
-B21E: 96 2A          LDA    $2A
+B21E: 96 2A          LDA    current_player_002a
 B220: 4C             INCA
 B221: BA 0E 2E       ORA    $0E2E
 B224: B7 0E 2E       STA    $0E2E
 B227: 6F 0E          CLR    $E,X
 B229: BD FF 10       JSR    push_one_sprite_entry_ff10
 B22C: 20 09          BRA    $B237
-B22E: 96 2A          LDA    $2A
+B22E: 96 2A          LDA    current_player_002a
 B230: 4C             INCA
 B231: BA 0E 2E       ORA    $0E2E
 B234: B7 0E 2E       STA    $0E2E
@@ -5126,12 +5129,12 @@ B262: 39             RTS
 
 push_player_sprites_b331:
 B331: 8E 03 A2       LDX    #$03A2
-B334: 0F 2A          CLR    $2A
+B334: 0F 2A          CLR    current_player_002a
 B336: BD B3 46       JSR    push_player_sprite_b346
 B339: 96 29          LDA    number_of_players_flag_0029
 B33B: 2A 08          BPL    $B345
 B33D: 30 88 5E       LEAX   $5E,X		; 0x400
-B340: 0C 2A          INC    $2A
+B340: 0C 2A          INC    current_player_002a
 B342: BD B3 46       JSR    push_player_sprite_b346
 B345: 39             RTS
 
@@ -5143,10 +5146,10 @@ B34F: 39             RTS
 
 push_players_sprites_b350:
 B350: 8E 03 A2       LDX    #$03A2
-B353: 0F 2A          CLR    $2A
+B353: 0F 2A          CLR    current_player_002a
 B355: BD B3 61       JSR    push_player_sprite_b361		; blue player
 B358: 30 88 5E       LEAX   $5E,X		; X=$400
-B35B: 0C 2A          INC    $2A
+B35B: 0C 2A          INC    current_player_002a
 B35D: BD B3 61       JSR    push_player_sprite_b361		; red player
 B360: 39             RTS
 
@@ -5162,7 +5165,7 @@ B36E: 25 60          BCS    $B3D0
 B370: 86 80          LDA    #$80
 B372: 20 0A          BRA    $B37E
 B374: 86 90          LDA    #$90
-B376: D6 2A          LDB    $2A
+B376: D6 2A          LDB    current_player_002a
 B378: C1 01          CMPB   #$01
 B37A: 27 02          BEQ    $B37E
 B37C: 86 78          LDA    #$78
@@ -5188,14 +5191,14 @@ B3A7: 24 1B          BCC    $B3C4
 ; auto-guided character, go right
 B3A9: 86 40          LDA    #$40
 B3AB: A7 0D          STA    $D,X
-B3AD: 96 2A          LDA    $2A
+B3AD: 96 2A          LDA    current_player_002a
 B3AF: 48             ASLA
 B3B0: 31 A6          LEAY   A,Y
 B3B2: EC A4          LDD    ,Y
 B3B4: 10 A3 04       CMPD   $4,X
 B3B7: 24 0B          BCC    $B3C4
 B3B9: 6F 0E          CLR    $E,X
-B3BB: 96 2A          LDA    $2A
+B3BB: 96 2A          LDA    current_player_002a
 B3BD: 4C             INCA
 B3BE: BA 0E 30       ORA    intro_anim_flag_0e30
 B3C1: B7 0E 30       STA    intro_anim_flag_0e30
@@ -5207,7 +5210,7 @@ B3CD: BD FC 1E       JSR    $FC1E
 B3D0: BD FF 10       JSR    push_one_sprite_entry_ff10
 B3D3: 39             RTS
 
-B3D4: 96 2A          LDA    $2A
+B3D4: 96 2A          LDA    current_player_002a
 B3D6: 4C             INCA
 B3D7: BA 0E 30       ORA    intro_anim_flag_0e30
 B3DA: B7 0E 30       STA    intro_anim_flag_0e30
@@ -6025,7 +6028,7 @@ BBDC: 81 10          CMPA   #$10
 BBDE: 25 A9          BCS    $BB89
 BBE0: 96 51          LDA    $51
 BBE2: 84 01          ANDA   #$01
-BBE4: 97 2A          STA    $2A
+BBE4: 97 2A          STA    current_player_002a
 BBE6: BD BC 59       JSR    $BC59
 BBE9: 32 61          LEAS   $1,S   ; [free_locals]
 BBEB: 39             RTS
@@ -9823,7 +9826,8 @@ FEB0: 7E FC 50       JMP    display_credit_fc50
 
 FEB3: 7E FC 78       JMP    $FC78
 FEB6: 7E 44 CD       JMP    lb0_44CD
-FEB9: 7E 44 49       JMP    lb0_4449
+read_player_commands_feb9:
+FEB9: 7E 44 49       JMP    lb0_read_player_commands_4449
 FEBC: 7E 47 36       JMP    lb0_4736
 FEBF: 7E 45 D7       JMP    lb0_45D7
 FEC2: 7E 47 DB       JMP    lb0_47DB

@@ -297,9 +297,7 @@ osd_enter_\@:
 	.global osd_read_dsw1
 	.global osd_read_dsw2
 	.global	osd_set_bank
-	.global	osd_read_system
-	.global	osd_read_p1_inputs
-	.global	osd_read_p2_inputs
+
 	
 	.global	osd_clear_fg_screen
 	.global	osd_clear_bg_screen
@@ -1655,12 +1653,11 @@ level3_interrupt:
 	jbsr	_read_joystick
 	move.l	d0,joypad_2_state
 
-	jbsr	update_player_1_controls
-
 	* change I/O stuff for the game
 	GET_MEMORY_START_AND_DP
+	jbsr	update_players_controls
+
 	bclr	#3,(extra_3802,a6)		| ack vblank
-	move.b	d0,(port_1_3800,a6)
 	
 
 	move.l	joypad_1_state,d0
@@ -4414,17 +4411,6 @@ osd_debug_hook:
 	
 	
 
-osd_read_p1_inputs:
-	move.b	 player_1_controls,d0
-	rts
-
-
-osd_read_p2_inputs:
-	st.B	d0
-	rts
-	
-
-
 	
 	.ifne	OPT_ENABLE_LOGGING
 purge_tile_log_data:
@@ -4458,7 +4444,7 @@ purge_sprite_log_data:
 
 	
 * < D1: previous state
-update_player_1_controls:
+update_players_controls:
 	moveq	#-1,d0
 
 	lea		keyboard_table(pc),a0
@@ -4497,7 +4483,9 @@ update_player_1_controls:
 	st.b	detect_controllers
 	bclr	#BIT_START_2P,d0
 0:	
+	move.b	d0,(port_1_3800,a6)
 
+	move.b	#0xF,d0
 	* directions + fire
 	move.l	joypad_1_state(pc),d1
 	jbsr	decode_joypad_controls
@@ -4505,8 +4493,9 @@ update_player_1_controls:
 	jeq		0f
 	bclr	#BIT_PUNCH_1P,d0
 0:
-	move.b	d0,player_1_controls
-
+	move.b	d0,(extra_3802,a6)		| TODO: BIT_PUNCH_2P
+	
+	st.b	(port_2_3801,a6)		| TEMP 2P off
 	rts
 	
 decode_joypad_controls:
@@ -5640,12 +5629,10 @@ color_copper_pointers:
 	.skip	TOTAL_NB_COLORS*4*4
 osd_entry_count:
 	.byte	0
-player_1_controls:
-	.byte	0
+
 flip_flop:
 	.byte	0
-irq_flip_flop:
-	.byte	0
+
 bank_value:
 	.byte	0
 must_mirror_y_tiles:
