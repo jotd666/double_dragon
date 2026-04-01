@@ -14,7 +14,7 @@ lb0_400c:   ; [global]
 lb0_400f:   ; [global]
 400F: 7E 47 DB       JMP    $47DB
 lb0_4012:   ; [global]
-4012: 7E 45 B1       JMP    $45B1
+4012: 7E 45 B1       JMP    lb0_random_45b1
 lb0_4015:   ; [global]
 4015: 7E 46 A3       JMP    $46A3
 lb0_4018:   ; [global]
@@ -227,7 +227,7 @@ lb0_move_character_4159:
 41AC: CC 00 00       LDD    #$0000
 41AF: 93 02          SUBD   $02		; change Y direction
 41B1: DD 02          STD    $02
-41B3: 32 68          LEAS   $8,S	; restore stack   ; [free_locals]
+41B3: 32 68          LEAS   $8,S	; [free_locals]
 41B5: 35 B6          PULS   D,X,Y,PC
 
 ; clear memory
@@ -335,6 +335,7 @@ lb0_4242:   ; [global]
 427D: 10 25 FF CA    LBCS   $424B
 4281: 32 61          LEAS   $1,S   ; [free_locals]
 4283: 35 C8          PULS   DP,U,PC
+
 4285: 34 37          PSHS   Y,X,D,CC
 4287: D6 26          LDB    $26
 4289: 26 09          BNE    $4294
@@ -660,7 +661,7 @@ lb0_4566:   ; [global]
 45AD: 20 D9          BRA    $4588
 45AF: 35 F6          PULS   D,X,Y,U,PC
 
-lb0_45b1:   ; [global]
+lb0_random_45b1:   ; [global]
 45B1: 34 0C          PSHS   DP,B
 45B3: 4F             CLRA
 45B4: 1F 8B          TFR    A,DP	; direct page 0
@@ -1787,7 +1788,7 @@ lb0_51e5:    ; [global]
 5258: 32 78          LEAS   -$8,S   ; [alloc_locals]
 525A: 7F 0B 0F       CLR    $0B0F
 525D: 10 8E 53 04    LDY    #$5304
-5261: BD 45 B1       JSR    $45B1
+5261: BD 45 B1       JSR    lb0_random_45b1
 5264: 84 07          ANDA   #$07
 5266: C6 03          LDB    #$03
 5268: 3D             MUL
@@ -2333,7 +2334,7 @@ lb0_588f:    ; [global]
 59E2: DC 3C          LDD    $3C
 59E4: 10 83 18 C0    CMPD   #$18C0
 59E8: 25 2C          BCS    $5A16
-59EA: BD 45 B1       JSR    $45B1
+59EA: BD 45 B1       JSR    lb0_random_45b1
 59ED: 84 1F          ANDA   #$1F
 59EF: 8E 5A 27       LDX    #$5A27
 59F2: A6 86          LDA    A,X
@@ -2568,7 +2569,7 @@ lb0_5c93:   ; [global]
 5D07: A7 E4          STA    ,S		; [local]
 5D09: 27 54          BEQ    $5D5F
 5D0B: 10 8E 53 04    LDY    #$5304
-5D0F: BD 45 B1       JSR    $45B1
+5D0F: BD 45 B1       JSR    lb0_random_45b1
 5D12: 84 07          ANDA   #$07
 5D14: C6 03          LDB    #$03
 5D16: 3D             MUL
@@ -2757,6 +2758,7 @@ lb0_5c93:   ; [global]
 5EE6: 84 EF          ANDA   #$EF
 5EE8: B7 0A EC       STA    $0AEC
 5EEB: 39             RTS
+
 5EEC: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 5EEE: 7C 0A EC       INC    $0AEC
 5EF1: B6 0A EC       LDA    $0AEC
@@ -3122,7 +3124,7 @@ lb0_5f85:  ; [global]
 6266: 48             ASLA
 6267: CE 66 D2       LDU    #$66D2
 626A: EE C6          LDU    A,U		; [bank_address]
-626C: BD 45 B1       JSR    $45B1
+626C: BD 45 B1       JSR    lb0_random_45b1
 626F: A4 C0          ANDA   ,U+	; [bank_address]
 6271: A6 C6          LDA    A,U	; [bank_address]
 6273: A7 88 1B       STA    $1B,X

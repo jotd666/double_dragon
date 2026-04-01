@@ -112,11 +112,15 @@ def f_handle_bank4_line(address,lines,i):
     line = lines[i]
     # specific file patches
     if address == 0x4361:
-        # fix abusive alternate direct jump
-        line = change_instruction("jra\tlb4_4470",lines,i)
-    elif address == 0X435e:
-        # fix abusive alternate direct jump
-        line = change_instruction("jra\tlb4_442f",lines,i)
+        # 4 cases
+        line = """\tcmp.w\t#0x4406,d2
+\tjeq\tlb4_4406
+\tcmp.w\t#0x4470,d2
+\tjeq\tlb4_4470
+\tcmp.w\t#0x4363,d2
+\tjeq\tlb4_4363
+\tjra\tlb4_442f
+"""
 
     elif address in [0x446e,0x442d]:
         # remove useless jra to next instruction

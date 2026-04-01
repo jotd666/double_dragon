@@ -395,19 +395,20 @@ table_4317:
 433C: 5F             CLRB
 433D: 39             RTS
 
-4343: 8E 44 06       LDX    #$4406
+; 4 cases to jump to depending on conditions
+4343: 8E 44 06       LDX    #$4406		; label
 4346: 96 69          LDA    $69
 4348: 91 6A          CMPA   $6A
 434A: 23 05          BLS    $4351
-434C: 8E 43 63       LDX    #$4363
+434C: 8E 43 63       LDX    #$4363		; label
 434F: 96 6A          LDA    $6A
 4351: 91 6B          CMPA   $6B
 4353: 23 05          BLS    $435A
-4355: 8E 44 70       LDX    #$4470
+4355: 8E 44 70       LDX    #$4470		; label
 4358: 96 6B          LDA    $6B
 435A: 91 6C          CMPA   $6C
 435C: 23 03          BLS    $4361
-435E: 8E 44 2F       LDX    #$442F
+435E: 8E 44 2F       LDX    #$442F	; label
 4361: 6E 84          JMP    ,X		; [direct_jump]
 
 4363: 4F             CLRA
@@ -499,6 +500,7 @@ table_4317:
 4422: 97 4B          STA    $4B
 4424: 0C 70          INC    $70
 4426: 39             RTS
+
 4427: 96 69          LDA    $69
 4429: 91 6C          CMPA   $6C
 442B: 25 D9          BCS    $4406
@@ -531,10 +533,11 @@ table_4317:
 4463: 86 08          LDA    #$08
 4465: 97 4B          STA    $4B
 4467: 39             RTS
+
 4468: 96 6C          LDA    $6C
 446A: 91 6B          CMPA   $6B
 446C: 25 C1          BCS    $442F
-446E: 20 00          BRA    $4470
+446E: 20 00          BRA    $4470	; [useless]
 4470: 4F             CLRA
 4471: D6 6B          LDB    $6B
 4473: C1 FF          CMPB   #$FF
@@ -553,7 +556,7 @@ table_4317:
 448E: 0C 70          INC    $70
 4490: 39             RTS
 
-4491: 96 6B          LDA    $6B
+4491: 96 6B          LDA    $6B		; [breakpoint]
 4493: 91 6A          CMPA   $6A
 4495: 25 D9          BCS    $4470
 4497: 7E 43 63       JMP    $4363
@@ -563,13 +566,13 @@ table_4317:
 44A0: BD 45 CF       JSR    fatal_error_45cf
 44A3: 4F             CLRA
 44A4: C3 00 01       ADDD   #$0001
-44A7: 34 06          PSHS   D
+44A7: 34 06          PSHS   D	; [manual_stack_push]
 44A9: 0C 6E          INC    $6E
 44AB: DC 50          LDD    $50
-44AD: E3 E4          ADDD   ,S	; [local]
+44AD: E3 E4          ADDD   ,S	; [handled]
 44AF: DD 50          STD    $50
 44B1: DC 5E          LDD    $5E
-44B3: E3 E4          ADDD   ,S	; [local]
+44B3: E3 E4          ADDD   ,S	; [handled]
 44B5: DD 5E          STD    $5E
 44B7: DC 52          LDD    $52
 44B9: E3 E4          ADDD   ,S	; [local]
@@ -916,6 +919,7 @@ fatal_error_45cf:
 47C2: 7C 03 A1       INC    $03A1
 47C5: 32 61          LEAS   $1,S   ; [free_locals]
 47C7: 35 E6          PULS   D,Y,U,PC
+
 47C9: 34 36          PSHS   Y,X,D
 47CB: D6 35          LDB    $35
 47CD: C1 04          CMPB   #$04
@@ -1105,6 +1109,7 @@ lb4_7bb4:  ; [global]
 7E35: 8C 0A CD       CMPX   #$0ACD
 7E38: 26 DD          BNE    $7E17
 7E3A: 39             RTS
+
 7E3B: 32 78          LEAS   -$8,S   ; [alloc_locals]
 7E3D: 96 51          LDA    $51
 7E3F: 84 01          ANDA   #$01

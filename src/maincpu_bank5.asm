@@ -541,14 +541,14 @@ jump_table_42bf:
 4E9F: 6C E4          INC    ,S	; [local]
 4EA1: E6 E4          LDB    ,S	; [local]
 4EA3: 58             ASLB
-4EA4: 10 AE A5       LDY    B,Y
+4EA4: 10 AE A5       LDY    B,Y	; [bank_address]
 4EA7: E6 88 3A       LDB    $3A,X
 4EAA: A6 88 14       LDA    $14,X
 4EAD: 84 40          ANDA   #$40
 4EAF: 27 03          BEQ    $4EB4
 4EB1: E6 88 3C       LDB    $3C,X
 4EB4: A6 88 1C       LDA    $1C,X
-4EB7: E1 A6          CMPB   A,Y
+4EB7: E1 A6          CMPB   A,Y	; [bank_address]
 4EB9: 24 37          BCC    $4EF2
 4EBB: A7 88 1E       STA    $1E,X
 4EBE: 81 01          CMPA   #$01
@@ -1483,7 +1483,6 @@ jump_table_5839:
 5B1B: 24 03          BCC    $5B20
 5B1D: 32 61          LEAS   $1,S   ; [free_locals]
 5B1F: 39             RTS
-
 5B20: B6 0E 32       LDA    $0E32
 5B23: 84 07          ANDA   #$07
 5B25: 81 07          CMPA   #$07
@@ -2422,6 +2421,7 @@ flip_screen_if_needed_66e6:
 
 6730: 32 62          LEAS   $2,S   ; [free_locals]
 6732: 35 C0          PULS   U,PC
+
 6734: 34 40          PSHS   U
 6736: A6 88 1B       LDA    $1B,X
 6739: 84 3F          ANDA   #$3F
@@ -2850,6 +2850,7 @@ flip_screen_if_needed_66e6:
 6B6B: 25 D3          BCS    $6B40
 6B6D: 32 61          LEAS   $1,S   ; [free_locals]
 6B6F: 39             RTS
+
 6B70: 34 16          PSHS   X,D
 6B72: 10 AE 88 41    LDY    $41,X
 6B76: CC 00 00       LDD    #$0000
@@ -3648,7 +3649,7 @@ jump_table_72a9:
 	dc.w	$72b1 
 	dc.w	$72b1
 	
-72B1: 32 7F          LEAS   -$1,S			; [alloc_stack]   ; [alloc_locals]
+72B1: 32 7F          LEAS   -$1,S			; [alloc_locals]
 72B3: 8E 07 5B       LDX    #$075B
 72B6: 6F E4          CLR    ,S	; [local]
 72B8: A6 84          LDA    ,X
@@ -3679,10 +3680,10 @@ jump_table_72a9:
 72F4: A6 E4          LDA    ,S	; [local]
 72F6: 81 10          CMPA   #$10
 72F8: 25 BE          BCS    $72B8
-72FA: 32 61          LEAS   $1,S			; [free_stack]   ; [free_locals]
+72FA: 32 61          LEAS   $1,S			; [free_locals]
 72FC: 39             RTS
 
-72FD: 32 7C          LEAS   -$4,S			; [alloc_stack]   ; [alloc_locals]
+72FD: 32 7C          LEAS   -$4,S			; [alloc_locals]
 72FF: 8E 07 5B       LDX    #$075B
 7302: 6F E4          CLR    ,S	; [local]
 7304: A6 84          LDA    ,X

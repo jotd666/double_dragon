@@ -1227,6 +1227,7 @@ play_intro_animation_84f8:
 893D: B6 0E 52       LDA    $0E52
 8940: 10 26 FC B8    LBNE   $85FC
 8944: 7E 83 7E       JMP    activate_nmi_flag_837e
+
 8947: 32 7E          LEAS   -$2,S   ; [alloc_locals]
 8949: 7C 0E 34       INC    $0E34
 894C: B6 0E 34       LDA    $0E34
@@ -1495,7 +1496,7 @@ wait_subcpu_reply_8ab5:
 8BB0: A6 A5          LDA    B,Y
 8BB2: A7 88 45       STA    $45,X
 8BB5: A7 88 50       STA    $50,X
-8BB8: BD FE 86       JSR    $FE86
+8BB8: BD FE 86       JSR    lb0_random_fe86
 8BBB: 35 FE          PULS   D,DP,X,Y,U,PC
 
 8BCD: 34 7E          PSHS   U,Y,X,DP,D                                   
@@ -1815,6 +1816,7 @@ wait_subcpu_reply_8ab5:
 8EFF: 6F 88 53       CLR    $53,X
 8F02: 32 61          LEAS   $1,S   ; [free_locals]
 8F04: 35 FE          PULS   D,DP,X,Y,U,PC
+
 8F06: 34 20          PSHS   Y
 8F08: 5F             CLRB
 8F09: EE 88 3C       LDU    $3C,X
@@ -3097,7 +3099,7 @@ wait_subcpu_reply_8ab5:
 9D9E: 48             ASLA
 9D9F: 48             ASLA
 9DA0: 31 A6          LEAY   A,Y
-9DA2: BD FE 86       JSR    $FE86
+9DA2: BD FE 86       JSR    lb0_random_fe86
 9DA5: 84 07          ANDA   #$07
 9DA7: A6 A6          LDA    A,Y
 9DA9: 26 1E          BNE    $9DC9
@@ -3581,6 +3583,7 @@ A250: A6 88 16       LDA    $16,X
 A253: 84 F9          ANDA   #$F9
 A255: A7 88 16       STA    $16,X
 A258: 35 C0          PULS   U,PC
+
 A25A: 86 FF          LDA    #$FF
 A25C: A7 88 22       STA    interrupt_status_22,X
 A25F: 86 01          LDA    #$01
@@ -3637,6 +3640,7 @@ A312: BD 40 5D       JSR    lb1_405D
 A315: 34 01          PSHS   CC
 A317: BD FD B2       JSR    restore_previous_bank_fdb2
 A31A: 35 81          PULS   CC,PC
+
 A31C: 10 8E A3 B2    LDY    #$A3B2
 A320: A6 88 1B       LDA    $1B,X
 A323: 2B 2E          BMI    $A353
@@ -3750,6 +3754,7 @@ A435: 27 05          BEQ    $A43C
 A437: 86 00          LDA    #$00
 A439: A7 88 1B       STA    $1B,X
 A43C: 39             RTS
+
 A43D: 32 7C          LEAS   -$4,S   ; [alloc_locals]
 A43F: 10 8E A4 9D    LDY    #$A49D
 A443: A6 88 1B       LDA    $1B,X
@@ -3787,6 +3792,7 @@ A48E: E6 A6          LDB    A,Y
 A490: E7 88 19       STB    $19,X
 A493: 32 64          LEAS   $4,S   ; [free_locals]
 A495: 39             RTS
+
 A496: 86 00          LDA    #$00
 A498: A7 88 1B       STA    $1B,X
 A49B: 20 F6          BRA    $A493
@@ -3856,11 +3862,13 @@ A540: 84 7F          ANDA   #$7F
 A542: A7 88 14       STA    $14,X
 A545: 6C 88 1D       INC    $1D,X
 A548: 39             RTS
+
 A549: 34 02          PSHS   A
 A54B: BD FC 82       JSR    switch_to_bank_5_fc82
-A54E: BD 40 CF       JSR    $40CF	 ; [banks=5]
+A54E: BD 40 CF       JSR    lb5_40CF
 A551: BD FC 8F       JSR    switch_to_bank_0_fc8f
 A554: 35 82          PULS   A,PC
+
 A556: A6 88 15       LDA    $15,X
 A559: 85 40          BITA   #$40
 A55B: 26 27          BNE    $A584
@@ -5976,11 +5984,11 @@ BB7E: BD BB 4D       JSR    switch_to_bank_0_bb4d
 BB81: 39             RTS
 
 BB82: 32 7F          LEAS   -$1,S   ; [alloc_locals]
-BB84: 6F E4          CLR    ,S		; [handled]
+BB84: 6F E4          CLR    ,S		; [local]
 BB86: 8E 07 5B       LDX    #$075B
 BB89: A6 84          LDA    ,X
 BB8B: 10 2A 00 46    LBPL   $BBD5
-BB8F: A6 E4          LDA    ,S		; [handled]
+BB8F: A6 E4          LDA    ,S		; [local]
 BB91: 98 51          EORA   $51
 BB93: 84 01          ANDA   #$01
 BB95: 27 33          BEQ    $BBCA
@@ -6374,6 +6382,7 @@ BFF1: A7 84          STA    ,X
 BFF3: 86 10          LDA    #$10
 BFF5: A7 0E          STA    $E,X
 BFF7: 39             RTS
+
 BFF8: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 BFFA: 6F E4          CLR    ,S		; [local]
 BFFC: A6 0F          LDA    $F,X
@@ -6633,6 +6642,7 @@ C2A3: A7 84          STA    ,X
 C2A5: 86 18          LDA    #$18
 C2A7: A7 0E          STA    $E,X
 C2A9: 39             RTS
+
 C2AA: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 C2AC: 6F E4          CLR    ,S		; [local]
 C2AE: A6 0F          LDA    $F,X
@@ -8037,7 +8047,7 @@ E1AD: 8E E1 E9       LDX    #$E1E9
 E1B0: 96 36          LDA    $36
 E1B2: 48             ASLA
 E1B3: EC 86          LDD    A,X
-E1B5: ED 62          STD    $2,S		; [handled]
+E1B5: ED 62          STD    $2,S		; [local]
 E1B7: 37 10          PULU   X		; using "user" stack as S is used as local vars
 E1B9: FC 03 A6       LDD    $03A6
 E1BC: B3 04 04       SUBD   $0404
@@ -8051,7 +8061,7 @@ E1D0: FC 03 A8       LDD    $03A8
 E1D3: B3 04 06       SUBD   $0406
 E1D6: 2A 03          BPL    $E1DB
 E1D8: BD E9 4F       JSR    $E94F
-E1DB: 10 A3 62       CMPD   $2,S		; [handled]
+E1DB: 10 A3 62       CMPD   $2,S		; [local]
 E1DE: 26 06          BNE    $E1E6
 E1E0: CC 00 00       LDD    #$0000
 E1E3: FD 0A 44       STD    $0A44
@@ -8760,14 +8770,14 @@ E86E: EC 84          LDD    ,X
 E870: 35 90          PULS   X,PC
 E872: 34 10          PSHS   X
 E874: 32 7E          LEAS   -$2,S   ; [alloc_locals]
-E876: A7 E4          STA    ,S		; [handled]
-E878: E7 61          STB    $1,S		; [handled]
+E876: A7 E4          STA    ,S		; [local]
+E878: E7 61          STB    $1,S		; [local]
 E87A: 8E EA 44       LDX    #$EA44
 E87D: EC 81          LDD    ,X++
 E87F: 5A             DECB
-E880: E0 61          SUBB   $1,S		; [handled]
+E880: E0 61          SUBB   $1,S		; [local]
 E882: 3D             MUL
-E883: EB E4          ADDB   ,S		; [handled]
+E883: EB E4          ADDB   ,S		; [local]
 E885: 89 00          ADCA   #$00
 E887: EC 8B          LDD    D,X
 E889: 1F 89          TFR    A,B
@@ -8947,6 +8957,7 @@ E9C5: F6 0A 5B       LDB    $0A5B
 E9C8: F7 0A 5C       STB    $0A5C
 E9CB: 32 61          LEAS   $1,S   ; [free_locals]
 E9CD: 39             RTS
+
 E9CE: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 E9D0: 86 81          LDA    #$81
 E9D2: 97 02          STA    $02
@@ -9118,10 +9129,10 @@ EE46: 27 1C          BEQ    $EE64
 EE48: 97 4C          STA    $4C
 EE4A: C6 10          LDB    #$10
 EE4C: 3D             MUL
-EE4D: A7 E4          STA    ,S		; [handled]
+EE4D: A7 E4          STA    ,S		; [local]
 EE4F: 10 8E 10 80    LDY    #sprites_palette_1080
 EE53: 8E EE D5       LDX    #$EED5
-EE56: A6 E4          LDA    ,S		; [handled]
+EE56: A6 E4          LDA    ,S		; [local]
 EE58: EE 8B          LDU    D,X
 EE5A: 8D 50          BSR    $EEAC
 EE5C: 5C             INCB
@@ -9165,6 +9176,7 @@ EEA4: 84 0F          ANDA   #$0F
 EEA6: 26 F2          BNE    $EE9A
 EEA8: 32 61          LEAS   $1,S   ; [free_locals]
 EEAA: 35 C0          PULS   U,PC
+
 EEAC: 34 14          PSHS   X,B
 EEAE: 32 7D          LEAS   -$3,S   ; [alloc_locals]
 ; vblank wait
@@ -9782,26 +9794,27 @@ FE61: 7E A4 3D       JMP    $A43D
 l_fe64:
 FE64: 7E A5 29       JMP    $A529
 FE67: 7E A4 A3       JMP    $A4A3
-FE80: 7E 40 1E       JMP    $401E ; [banks=0]
-FE83: 7E 46 52       JMP    $4652 ; [banks=0]
-FE86: 7E 45 B1       JMP    $45B1 ; [banks=0]
-FE89: 7E 44 DC       JMP    $44DC ; [banks=0]
-FE8C: 7E 48 B1       JMP    $48B1 ; [banks=0]
-FE8F: 7E 46 E0       JMP    $46E0 ; [banks=0]
-FE92: 7E 48 EB       JMP    $48EB ; [banks=0]
-FE95: 7E 41 C9       JMP    $41C9 ; [banks=0]
+FE80: 7E 40 1E       JMP    lb0_401E
+FE83: 7E 46 52       JMP    lb0_4652
+lb0_random_fe86:
+FE86: 7E 45 B1       JMP    lb0_random_45b1
+FE89: 7E 44 DC       JMP    lb0_44DC
+FE8C: 7E 48 B1       JMP    lb0_48B1
+FE8F: 7E 46 E0       JMP    lb0_46E0
+FE92: 7E 48 EB       JMP    lb0_48EB
+FE95: 7E 41 C9       JMP    lb0_41C9
 clear_fg_screen_fe98:
-FE98: 7E 41 E3       JMP    $41E3 ; [banks=0]
+FE98: 7E 41 E3       JMP    lb0_41E3
 clear_bg_screen_fe9b:
-FE9B: 7E 41 D6       JMP    $41D6 ; [banks=0]
+FE9B: 7E 41 D6       JMP    lb0_41D6
 clear_sprite_memory_fe9e:
 FE9E: 7E 42 13       JMP    lb0_clear_sprite_memory_4213
 set_screen_orientation_fea1:
-FEA1: 7E 42 B4       JMP    $42B4 ; [banks=0]
+FEA1: 7E 42 B4       JMP    lb0_42B4
 update_sprite_memory_fea4:
 FEA4: 7E 42 31       JMP    lb0_update_sprite_memory_4231
-FEA7: 7E 45 66       JMP    $4566 ; [banks=0]
-FEAA: 7E 41 BF       JMP    $41BF ; [banks=0]
+FEA7: 7E 45 66       JMP    lb0_4566
+FEAA: 7E 41 BF       JMP    lb0_41BF
 clear_sprite_slots_fead:
 FEAD: 7E 41 F0       JMP    lb0_clear_sprite_slots_41f0
 
@@ -9809,33 +9822,33 @@ display_credit_feb0:
 FEB0: 7E FC 50       JMP    display_credit_fc50
 
 FEB3: 7E FC 78       JMP    $FC78
-FEB6: 7E 44 CD       JMP    $44CD ; [banks=0]
-FEB9: 7E 44 49       JMP    $4449 ; [banks=0]
-FEBC: 7E 47 36       JMP    $4736 ; [banks=0]
-FEBF: 7E 45 D7       JMP    $45D7 ; [banks=0]
-FEC2: 7E 47 DB       JMP    $47DB ; [banks=0]
-FEC5: 7E 68 1B       JMP    $681B ; [banks=0]
-FEC8: 7E 6D 64       JMP    $6D64 ; [banks=0]
-FECB: 7E 47 E3       JMP    $47E3 ; [banks=0]
-FECE: 7E 47 E9       JMP    $47E9 ; [banks=0]
-FED1: 7E 48 04       JMP    $4804 ; [banks=0]
-FED4: 7E 67 5D       JMP    $675D ; [banks=0]
-FED7: 7E 5F 85       JMP    $5F85 ; [banks=0]
-FEDA: 7E 5B 1F       JMP    $5B1F ; [banks=0]
-FEDD: 7E 58 8F       JMP    $588F ; [banks=0]
-FEE0: 7E 5C 93       JMP    $5C93 ; [banks=0]
-FEE3: 7E 4A 6B       JMP    $4A6B ; [banks=0]
-FEE6: 7E 51 E5       JMP    $51E5 ; [banks=0]
-FEE9: 7E 4D 9D       JMP    $4D9D ; [banks=0]
-FEEC: 7E 4E 4B       JMP    $4E4B ; [banks=0]
-FEEF: 7E 4E 76       JMP    $4E76 ; [banks=0]
-FEF2: 7E 4F 80       JMP    $4F80 ; [banks=0]
-FEF5: 7E 4D DD       JMP    $4DDD ; [banks=0]
-FEF8: 7E 49 A0       JMP    $49A0 ; [banks=0]
-FEFB: 7E 46 A3       JMP    $46A3 ; [banks=0]
+FEB6: 7E 44 CD       JMP    lb0_44CD
+FEB9: 7E 44 49       JMP    lb0_4449
+FEBC: 7E 47 36       JMP    lb0_4736
+FEBF: 7E 45 D7       JMP    lb0_45D7
+FEC2: 7E 47 DB       JMP    lb0_47DB
+FEC5: 7E 68 1B       JMP    lb0_681B
+FEC8: 7E 6D 64       JMP    lb0_6D64
+FECB: 7E 47 E3       JMP    lb0_47E3
+FECE: 7E 47 E9       JMP    lb0_47E9
+FED1: 7E 48 04       JMP    lb0_4804
+FED4: 7E 67 5D       JMP    lb0_675D
+FED7: 7E 5F 85       JMP    lb0_5F85
+FEDA: 7E 5B 1F       JMP    lb0_5B1F
+FEDD: 7E 58 8F       JMP    lb0_588F
+FEE0: 7E 5C 93       JMP    lb0_5C93
+FEE3: 7E 4A 6B       JMP    lb0_4A6B
+FEE6: 7E 51 E5       JMP    lb0_51E5
+FEE9: 7E 4D 9D       JMP    lb0_4D9D
+FEEC: 7E 4E 4B       JMP    lb0_4E4B
+FEEF: 7E 4E 76       JMP    lb0_4E76
+FEF2: 7E 4F 80       JMP    lb0_4F80
+FEF5: 7E 4D DD       JMP    lb0_4DDD
+FEF8: 7E 49 A0       JMP    lb0_49A0
+FEFB: 7E 46 A3       JMP    lb0_46A3
 FEFE: 7E FF C9       JMP    $FFC9
 FF01: 7E 42 42       JMP    lb0_4242
-FF04: 7E 48 8C       JMP    $488C ; [banks=0]
+FF04: 7E 48 8C       JMP    lb0_488C
 
 push_one_sprite_entry_ff10:  ; [global]
 FF10: BD FD A0       JSR    save_and_switch_to_bank_1_fda0

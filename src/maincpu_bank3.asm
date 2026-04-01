@@ -841,16 +841,17 @@ jump_table_7290:
 7403: 86 1E          LDA    #$1E
 7405: 17 8B C1       LBSR   $FFC9
 7408: 32 7F          LEAS   -$1,S   ; [alloc_locals]
-740A: 6F E4          CLR    ,S	; [handled]
+740A: 6F E4          CLR    ,S	; [local]
 740C: 10 8E 07 5B    LDY    #$075B
 7410: 6F A4          CLR    ,Y
 7412: 31 A8 21       LEAY   $21,Y
-7415: 6C E4          INC    ,S	; [handled]
-7417: A6 E4          LDA    ,S	; [handled]
+7415: 6C E4          INC    ,S	; [local]
+7417: A6 E4          LDA    ,S	; [local]
 7419: 81 10          CMPA   #$10
 741B: 25 F3          BCS    $7410
 741D: 32 61          LEAS   $1,S   ; [free_locals]
 741F: 39             RTS
+
 7420: 34 7E          PSHS   U,Y,X,DP,D
 7422: 10 8E 09 6B    LDY    #$096B
 7426: 8E 09 8C       LDX    #$098C
@@ -865,6 +866,7 @@ jump_table_7290:
 743C: 17 00 30       LBSR   $746F
 743F: 17 00 7B       LBSR   $74BD
 7442: 35 FE          PULS   D,DP,X,Y,U,PC
+
 7444: 34 7E          PSHS   U,Y,X,DP,D
 7446: A6 88 31       LDA    $31,X
 7449: 2B 22          BMI    $746D
@@ -884,6 +886,7 @@ jump_table_7290:
 7469: A7 84          STA    ,X
 746B: 6F 0D          CLR    $D,X
 746D: 35 FE          PULS   D,DP,X,Y,U,PC
+
 746F: 34 7E          PSHS   U,Y,X,DP,D
 7471: 86 04          LDA    #$04
 7473: A7 0E          STA    $E,X
@@ -1100,6 +1103,7 @@ jump_table_748f:
 7654: 86 55          LDA    #$55
 7656: B7 34 16       STA    $3416
 7659: 39             RTS
+
 765A: 32 7C          LEAS   -$4,S   ; [alloc_locals]
 765C: BD 76 79       JSR    $7679
 765F: BD 76 91       JSR    $7691
@@ -1128,6 +1132,7 @@ jump_table_748f:
 768C: E3 E1          ADDD   ,S++
 768E: 1F 02          TFR    D,Y
 7690: 39             RTS
+
 7691: 8E 76 C0       LDX    #$76C0
 7694: 96 00          LDA    $00
 7696: A6 86          LDA    A,X			; [bank_address]

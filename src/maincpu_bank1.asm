@@ -911,6 +911,7 @@ subcpu_processing_411e:
 47CA: 86 40       LDA    #$40
 47CC: A7 0D       STA    $D,X
 47CE: 39          RTS
+
 47CF: 32 7F       LEAS   -$1,S   ; [alloc_locals]
 47D1: 86 10       LDA    #$10
 47D3: A7 0E       STA    $E,X
@@ -940,6 +941,7 @@ subcpu_processing_411e:
 480E: A7 0D       STA    $D,X
 4810: 32 61       LEAS   $1,S   ; [free_locals]
 4812: 39          RTS
+
 4813: 32 7F       LEAS   -$1,S   ; [alloc_locals]
 4815: BD 59 9A    JSR    $599A
 4818: 25 3E       BCS    $4858
@@ -969,6 +971,7 @@ subcpu_processing_411e:
 4855: 6F 88 38    CLR    $38,X
 4858: 32 61       LEAS   $1,S   ; [free_locals]
 485A: 39          RTS
+
 485B: BD 59 EB    JSR    $59EB
 485E: 24 01       BCC    $4861
 4860: 39          RTS
@@ -1003,6 +1006,7 @@ subcpu_processing_411e:
 48B5: 39          RTS
 48B6: 6F 88 38    CLR    $38,X
 48B9: 39          RTS
+
 48BA: 32 7F       LEAS   -$1,S   ; [alloc_locals]
 48BC: 10 BE 0E 4B LDY    $0E4B
 48C0: A6 A8 1B    LDA    $1B,Y
@@ -1022,6 +1026,7 @@ subcpu_processing_411e:
 48E2: A7 88 38    STA    $38,X
 48E5: 32 61       LEAS   $1,S   ; [free_locals]
 48E7: 39          RTS
+
 48E8: 96 36       LDA    $36
 48EA: 81 03       CMPA   #$03
 48EC: 27 4E       BEQ    $493C
@@ -1234,6 +1239,7 @@ subcpu_processing_411e:
 4AF1: 6F 88 38    CLR    $38,X
 4AF4: 32 62       LEAS   $2,S   ; [free_locals]
 4AF6: 39          RTS
+
 4AF7: 10 AE 88 2D LDY    $2D,X
 4AFB: A6 88 1B    LDA    $1B,X
 4AFE: 2B 11       BMI    $4B11
@@ -1838,6 +1844,7 @@ subcpu_processing_411e:
 515B: A7 0D       STA    $D,X
 515D: 32 61       LEAS   $1,S   ; [free_locals]
 515F: 39          RTS
+
 5160: B6 0E 4A    LDA    $0E4A
 5163: 84 02       ANDA   #$02
 5165: 44          LSRA
@@ -3860,6 +3867,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 64FC: ED 06       STD    $6,X
 64FE: 32 62       LEAS   $2,S   ; [free_locals]
 6500: 39          RTS
+
 6501: 10 8E 70 00 LDY    #$7000
 6505: 8C 03 A2    CMPX   #$03A2
 6508: 27 04       BEQ    $650E
@@ -4041,6 +4049,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 66B4: 26 FA       BNE    $66B0
 66B6: 32 62       LEAS   $2,S   ; [free_locals]
 66B8: 35 D0       PULS   X,U,PC
+
 66BA: 5F          CLRB
 66BB: 4D          TSTA
 66BC: 27 0D       BEQ    $66CB
@@ -4152,6 +4161,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 67AC: 7E 68 81    JMP    $6881
 67AF: 32 62       LEAS   $2,S   ; [free_locals]
 67B1: 35 C0       PULS   U,PC
+
 67B3: 32 7E       LEAS   -$2,S   ; [alloc_locals]
 67B5: A6 88 1B    LDA    $1B,X
 67B8: 84 3F       ANDA   #$3F

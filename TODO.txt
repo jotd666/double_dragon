@@ -2,10 +2,8 @@
   
 - context change: BA3267F2 972B4DF4 7C2231AE => D265AE25
 
-- demo: characters do stupid moves and end locking up. at start there's a DP change (B) right after that it fucks up
-- not demo: player gets damage see why?
-- demo trace with mega big buffer except in nmi ? game starts running at 833D (game loop)
-- level start: ends up with fatal error / lockup (patch lockup to break)
+- play 1p reverse directions, see player reactions to movement in MAME
+  in port, player crouches all the time (play & demo) which is not normal!
 
   
 - set DSW difficulty lives, etc.
