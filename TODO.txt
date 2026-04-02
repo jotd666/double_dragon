@@ -2,9 +2,9 @@
   
 - context change: BA3267F2 972B4DF4 7C2231AE => D265AE25
 
-- player crouches all the time (play & demo) which is not normal!
-  movements seem to work but are parasited by the crouches, then bank error
-  use CPU trace from read player inputs & compare
+- bank error A78 = $FFFF then fails 6ADD bank 0: super strange
+bank 0 6A30: A=08 then jumps and 6A69: A=F8 ??? D5 is traced in 0x110/0x112
+- locks up nmi_active_flag_0e71 gets positive and nmi skips processing, see when (in MAME? in amiga version?)
 
   
 - set DSW difficulty lives, etc.
@@ -26,3 +26,8 @@
 
 monitor bank switch: wpset 3808:maincpu,1,W,,{printf "bank %d",(wpdata & 0xe0) >> 5;g}
 force bank switch: fill 3808:maincpu,1,bankno<<5
+
+winuae: check value written is FF
+w 0 rA6+$A78 1 W VFF.B
+w 1 rA6+$A85 1 W VFF.B
+w 2 rA6+$A6D 1 W VFF.B

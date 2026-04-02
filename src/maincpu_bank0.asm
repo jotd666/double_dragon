@@ -3419,7 +3419,7 @@ lb0_675d:   ; [global]
 6787: 84 7F          ANDA   #$7F
 6789: 97 00          STA    $00
 678B: 4F             CLRA
-678C: E6 A6          LDB    A,Y
+678C: E6 A6          LDB    A,Y	; [bank_address]
 678E: 2B 07          BMI    $6797
 6790: D1 00          CMPB   $00
 6792: 27 2F          BEQ    $67C3
@@ -3982,7 +3982,7 @@ lb0_681b:  ; [global]
 6D25: FC 0A 83       LDD    $0A83
 6D28: ED A8 2D       STD    $2D,Y
 6D2B: 10 BE 0A 78    LDY    $0A78
-6D2F: A6 21          LDA    $1,Y
+6D2F: A6 21          LDA    $1,Y	; [bank_address]
 6D31: A7 88 20       STA    $20,X
 6D34: A6 88 15       LDA    $15,X
 6D37: 84 F7          ANDA   #$F7

@@ -279,14 +279,15 @@ jra        coin_inserted_8158
     elif address in {0x89b7,0x8A20,0x8A50}:
         # removing safety checks when inserting coins
         line = remove_instruction(lines,i)
-
-    elif address == 0x89C0:
         # skip coin debounce shit
         line = change_instruction("jra\tl_89ea",lines,i)
+    elif address in {0x83e4,0x83e6}:
+        # remove non-atomic OR for interrupt_status_22
+        line = remove_instruction(lines,i)
+    elif address == 0x83e2:
+        line = change_instruction("OP_W_ON_DP_ADDRESS\tor,interrupt_status_22,#1",lines,i) # atomic set of interrupt flag
     elif address == 0x8124:
         line = "\tjra\tstart_attract_mode_8147\n"  # temp skip "insert coin" flashing
-##    elif address == 0x8552:
-##        line = ""  # TEMP
     elif address == 0x8B8B:
         # allocate 1 byte on target stack
         line += "\tsubq.w\t#1,d5   | allocate in target stack, routine fiddles with pushed A\n"

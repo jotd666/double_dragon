@@ -4485,7 +4485,12 @@ update_players_controls:
 0:	
 	move.b	d0,(port_1_3800,a6)
 
-	move.b	#0xF,d0
+	move.b	#0x0F,d0
+	tst.b	(0x40,a0)		| space
+	beq.b	0f
+	bclr	#BIT_PUNCH_1P,d0
+0:	
+
 	* directions + fire
 	move.l	joypad_1_state(pc),d1
 	jbsr	decode_joypad_controls

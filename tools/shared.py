@@ -17,11 +17,11 @@ input_dict = {"bankswitch_3808":"set_bank",
 }
 
 sorted_cmp = False
-avoid_regs = "yu"
+
 regslist = list("abdxyu")
 excluded_pcs = set()
 
-def load_amiga_log(log_name,out_name,existing_pcs=None):
+def load_amiga_log(log_name,out_name,existing_pcs=None,avoid_regs=""):
     with open(log_name,"rb") as f:
         contents = f.read()
         contents = contents[:-8]
@@ -115,7 +115,7 @@ def load_amiga_log(log_name,out_name,existing_pcs=None):
     return pcs
 
 
-def load_mame_log(in_log,out_log,pcs):
+def load_mame_log(in_log,out_log,pcs,avoid_regs = ""):
     """ generated using log:
         trace mame.tr,,noloop,{tracelog "A=%02X, B=%02X, D=%04X, X=%04X, Y=%04X, U=%04X ",a,b,d,x,y,u}
     """

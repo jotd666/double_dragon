@@ -199,7 +199,7 @@ attract_mode_timer_0e50 = $e50
 ;    9: barechested thug
 ;    14: curtain
 ;    1F: girl
-; 2:
+; 2: animation frame id
 ; 3:
 ; 4.W: X coordinate
 ; 6.W: Y coordinate
@@ -1438,12 +1438,12 @@ wait_subcpu_reply_8ab5:
 8AF9: A6 88 1B       LDA    $1B,X
 8AFC: 84 3F          ANDA   #$3F
 8AFE: 81 00          CMPA   #$00
-8B00: 27 13          BEQ    $8B15
+8B00: 27 13          BEQ    $8B15		; jumps to jump table with first entry as A=0
 8B02: 81 19          CMPA   #$19
 8B04: 25 07          BCS    $8B0D
 8B06: 86 00          LDA    #$00
 8B08: A7 88 1B       STA    $1B,X
-8B0B: 20 08          BRA    $8B15
+8B0B: 20 08          BRA    $8B15		; jumps to jump table with first entry as A=0
 8B0D: D6 51          LDB    $51
 8B0F: C4 01          ANDB   #$01
 8B11: D1 2A          CMPB   current_player_002a
@@ -1858,7 +1858,7 @@ read_player_commands_8b8b:
 9028: 49             ROLA
 9029: 49             ROLA
 902A: 84 01          ANDA   #$01
-902C: A7 88 22       STA    interrupt_status_22,X
+902C: A7 88 22       STA    $22,X
 902F: 39             RTS
 
 904B: 34 7E          PSHS   U,Y,X,DP,D
@@ -1879,7 +1879,7 @@ read_player_commands_8b8b:
 91AF: A6 88 1B       LDA    $1B,X
 91B2: 10 2B 00 72    LBMI   $9228
 91B6: BD A5 29       JSR    $A529
-91B9: A6 88 22       LDA    interrupt_status_22,X
+91B9: A6 88 22       LDA    $22,X
 91BC: 10 8E 92 83    LDY    #$9283
 91C0: A6 A6          LDA    A,Y
 91C2: A8 03          EORA   $3,X
@@ -2829,7 +2829,7 @@ read_player_commands_8b8b:
 9AF7: 86 7F          LDA    #$7F
 9AF9: A7 22          STA    $2,Y
 9AFB: 86 06          LDA    #$06
-9AFD: A7 A8 22       STA    interrupt_status_22,Y
+9AFD: A7 A8 22       STA    $22,Y
 9B00: 86 04          LDA    #$04
 9B02: BD A5 49       JSR    $A549
 9B05: A6 03          LDA    $3,X
@@ -2903,7 +2903,7 @@ read_player_commands_8b8b:
 9BAF: 86 01          LDA    #$01
 9BB1: A7 C8 1B       STA    $1B,U
 9BB4: 86 00          LDA    #$00
-9BB6: A7 C8 22       STA    interrupt_status_22,U
+9BB6: A7 C8 22       STA    $22,U
 9BB9: A6 88 16       LDA    $16,X
 9BBC: 84 F9          ANDA   #$F9
 9BBE: A7 88 16       STA    $16,X
@@ -3061,7 +3061,7 @@ read_player_commands_8b8b:
 9D3F: B6 09 F2       LDA    $09F2
 9D42: 2B 0A          BMI    $9D4E
 9D44: 86 08          LDA    #$08
-9D46: A7 88 22       STA    interrupt_status_22,X
+9D46: A7 88 22       STA    $22,X
 9D49: 86 01          LDA    #$01
 9D4B: 7E 9D DA       JMP    $9DDA
 9D4E: A6 88 3A       LDA    bank_switch_copy_3a,X
@@ -3226,7 +3226,7 @@ read_player_commands_8b8b:
 9F02: 84 7F          ANDA   #$7F
 9F04: 26 17          BNE    $9F1D
 9F06: 86 FF          LDA    #$FF
-9F08: A7 88 22       STA    interrupt_status_22,X
+9F08: A7 88 22       STA    $22,X
 9F0B: 6F 88 25       CLR    $25,X
 9F0E: 6F 88 30       CLR    $30,X
 9F11: A6 01          LDA    $1,X
@@ -3264,7 +3264,7 @@ read_player_commands_8b8b:
 9F5F: A7 02          STA    $2,X
 9F61: A7 22          STA    $2,Y
 9F63: 20 13          BRA    $9F78
-9F65: A6 88 22       LDA    interrupt_status_22,X
+9F65: A6 88 22       LDA    $22,X
 9F68: 10 2A 02 A8    LBPL   $A214
 9F6C: A6 88 2F       LDA    $2F,X
 9F6F: 84 7F          ANDA   #$7F
@@ -3483,7 +3483,7 @@ A155: 20 23          BRA    $A17A
 A157: 86 01          LDA    #$01
 A159: A7 C8 1B       STA    $1B,U
 A15C: 86 05          LDA    #$05
-A15E: A7 C8 22       STA    interrupt_status_22,U
+A15E: A7 C8 22       STA    $22,U
 A161: 86 00          LDA    #$00
 A163: A7 88 1B       STA    $1B,X
 A166: 86 7F          LDA    #$7F
@@ -3576,7 +3576,7 @@ A237: 25 21          BCS    $A25A
 A239: 86 01          LDA    #$01
 A23B: A7 88 1B       STA    $1B,X
 A23E: 86 04          LDA    #$04
-A240: A7 88 22       STA    interrupt_status_22,X
+A240: A7 88 22       STA    $22,X
 A243: 86 7F          LDA    #$7F
 A245: A7 02          STA    $2,X
 A247: 10 AE 88 2D    LDY    $2D,X
@@ -3588,7 +3588,7 @@ A255: A7 88 16       STA    $16,X
 A258: 35 C0          PULS   U,PC
 
 A25A: 86 FF          LDA    #$FF
-A25C: A7 88 22       STA    interrupt_status_22,X
+A25C: A7 88 22       STA    $22,X
 A25F: 86 01          LDA    #$01
 A261: A7 88 2F       STA    $2F,X
 A264: BD 9F 83       JSR    $9F83
@@ -3598,7 +3598,7 @@ A26D: AA 03          ORA    $3,X
 A26F: A7 02          STA    $2,X
 A271: 6F 88 18       CLR    $18,X
 A274: 35 C0          PULS   U,PC
-A276: A6 88 22       LDA    interrupt_status_22,X
+A276: A6 88 22       LDA    $22,X
 A279: 48             ASLA
 A27A: 97 00          STA    $00
 A27C: A6 88 15       LDA    $15,X
@@ -4001,7 +4001,7 @@ A6A5: 27 04          BEQ    $A6AB
 A6A7: 86 04          LDA    #$04
 A6A9: 20 07          BRA    $A6B2
 A6AB: 86 01          LDA    #$01
-A6AD: A7 88 22       STA    interrupt_status_22,X
+A6AD: A7 88 22       STA    $22,X
 A6B0: 86 05          LDA    #$05
 A6B2: A7 88 1B       STA    $1B,X
 A6B5: A6 88 34       LDA    $34,X
@@ -4016,7 +4016,7 @@ A6CA: 26 17          BNE    $A6E3
 A6CC: 86 01          LDA    #$01
 A6CE: A7 88 1B       STA    $1B,X
 A6D1: 86 00          LDA    #$00
-A6D3: A7 88 22       STA    interrupt_status_22,X
+A6D3: A7 88 22       STA    $22,X
 A6D6: 86 06          LDA    #$06
 A6D8: A7 C8 1B       STA    $1B,U
 A6DB: 86 40          LDA    #$40
@@ -4035,16 +4035,16 @@ A701: 24 11          BCC    $A714
 A703: A6 88 1F       LDA    $1F,X
 A706: 81 18          CMPA   #$18
 A708: 25 0A          BCS    $A714
-A70A: 6D 88 22       TST    interrupt_status_22,X
+A70A: 6D 88 22       TST    $22,X
 A70D: 26 05          BNE    $A714
 A70F: 86 01          LDA    #$01
-A711: A7 88 22       STA    interrupt_status_22,X
-A714: A6 88 22       LDA    interrupt_status_22,X
+A711: A7 88 22       STA    $22,X
+A714: A6 88 22       LDA    $22,X
 A717: 48             ASLA
 A718: 10 8E A7 1E    LDY   #jump_table_a71e
 A71C: 6E B6          JMP    [A,Y]			; [indirect_jump] [nb_entries=10]
 
-A732: A6 88 22       LDA    interrupt_status_22,X
+A732: A6 88 22       LDA    $22,X
 A735: 10 8E A8 71    LDY    #$A871
 A739: C6 0B          LDB    #$0B
 A73B: 3D             MUL
@@ -4675,7 +4675,7 @@ AE1A: ED 24          STD    $4,Y
 AE1C: 86 01          LDA    #$01
 AE1E: A7 A8 1B       STA    $1B,Y
 AE21: 86 07          LDA    #$07
-AE23: A7 A8 22       STA    interrupt_status_22,Y
+AE23: A7 A8 22       STA    $22,Y
 AE26: 86 04          LDA    #$04
 AE28: BD A5 49       JSR    $A549
 AE2B: A6 03          LDA    $3,X
