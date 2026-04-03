@@ -297,7 +297,7 @@ jra        coin_inserted_8158
         line = change_instruction("OP_W_ON_DP_ADDRESS\tor,interrupt_status_22,#1",lines,i) # atomic set of interrupt flag
     elif address == 0x8124:
         line = "\tjra\tstart_attract_mode_8147\n"  # temp skip "insert coin" flashing
-    elif address == 0x8B8B and ",a5" in line:  # don't do it twice!
+    elif address == 0x8B8B and "a5," in line:  # don't do it twice!
         # allocate 1 byte on target stack
         line += "\tsubq.w\t#1,d5   | allocate in target stack, routine fiddles with pushed A\n"
     elif address == 0x8bbb:

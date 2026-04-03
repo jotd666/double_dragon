@@ -2250,9 +2250,10 @@ lb0_588f:    ; [global]
 5901: 24 03          BCC    $5906
 5903: BD 59 35       JSR    $5935
 5906: 39             RTS
+
 5907: 34 10          PSHS   X
 5909: EC 04          LDD    $4,X
-590B: A3 A4          SUBD   ,Y
+590B: A3 A4          SUBD   ,Y		; [bank_address]
 590D: 2A 05          BPL    $5914
 590F: 43             COMA
 5910: 53             COMB

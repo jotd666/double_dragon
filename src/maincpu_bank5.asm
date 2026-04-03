@@ -3626,7 +3626,7 @@ flip_screen_if_needed_66e6:
 7279: 26 02          BNE    $727D
 727B: 5F             CLRB
 727C: 4F             CLRA
-727D: ED C1          STD    ,U++
+727D: ED C1          STD    ,U++	; [video_address_word]
 727F: 6A 62          DEC    $2,S	; [local]
 7281: 26 F2          BNE    $7275
 7283: 33 C8 38       LEAU   $38,U

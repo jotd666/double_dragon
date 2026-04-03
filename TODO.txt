@@ -3,7 +3,7 @@
 - context change: BA3267F2 972B4DF4 7C2231AE => D265AE25
 
 
-=> stack "leak" increase find the missing leas instruction
+=> stack "leak" increase find the missing leas instruction protect against stack > 0x1000 (check in MAME)
 => scrolling doesn't feed
 
 - don't log sprites if not visible (enemies leaving at start, context changes)  
