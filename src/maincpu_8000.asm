@@ -7974,7 +7974,7 @@ E0F9: FD 0A 5F       STD    $0A5F
 E0FC: FD 0A 62       STD    $0A62
 E0FF: DD 3C          STD    $3C
 E101: DD 3F          STD    $3F
-E103: BD E9 46       JSR    $E946
+E103: BD E9 46       JSR    add_bit_6_on_nmi_flag_e946
 E106: 39             RTS
 E107: B6 0B 03       LDA    $0B03
 E10A: 84 C0          ANDA   #$C0
@@ -7995,7 +7995,7 @@ E131: BD FE F2       JSR    $FEF2
 E134: BD E1 47       JSR    $E147
 E137: BD E1 57       JSR    $E157
 E13A: BD E2 8E       JSR    $E28E
-E13D: BD E9 46       JSR    $E946
+E13D: BD E9 46       JSR    add_bit_6_on_nmi_flag_e946
 E140: BD E9 82       JSR    $E982
 E143: BD ED DE       JSR    $EDDE
 E146: 39             RTS
@@ -8055,7 +8055,7 @@ E1B7: 37 10          PULU   X		; using "user" stack as S is used as local vars
 E1B9: FC 03 A6       LDD    $03A6
 E1BC: B3 04 04       SUBD   $0404
 E1BF: 2A 03          BPL    $E1C4
-E1C1: BD E9 4F       JSR    $E94F
+E1C1: BD E9 4F       JSR    negate_d_e94f
 E1C4: 10 83 00 80    CMPD   #$0080
 E1C8: 26 06          BNE    $E1D0
 E1CA: CC 00 00       LDD    #$0000
@@ -8063,7 +8063,7 @@ E1CD: FD 0A 42       STD    $0A42
 E1D0: FC 03 A8       LDD    $03A8
 E1D3: B3 04 06       SUBD   $0406
 E1D6: 2A 03          BPL    $E1DB
-E1D8: BD E9 4F       JSR    $E94F
+E1D8: BD E9 4F       JSR    negate_d_e94f
 E1DB: 10 A3 62       CMPD   $2,S		; [local]
 E1DE: 26 06          BNE    $E1E6
 E1E0: CC 00 00       LDD    #$0000
@@ -8886,10 +8886,14 @@ E940: 97 3A          STA    bank_switch_copy_3a
 E942: B7 38 08       STA    bankswitch_3808
 E945: 39             RTS
 
+add_bit_6_on_nmi_flag_e946:
 E946: B6 0E 71       LDA    nmi_active_flag_0e71
 E949: 8A 40          ORA    #$40
 E94B: B7 0E 71       STA    nmi_active_flag_0e71
 E94E: 39             RTS
+
+; two's complement on 16 bits
+negate_d_e94f:
 E94F: 43             COMA
 E950: 53             COMB
 E951: C3 00 01       ADDD   #$0001

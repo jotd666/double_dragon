@@ -284,6 +284,8 @@ jra        coin_inserted_8158
     elif address in {0x83e4,0x83e6}:
         # remove non-atomic OR for interrupt_status_22
         line = remove_instruction(lines,i)
+    elif address == 0xE946:
+        line = change_instruction("or\t#0x40,(nmi_active_flag_0e71,a6)",lines,i)+"\trts\n" # atomic set of interrupt flag
     elif address == 0x83e2:
         line = change_instruction("OP_W_ON_DP_ADDRESS\tor,interrupt_status_22,#1",lines,i) # atomic set of interrupt flag
     elif address == 0x8124:
