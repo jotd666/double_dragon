@@ -60,6 +60,7 @@ def f_handle_bank0_line(address,lines,i):
         # stack add just after cmp!
         line += "\taddq.w\t#4,d5\n"
         lines[i+1] += "\trts\n"
+
     lines[i] = line
 
 def f_handle_bank1_line(address,lines,i):
@@ -281,16 +282,22 @@ jra        coin_inserted_8158
         line = remove_instruction(lines,i)
         # skip coin debounce shit
         line = change_instruction("jra\tl_89ea",lines,i)
-    elif address in {0x83e4,0x83e6}:
+    elif address in {0x83e4,0x83e6,0x8693,0x8695,0x8595,0x8597,0x85ff,0x8601,0x8381,0x8383,0x8509,0x850B}:
         # remove non-atomic OR for interrupt_status_22
         line = remove_instruction(lines,i)
+    elif address in {0x837e,0x85FC,0x8506}:
+        line = change_instruction("or.b\t#0x80,(nmi_active_flag_0e71,a6)",lines,i) # atomic clear of interrupt flag
+
+    elif address in {0x8592,0x8690}:
+        line = change_instruction("and.b\t#0x7f,(nmi_active_flag_0e71,a6)",lines,i) # atomic clear of interrupt flag
+
     elif address == 0xE946:
-        line = change_instruction("or\t#0x40,(nmi_active_flag_0e71,a6)",lines,i)+"\trts\n" # atomic set of interrupt flag
+        line = change_instruction("or.b\t#0x40,(nmi_active_flag_0e71,a6)",lines,i)+"\trts\n" # atomic set of interrupt flag
     elif address == 0x83e2:
         line = change_instruction("OP_W_ON_DP_ADDRESS\tor,interrupt_status_22,#1",lines,i) # atomic set of interrupt flag
     elif address == 0x8124:
         line = "\tjra\tstart_attract_mode_8147\n"  # temp skip "insert coin" flashing
-    elif address == 0x8B8B:
+    elif address == 0x8B8B and ",a5" in line:  # don't do it twice!
         # allocate 1 byte on target stack
         line += "\tsubq.w\t#1,d5   | allocate in target stack, routine fiddles with pushed A\n"
     elif address == 0x8bbb:

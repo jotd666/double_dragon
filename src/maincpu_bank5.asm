@@ -3589,7 +3589,7 @@ flip_screen_if_needed_66e6:
 7222: F6 0E 41       LDB    $0E41
 7225: 10 8E 72 5C    LDY    #$725C
 7229: B6 0E 40       LDA    $0E40
-722C: E1 A6          CMPB   A,Y
+722C: E1 A6          CMPB   A,Y		; [bank_address]
 722E: 25 2B          BCS    $725B
 7230: B6 0E 40       LDA    $0E40
 7233: 88 01          EORA   #$01
@@ -3621,7 +3621,7 @@ flip_screen_if_needed_66e6:
 726F: 86 04          LDA    #$04
 7271: A7 62          STA    $2,S	; [local]
 7273: 86 63          LDA    #$63
-7275: E6 A0          LDB    ,Y+
+7275: E6 A0          LDB    ,Y+		; [bank_address]
 7277: 6D E4          TST    ,S	; [local]
 7279: 26 02          BNE    $727D
 727B: 5F             CLRB
@@ -3668,11 +3668,11 @@ jump_table_72a9:
 72D8: 81 07          CMPA   #$07
 72DA: 24 13          BCC    $72EF
 72DC: 10 8E 73 4F    LDY    #$734F
-72E0: A6 A6          LDA    A,Y
+72E0: A6 A6          LDA    A,Y		; [bank_address]
 72E2: 81 FF          CMPA   #$FF
 72E4: 27 09          BEQ    $72EF
 72E6: 10 8E 73 56    LDY    #$7356
-72EA: 10 AE A6       LDY    A,Y
+72EA: 10 AE A6       LDY    A,Y		; [bank_address]
 72ED: 6A A4          DEC    ,Y
 72EF: C6 21          LDB    #$21
 72F1: 3A             ABX
@@ -3705,11 +3705,11 @@ jump_table_72a9:
 732A: 81 07          CMPA   #$07
 732C: 24 13          BCC    $7341
 732E: 10 8E 73 4F    LDY    #$734F
-7332: A6 A6          LDA    A,Y
+7332: A6 A6          LDA    A,Y		; [bank_address]
 7334: 81 FF          CMPA   #$FF
 7336: 27 09          BEQ    $7341
 7338: 10 8E 73 56    LDY    #$7356
-733C: 10 AE A6       LDY    A,Y
+733C: 10 AE A6       LDY    A,Y		; [bank_address]
 733F: 6A A4          DEC    ,Y
 7341: C6 21          LDB    #$21
 7343: 3A             ABX
@@ -3717,7 +3717,7 @@ jump_table_72a9:
 7346: A6 E4          LDA    ,S	; [local]
 7348: 81 10          CMPA   #$10
 734A: 25 B8          BCS    $7304
-734C: 32 64          LEAS   $4,S			; [free_stack]   ; [free_locals]
+734C: 32 64          LEAS   $4,S			; [free_locals]
 734E: 39             RTS
 
 7360: 34 36          PSHS   Y,X,D
@@ -3731,9 +3731,9 @@ jump_table_72a9:
 7371: 10 AE A6       LDY    A,Y		; [bank_address]
 7374: 96 36          LDA    $36
 7376: 48             ASLA
-7377: 10 AE A6       LDY    A,Y
+7377: 10 AE A6       LDY    A,Y		; [bank_address]
 737A: A6 88 1E       LDA    $1E,X
-737D: A6 A6          LDA    A,Y
+737D: A6 A6          LDA    A,Y		; [bank_address]
 737F: A7 88 3F       STA    $3F,X
 7382: A6 88 3E       LDA    $3E,X
 7385: 8A 80          ORA    #$80
@@ -3940,10 +3940,10 @@ jump_table_72a9:
 76DF: A6 88 18       LDA    $18,X
 76E2: 81 03          CMPA   #$03
 76E4: 24 0D          BCC    $76F3
-76E6: E6 A6          LDB    A,Y
+76E6: E6 A6          LDB    A,Y		; [bank_address]
 76E8: EA 03          ORB    $3,X
 76EA: E7 02          STB    $2,X
-76EC: E6 C6          LDB    A,U
+76EC: E6 C6          LDB    A,U		; [bank_address]
 76EE: E7 88 19       STB    $19,X
 76F1: 20 05          BRA    $76F8
 76F3: 86 00          LDA    #$00

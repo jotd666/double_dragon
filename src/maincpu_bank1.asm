@@ -983,10 +983,10 @@ subcpu_processing_411e:
 4870: 48          ASLA
 4871: 48          ASLA
 4872: 4C          INCA
-4873: E1 A6       CMPB   A,Y
+4873: E1 A6       CMPB   A,Y		; [bank_address]
 4875: 24 08       BCC    $487F
 4877: 4C          INCA
-4878: E1 A6       CMPB   A,Y
+4878: E1 A6       CMPB   A,Y		; [bank_address]
 487A: 24 06       BCC    $4882
 487C: BD 51 3E    JSR    $513E
 487F: 7E 44 66    JMP    $4466
@@ -2426,17 +2426,20 @@ subcpu_processing_411e:
 5723: 39          RTS
 
 572C: 39          RTS
-572D: 10 8E 03 A2 LDY    #$03A2
+
+572D: 10 8E 03 A2 LDY    #player_1_struct_03a2
 5731: BD 57 55    JSR    $5755
 5734: BD F9 00    JSR    $F900
 5737: 39          RTS
-5738: 10 8E 04 00 LDY    #$0400
+
+5738: 10 8E 04 00 LDY    #player_2_struct_0400
 573C: BD 57 55    JSR    $5755
 573F: BD F9 0A    JSR    $F90A
 5742: 39          RTS
-5743: 10 8E 03 A2 LDY    #$03A2
+
+5743: 10 8E 03 A2 LDY    #player_1_struct_03a2
 5747: BD 57 55    JSR    $5755
-574A: 10 8E 04 00 LDY    #$0400
+574A: 10 8E 04 00 LDY    #player_2_struct_0400
 574E: BD 57 55    JSR    $5755
 5751: BD F9 14    JSR    $F914
 5754: 39          RTS

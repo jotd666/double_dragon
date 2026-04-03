@@ -176,6 +176,8 @@ intro_anim_flag_0e30 = $e30
 sprite_memory_2081 = $2081
 nb_objects_to_convert_03a1 = $3a1
 attract_mode_timer_0e50 = $e50
+player_1_struct_03a2 = $3A2
+player_2_struct_0400 = $400
 
 ; contains the array on pointers on logical object structures, located just after the array, at $3A2
 ; a logical object is a combination of sprites
@@ -530,7 +532,7 @@ demo_8215:
 8296: F6 04 48       LDB    player_2_nb_lives_0448
 8299: 34 06          PSHS   D
 829B: 7F 0E 71       CLR    nmi_active_flag_0e71
-829E: 8E 03 A2       LDX    #$03A2
+829E: 8E 03 A2       LDX    #player_1_struct_03a2
 82A1: 10 8E 0A CF    LDY    #$0ACF
 82A5: BD FE AA       JSR    $FEAA
 82A8: 8E 00 60       LDX    #$0060
@@ -555,7 +557,7 @@ demo_8215:
 82DF: F6 04 48       LDB    player_2_nb_lives_0448
 82E2: 34 06          PSHS   D
 82E4: BD FE 9B       JSR    clear_bg_screen_fe9b
-82E7: 8E 03 A2       LDX    #$03A2
+82E7: 8E 03 A2       LDX    #player_1_struct_03a2
 82EA: 10 8E 0A CF    LDY    #$0ACF
 82EE: BD FE AA       JSR    $FEAA
 82F1: 35 06          PULS   D
@@ -593,11 +595,11 @@ demo_8215:
 ; initialize stuff
 833D: 86 80          LDA    #$80
 833F: C6 35          LDB    #$35		; max energy
-8341: 7D 03 A2       TST    $03A2
+8341: 7D 03 A2       TST    player_1_struct_03a2
 8344: 2A 06          BPL    $834C
 8346: B7 09 AD       STA    $09AD
 8349: F7 03 C1       STB    player_1_energy_03c1
-834C: 7D 04 00       TST    $0400
+834C: 7D 04 00       TST    player_2_struct_0400
 834F: 2A 06          BPL    $8357
 ; 2 players
 8351: B7 09 CE       STA    $09CE
@@ -721,7 +723,7 @@ gameloop_8389:
 847E: 96 29          LDA    number_of_players_flag_0029
 8480: 2B 1D          BMI    two_players_849f
 8482: 0F 2A          CLR    current_player_002a
-8484: 8E 03 A2       LDX    #$03A2
+8484: 8E 03 A2       LDX    #player_1_struct_03a2
 8487: BD 84 B0       JSR    $84B0
 848A: 86 80          LDA    #$80
 848C: B7 04 4C       STA    $044C
@@ -733,7 +735,7 @@ gameloop_8389:
 849D: 20 10          BRA    $84AF
 two_players_849f:
 849F: 0F 2A          CLR    current_player_002a
-84A1: 8E 03 A2       LDX    #$03A2
+84A1: 8E 03 A2       LDX    #player_1_struct_03a2
 84A4: BD 84 B0       JSR    $84B0
 84A7: 0C 2A          INC    current_player_002a
 84A9: 30 88 5E       LEAX   $5E,X
@@ -866,12 +868,12 @@ play_intro_animation_84f8:
 85C3: 10 8E 86 E8    LDY    #$86E8
 85C7: A6 A6          LDA    A,Y
 85C9: 34 02          PSHS   A			; [manual_stack_push]
-85CB: 8E 03 A2       LDX    #$03A2
-85CE: F6 03 A2       LDB    $03A2
+85CB: 8E 03 A2       LDX    #player_1_struct_03a2
+85CE: F6 03 A2       LDB    player_1_struct_03a2
 85D1: 2A 03          BPL    $85D6
 85D3: BD FA F8       JSR    $FAF8
 85D6: 30 88 5E       LEAX   $5E,X
-85D9: F6 04 00       LDB    $0400
+85D9: F6 04 00       LDB    player_2_struct_0400
 85DC: 2A 05          BPL    $85E3
 85DE: A6 E4          LDA    ,S			; [manual_stack_read]
 85E0: BD FA F8       JSR    $FAF8
@@ -924,8 +926,8 @@ play_intro_animation_84f8:
 8654: B6 0E 2D       LDA    $0E2D
 8657: 84 3F          ANDA   #$3F
 8659: 26 12          BNE    $866D
-865B: B6 03 A2       LDA    $03A2
-865E: BA 04 00       ORA    $0400
+865B: B6 03 A2       LDA    player_1_struct_03a2
+865E: BA 04 00       ORA    player_2_struct_0400
 8661: 2B 0A          BMI    $866D
 8663: B6 03 EA       LDA    player_1_nb_lives_03ea
 8666: BA 04 48       ORA    player_2_nb_lives_0448
@@ -984,7 +986,7 @@ play_intro_animation_84f8:
 86F4: 84 03          ANDA   #$03
 86F6: 81 03          CMPA   #$03
 86F8: 27 1E          BEQ    $8718
-86FA: 8E 03 A2       LDX    #$03A2
+86FA: 8E 03 A2       LDX    #player_1_struct_03a2
 86FD: 0F 2A          CLR    current_player_002a
 86FF: A6 88 4C       LDA    $4C,X
 8702: 85 20          BITA   #$20
@@ -999,12 +1001,12 @@ play_intro_animation_84f8:
 8718: 39             RTS
 
 8719: 34 76          PSHS   U,Y,X,D
-871B: 8E 03 A2       LDX    #$03A2
-871E: CE 04 00       LDU    #$0400
+871B: 8E 03 A2       LDX    #player_1_struct_03a2
+871E: CE 04 00       LDU    #player_2_struct_0400
 8721: 0D 2A          TST    current_player_002a
 8723: 27 06          BEQ    $872B
 8725: 30 88 5E       LEAX   $5E,X
-8728: CE 03 A2       LDU    #$03A2
+8728: CE 03 A2       LDU    #player_1_struct_03a2
 872B: A6 88 4C       LDA    $4C,X
 872E: 84 20          ANDA   #$20
 8730: 27 0A          BEQ    $873C
@@ -1138,7 +1140,7 @@ play_intro_animation_84f8:
 8859: B6 03 EA       LDA    player_1_nb_lives_03ea
 885C: BA 04 48       ORA    player_2_nb_lives_0448
 885F: 27 51          BEQ    $88B2
-8861: 8E 03 A2       LDX    #$03A2
+8861: 8E 03 A2       LDX    #player_1_struct_03a2
 8864: 0F 2A          CLR    current_player_002a
 8866: B6 03 EA       LDA    player_1_nb_lives_03ea
 8869: 27 05          BEQ    $8870
@@ -1197,16 +1199,16 @@ play_intro_animation_84f8:
 88EA: 26 31          BNE    $891D
 88EC: BD 89 47       JSR    $8947
 88EF: 0F 2A          CLR    current_player_002a
-88F1: 8E 03 A2       LDX    #$03A2
+88F1: 8E 03 A2       LDX    #player_1_struct_03a2
 88F4: BD 87 5F       JSR    $875F
-88F7: B6 03 A2       LDA    $03A2
+88F7: B6 03 A2       LDA    player_1_struct_03a2
 88FA: 2B 35          BMI    $8931
 88FC: 96 29          LDA    number_of_players_flag_0029
 88FE: 2A 0D          BPL    $890D
 8900: 0C 2A          INC    current_player_002a
 8902: 30 88 5E       LEAX   $5E,X
 8905: BD 87 5F       JSR    $875F
-8908: B6 04 00       LDA    $0400
+8908: B6 04 00       LDA    player_2_struct_0400
 890B: 2B 24          BMI    $8931
 890D: 86 01          LDA    #$01
 890F: BD B7 56       JSR    vbl_delay_b756
@@ -3043,7 +3045,7 @@ read_player_commands_8b8b:
 9D12: A6 01          LDA    $1,X
 9D14: 81 02          CMPA   #$02
 9D16: 25 22          BCS    $9D3A
-9D18: 10 8E 03 A2    LDY    #$03A2
+9D18: 10 8E 03 A2    LDY    #player_1_struct_03a2
 9D1C: A6 88 14       LDA    $14,X
 9D1F: 84 40          ANDA   #$40
 9D21: 27 03          BEQ    $9D26
@@ -3403,11 +3405,11 @@ A09E: 84 03          ANDA   #$03
 A0A0: 81 03          CMPA   #$03
 A0A2: 26 7E          BNE    $A122
 A0A4: 10 AE 88 2D    LDY    $2D,X
-A0A8: 10 8C 03 A2    CMPY   #$03A2
+A0A8: 10 8C 03 A2    CMPY   #player_1_struct_03a2
 A0AC: 27 06          BEQ    $A0B4
-A0AE: 10 8E 03 A2    LDY    #$03A2
+A0AE: 10 8E 03 A2    LDY    #player_1_struct_03a2
 A0B2: 20 04          BRA    $A0B8
-A0B4: 10 8E 04 00    LDY    #$0400
+A0B4: 10 8E 04 00    LDY    #player_2_struct_0400
 A0B8: EC 08          LDD    $8,X
 A0BA: 10 A3 28       CMPD   $8,Y
 A0BD: 26 63          BNE    $A122
@@ -3882,7 +3884,7 @@ A563: ED E4          STD    ,S		; [local]
 A565: CC 00 00       LDD    #$0000
 A568: A3 E4          SUBD   ,S		; [local]
 A56A: 32 62          LEAS   $2,S   ; [free_locals]
-A56C: 10 83 04 00    CMPD   #$0400
+A56C: 10 83 04 00    CMPD   #player_2_struct_0400
 A570: 24 12          BCC    $A584
 A572: 10 8E A5 87    LDY    #$A587
 A576: A6 01          LDA    $1,X
@@ -4292,7 +4294,7 @@ AA3D: 27 4B          BEQ    $AA8A
 AA3F: A6 88 25       LDA    $25,X
 AA42: 81 04          CMPA   #$04
 AA44: 24 4C          BCC    $AA92
-AA46: 10 8E 03 A2    LDY    #$03A2
+AA46: 10 8E 03 A2    LDY    #player_1_struct_03a2
 AA4A: E6 88 14       LDB    $14,X
 AA4D: C5 40          BITB   #$40
 AA4F: 27 03          BEQ    $AA54
@@ -4342,7 +4344,7 @@ AAEB: BD 40 D8       JSR    $40D8	 ; [banks=5]
 AAEE: BD FC 8F       JSR    switch_to_bank_0_fc8f
 AAF1: 39             RTS
 AAF2: 34 40          PSHS   U
-AAF4: CE 03 A2       LDU    #$03A2
+AAF4: CE 03 A2       LDU    #player_1_struct_03a2
 AAF7: A6 88 14       LDA    $14,X
 AAFA: 85 40          BITA   #$40
 AAFC: 27 03          BEQ    $AB01
@@ -4417,7 +4419,7 @@ ABAC: BD FC 8F       JSR    switch_to_bank_0_fc8f
 ABAF: 39             RTS
 
 ABB0: 34 40          PSHS   U
-ABB2: CE 03 A2       LDU    #$03A2
+ABB2: CE 03 A2       LDU    #player_1_struct_03a2
 ABB5: A6 88 14       LDA    $14,X
 ABB8: 85 40          BITA   #$40
 ABBA: 27 03          BEQ    $ABBF
@@ -4683,7 +4685,7 @@ AE2D: A7 23          STA    $3,Y
 AE2F: 39             RTS
 
 AE38: BD FC 82       JSR    switch_to_bank_5_fc82
-AE3B: BD 40 E1       JSR    $40E1	 ; [banks=5]
+AE3B: BD 40 E1       JSR    lb5_40E1
 AE3E: BD FC 8F       JSR    switch_to_bank_0_fc8f
 AE41: 39             RTS
 AE42: 34 40          PSHS   U
@@ -4726,25 +4728,25 @@ AE93: A7 88 1B       STA    $1B,X
 AE96: 35 C0          PULS   U,PC
 
 AEA0: BD FC 82       JSR    switch_to_bank_5_fc82
-AEA3: BD 40 E4       JSR    $40E4 ; [banks=5]
+AEA3: BD 40 E4       JSR    lb5_40E4
 AEA6: BD FC 8F       JSR    switch_to_bank_0_fc8f
 AEA9: 39             RTS
 
 AEAA: BD FC 82       JSR    switch_to_bank_5_fc82
-AEAD: BD 40 E7       JSR    $40E7 ; [banks=5]
+AEAD: BD 40 E7       JSR    lb5_40E7
 AEB0: BD FC 8F       JSR    switch_to_bank_0_fc8f
 AEB3: 39             RTS
 AEB4: BD FC 82       JSR    switch_to_bank_5_fc82
-AEB7: BD 40 D2       JSR    $40D2 ; [banks=5]
+AEB7: BD 40 D2       JSR    lb5_40D2
 AEBA: BD FC 8F       JSR    switch_to_bank_0_fc8f
 AEBD: 39             RTS
 AEBE: BD FC 82       JSR    switch_to_bank_5_fc82
-AEC1: BD 40 B4       JSR    $40B4 ; [banks=5]
+AEC1: BD 40 B4       JSR    lb5_40B4
 AEC4: BD FC 8F       JSR    switch_to_bank_0_fc8f
 AEC7: 96 36          LDA    $36
 AEC9: 10 8E AE D1    LDY   #jump_table_aed1
 AECD: 48             ASLA
-AECE: 6E B6          JMP    [A,Y]		; [indirect_jump] [nb_entries=7]
+AECE: 6E B6          JMP    [A,Y]		; [indirect_jump] [nb_entries=4]
 AED0: 39             RTS
 
 AED9: 86 01          LDA    #$01                                         
@@ -4832,7 +4834,7 @@ AFA0: BA 0E 1A       ORA    $0E1A
 AFA3: B7 0E 1A       STA    $0E1A
 AFA6: BD B0 F1       JSR    $B0F1
 AFA9: 39             RTS
-AFAA: 8E 03 A2       LDX    #$03A2
+AFAA: 8E 03 A2       LDX    #player_1_struct_03a2
 AFAD: A6 84          LDA    ,X
 AFAF: 2A 03          BPL    $AFB4
 AFB1: BD FF 10       JSR    push_one_sprite_entry_ff10
@@ -4896,6 +4898,7 @@ B046: 7F 0E 2E       CLR    $0E2E
 B049: 0C 36          INC    $36
 B04B: 0F 37          CLR    $37
 B04D: 39             RTS
+
 B04E: 96 29          LDA    number_of_players_flag_0029
 B050: 84 03          ANDA   #$03
 B052: 81 03          CMPA   #$03
@@ -4968,7 +4971,7 @@ B0F6: 4C             INCA
 B0F7: B7 0E 2D       STA    $0E2D
 B0FA: 7F 0E 2E       CLR    $0E2E
 B0FD: 39             RTS
-B0FE: 8E 03 A2       LDX    #$03A2
+B0FE: 8E 03 A2       LDX    #player_1_struct_03a2
 B101: A6 88 21       LDA    nb_credits_0021,X
 B104: 27 08          BEQ    $B10E
 B106: BD 99 67       JSR    $9967
@@ -5128,7 +5131,7 @@ B25F: BD 8C CA       JSR    $8CCA
 B262: 39             RTS
 
 push_player_sprites_b331:
-B331: 8E 03 A2       LDX    #$03A2
+B331: 8E 03 A2       LDX    #player_1_struct_03a2
 B334: 0F 2A          CLR    current_player_002a
 B336: BD B3 46       JSR    push_player_sprite_b346
 B339: 96 29          LDA    number_of_players_flag_0029
@@ -5145,7 +5148,7 @@ B34C: BD FD B2       JSR    restore_previous_bank_fdb2
 B34F: 39             RTS
 
 push_players_sprites_b350:
-B350: 8E 03 A2       LDX    #$03A2
+B350: 8E 03 A2       LDX    #player_1_struct_03a2
 B353: 0F 2A          CLR    current_player_002a
 B355: BD B3 61       JSR    push_player_sprite_b361		; blue player
 B358: 30 88 5E       LEAX   $5E,X		; X=$400
@@ -8011,9 +8014,9 @@ E15D: FD 0A 62       STD    $0A62
 E160: B6 0A 4B       LDA    $0A4B
 E163: B7 0A 64       STA    $0A64
 E166: 39             RTS
-E167: 8E 03 A2       LDX    #$03A2
+E167: 8E 03 A2       LDX    #player_1_struct_03a2
 E16A: BD E1 74       JSR    $E174
-E16D: 8E 04 00       LDX    #$0400
+E16D: 8E 04 00       LDX    #player_2_struct_0400
 E170: BD E1 74       JSR    $E174
 E173: 39             RTS
 E174: DC 3D          LDD    $3D
@@ -8144,16 +8147,16 @@ E2A2: 39             RTS
 E2A3: CC 00 00       LDD    #$0000
 E2A6: FD 0A 4C       STD    $0A4C
 E2A9: FD 0A 50       STD    $0A50
-E2AC: 8E 03 A2       LDX    #$03A2
+E2AC: 8E 03 A2       LDX    #player_1_struct_03a2
 E2AF: BD E3 15       JSR    $E315
 E2B2: 25 35          BCS    $E2E9
-E2B4: 8E 04 00       LDX    #$0400
+E2B4: 8E 04 00       LDX    #player_2_struct_0400
 E2B7: BD E3 15       JSR    $E315
 E2BA: 25 2D          BCS    $E2E9
-E2BC: 8E 03 A2       LDX    #$03A2
+E2BC: 8E 03 A2       LDX    #player_1_struct_03a2
 E2BF: 10 8E 0A 4C    LDY    #$0A4C
 E2C3: BD E2 ED       JSR    $E2ED
-E2C6: 8E 04 00       LDX    #$0400
+E2C6: 8E 04 00       LDX    #player_2_struct_0400
 E2C9: 10 8E 0A 50    LDY    #$0A50
 E2CD: BD E2 ED       JSR    $E2ED
 E2D0: FC 0A 4C       LDD    $0A4C
@@ -8210,10 +8213,10 @@ E34B: 39             RTS
 E34C: CC 00 00       LDD    #$0000
 E34F: FD 0A 4C       STD    $0A4C
 E352: FD 0A 50       STD    $0A50
-E355: 8E 03 A2       LDX    #$03A2
+E355: 8E 03 A2       LDX    #player_1_struct_03a2
 E358: 10 8E 0A 4C    LDY    #$0A4C
 E35C: BD E3 86       JSR    $E386
-E35F: 8E 04 00       LDX    #$0400
+E35F: 8E 04 00       LDX    #player_2_struct_0400
 E362: 10 8E 0A 50    LDY    #$0A50
 E366: BD E3 86       JSR    $E386
 E369: FC 0A 4C       LDD    $0A4C
@@ -8236,8 +8239,8 @@ E38C: 2A 4E          BPL    $E3DC
 E38E: 96 36          LDA    $36
 E390: 81 03          CMPA   #$03
 E392: 27 08          BEQ    $E39C
-E394: B6 03 A2       LDA    $03A2
-E397: B8 04 00       EORA   $0400
+E394: B6 03 A2       LDA    player_1_struct_03a2
+E397: B8 04 00       EORA   player_2_struct_0400
 E39A: 2B 0A          BMI    $E3A6
 E39C: B6 03 B7       LDA    $03B7
 E39F: BA 04 15       ORA    $0415
@@ -9983,9 +9986,7 @@ jump_table_aed1:
 	dc.w	$af6c	; $aed3
 	dc.w	$afce	; $aed5
 	dc.w	$b04e	; $aed7
-	dc.w	$8601	; $aed9
-	dc.w	$974b	; $aedb
-	dc.w	$b60e	; $aedd
+
 jump_table_aeea:
 	dc.w	$aef0	; $aeea
 	dc.w	$aefc	; $aeec

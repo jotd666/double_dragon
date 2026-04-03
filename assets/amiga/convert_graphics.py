@@ -793,10 +793,6 @@ print(f"Used sprite colors: {len(sprite_palette)}")
 #fg_tile_lower_table,_ = read_tileset(fg_tile_lower_set_list,fg_tile_lower_palette,[True,False,False,False],cache=tile_plane_cache, is_bob=False, nb_cluts=FG_NB_CLUTS, mask_color=magenta, next_cache_id = next_id)
 #sprite_table,_ = read_tileset(sprite_set_list,empty_32_cols+sprite_palette,[True,False,False,False],cache=bob_plane_cache, is_bob=True, mask_color=magenta, nb_cluts=SPRITE_NB_CLUTS)
 
-# remove white amerrers, waste of memory for very small benefit
-##for k,sprite in enumerate(sprite_table):
-##    if sprite_names.get(k)=="arremer" and k!=0x198:
-##        sprite[2]=sprite[3]
 
 ##
 ##BLOCK_DISPLAY_MASK = 1<<14
