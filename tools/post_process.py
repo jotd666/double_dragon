@@ -60,7 +60,9 @@ def f_handle_bank0_line(address,lines,i):
         # stack add just after cmp!
         line += "\taddq.w\t#4,d5\n"
         lines[i+1] += "\trts\n"
-
+    elif address == 0x631C:
+        # cheat, enemies have 1 health point
+        line = "\ttst.b\tweak_enemies_flag\n\tjeq\t0f\n\tmoveq\t#1,d1\n0:\n"+line
     lines[i] = line
 
 def f_handle_bank1_line(address,lines,i):

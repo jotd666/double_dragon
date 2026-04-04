@@ -1761,8 +1761,9 @@ lb0_51e5:    ; [global]
 5205: 10 A3 84       CMPD   ,X	; [bank_address]
 5208: 25 06          BCS    $5210
 520A: BD 52 23       JSR    $5223
-520D: BD 53 B0       JSR    $53B0
+520D: BD 53 B0       JSR    lb0_open_doors_53b0
 5210: 39             RTS
+
 5211: 7F 0A FC       CLR    $0AFC
 5214: 7F 0A FD       CLR    $0AFD
 5217: 7F 0B 0F       CLR    $0B0F
@@ -1770,6 +1771,7 @@ lb0_51e5:    ; [global]
 521D: 86 80          LDA    #$80
 521F: B7 0A FB       STA    $0AFB
 5222: 39             RTS
+
 5223: 8E 52 2D       LDX   #table_522d
 5226: F6 0A FC       LDB    $0AFC
 5229: 58             ASLB
@@ -1828,11 +1830,11 @@ lb0_51e5:    ; [global]
 52AE: 86 57          LDA    #$57
 52B0: A7 88 1B       STA    $1B,X
 52B3: 10 AE 62       LDY    $2,S	; [local]
-52B6: EC A1          LDD    ,Y++
+52B6: EC A1          LDD    ,Y++	; [bank_address]
 52B8: ED 04          STD    $4,X
-52BA: EC A1          LDD    ,Y++
+52BA: EC A1          LDD    ,Y++	; [bank_address]
 52BC: ED 06          STD    $6,X
-52BE: EC A1          LDD    ,Y++
+52BE: EC A1          LDD    ,Y++	; [bank_address]
 52C0: ED 08          STD    $8,X
 52C2: 10 AF 62       STY    $2,S	; [local]
 52C5: A6 01          LDA    $1,X
@@ -1912,6 +1914,7 @@ lb0_51e5:    ; [global]
 53AC: B7 0A FB       STA    $0AFB
 53AF: 39             RTS
 
+b0_open_doors_53b0:
 53B0: 32 79          LEAS   -$7,S   ; [alloc_locals]
 53B2: 96 51          LDA    $51
 53B4: 84 03          ANDA   #$03
@@ -1920,9 +1923,9 @@ lb0_51e5:    ; [global]
 53BB: 96 36          LDA    $36
 53BD: 48             ASLA
 53BE: AE 86          LDX    A,X	; [bank_address]
-53C0: EC 84          LDD    ,X
+53C0: EC 84          LDD    ,X	; [bank_address]
 53C2: ED E4          STD    ,S	; [local]
-53C4: EC 04          LDD    $4,X
+53C4: EC 04          LDD    $4,X	; [bank_address]
 53C6: ED 62          STD    $2,S	; [local]
 53C8: 6F 66          CLR    $6,S	; [local]
 53CA: A6 66          LDA    $6,S	; [local]
@@ -1945,12 +1948,12 @@ lb0_51e5:    ; [global]
 53ED: 10 AE A6       LDY    A,Y	; [bank_address]
 53F0: B6 0A FC       LDA    $0AFC
 53F3: 48             ASLA
-53F4: 10 AE A6       LDY    A,Y
+53F4: 10 AE A6       LDY    A,Y		; [bank_address]
 53F7: A6 66          LDA    $6,S	; [local]
 53F9: 48             ASLA
-53FA: EC A6          LDD    A,Y
+53FA: EC A6          LDD    A,Y		; [bank_address]
 53FC: AE 64          LDX    $4,S	; [local]
-53FE: ED 84          STD    ,X
+53FE: ED 84          STD    ,X		; [video_address_word] open door when girl arrives
 5400: 6C 66          INC    $6,S	; [local]
 5402: A6 66          LDA    $6,S	; [local]
 5404: 81 0F          CMPA   #$0F
@@ -3210,7 +3213,7 @@ lb0_5f85:  ; [global]
 6315: ED 06          STD    $6,X
 6317: A6 01          LDA    $1,X
 6319: BD 64 19       JSR    $6419
-631C: E7 88 1F       STB    $1F,X
+631C: E7 88 1F       STB    $1F,X	; store enemy health
 631F: 96 36          LDA    $36
 6321: 81 01          CMPA   #$01
 6323: 26 05          BNE    $632A
@@ -4542,10 +4545,10 @@ lb0_6d64:   ; [global]
 7D13: 39             RTS
 7D14: 34 70          PSHS   U,Y,X
 7D16: CE 7E 30       LDU    #$7E30
-7D19: A6 A8 17       LDA    $17,Y	; [bank_address]
+7D19: A6 A8 17       LDA    $17,Y
 7D1C: 84 1F          ANDA   #$1F
 7D1E: 48             ASLA
-7D1F: EE C6          LDU    A,U
+7D1F: EE C6          LDU    A,U		; [bank_address]
 7D21: 4F             CLRA
 7D22: E6 22          LDB    $2,Y
 7D24: C4 7F          ANDB   #$7F
@@ -4553,18 +4556,18 @@ lb0_6d64:   ; [global]
 7D28: 27 64          BEQ    $7D8E
 7D2A: 58             ASLB
 7D2B: 49             ROLA
-7D2C: EE CB          LDU    D,U
-7D2E: A6 C0          LDA    ,U+
+7D2C: EE CB          LDU    D,U		; [bank_address]
+7D2E: A6 C0          LDA    ,U+		; [bank_address]
 7D30: 97 01          STA    $01
-7D32: A6 C0          LDA    ,U+
+7D32: A6 C0          LDA    ,U+		; [bank_address]
 7D34: 97 02          STA    $02
-7D36: A6 C0          LDA    ,U+
+7D36: A6 C0          LDA    ,U+		; [bank_address]
 7D38: 97 03          STA    $03
-7D3A: A6 C0          LDA    ,U+
+7D3A: A6 C0          LDA    ,U+		; [bank_address]
 7D3C: 97 04          STA    $04
-7D3E: A6 C0          LDA    ,U+
+7D3E: A6 C0          LDA    ,U+		; [bank_address]
 7D40: 97 05          STA    $05
-7D42: A6 C0          LDA    ,U+
+7D42: A6 C0          LDA    ,U+		; [bank_address]
 7D44: 97 06          STA    $06
 7D46: E6 02          LDB    $2,X
 7D48: C4 7F          ANDB   #$7F
@@ -4579,29 +4582,30 @@ lb0_6d64:   ; [global]
 7D5B: 34 20          PSHS   Y
 7D5D: 10 8E 6A 76    LDY    #$6A76
 7D61: A6 01          LDA    $1,X
-7D63: A6 A6          LDA    A,Y	; [bank_address]
+7D63: A6 A6          LDA    A,Y		; [bank_address]
 7D65: 48             ASLA
 7D66: 35 20          PULS   Y
-7D68: EE C6          LDU    A,U
+7D68: EE C6          LDU    A,U		; [bank_address]
 7D6A: 11 83 6F EA    CMPU   #$6FEA
 7D6E: 27 1E          BEQ    $7D8E
-7D70: EE 42          LDU    $2,U
-7D72: A6 C0          LDA    ,U+
+7D70: EE 42          LDU    $2,U	; [bank_address]
+7D72: A6 C0          LDA    ,U+	; [bank_address]
 7D74: 97 07          STA    $07
 7D76: 86 00          LDA    #$00
 7D78: 97 08          STA    $08
-7D7A: A6 C0          LDA    ,U+
+7D7A: A6 C0          LDA    ,U+	; [bank_address]
 7D7C: 97 09          STA    $09
-7D7E: A6 C0          LDA    ,U+
+7D7E: A6 C0          LDA    ,U+	; [bank_address]
 7D80: 97 0A          STA    $0A
 7D82: 86 04          LDA    #$04
 7D84: 97 0B          STA    $0B
-7D86: A6 C0          LDA    ,U+
+7D86: A6 C0          LDA    ,U+	; [bank_address]
 7D88: 97 0C          STA    $0C
 7D8A: 1A 01          ORCC   #$01
 7D8C: 20 02          BRA    $7D90
 7D8E: 1C FE          ANDCC  #$FE
 7D90: 35 F0          PULS   X,Y,U,PC
+
 7D92: 96 01          LDA    $01
 7D94: D6 04          LDB    $04
 7D96: 34 10          PSHS   X

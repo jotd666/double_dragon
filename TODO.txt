@@ -1,17 +1,20 @@
-- sprite clipping too soon on the right
+video:
+
+- sprite clipping too soon on the right: mockup
   
 - context change: BA3267F2 972B4DF4 7C2231AE => D265AE25
+in this context, the palette is different (after intro): re-dump pics as enemies have the wrong colors
+- lockup when girl appears, door doesn't open? bank 0: 53B0 called by 51E5
+- scrolling doesn't feed from right / wrong positions (seems OK from left)
 
-
-=> stack "leak" increase find the missing leas instruction protect against stack > 0x1000 (check in MAME)
-=> scrolling doesn't feed
-
+- group laterally like in VBall
+- copy sprite colors from billy to jimmy
 - don't log sprites if not visible (enemies leaving at start, context changes)  
 - set DSW difficulty lives, etc.
 - cache subcontext (loaded fg/bg/sprite files)
 - don't forget temp breakpoints for stack params!
-- converter: maybe find a leas +/- stack size pattern, then scan the lines in-between to find
-  stack references above the reserved limit (parameters)
+
+- sounds
 - title fading in not supported
 - will probably have to use 64+64 colors, 32+32 don't cut it
   
@@ -23,9 +26,12 @@
 	subq	#2,a0
  	xxx_W_TO_REG	a0,d2                         	| [$5bd5: pulu   x,y]
 =>  xxx_W_TO_REG_PREDEC
+- converter: maybe find a leas +/- stack size pattern, then scan the lines in-between to find
+  stack references above the reserved limit (parameters)
 
 monitor bank switch: wpset 3808:maincpu,1,W,,{printf "bank %d",(wpdata & 0xe0) >> 5;g}
 force bank switch: fill 3808:maincpu,1,bankno<<5
+weak enemies: bpset 631C,b@pc==$E7,{B=1;g}
 
 winuae: check value written is FF
 w 0 rA6+$A78 1 W VFF.B

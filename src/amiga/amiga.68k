@@ -62,7 +62,7 @@ GAME_MAX_SCROLL_Y = 0x200
 BG_TILE_WIDTH = 16
 
 FG_TILE_FILE_MAX_SIZE = 0x8000
-BG_TILE_FILE_MAX_SIZE = 0x14000
+BG_TILE_FILE_MAX_SIZE = 0x16000
 SPRITE_FILE_MAX_SIZE = 0x40000
 
 	.if		OPT_CD32_VERSION==0
@@ -462,7 +462,7 @@ _user:
 	btst	#2,d0
 	sne		infinite_time_flag
 	btst	#3,d0
-	sne		skip_first_loop_flag
+	sne		weak_enemies_flag
 	move.b	d0,d1
 	and.b	#3,d1
 	jeq		2f
@@ -4706,6 +4706,24 @@ skip_level:
 	movem.l	(a7)+,d0-a6
 	rts
 	
+kill_all_enemies:
+	movem.l	d0-a6,-(a7)
+	GET_MEMORY_START_IN_A6
+	lea		(logical_objects_array_0381,a6),a0
+0:
+	move.w	(a0)+,d0
+	jeq		1f
+	cmp.w	#0x3A2,d0
+	jeq		0b
+	cmp.w	#0x400,d0
+	jeq		0b
+	lea		(a6,d0.w),a1
+	move.b	#1,(0x1F,a1)		| low stamina
+	jra		0b
+1:
+	movem.l	(a7)+,d0-a6
+	rts
+	
 	
 handle_keyboard:
 	movem.l	D0/A0/A5,-(a7)
@@ -4769,10 +4787,11 @@ handle_keyboard:
 	COLOR0_FLASH	0x0FF
 	
 0:
-	cmp.b	#0x52,d0	| F3 key: 
+	cmp.b	#0x52,d0	| F3 key: kill all enemies on screen
 	bne.b	0f
 	st.b	cheat_used
-
+	COLOR0_FLASH	0x0FF
+	jbsr	kill_all_enemies
 	
 0:
 

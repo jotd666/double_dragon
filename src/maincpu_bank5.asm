@@ -2725,14 +2725,14 @@ flip_screen_if_needed_66e6:
 6A46: DC 3C          LDD    $3C
 6A48: 10 A3 04       CMPD   $4,X
 6A4B: 24 11          BCC    $6A5E
-6A4D: EC A4          LDD    ,Y
+6A4D: EC A4          LDD    ,Y		; [bank_address]
 6A4F: 10 A3 04       CMPD   $4,X
 6A52: 25 11          BCS    $6A65
 6A54: DC 3C          LDD    $3C
 6A56: C3 01 20       ADDD   #$0120
 6A59: 10 A3 04       CMPD   $4,X
 6A5C: 24 62          BCC    $6AC0
-6A5E: EC 22          LDD    $2,Y
+6A5E: EC 22          LDD    $2,Y		; [bank_address]
 6A60: 10 A3 04       CMPD   $4,X
 6A63: 25 5B          BCS    $6AC0
 6A65: A6 88 16       LDA    $16,X
@@ -2774,6 +2774,7 @@ flip_screen_if_needed_66e6:
 6ABC: 27 02          BEQ    $6AC0
 6ABE: 6A A4          DEC    ,Y
 6AC0: 39             RTS
+
 6AC1: 34 40          PSHS   U
 6AC3: 32 7D          LEAS   -$3,S   ; [alloc_locals]
 6AC5: 96 38          LDA    $38

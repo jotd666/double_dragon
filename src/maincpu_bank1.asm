@@ -310,7 +310,7 @@ subcpu_processing_411e:
 424F: A6 88 18    LDA    $18,X
 4252: 81 04       CMPA   #$04
 4254: 24 0D       BCC    $4263
-4256: E6 A6       LDB    A,Y
+4256: E6 A6       LDB    A,Y		; [bank_address]
 4258: EA 03       ORB    $3,X
 425A: E7 02       STB    $2,X
 425C: C6 08       LDB    #$08
@@ -325,6 +325,7 @@ subcpu_processing_411e:
 4271: A7 88 4C    STA    $4C,X
 4274: BD 42 79    JSR    $4279
 4277: 35 F6       PULS   D,X,Y,U,PC
+
 4279: 34 30       PSHS   Y,X
 427B: 96 36       LDA    $36
 427D: 81 03       CMPA   #$03
@@ -1300,10 +1301,10 @@ subcpu_processing_411e:
 4B8D: A6 88 1B    LDA    $1B,X
 4B90: 2B 09       BMI    $4B9B
 4B92: BD FE 64    JSR    $FE64
-4B95: A6 A4       LDA    ,Y
+4B95: A6 A4       LDA    ,Y		; [bank_address]
 4B97: AA 03       ORA    $3,X
 4B99: A7 02       STA    $2,X
-4B9B: EC 21       LDD    $1,Y
+4B9B: EC 21       LDD    $1,Y	; [bank_address]
 4B9D: 10 B3 03 A6 CMPD   $03A6
 4BA1: 24 17       BCC    $4BBA
 4BA3: EC 08       LDD    $8,X
@@ -1311,11 +1312,12 @@ subcpu_processing_411e:
 4BA9: 26 04       BNE    $4BAF
 4BAB: 86 04       LDA    #$04
 4BAD: 20 07       BRA    $4BB6
-4BAF: A6 23       LDA    $3,Y
+4BAF: A6 23       LDA    $3,Y	; [bank_address]
 4BB1: A7 88 4E    STA    $4E,X
 4BB4: 86 11       LDA    #$11
 4BB6: A7 88 1B    STA    $1B,X
 4BB9: 39          RTS
+
 4BBA: 10 B3 04 04 CMPD   $0404
 4BBE: 24 F9       BCC    $4BB9
 4BC0: EC 08       LDD    $8,X
@@ -1364,14 +1366,14 @@ subcpu_processing_411e:
 4C5D: 20 1B       BRA    $4C7A
 4C5F: 96 36       LDA    $36
 4C61: 48          ASLA
-4C62: EE C6       LDU    A,U
+4C62: EE C6       LDU    A,U		; [bank_address]
 4C64: E6 88 4B    LDB    $4B,X
 4C67: 5A          DECB
 4C68: 10 8E 4D 6A LDY    #$4D6A
 4C6C: 10 AE A6    LDY    A,Y		; [bank_address]
 4C6F: 34 04       PSHS   B
 4C71: 58          ASLB
-4C72: EC A5       LDD    B,Y
+4C72: EC A5       LDD    B,Y		; [bank_address]
 4C74: E3 06       ADDD   $6,X
 4C76: ED 06       STD    $6,X
 4C78: 35 04       PULS   B
@@ -1411,11 +1413,11 @@ subcpu_processing_411e:
 4CC6: 4C          INCA
 4CC7: A7 88 18    STA    $18,X
 4CCA: 48          ASLA
-4CCB: E6 A6       LDB    A,Y
+4CCB: E6 A6       LDB    A,Y		; [bank_address]
 4CCD: EA 03       ORB    $3,X
 4CCF: E7 02       STB    $2,X
 4CD1: 4C          INCA
-4CD2: E6 A6       LDB    A,Y
+4CD2: E6 A6       LDB    A,Y		; [bank_address]
 4CD4: E7 88 19    STB    $19,X
 4CD7: BD 52 9F    JSR    $529F
 4CDA: BD 53 0A    JSR    $530A
@@ -1561,7 +1563,7 @@ subcpu_processing_411e:
 4E88: ED 48       STD    $8,U
 4E8A: EC 66       LDD    $6,S		; [local]
 4E8C: ED 44       STD    $4,U
-4E8E: E3 22       ADDD   $2,Y
+4E8E: E3 22       ADDD   $2,Y	; [bank_address]
 4E90: ED 4A       STD    $A,U
 4E92: A6 03       LDA    $3,X
 4E94: A7 4C       STA    $C,U

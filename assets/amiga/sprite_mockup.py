@@ -77,6 +77,7 @@ def doit(binname):
 
             #which &= 0x100-size-1;
 
+            real_color = color
             if mono_clut:
                 color = 0
             sheet = ts_title_list[color]
@@ -85,10 +86,9 @@ def doit(binname):
             img = get_transformed(img,flipx,flipy)
 
             name = sprite_names.get(which,"unknown")
-            if name=="garage_door":
-                continue
 
-            print(f"offset={i:04x}, code={which:03x}, color={color}, name={name}, x={sx}, y={sy}, size={size}, flipx={flipx}, flipy={flipy}")
+
+            print(f"offset={i:04x}, code={which:03x}, color={real_color}, name={name}, x={sx}, y={sy}, size={size}, flipx={flipx}, flipy={flipy}")
             if size==0:
                 layer.paste(img,box=(sx,sy))
             elif size==1:
@@ -115,7 +115,7 @@ def doit(binname):
 
     layer.save(f"{binname}.png")
 
-doit(r"amiga/sprites_2800_mame_inj")
+doit(r"girl")
 
 
 

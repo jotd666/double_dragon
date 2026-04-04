@@ -8611,10 +8611,10 @@ E719: A7 E8 10       STA    $10,S     ; [local]
 E71C: A6 E8 10       LDA    $10,S     ; [local]
 E71F: BD E8 FB       JSR    set_bank_e8fb
 E722: AE 6E          LDX    $E,S     ; [local]
-E724: EC 84          LDD    ,X
+E724: EC 84          LDD    ,X		; [bank_address]
 E726: AE 6C          LDX    $C,S     ; [local]
 E728: BD E9 72       JSR    $E972
-E72B: ED 84          STD    ,X
+E72B: ED 84          STD    ,X		; [video_address_word]
 E72D: EC 68          LDD    $8,S     ; [local]
 E72F: C3 00 10       ADDD   #$0010
 E732: ED 68          STD    $8,S     ; [local]
