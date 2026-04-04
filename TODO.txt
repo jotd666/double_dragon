@@ -1,5 +1,5 @@
-- 46DD: carry loss issue (bank 0) to fix
 - trace from 520A girl doesn't move, no doors sprites
+  => AFC is now incremented but remains at 1 trace bank 0 (523C)
 - sprite clipping too soon on the right: mockup
   
 - context change: BA3267F2 972B4DF4 7C2231AE => D265AE25
@@ -30,6 +30,7 @@ in this context, the palette is different (after intro): re-dump pics as enemies
 =>  xxx_W_TO_REG_PREDEC
 - converter: maybe find a leas +/- stack size pattern, then scan the lines in-between to find
   stack references above the reserved limit (parameters)
+- converter: add push/pull around add manual stack D5
 
 monitor bank switch: wpset 3808:maincpu,1,W,,{printf "bank %d",(wpdata & 0xe0) >> 5;g}
 force bank switch: fill 3808:maincpu,1,bankno<<5

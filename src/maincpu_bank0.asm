@@ -1785,7 +1785,7 @@ lb0_handle_events_51e5:    ; [global]
 522A: AD 95          JSR    [B,X]	; [indirect_jump] [nb_entries=5]
 522C: 39             RTS
 
-5237: B6 0A FD       LDA    $0AFD          
+5237: B6 0A FD       LDA    $0AFD  ; timer?        
 523A: 26 18          BNE    $5254
 523C: BD 52 58       JSR    $5258
 523F: 24 16          BCC    $5257
@@ -1816,15 +1816,18 @@ lb0_handle_events_51e5:    ; [global]
 527A: 10 AF 62       STY    $2,S	; [local]
 527D: 86 01          LDA    #$01
 527F: A7 64          STA    $4,S	; [local]
+; find a free enemy slot to insert the new enemy
 5281: 8E 04 5E       LDX    #$045E
 5284: 6D 84          TST    ,X
-5286: 2A 0A          BPL    $5292
+5286: 2A 0A          BPL    found_a_free_slot_5292
 5288: 30 88 55       LEAX   $55,X
 528B: 8C 07 06       CMPX   #$0706
 528E: 26 F4          BNE    $5284
+; no free slot found
 5290: 20 64          BRA    $52F6
+found_a_free_slot_5292:
 5292: 86 81          LDA    #$81
-5294: A7 84          STA    ,X
+5294: A7 84          STA    ,X		; enemy activated
 5296: BD 63 50       JSR    $6350
 5299: 6F 88 45       CLR    $45,X
 529C: 10 AE E4       LDY    ,S	; [local]
@@ -2332,11 +2335,11 @@ lb0_588f:    ; [global]
 59B5: A7 88 1B       STA    $1B,X
 59B8: 86 00          LDA    #$00
 59BA: A7 03          STA    $3,X
-59BC: EC A1          LDD    ,Y++
+59BC: EC A1          LDD    ,Y++	; [bank_address]
 59BE: ED 04          STD    $4,X
-59C0: EC A1          LDD    ,Y++
+59C0: EC A1          LDD    ,Y++	; [bank_address]
 59C2: ED 06          STD    $6,X
-59C4: EC A1          LDD    ,Y++
+59C4: EC A1          LDD    ,Y++	; [bank_address]
 59C6: ED 08          STD    $8,X
 59C8: 6F 0A          CLR    $A,X
 59CA: 6F 0B          CLR    $B,X
@@ -2347,6 +2350,7 @@ lb0_588f:    ; [global]
 59D6: BD 63 50       JSR    $6350
 59D9: 6F 88 45       CLR    $45,X
 59DC: 39             RTS
+
 59DD: B6 0A 95       LDA    $0A95
 59E0: 2B 34          BMI    $5A16
 59E2: DC 3C          LDD    current_level_x_position_003c

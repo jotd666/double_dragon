@@ -63,7 +63,7 @@ def f_handle_bank0_line(address,lines,i):
     elif address == 0x631C:
         # cheat, enemies have 1 health point
         line = "\ttst.b\tweak_enemies_flag\n\tjeq\t0f\n\tmoveq\t#1,d1\n0:\n"+line
-    elif address == 0x46dd:
+    elif address in {0x46dd,0x5301}:
         # protect carry from target stack restore
         line = f"\tPUSH_SR  | save carry\n{line}\tPOP_SR  | restore carry\n"
     lines[i] = line
@@ -100,6 +100,9 @@ def f_handle_bank1_line(address,lines,i):
         line += '\tmove.b\td0,d6  | "push" d0 in d6\n'
     elif address == 0x5413:
         line = change_instruction("tst.b\td6",lines,i)
+    elif address in {0x5405,0x600F,0x619E}:
+        # protect carry from target stack restore
+        line = f"\tPUSH_SR  | save carry\n{line}\tPOP_SR  | restore carry\n"
 
     lines[i] = line
 
@@ -152,6 +155,9 @@ def f_handle_bank5_line(address,lines,i):
         lines[i+1] = remove_error(lines[i+1])
     elif address == 0x6D12:
         line = change_instruction('BREAKPOINT  "6D12_b5"',lines,i)  # TEMP
+    elif address in {0x44DD,0x5696,0x582C}:
+        # protect carry from target stack restore
+        line = f"\tPUSH_SR  | save carry\n{line}\tPOP_SR  | restore carry\n"
     lines[i] = line
 
 def f_handle_sub_line(address,lines,i):
