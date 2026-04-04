@@ -1,6 +1,5 @@
-video:
+- 46DD: carry loss issue (bank 0) to fix
 - trace from 520A girl doesn't move, no doors sprites
-- enemies don't punch: punch animation stops right away, compare with original game
 - sprite clipping too soon on the right: mockup
   
 - context change: BA3267F2 972B4DF4 7C2231AE => D265AE25

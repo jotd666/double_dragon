@@ -563,7 +563,7 @@ jump_table_42bf:
 4ED1: AF C8 2D       STX    $2D,U
 4ED4: EF 88 2D       STU    $2D,X
 4ED7: 86 07          LDA    #$07
-4ED9: A7 88 1B       STA    $1B,X
+4ED9: A7 88 1B       STA    $1B,X	; >0: enemy attacks
 4EDC: A6 88 13       LDA    $13,X
 4EDF: 84 DF          ANDA   #$DF
 4EE1: A7 88 13       STA    $13,X

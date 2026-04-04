@@ -788,6 +788,7 @@ lb0_4652:  ; [global]
 469B: 32 6F          LEAS   $F,S   ; [free_locals]
 469D: 35 FE          PULS   D,DP,X,Y,U,PC
 
+; > C (carry)
 lb0_46a3:   ; [global]
 46A3: 32 7C          LEAS   -$4,S   ; [alloc_locals]
 46A5: EC 04          LDD    $4,X

@@ -4233,9 +4233,7 @@ A929: 48             ASLA
 A92A: 6E B6          JMP    [A,Y]		; [indirect_jump] [nb_entries=20]
 A92C: 39             RTS
 
-
-
-A9B9: 96 33          LDA    $33
+; X < enemy structure
 A9BB: 34 40          PSHS   U
 A9BD: CE AA 9A       LDU    #$AA9A
 A9C0: 96 36          LDA    current_level_0036
@@ -4243,16 +4241,17 @@ A9C2: 48             ASLA
 A9C3: EE C6          LDU    A,U
 A9C5: A6 88 1B       LDA    $1B,X
 A9C8: 2B 26          BMI    $A9F0
+; positive: attack
 A9CA: BD A5 29       JSR    $A529
 A9CD: E6 88 15       LDB    $15,X
-A9D0: C8 04          EORB   #$04
+A9D0: C8 04          EORB   #$04	; invert punch hand
 A9D2: E7 88 15       STB    $15,X
-A9D5: 86 12          LDA    #$12
+A9D5: 86 12          LDA    #$12	; punch start frame right punch
 A9D7: C5 04          BITB   #$04
 A9D9: 27 02          BEQ    $A9DD
-A9DB: 86 14          LDA    #$14
-A9DD: AA 03          ORA    $3,X
-A9DF: A7 02          STA    $2,X
+A9DB: 86 14          LDA    #$14	; punch start frame left punch
+A9DD: AA 03          ORA    $3,X	; direction
+A9DF: A7 02          STA    $2,X	; frame
 A9E1: A6 01          LDA    $1,X
 A9E3: 81 22          CMPA   #$22
 A9E5: 25 02          BCS    $A9E9
@@ -5242,6 +5241,7 @@ B40D: 17 01 1D       LBSR   $B52D
 B410: 17 02 33       LBSR   init_rest_of_thugs_b646
 B413: 17 03 26       LBSR   $B73C
 B416: 35 FE          PULS   D,DP,X,Y,U,PC
+
 B418: 8E 04 5E       LDX    #$045E
 B41B: 17 00 0D       LBSR   $B42B
 B41E: 17 00 2D       LBSR   $B44E
@@ -5253,7 +5253,7 @@ B42B: A6 88 31       LDA    $31,X
 B42E: 2B 1D          BMI    $B44D
 B430: 8A 80          ORA    #$80
 B432: A7 88 31       STA    $31,X
-B435: CC 00 78       LDD    #$0078
+B435: CC 00 78       LDD    #$0078		; X coord of thug that hits the girl in intro
 B438: ED 04          STD    $4,X
 B43A: CC 01 20       LDD    #$0120
 B43D: ED 06          STD    $6,X
@@ -9410,18 +9410,22 @@ FAD0: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
 FAD3: BD 40 42       JSR    lb1_4042
 FAD6: BD FD B2       JSR    restore_previous_bank_fdb2
 FAD9: 39             RTS
+
 FADA: BD FC 82       JSR    switch_to_bank_5_fc82
 FADD: BD 40 93       JSR    lb5_4093
 FAE0: BD FC 8F       JSR    switch_to_bank_0_fc8f
 FAE3: 39             RTS
+
 FAE4: BD FC 82       JSR    switch_to_bank_5_fc82
 FAE7: BD 40 5A       JSR    lb5_405A
 FAEA: BD FC 8F       JSR    switch_to_bank_0_fc8f
 FAED: 39             RTS
+
 FAEE: BD FC 82       JSR    switch_to_bank_5_fc82
 FAF1: BD 40 C3       JSR    lb5_40C3
 FAF4: BD FC 8F       JSR    switch_to_bank_0_fc8f
 FAF7: 39             RTS
+
 FAF8: 7E 40 1B       JMP    $401B ; [banks=0,1,5]
 
 FB00: 96 3A          LDA    bank_switch_copy_3a
@@ -9501,7 +9505,7 @@ FB93: 39             RTS
 l_fb94:
 FB94: BD FC 28       JSR    save_and_switch_to_bank_5_fc28
 FB97: BD 40 09       JSR    lb5_4009
-FB9A: BD FC 3A       JSR    switch_to_saved_bank_fc3a
+FB90: BD FC 3A       JSR    switch_to_saved_bank_fc3a
 FB9D: 39             RTS
 l_fb9e:
 FB9E: BD FC 28       JSR    save_and_switch_to_bank_5_fc28
@@ -9524,18 +9528,22 @@ FBCA: BD BB 40       JSR    switch_to_bank_1_bb40
 FBCD: BD 40 09       JSR    lb1_4009
 FBD0: BD BB 4D       JSR    switch_to_bank_0_bb4d
 FBD3: 39             RTS
+
 FBD4: BD BB 40       JSR    switch_to_bank_1_bb40
 FBD7: BD 40 0C       JSR    lb1_400C 
 FBDA: BD BB 4D       JSR    switch_to_bank_0_bb4d
 FBDD: 39             RTS
+
 FBDE: BD BB 40       JSR    switch_to_bank_1_bb40
 FBE1: BD 40 0F       JSR    lb1_400F
 FBE4: BD BB 4D       JSR    switch_to_bank_0_bb4d
 FBE7: 39             RTS
+
 FBE8: BD BB 40       JSR    switch_to_bank_1_bb40
 FBEB: BD 40 6F       JSR    lb1_406F
 FBEE: BD BB 4D       JSR    switch_to_bank_0_bb4d
 FBF1: 39             RTS
+
 FBF2: BD FC 82       JSR    switch_to_bank_5_fc82
 FBF5: BD 40 C0       JSR    lb5_40C0
 FBF8: BD FC 8F       JSR    switch_to_bank_0_fc8f
@@ -9546,11 +9554,13 @@ FC00: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
 FC03: BD 40 39       JSR    lb1_4039
 FC06: BD FD B2       JSR    restore_previous_bank_fdb2
 FC09: 39             RTS
+
 l_fc0a:
 FC0A: BD FC 28       JSR    save_and_switch_to_bank_5_fc28
 FC0D: BD 40 0C       JSR    lb5_400C
 FC10: BD FC 3A       JSR    switch_to_saved_bank_fc3a
 FC13: 39             RTS
+
 FC14: BD FC 28       JSR    save_and_switch_to_bank_5_fc28
 FC17: BD 40 90       JSR    lb5_4090
 FC1A: BD FC 3A       JSR    switch_to_saved_bank_fc3a
@@ -9632,7 +9642,7 @@ FCA6: BD FC 8F       JSR    switch_to_bank_0_fc8f
 FCA9: 39             RTS
 
 FCAA: BD FC 82       JSR    switch_to_bank_5_fc82
-FCAD: BD 40 18       JSR    $4018 ; [banks=5]
+FCAD: BD 40 18       JSR    lb5_4018
 FCB0: BD FC 8F       JSR    switch_to_bank_0_fc8f
 FCB3: 39             RTS
 
@@ -9691,18 +9701,22 @@ FD3A: BD FC 82       JSR    switch_to_bank_5_fc82
 FD3D: BD 40 B7       JSR    lb5_40B7
 FD40: BD FC 8F       JSR    switch_to_bank_0_fc8f
 FD43: 39             RTS
+
 FD44: BD FC 82       JSR    switch_to_bank_5_fc82
 FD47: BD 40 BD       JSR    lb5_40BD
 FD4A: BD FC 8F       JSR    switch_to_bank_0_fc8f
 FD4D: 39             RTS
+
 FD4E: BD BB 40       JSR    switch_to_bank_1_bb40
 FD51: BD 40 63       JSR    lb1_4063
 FD54: BD BB 4D       JSR    switch_to_bank_0_bb4d
 FD57: 39             RTS
+
 FD58: BD BB 40       JSR    switch_to_bank_1_bb40
 FD5B: BD 40 66       JSR    lb1_4066
 FD5E: BD BB 4D       JSR    switch_to_bank_0_bb4d
 FD61: 39             RTS
+
 FD62: BD BB 40       JSR    switch_to_bank_1_bb40
 FD65: BD 40 69       JSR    lb1_4069
 FD68: BD BB 4D       JSR    switch_to_bank_0_bb4d
@@ -9712,6 +9726,7 @@ FD70: BD FC 82       JSR    switch_to_bank_5_fc82
 FD73: BD 40 39       JSR    lb5_4039
 FD76: BD FC 8F       JSR    switch_to_bank_0_fc8f
 FD79: 39             RTS
+
 FD7A: BD FC 82       JSR    switch_to_bank_5_fc82
 FD7D: BD 40 3C       JSR    lb5_403C
 FD80: BD FC 8F       JSR    switch_to_bank_0_fc8f
@@ -9851,7 +9866,8 @@ FEDA: 7E 5B 1F       JMP    lb0_5B1F
 FEDD: 7E 58 8F       JMP    lb0_588F
 FEE0: 7E 5C 93       JMP    lb0_5C93
 FEE3: 7E 4A 6B       JMP    lb0_4A6B
-FEE6: 7E 51 E5       JMP    lb0_51E5
+handle_events_fee6:
+FEE6: 7E 51 E5       JMP    lb0_handle_events_51e5	; not even called from here
 FEE9: 7E 4D 9D       JMP    lb0_4D9D
 FEEC: 7E 4E 4B       JMP    lb0_4E4B
 FEEF: 7E 4E 76       JMP    lb0_4E76
@@ -9936,15 +9952,16 @@ FF93: 8A A0          ORA    #$A0	; bank=5
 FF95: 97 3A          STA    bank_switch_copy_3a
 FF97: B7 38 08       STA    bankswitch_3808
 FF9A: 35 82          PULS   A,PC
-FF9C: 34 02          PSHS   A
 
-switch_to_bank_3_ff9e:
+switch_to_bank_3_ff9c:
+FF9C: 34 02          PSHS   A
 FF9E: 96 3A          LDA    bank_switch_copy_3a
 FFA0: 84 1F          ANDA   #$1F
 FFA2: 8A 60          ORA    #$60	; bank=3
 FFA4: 97 3A          STA    bank_switch_copy_3a
 FFA6: B7 38 08       STA    bankswitch_3808
 FFA9: 35 82          PULS   A,PC
+
 l_ffab:
 FFAB: BD FF 80       JSR    switch_to_bank_4_ff80
 FFAE: BD 78 09       JSR    lb4_7809
@@ -9955,6 +9972,7 @@ FFB5: BD FF 80       JSR    switch_to_bank_4_ff80
 FFB8: BD 78 03       JSR    lb4_7803
 FFBB: BD FC 8F       JSR    switch_to_bank_0_fc8f
 FFBE: 39             RTS
+
 FFBF: BD FF 80       JSR    switch_to_bank_4_ff80
 FFC2: BD 78 06       JSR    lb4_7806
 FFC5: BD FC 8F       JSR    switch_to_bank_0_fc8f
@@ -9962,12 +9980,12 @@ FFC8: 39             RTS
 l_ffc9:
 FFC9: BD FF 8D       JSR    switch_to_bank_5_ff8d
 FFCC: BD 40 45       JSR    lb5_4045
-FFCF: BD FF 9C       JSR    $FF9C
+FFCF: BD FF 9C       JSR    switch_to_bank_3_ff9c
 FFD2: 39             RTS
 l_ffd3:
 FFD3: BD FC 8F       JSR    switch_to_bank_0_fc8f
 FFD6: BD 40 00       JSR    lb0_4000
-FFD9: BD FF 9C       JSR    $FF9C
+FFD9: BD FF 9C       JSR    switch_to_bank_3_ff9c
 FFDC: 39             RTS
 FFDD: 39             RTS
 

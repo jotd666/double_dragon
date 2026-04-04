@@ -63,6 +63,9 @@ def f_handle_bank0_line(address,lines,i):
     elif address == 0x631C:
         # cheat, enemies have 1 health point
         line = "\ttst.b\tweak_enemies_flag\n\tjeq\t0f\n\tmoveq\t#1,d1\n0:\n"+line
+    elif address == 0x46dd:
+        # protect carry from target stack restore
+        line = f"\tPUSH_SR  | save carry\n{line}\tPOP_SR  | restore carry\n"
     lines[i] = line
 
 def f_handle_bank1_line(address,lines,i):
@@ -305,6 +308,9 @@ jra        coin_inserted_8158
     elif address == 0x8bbb:
         # free 1 byte on target stack, restore stored value for A so we can use target stack
         line += "\tGET_REG_ADDRESS\t0,d5\n\tmove.b\t(a0),d0 | restore stored value for A (not used in caller!)\n\taddq.w\t#1,d5\n"
+    elif address == 0xB435:
+        # set thug X to right of screen so intro is very fast
+        line += "\ttst.b\tskip_intro_flag\n\tjeq\t0f\n\tmove.w\t#0xF8,d1\n0:\n"
 
     elif address == 0xeeb0:
         line = change_instruction("jbsr\tosd_wait_vblank_interrupt",lines,i)
@@ -317,6 +323,16 @@ jra        coin_inserted_8158
         line = change_instruction("jbsr\tosd_read_dsw_2",lines,i)
     elif address == 0xeed3:
         line = "\tjbsr\tosd_palette_updated\n"+line
+
+    elif address in {0xFC56,0xFC60,0xFC6A,0xFC74,0xFC7E,0xFCB0,
+0xFCBA,0xFCC4,0xFCCE,0xFD40,0xFD4A,0xFD54,
+0xFD5E,0xFD68,0xFD76,0xFD80,0xFD90,0xFF5A,
+0xFFB1,0xFFBB,0xFFC5,0xFFCF,0xFFD9,
+0xFAD6,0xFB68,0xFB72,0xFB7C,0xFB86,0xFB90,0xFB90,
+0xFBA4,0xFBAE,0xFBC6,0xFBD0,0xFBDA,0xFBE4,
+0xFBEE,0xFBF8,0xFC06,0xFC10,0xFC1A,0xFC24}:
+        # vicious blow! restoring bank destroys carry on 68000, it is preserved in 6809
+        line = f"\tPUSH_SR  | save carry\n{line}\tPOP_SR  | restore carry\n"
 
     if "multiply_ab" in line and "MAKE_D" in lines[i+1]:
         lines[i+1] = ""

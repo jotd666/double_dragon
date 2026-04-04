@@ -63,7 +63,7 @@ BG_TILE_WIDTH = 16
 
 FG_TILE_FILE_MAX_SIZE = 0x8000
 BG_TILE_FILE_MAX_SIZE = 0x16000
-SPRITE_FILE_MAX_SIZE = 0x40000
+SPRITE_FILE_MAX_SIZE = 0x50000
 
 	.if		OPT_CD32_VERSION==0
 BIGGEST_MUSIC_SIZE = 385000
@@ -4498,9 +4498,16 @@ update_players_controls:
 	jeq		0f
 	bclr	#BIT_PUNCH_1P,d0
 0:
-	move.b	d0,(extra_3802,a6)		| TODO: BIT_PUNCH_2P
+	move.b	d0,(extra_3802,a6)
 	
-	st.b	(port_2_3801,a6)		| TEMP 2P off
+	move.l	joypad_2_state(pc),d1
+	jbsr	decode_joypad_controls
+	btst	#JPB_BTN_GRN,d1
+	jeq		0f
+	bclr	#BIT_PUNCH_2P,(extra_3802,a6)
+0:
+	
+	move.b	d0,(port_2_3801,a6)
 	rts
 	
 decode_joypad_controls:
