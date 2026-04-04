@@ -1,5 +1,6 @@
 video:
-
+- trace from 520A girl doesn't move, no doors sprites
+- enemies don't punch: punch animation stops right away, compare with original game
 - sprite clipping too soon on the right: mockup
   
 - context change: BA3267F2 972B4DF4 7C2231AE => D265AE25
@@ -10,7 +11,8 @@ in this context, the palette is different (after intro): re-dump pics as enemies
 
 - group laterally like in VBall
 - copy sprite colors from billy to jimmy
-- don't log sprites if not visible (enemies leaving at start, context changes)  
+- don't log sprites if not visible (enemies leaving at start, context changes) or remove from used sprites
+  when converting graphics to save memory/palette entries
 - set DSW difficulty lives, etc.
 - cache subcontext (loaded fg/bg/sprite files)
 - don't forget temp breakpoints for stack params!

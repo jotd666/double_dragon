@@ -163,7 +163,7 @@ lb5_40e7:      ; [global]
 410A: 48             ASLA
 410B: 10 8E 41 21    LDY    #$4121
 410F: 10 AE A6       LDY    A,Y		; [bank_address]
-4112: 96 36          LDA    $36
+4112: 96 36          LDA    current_level_0036
 4114: 48             ASLA
 4115: 48             ASLA
 4116: 48             ASLA
@@ -728,7 +728,7 @@ jump_table_42bf:
 
 
 5321: 34 7E          PSHS   U,Y,X,DP,D
-5323: D6 36          LDB    $36
+5323: D6 36          LDB    current_level_0036
 5325: 27 04          BEQ    $532B
 5327: C1 03          CMPB   #$03
 5329: 26 18          BNE    $5343
@@ -831,7 +831,7 @@ jump_table_42bf:
 5424: B7 09 AD       STA    $09AD
 5427: 86 00          LDA    #$00
 5429: A7 01          STA    $1,X
-542B: 96 36          LDA    $36
+542B: 96 36          LDA    current_level_0036
 542D: 48             ASLA
 542E: 10 8E 54 35    LDY    #jump_table_5435
 5432: 6E B6          JMP    [A,Y]		; [indirect_jump] [nb_entries=4]
@@ -1118,7 +1118,7 @@ jump_table_5435:
 570E: 35 FE          PULS   D,DP,X,Y,U,PC
 5710: 34 7E          PSHS   U,Y,X,DP,D
 5712: 32 71          LEAS   -$F,S   ; [alloc_locals]
-5714: 96 36          LDA    $36
+5714: 96 36          LDA    current_level_0036
 5716: 81 03          CMPA   #$03
 5718: 26 F2          BNE    $570C
 571A: 96 51          LDA    $51
@@ -1252,7 +1252,7 @@ jump_table_5435:
 582C: 32 61          LEAS   $1,S   ; [free_locals]
 582E: 35 EE          PULS   D,DP,Y,U,PC
 
-5830: 96 36          LDA    $36
+5830: 96 36          LDA    current_level_0036
 5832: 48             ASLA
 5833: 10 8E 58 39    LDY    #jump_table_5839
 5837: 6E B6          JMP    [A,Y]	; [indirect_jump] [nb_entries=4]
@@ -1290,7 +1290,7 @@ jump_table_5839:
 5883: BD 5C 70       JSR    $5C70
 5886: 39             RTS
 5887: 32 7C          LEAS   -$4,S   ; [alloc_locals]
-5889: 96 36          LDA    $36
+5889: 96 36          LDA    current_level_0036
 588B: 27 04          BEQ    $5891
 588D: 81 03          CMPA   #$03
 588F: 26 43          BNE    $58D4
@@ -1325,7 +1325,7 @@ jump_table_5839:
 58D4: 32 64          LEAS   $4,S   ; [free_locals]
 58D6: 39             RTS
 
-5907: 96 36          LDA    $36
+5907: 96 36          LDA    current_level_0036
 5909: 81 03          CMPA   #$03
 590B: 26 0B          BNE    $5918
 590D: B6 0E 1E       LDA    $0E1E
@@ -1401,7 +1401,7 @@ jump_table_5839:
 5A37: BD 5B E6       JSR    $5BE6
 5A3A: 39             RTS
 
-5A4B: 96 36          LDA    $36
+5A4B: 96 36          LDA    current_level_0036
 5A4D: 81 01          CMPA   #$01
 5A4F: 26 3A          BNE    $5A8B
 5A51: 96 38          LDA    $38
@@ -1428,7 +1428,7 @@ jump_table_5839:
 5A88: B7 0E 33       STA    $0E33
 5A8B: 39             RTS
 
-5A94: 96 36          LDA    $36
+5A94: 96 36          LDA    current_level_0036
 5A96: 81 01          CMPA   #$01
 5A98: 26 09          BNE    $5AA3
 5A9A: 96 38          LDA    $38
@@ -1449,7 +1449,7 @@ jump_table_5839:
 5ABF: 6F 88 1B       CLR    $1B,X
 5AC2: 39             RTS
 
-5ACB: 96 36          LDA    $36
+5ACB: 96 36          LDA    current_level_0036
 5ACD: 81 01          CMPA   #$01
 5ACF: 26 11          BNE    $5AE2
 5AD1: 96 38          LDA    $38
@@ -1475,7 +1475,7 @@ jump_table_5839:
 5B04: 39             RTS
 
 5B0D: 32 7F          LEAS   -$1,S   ; [alloc_locals]
-5B0F: 96 36          LDA    $36
+5B0F: 96 36          LDA    current_level_0036
 5B11: 81 03          CMPA   #$03
 5B13: 26 08          BNE    $5B1D
 5B15: DC 3C          LDD    $3C
@@ -1525,7 +1525,7 @@ jump_table_5839:
 5B92: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 5B94: 86 80          LDA    #$80
 5B96: A7 E4          STA    ,S	; [local]
-5B98: 96 36          LDA    $36
+5B98: 96 36          LDA    current_level_0036
 5B9A: 81 02          CMPA   #$02
 5B9C: 26 31          BNE    $5BCF
 5B9E: B6 0E 33       LDA    $0E33
@@ -1571,7 +1571,7 @@ jump_table_5839:
 5C07: 39             RTS
 
 5C08: 32 7F          LEAS   -$1,S   ; [alloc_locals]
-5C0A: 96 36          LDA    $36
+5C0A: 96 36          LDA    current_level_0036
 5C0C: 81 03          CMPA   #$03
 5C0E: 26 F5          BNE    $5C05
 5C10: B6 0E 36       LDA    $0E36
@@ -1761,7 +1761,7 @@ jump_table_5caf:
 5DD0: 81 03          CMPA   #$03
 5DD2: 25 03          BCS    $5DD7
 5DD4: 6F 88 18       CLR    $18,X
-5DD7: 96 36          LDA    $36
+5DD7: 96 36          LDA    current_level_0036
 5DD9: 81 01          CMPA   #$01
 5DDB: 27 02          BEQ    $5DDF
 5DDD: 6F 84          CLR    ,X
@@ -2192,7 +2192,7 @@ jump_table_5f4f:
 
 6524: 34 36          PSHS   Y,X,D                                       
 6526: 10 8E 65 6C    LDY    #$656C                                      
-652A: 96 36          LDA    $36
+652A: 96 36          LDA    current_level_0036
 652C: 81 03          CMPA   #$03
 652E: 26 06          BNE    $6536
 6530: 0D 37          TST    $37
@@ -2711,7 +2711,7 @@ flip_screen_if_needed_66e6:
 6A28: C3 00 40       ADDD   #$0040
 6A2B: 10 93 3C       CMPD   $3C
 6A2E: 25 35          BCS    $6A65
-6A30: 96 36          LDA    $36
+6A30: 96 36          LDA    current_level_0036
 6A32: 10 8E 69 E7    LDY    #$69E7
 6A36: 48             ASLA
 6A37: 10 AE A6       LDY    A,Y      ; [bank_address]
@@ -3029,7 +3029,7 @@ flip_screen_if_needed_66e6:
 6D17: 32 64          LEAS   $4,S   ; [free_locals]
 6D19: 35 A0          PULS   Y,PC
 
-6D1B: 96 36          LDA    $36
+6D1B: 96 36          LDA    current_level_0036
 6D1D: D6 37          LDB    $37
 6D1F: 10 83 02 01    CMPD   #$0201
 6D23: 26 3F          BNE    $6D64
@@ -3062,7 +3062,7 @@ flip_screen_if_needed_66e6:
 6D64: 39             RTS
 
 6D65: 34 40          PSHS   U
-6D67: 96 36          LDA    $36
+6D67: 96 36          LDA    current_level_0036
 6D69: 81 01          CMPA   #$01
 6D6B: 26 65          BNE    $6DD2
 6D6D: DC 3C          LDD    $3C
@@ -3638,7 +3638,7 @@ flip_screen_if_needed_66e6:
 
 729E: 39             RTS                                                 
 
-729F: 96 36          LDA    $36                                         
+729F: 96 36          LDA    current_level_0036                                         
 72A1: 48             ASLA                                               
 72A2: 10 8E 72 A9    LDY    #jump_table_72a9
 72A6: 6E B6          JMP    [A,Y]	; [indirect_jump] [nb_entries=4]
@@ -3730,7 +3730,7 @@ jump_table_72a9:
 736E: 80 02          SUBA   #$02
 7370: 48             ASLA
 7371: 10 AE A6       LDY    A,Y		; [bank_address]
-7374: 96 36          LDA    $36
+7374: 96 36          LDA    current_level_0036
 7376: 48             ASLA
 7377: 10 AE A6       LDY    A,Y		; [bank_address]
 737A: A6 88 1E       LDA    $1E,X
@@ -3953,7 +3953,7 @@ jump_table_72a9:
 
 7700: 34 40          PSHS   U
 7702: CE 77 49       LDU    #$7749
-7705: 96 36          LDA    $36
+7705: 96 36          LDA    current_level_0036
 7707: 48             ASLA
 7708: 48             ASLA
 7709: 33 C6          LEAU   A,U
@@ -4054,9 +4054,9 @@ jump_table_72a9:
 77FD: 1F 20          TFR    Y,D
 77FF: 34 40          PSHS   U
 7801: CE 78 48       LDU    #$7848
-7804: 96 36          LDA    $36
+7804: 96 36          LDA    current_level_0036
 7806: 48             ASLA
-7807: 9B 36          ADDA   $36
+7807: 9B 36          ADDA   current_level_0036
 7809: 33 C6          LEAU   A,U
 780B: 10 8E 78 45    LDY    #$7845
 780F: A6 88 1B       LDA    $1B,X

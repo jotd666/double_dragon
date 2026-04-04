@@ -140,6 +140,8 @@
 ; characters seem to have a 16 color palette each
 ; ex in intro $1xCx is boss palette, $1xDx is green punk palette
 bank_switch_copy_3a = $3a
+current_level_x_position_003c = $3c 
+current_level_0036 = $36
 
 bank_address_4000 = $4000
 port_1_3800 = $3800
@@ -351,7 +353,7 @@ swi_interrupt:
 8102: BD FE 9B       JSR    clear_bg_screen_fe9b
 8105: BD FE 9E       JSR    clear_sprite_memory_fe9e
 8108: BD FE 98       JSR    clear_fg_screen_fe98
-810B: 0F 36          CLR    $36
+810B: 0F 36          CLR    current_level_0036
 810D: 0F 38          CLR    $38
 810F: 0F 37          CLR    $37
 8111: BD FD F0       JSR    set_palettes_fdf0
@@ -401,7 +403,7 @@ coin_inserted_8158:
 816F: BD FE A1       JSR    set_screen_orientation_fea1
 8172: BD FE 9B       JSR    clear_bg_screen_fe9b
 8175: BD FE 9E       JSR    clear_sprite_memory_fe9e
-8178: 0F 36          CLR    $36
+8178: 0F 36          CLR    current_level_0036
 817A: BD FD F0       JSR    set_palettes_fdf0
 817D: BD FD F3       JSR    set_palettes_fdf3
 8180: BD FE 98       JSR    clear_fg_screen_fe98
@@ -505,7 +507,7 @@ demo_8215:
 825A: FD 04 49       STD    $0449
 825D: B7 04 4B       STA    $044B
 8260: 97 38          STA    $38
-8262: 97 36          STA    $36
+8262: 97 36          STA    current_level_0036
 8264: 97 37          STA    $37
 8266: B7 09 F2       STA    $09F2
 8269: 20 28          BRA    $8293
@@ -564,7 +566,7 @@ demo_8215:
 82F3: B7 03 EA       STA    player_1_nb_lives_03ea
 82F6: F7 04 48       STB    player_2_nb_lives_0448
 82F9: 8E 83 76       LDX    #$8376
-82FC: D6 36          LDB    $36
+82FC: D6 36          LDB    current_level_0036
 82FE: A6 85          LDA    B,X
 8300: 97 4B          STA    $4B
 8302: 5D             TSTB
@@ -586,7 +588,7 @@ demo_8215:
 832A: B6 04 4C       LDA    $044C
 832D: 84 5F          ANDA   #$5F
 832F: B7 04 4C       STA    $044C
-8332: 96 36          LDA    $36
+8332: 96 36          LDA    current_level_0036
 8334: 27 04          BEQ    $833A
 8336: 81 03          CMPA   #$03
 8338: 26 03          BNE    $833D
@@ -612,7 +614,7 @@ demo_8215:
 8361: 86 01          LDA    #$01
 8363: 20 08          BRA    $836D
 8365: 10 8E 83 72    LDY    #$8372
-8369: 96 36          LDA    $36
+8369: 96 36          LDA    current_level_0036
 836B: A6 A6          LDA    A,Y
 836D: BD FE B6       JSR    $FEB6
 8370: 20 0C          BRA    activate_nmi_flag_837e		; [useless]
@@ -644,7 +646,7 @@ gameloop_8389:
 83C0: BD 84 4A       JSR    $844A
 83C3: BD FD F9       JSR    $FDF9
 83C6: BD 8A A8       JSR    put_max_energy_to_demo_players_8aa8
-83C9: 96 36          LDA    $36
+83C9: 96 36          LDA    current_level_0036
 83CB: 81 03          CMPA   #$03
 83CD: 26 06          BNE    $83D5
 83CF: BD B7 8A       JSR    call_bank3_b78a
@@ -774,7 +776,7 @@ l_84ec:
 84F7: 39             RTS
 
 play_intro_animation_84f8:
-84F8: 96 36          LDA    $36
+84F8: 96 36          LDA    current_level_0036
 84FA: 26 07          BNE    $8503
 84FC: 86 05          LDA    #$05
 84FE: 97 4B          STA    $4B
@@ -817,7 +819,7 @@ play_intro_animation_84f8:
 8550: 81 03          CMPA   #$03
 8552: 26 BA          BNE    $850E
 ; intro loop ended, return
-8554: 96 36          LDA    $36
+8554: 96 36          LDA    current_level_0036
 8556: 84 01          ANDA   #$01
 8558: 10 8E 85 62    LDY    #$8562
 855C: A6 A6          LDA    A,Y
@@ -837,7 +839,7 @@ play_intro_animation_84f8:
 857A: 7F 0E 15       CLR    $0E15
 857D: 86 0C          LDA    #$0C
 857F: BD FE B6       JSR    $FEB6
-8582: 96 36          LDA    $36
+8582: 96 36          LDA    current_level_0036
 8584: 81 03          CMPA   #$03
 8586: 27 5D          BEQ    $85E5
 8588: 81 02          CMPA   #$02
@@ -849,7 +851,7 @@ play_intro_animation_84f8:
 8595: 84 7F          ANDA   #$7F
 8597: B7 0E 71       STA    nmi_active_flag_0e71
 859A: 10 8E 86 E0    LDY    #$86E0
-859E: 96 36          LDA    $36
+859E: 96 36          LDA    current_level_0036
 85A0: A6 A6          LDA    A,Y
 85A2: 81 FF          CMPA   #$FF
 85A4: 27 3F          BEQ    $85E5
@@ -864,7 +866,7 @@ play_intro_animation_84f8:
 85B9: BD FE B0       JSR    display_credit_feb0
 85BC: 86 94          LDA    #$94
 85BE: BD FE B0       JSR    display_credit_feb0
-85C1: 96 36          LDA    $36
+85C1: 96 36          LDA    current_level_0036
 85C3: 10 8E 86 E8    LDY    #$86E8
 85C7: A6 A6          LDA    A,Y
 85C9: 34 02          PSHS   A			; [manual_stack_push]
@@ -878,7 +880,7 @@ play_intro_animation_84f8:
 85DE: A6 E4          LDA    ,S			; [manual_stack_read]
 85E0: BD FA F8       JSR    $FAF8
 85E3: 35 02          PULS   A			; [manual_stack_pull]
-85E5: 96 36          LDA    $36
+85E5: 96 36          LDA    current_level_0036
 85E7: 81 02          CMPA   #$02
 85E9: 26 04          BNE    $85EF
 85EB: 0D 37          TST    $37
@@ -898,7 +900,7 @@ play_intro_animation_84f8:
 860E: BD FF 1A       JSR    subcpu_processing_ff1a
 8611: BD FE F5       JSR    $FEF5
 8614: BD B7 9A       JSR    $B79A
-8617: 96 36          LDA    $36
+8617: 96 36          LDA    current_level_0036
 8619: 81 04          CMPA   #$04
 861B: 27 18          BEQ    $8635
 861D: 5D             TSTB
@@ -936,7 +938,7 @@ play_intro_animation_84f8:
 866F: B6 0E 2D       LDA    $0E2D
 8672: 81 FF          CMPA   #$FF
 8674: 26 8E          BNE    $8604
-8676: 96 36          LDA    $36
+8676: 96 36          LDA    current_level_0036
 8678: 81 03          CMPA   #$03
 867A: 26 28          BNE    $86A4
 867C: 96 38          LDA    $38
@@ -959,7 +961,7 @@ play_intro_animation_84f8:
 86A4: 7F 09 F2       CLR    $09F2
 86A7: 7F 0E 2D       CLR    $0E2D
 86AA: 7F 0E 2E       CLR    $0E2E
-86AD: 96 36          LDA    $36
+86AD: 96 36          LDA    current_level_0036
 86AF: 81 04          CMPA   #$04
 86B1: 26 0F          BNE    $86C2
 86B3: 7F 09 F2       CLR    $09F2
@@ -979,7 +981,7 @@ play_intro_animation_84f8:
 86DA: BD FE B6       JSR    $FEB6
 86DD: 7E 83 7E       JMP    activate_nmi_flag_837e
 
-86EC: 96 36          LDA    $36
+86EC: 96 36          LDA    current_level_0036
 86EE: 81 03          CMPA   #$03
 86F0: 26 26          BNE    $8718
 86F2: 96 29          LDA    number_of_players_flag_0029
@@ -1192,7 +1194,7 @@ play_intro_animation_84f8:
 88D9: BD FE B0       JSR    display_credit_feb0
 88DC: CC 02 80       LDD    #$0280
 88DF: FD 0E 4D       STD    $0E4D
-88E2: 96 36          LDA    $36
+88E2: 96 36          LDA    current_level_0036
 88E4: 81 03          CMPA   #$03
 88E6: 26 04          BNE    $88EC
 88E8: 0D 37          TST    $37
@@ -1666,12 +1668,12 @@ read_player_commands_8b8b:
 8D7E: 24 06          BCC    $8D86
 8D80: CC 10 00       LDD    #$1000
 8D83: ED 88 3A       STD    bank_switch_copy_3a,X
-8D86: DC 3C          LDD    $3C
+8D86: DC 3C          LDD    current_level_x_position_003c
 8D88: C3 00 C1       ADDD   #$00C1
 8D8B: 10 A3 04       CMPD   $4,X
 8D8E: 24 02          BCC    $8D92
 8D90: ED 04          STD    $4,X
-8D92: DC 3C          LDD    $3C
+8D92: DC 3C          LDD    current_level_x_position_003c
 8D94: C3 00 30       ADDD   #$0030
 8D97: 10 A3 04       CMPD   $4,X
 8D9A: 25 02          BCS    $8D9E
@@ -1690,7 +1692,7 @@ read_player_commands_8b8b:
 8DB4: 86 11          LDA    #$11
 8DB6: A7 88 1B       STA    $1B,X
 8DB9: 20 62          BRA    $8E1D
-8DBB: DC 3C          LDD    $3C
+8DBB: DC 3C          LDD    current_level_x_position_003c
 8DBD: C3 00 C0       ADDD   #$00C0
 8DC0: 10 B3 0B 4E    CMPD   $0B4E
 8DC4: 25 57          BCS    $8E1D
@@ -1734,7 +1736,7 @@ read_player_commands_8b8b:
 8E1D: 39             RTS
 8E1E: 6F 0E          CLR    $E,X
 8E20: 6F 03          CLR    $3,X
-8E22: 96 36          LDA    $36
+8E22: 96 36          LDA    current_level_0036
 8E24: 81 01          CMPA   #$01
 8E26: 26 04          BNE    $8E2C
 8E28: 86 80          LDA    #$80
@@ -1824,7 +1826,7 @@ read_player_commands_8b8b:
 
 8F06: 34 20          PSHS   Y
 8F08: 5F             CLRB
-8F09: EE 88 3C       LDU    $3C,X
+8F09: EE 88 3C       LDU    current_level_x_position_003c,X
 8F0C: 27 10          BEQ    $8F1E
 8F0E: A6 C8 1B       LDA    $1B,U
 8F11: 84 3F          ANDA   #$3F
@@ -2166,7 +2168,7 @@ read_player_commands_8b8b:
 94AA: 20 30          BRA    $94DC
 94AC: A6 88 51       LDA    $51,X
 94AF: 27 1B          BEQ    $94CC
-94B1: 10 AE 88 3C    LDY    $3C,X
+94B1: 10 AE 88 3C    LDY    current_level_x_position_003c,X
 94B5: A6 A8 1B       LDA    $1B,Y
 94B8: 84 3F          ANDA   #$3F
 94BA: 81 03          CMPA   #$03
@@ -2723,7 +2725,7 @@ read_player_commands_8b8b:
 99F1: 26 1E          BNE    $9A11
 99F3: 10 8E AE 98    LDY    #$AE98
 99F7: CE AE 9C       LDU    #$AE9C
-99FA: 96 36          LDA    $36
+99FA: 96 36          LDA    current_level_0036
 99FC: 33 C6          LEAU   A,U
 99FE: A6 88 1B       LDA    $1B,X
 9A01: 10 2B 14 69    LBMI   $AE6E
@@ -3073,7 +3075,7 @@ read_player_commands_8b8b:
 9D58: E6 88 14       LDB    $14,X
 9D5B: C5 40          BITB   #$40
 9D5D: 27 0A          BEQ    $9D69
-9D5F: A6 88 3C       LDA    $3C,X
+9D5F: A6 88 3C       LDA    current_level_x_position_003c,X
 9D62: 97 00          STA    $00
 9D64: A6 88 3D       LDA    $3D,X
 9D67: 97 01          STA    $01
@@ -3099,7 +3101,7 @@ read_player_commands_8b8b:
 9D93: 81 03          CMPA   #$03
 9D95: 27 14          BEQ    $9DAB
 9D97: 10 8E 9D F4    LDY    #$9DF4
-9D9B: 96 36          LDA    $36
+9D9B: 96 36          LDA    current_level_0036
 9D9D: 48             ASLA
 9D9E: 48             ASLA
 9D9F: 48             ASLA
@@ -3656,7 +3658,7 @@ A32C: A7 02          STA    $2,X
 A32E: 86 08          LDA    #$08
 A330: A7 88 19       STA    $19,X
 A333: 10 8E A3 B5    LDY    #$A3B5
-A337: 96 36          LDA    $36
+A337: 96 36          LDA    current_level_0036
 A339: A6 A6          LDA    A,Y
 A33B: BD FE D1       JSR    $FED1
 A33E: A6 88 15       LDA    $15,X
@@ -4236,7 +4238,7 @@ A92C: 39             RTS
 A9B9: 96 33          LDA    $33
 A9BB: 34 40          PSHS   U
 A9BD: CE AA 9A       LDU    #$AA9A
-A9C0: 96 36          LDA    $36
+A9C0: 96 36          LDA    current_level_0036
 A9C2: 48             ASLA
 A9C3: EE C6          LDU    A,U
 A9C5: A6 88 1B       LDA    $1B,X
@@ -4380,7 +4382,7 @@ AB44: A6 88 3A       LDA    bank_switch_copy_3a,X
 AB47: E6 88 14       LDB    $14,X
 AB4A: C5 40          BITB   #$40
 AB4C: 27 03          BEQ    $AB51
-AB4E: A6 88 3C       LDA    $3C,X
+AB4E: A6 88 3C       LDA    current_level_x_position_003c,X
 AB51: 81 14          CMPA   #$14
 AB53: 24 3D          BCC    $AB92
 AB55: A6 C8 1B       LDA    $1B,U
@@ -4614,7 +4616,7 @@ AD87: A6 88 3A       LDA    $3A,X
 AD8A: E6 88 14       LDB    $14,X
 AD8D: C5 40          BITB   #$40
 AD8F: 27 03          BEQ    $AD94
-AD91: A6 88 3C       LDA    $3C,X
+AD91: A6 88 3C       LDA    current_level_x_position_003c,X
 AD94: 81 10          CMPA   #$10
 AD96: 24 11          BCC    $ADA9
 AD98: 81 08          CMPA   #$08
@@ -4690,7 +4692,7 @@ AE3E: BD FC 8F       JSR    switch_to_bank_0_fc8f
 AE41: 39             RTS
 AE42: 34 40          PSHS   U
 AE44: CE AE 9C       LDU    #$AE9C
-AE47: 96 36          LDA    $36
+AE47: 96 36          LDA    current_level_0036
 AE49: 33 C6          LEAU   A,U
 AE4B: 10 8E AE 98    LDY    #$AE98
 AE4F: A6 88 1B       LDA    $1B,X
@@ -4743,7 +4745,7 @@ AEBD: 39             RTS
 AEBE: BD FC 82       JSR    switch_to_bank_5_fc82
 AEC1: BD 40 B4       JSR    lb5_40B4
 AEC4: BD FC 8F       JSR    switch_to_bank_0_fc8f
-AEC7: 96 36          LDA    $36
+AEC7: 96 36          LDA    current_level_0036
 AEC9: 10 8E AE D1    LDY   #jump_table_aed1
 AECD: 48             ASLA
 AECE: 6E B6          JMP    [A,Y]		; [indirect_jump] [nb_entries=4]
@@ -4765,7 +4767,7 @@ AEF8: BD B0 F1       JSR    $B0F1
 AEFB: 39             RTS
 
 AEFC: 10 8E AF 22    LDY    #$AF22
-AF00: 96 36          LDA    $36
+AF00: 96 36          LDA    current_level_0036
 AF02: 81 02          CMPA   #$02
 AF04: 26 06          BNE    $AF0C
 AF06: 96 38          LDA    $38
@@ -4784,7 +4786,7 @@ AF21: 39             RTS
 AF26: BD B0 D0       JSR    $B0D0 
 AF29: BD B0 FE       JSR    $B0FE
 AF2C: 24 3D          BCC    $AF6B
-AF2E: 96 36          LDA    $36
+AF2E: 96 36          LDA    current_level_0036
 AF30: 81 02          CMPA   #$02
 AF32: 27 07          BEQ    $AF3B
 AF34: B6 0A 56       LDA    $0A56
@@ -4800,7 +4802,7 @@ AF49: 7F 04 4C       CLR    $044C
 AF4C: 86 FF          LDA    #$FF
 AF4E: B7 0E 2D       STA    $0E2D
 AF51: 7F 0E 2E       CLR    $0E2E
-AF54: 96 36          LDA    $36
+AF54: 96 36          LDA    current_level_0036
 AF56: 81 02          CMPA   #$02
 AF58: 26 0A          BNE    $AF64
 AF5A: 0D 37          TST    $37
@@ -4808,7 +4810,7 @@ AF5C: 26 06          BNE    $AF64
 AF5E: 0C 37          INC    $37
 AF60: 86 9A          LDA    #$9A
 AF62: 20 04          BRA    $AF68
-AF64: 0C 36          INC    $36
+AF64: 0C 36          INC    current_level_0036
 AF66: 86 91          LDA    #$91
 AF68: BD FE B0       JSR    display_credit_feb0
 AF6B: 39             RTS
@@ -4895,7 +4897,7 @@ B03E: 7F 04 4C       CLR    $044C
 B041: 86 FF          LDA    #$FF
 B043: B7 0E 2D       STA    $0E2D
 B046: 7F 0E 2E       CLR    $0E2E
-B049: 0C 36          INC    $36
+B049: 0C 36          INC    current_level_0036
 B04B: 0F 37          CLR    $37
 B04D: 39             RTS
 
@@ -5031,7 +5033,7 @@ B184: A7 88 19       STA    $19,X
 B187: 86 10          LDA    #$10
 B189: A7 0E          STA    $E,X
 B18B: 10 8E B2 81    LDY    #$B281
-B18F: 96 36          LDA    $36
+B18F: 96 36          LDA    current_level_0036
 B191: 1F 89          TFR    A,B
 B193: 48             ASLA
 B194: 48             ASLA
@@ -5078,7 +5080,7 @@ B1EA: A6 A0          LDA    ,Y+
 B1EC: 27 04          BEQ    $B1F2
 B1EE: EC 06          LDD    $6,X
 B1F0: DD 00          STD    $00
-B1F2: 96 36          LDA    $36
+B1F2: 96 36          LDA    current_level_0036
 B1F4: 81 02          CMPA   #$02
 B1F6: 26 13          BNE    $B20B
 B1F8: 0D 37          TST    $37
@@ -5115,7 +5117,7 @@ B23B: BD 40 57       JSR    $4057 ; [banks=1]
 B23E: BD FD B2       JSR    restore_previous_bank_fdb2
 B241: 39             RTS
 B242: 10 8E B2 63    LDY    #$B263
-B246: 96 36          LDA    $36
+B246: 96 36          LDA    current_level_0036
 B248: C6 06          LDB    #$06
 B24A: 3D             MUL
 B24B: 31 AB          LEAY   D,Y
@@ -5159,7 +5161,7 @@ B360: 39             RTS
 push_player_sprite_b361:
 B361: A6 84          LDA    ,X
 B363: 2A 6F          BPL    $B3D4
-B365: 96 36          LDA    $36
+B365: 96 36          LDA    current_level_0036
 B367: 26 0B          BNE    $B374
 B369: B6 0E 2F       LDA    $0E2F
 B36C: 81 05          CMPA   #$05
@@ -5175,13 +5177,13 @@ B37C: 86 78          LDA    #$78
 B37E: A7 0D          STA    $D,X
 B380: 86 08          LDA    #$08
 B382: A7 0E          STA    $E,X
-B384: 96 36          LDA    $36
+B384: 96 36          LDA    current_level_0036
 B386: 84 01          ANDA   #$01
 B388: 10 8E B3 DE    LDY    #$B3DE
 B38C: A6 A6          LDA    A,Y
 B38E: BD FE B0       JSR    display_credit_feb0
 B391: 10 8E B3 E0    LDY    #$B3E0
-B395: 96 36          LDA    $36
+B395: 96 36          LDA    current_level_0036
 B397: 84 02          ANDA   #$02
 B399: 34 02          PSHS   A		; [manual_stack_push]
 B39B: 48             ASLA
@@ -5231,7 +5233,7 @@ B3FC: BD FD B2       JSR    restore_previous_bank_fdb2
 B3FF: 39             RTS
 
 B400: 34 7E          PSHS   U,Y,X,DP,D
-B402: 96 36          LDA    $36
+B402: 96 36          LDA    current_level_0036
 B404: 26 10          BNE    $B416
 B406: 96 4B          LDA    $4B
 B408: 27 0C          BEQ    $B416
@@ -5440,7 +5442,7 @@ B5ED: A6 88 18       LDA    $18,X
 B5F0: 81 04          CMPA   #$04
 B5F2: 25 03          BCS    $B5F7
 B5F4: 6F 88 18       CLR    $18,X
-B5F7: DC 3C          LDD    $3C
+B5F7: DC 3C          LDD    current_level_x_position_003c
 B5F9: C3 00 90       ADDD   #$0090
 B5FC: 10 A3 04       CMPD   $4,X
 B5FF: 25 05          BCS    $B606
@@ -5513,7 +5515,7 @@ B6A6: A6 88 1B       LDA    $1B,X
 B6A9: 84 7F          ANDA   #$7F
 B6AB: 81 02          CMPA   #$02
 B6AD: 27 14          BEQ    $B6C3
-B6AF: DC 3C          LDD    $3C
+B6AF: DC 3C          LDD    current_level_x_position_003c
 B6B1: C3 00 A0       ADDD   #$00A0
 B6B4: 10 B3 04 62    CMPD   $0462
 B6B8: 24 1C          BCC    $B6D6
@@ -5523,7 +5525,7 @@ B6BE: 86 02          LDA    #$02
 B6C0: A7 88 1B       STA    $1B,X
 B6C3: B6 0E 31       LDA    $0E31
 B6C6: 27 0E          BEQ    $B6D6
-B6C8: DC 3C          LDD    $3C
+B6C8: DC 3C          LDD    current_level_x_position_003c
 B6CA: C3 00 E0       ADDD   #$00E0
 B6CD: 10 B3 04 62    CMPD   $0462
 B6D1: 24 03          BCC    $B6D6
@@ -5842,12 +5844,12 @@ B9D7: A6 88 1B       LDA    $1B,X
 B9DA: 84 3F          ANDA   #$3F
 B9DC: 81 0B          CMPA   #$0B
 B9DE: 27 27          BEQ    $BA07
-B9E0: 96 36          LDA    $36
+B9E0: 96 36          LDA    current_level_0036
 B9E2: 81 03          CMPA   #$03
 B9E4: 26 04          BNE    $B9EA
 B9E6: 0D 38          TST    $38
 B9E8: 26 16          BNE    $BA00
-B9EA: DC 3C          LDD    $3C
+B9EA: DC 3C          LDD    current_level_x_position_003c
 B9EC: C3 01 30       ADDD   #$0130
 B9EF: 10 A3 04       CMPD   $4,X
 B9F2: 10 24 00 0A    LBCC   $BA00
@@ -5863,7 +5865,7 @@ BA0C: 10 AE 88 41    LDY    $41,X
 BA10: A6 03          LDA    $3,X
 BA12: A7 23          STA    $3,Y
 BA14: 10 8E BA 1D    LDY   #jump_table_ba1d
-BA18: 96 36          LDA    $36
+BA18: 96 36          LDA    current_level_0036
 BA1A: 48             ASLA
 BA1B: 6E B6          JMP    [A,Y]		; [indirect_jump] [nb_entries=4]
 
@@ -7747,7 +7749,7 @@ CD0A: 81 07          CMPA   #$07
 CD0C: 26 12          BNE    $CD20
 CD0E: 86 0A          LDA    #$0A
 CD10: A7 88 1B       STA    $1B,X
-CD13: 96 36          LDA    $36
+CD13: 96 36          LDA    current_level_0036
 CD15: 81 01          CMPA   #$01
 CD17: 26 07          BNE    $CD20
 CD19: 86 12          LDA    #$12
@@ -7922,7 +7924,7 @@ E070: 10 2B C1 83    LBMI   $A1F7
 E074: 10 AE 88 2D    LDY    $2D,X
 E078: 7E 92 C0       JMP    $92C0
 E080: 8E E0 89       LDX    #jump_table_e089
-E083: D6 36          LDB    $36
+E083: D6 36          LDB    current_level_0036
 E085: 58             ASLB
 E086: AD 95          JSR    [B,X]    ; [indirect_jump] [nb_entries=4]
 E088: 39             RTS
@@ -7940,7 +7942,7 @@ E09A: BD E0 BC       JSR    $E0BC
 E09D: BD FE E9       JSR    $FEE9
 E0A0: 39             RTS
 E0A1: 8E EA F2       LDX    #$EAF2
-E0A4: D6 36          LDB    $36
+E0A4: D6 36          LDB    current_level_0036
 E0A6: 58             ASLB
 E0A7: EC 85          LDD    B,X
 E0A9: B7 0A 5F       STA    $0A5F
@@ -7975,7 +7977,7 @@ E0F5: 39             RTS
 E0F6: CC 00 00       LDD    #$0000
 E0F9: FD 0A 5F       STD    $0A5F
 E0FC: FD 0A 62       STD    $0A62
-E0FF: DD 3C          STD    $3C
+E0FF: DD 3C          STD    current_level_x_position_003c
 E101: DD 3F          STD    $3F
 E103: BD E9 46       JSR    add_bit_6_on_nmi_flag_e946
 E106: 39             RTS
@@ -8050,7 +8052,7 @@ E1A7: 81 03          CMPA   #$03
 E1A9: 26 3B          BNE    $E1E6
 E1AB: 36 10          PSHU   X		; using "user" stack as S is used as local vars
 E1AD: 8E E1 E9       LDX    #$E1E9
-E1B0: 96 36          LDA    $36
+E1B0: 96 36          LDA    current_level_0036
 E1B2: 48             ASLA
 E1B3: EC 86          LDD    A,X
 E1B5: ED 62          STD    $2,S		; [local]
@@ -8074,10 +8076,10 @@ E1E3: FD 0A 44       STD    $0A44
 E1E6: 32 64          LEAS   $4,S   ; [free_locals]
 E1E8: 39             RTS
 
-E1F1: 96 36          LDA    $36
+E1F1: 96 36          LDA    current_level_0036
 E1F3: 81 02          CMPA   #$02
 E1F5: 26 46          BNE    $E23D
-E1F7: DC 3C          LDD    $3C
+E1F7: DC 3C          LDD    current_level_x_position_003c
 E1F9: 10 83 10 00    CMPD   #$1000
 E1FD: 25 3E          BCS    $E23D
 E1FF: 10 83 10 40    CMPD   #$1040
@@ -8103,7 +8105,7 @@ E235: 24 06          BCC    $E23D
 E237: CC 01 00       LDD    #$0100
 E23A: FD 0A 44       STD    $0A44
 E23D: 39             RTS
-E23E: 96 36          LDA    $36
+E23E: 96 36          LDA    current_level_0036
 E240: D6 38          LDB    $38
 E242: 10 83 02 04    CMPD   #$0204
 E246: 26 14          BNE    $E25C
@@ -8115,7 +8117,7 @@ E254: 2B 06          BMI    $E25C
 E256: CC 00 00       LDD    #$0000
 E259: FD 0A 44       STD    $0A44
 E25C: 39             RTS
-E25D: 96 36          LDA    $36
+E25D: 96 36          LDA    current_level_0036
 E25F: 81 03          CMPA   #$03
 E261: 26 2A          BNE    $E28D
 E263: 96 29          LDA    number_of_players_flag_0029
@@ -8136,7 +8138,7 @@ E287: CC FF 00       LDD    #$FF00
 E28A: FD 0A 44       STD    $0A44
 E28D: 39             RTS
 E28E: FC 0A 5F       LDD    $0A5F
-E291: DD 3C          STD    $3C
+E291: DD 3C          STD    current_level_x_position_003c
 E293: B6 0A 61       LDA    $0A61
 E296: 97 3E          STA    $3E
 E298: FC 0A 62       LDD    $0A62
@@ -8236,7 +8238,7 @@ E386: 34 36          PSHS   Y,X,D
 E388: 32 7C          LEAS   -$4,S   ; [alloc_locals]
 E38A: 6D 84          TST    ,X
 E38C: 2A 4E          BPL    $E3DC
-E38E: 96 36          LDA    $36
+E38E: 96 36          LDA    current_level_0036
 E390: 81 03          CMPA   #$03
 E392: 27 08          BEQ    $E39C
 E394: B6 03 A2       LDA    player_1_struct_03a2
@@ -8248,12 +8250,12 @@ E3A2: 84 40          ANDA   #$40
 E3A4: 26 36          BNE    $E3DC
 E3A6: 36 10          PSHU   X		; using "user" stack as S is used as local vars
 E3A8: 8E E3 E0       LDX    #$E3E0
-E3AB: 96 36          LDA    $36
+E3AB: 96 36          LDA    current_level_0036
 E3AD: 48             ASLA
 E3AE: EC 86          LDD    A,X
 E3B0: ED E4          STD    ,S		; [local]
 E3B2: 8E E3 E8       LDX    #$E3E8
-E3B5: 96 36          LDA    $36
+E3B5: 96 36          LDA    current_level_0036
 E3B7: 48             ASLA
 E3B8: EC 86          LDD    A,X
 E3BA: ED 62          STD    $2,S		; [local]
@@ -9062,13 +9064,13 @@ ED52: A6 84          LDA    ,X
 ED54: 84 9F          ANDA   #$9F
 ED56: A7 84          STA    ,X
 ED58: 10 AE 03       LDY    $3,X
-ED5B: DC 3C          LDD    $3C
+ED5B: DC 3C          LDD    current_level_x_position_003c
 ED5D: 10 A3 A4       CMPD   ,Y
 ED60: 25 08          BCS    $ED6A
 ED62: A6 84          LDA    ,X
 ED64: 8A 40          ORA    #$40
 ED66: A7 84          STA    ,X
-ED68: DC 3C          LDD    $3C
+ED68: DC 3C          LDD    current_level_x_position_003c
 ED6A: 10 A3 22       CMPD   $2,Y
 ED6D: 24 06          BCC    $ED75
 ED6F: A6 84          LDA    ,X
@@ -9650,7 +9652,7 @@ FCCE: BD FC 8F       JSR    switch_to_bank_0_fc8f
 FCD1: 39             RTS
 
 FCD2: BD E1 A1       JSR    $E1A1
-FCD5: 96 36          LDA    $36
+FCD5: 96 36          LDA    current_level_0036
 FCD7: 81 01          CMPA   #$01
 FCD9: 26 1E          BNE    $FCF9
 FCDB: B6 09 F2       LDA    $09F2
@@ -9675,7 +9677,7 @@ FD0C: 7E B9 B0       JMP    $B9B0
 FD0F: 7E F9 C4       JMP    $F9C4
 FD12: 7E F9 88       JMP    $F988
 FD15: 7E BB 82       JMP    $BB82
-FD18: 96 36          LDA    $36
+FD18: 96 36          LDA    current_level_0036
 FD1A: 81 03          CMPA   #$03
 FD1C: 26 09          BNE    $FD27
 FD1E: BD FC 82       JSR    switch_to_bank_5_fc82

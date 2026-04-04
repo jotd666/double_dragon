@@ -799,9 +799,9 @@ lb0_46a3:   ; [global]
 46B1: C3 00 20       ADDD   #$0020
 46B4: 81 FF          CMPA   #$FF
 46B6: 27 25          BEQ    $46DD
-46B8: 10 93 3C       CMPD   $3C
+46B8: 10 93 3C       CMPD   current_level_x_position_003c
 46BB: 25 20          BCS    $46DD
-46BD: DC 3C          LDD    $3C
+46BD: DC 3C          LDD    current_level_x_position_003c
 46BF: C3 01 20       ADDD   #$0120
 46C2: 10 A3 E4       CMPD   ,S		; [local]
 46C5: 25 16          BCS    $46DD
@@ -1384,7 +1384,7 @@ lb0_4ddd:  ; [global]
 4DE2: 81 C0          CMPA   #$C0
 4DE4: 27 08          BEQ    $4DEE
 4DE6: 8E 4D EF       LDX   #table_4def
-4DE9: 96 36          LDA    $36
+4DE9: 96 36          LDA    current_level_0036
 4DEB: 48             ASLA
 4DEC: AD 96          JSR    [A,X]	; [indirect_jump] [nb_entries=4]
 4DEE: 39             RTS
@@ -1393,14 +1393,16 @@ lb0_4ddd:  ; [global]
 4DF7: BD 50 6C       JSR    $506C
 4DFA: BD 5B 1F       JSR    $5B1F
 4DFD: BD 58 8F       JSR    $588F
-4E00: BD 51 E5       JSR    $51E5
+4E00: BD 51 E5       JSR    lb0_handle_events_51e5
 4E03: 39             RTS
+
 4E04: BD 50 71       JSR    $5071
 4E07: BD FE 33       JSR    $FE33
 4E0A: BD 5C 93       JSR    $5C93
 4E0D: 39             RTS
+
 4E0E: BD 50 76       JSR    $5076
-4E11: BD 51 E5       JSR    $51E5
+4E11: BD 51 E5       JSR    lb0_handle_events_51e5
 4E14: BD 54 B3       JSR    $54B3
 4E17: 39             RTS
 4E18: BD 50 7B       JSR    $507B
@@ -1416,7 +1418,7 @@ lb0_4ddd:  ; [global]
 4E32: 39             RTS
 4E33: B6 0B 21       LDA    $0B21
 4E36: 2B 12          BMI    $4E4A
-4E38: DC 3C          LDD    $3C
+4E38: DC 3C          LDD    current_level_x_position_003c
 4E3A: 10 83 19 60    CMPD   #$1960
 4E3E: 25 0A          BCS    $4E4A
 4E40: 86 01          LDA    #$01
@@ -1431,7 +1433,7 @@ lb0_4e4b:  ; [global]
 4E50: 7F 0A 54       CLR    $0A54
 4E53: 7C 0A 55       INC    $0A55
 4E56: 8E 4F BA       LDX    #$4FBA
-4E59: D6 36          LDB    $36
+4E59: D6 36          LDB    current_level_0036
 4E5B: 58             ASLB
 4E5C: AE 85          LDX    B,X		; [bank_address]
 4E5E: 86 05          LDA    #$05
@@ -1474,7 +1476,7 @@ lb0_4e76:    ; [global]
 4EB0: C1 04          CMPB   #$04
 4EB2: 26 08          BNE    $4EBC
 4EB4: 8E 4E BD       LDX   #table_4ebd
-4EB7: D6 36          LDB    $36
+4EB7: D6 36          LDB    current_level_0036
 4EB9: 58             ASLB
 4EBA: AD 95          JSR    [B,X]		; [indirect_jump] [nb_entries=4]
 4EBC: 39             RTS
@@ -1630,7 +1632,7 @@ jump_table_50c0:
     dc.w	$7c99
 	dc.w	$7c99 
 
-50CE: DC 3C          LDD    $3C
+50CE: DC 3C          LDD    current_level_x_position_003c
 50D0: 10 83 00 D4    CMPD   #$00D4
 50D4: 25 03          BCS    $50D9
 50D6: 73 0A 54       COM    $0A54
@@ -1641,12 +1643,12 @@ jump_table_50c0:
 50E2: 0C 38          INC    $38
 50E4: 7F 0B 1F       CLR    $0B1F
 50E7: 39             RTS
-50E8: DC 3C          LDD    $3C
+50E8: DC 3C          LDD    current_level_x_position_003c
 50EA: 10 83 01 CE    CMPD   #$01CE
 50EE: 25 03          BCS    $50F3
 50F0: 73 0A 54       COM    $0A54
 50F3: 39             RTS
-50F4: DC 3C          LDD    $3C
+50F4: DC 3C          LDD    current_level_x_position_003c
 50F6: 10 83 03 80    CMPD   #$0380
 50FA: 25 03          BCS    $50FF
 50FC: 73 0A 54       COM    $0A54
@@ -1666,17 +1668,17 @@ jump_table_50c0:
 5121: 25 03          BCS    $5126
 5123: 73 0A 54       COM    $0A54
 5126: 39             RTS
-5127: DC 3C          LDD    $3C
+5127: DC 3C          LDD    current_level_x_position_003c
 5129: 10 83 0B 10    CMPD   #$0B10
 512D: 25 03          BCS    $5132
 512F: 73 0A 54       COM    $0A54
 5132: 39             RTS
-5133: DC 3C          LDD    $3C
+5133: DC 3C          LDD    current_level_x_position_003c
 5135: 10 83 0D E6    CMPD   #$0DE6
 5139: 25 F7          BCS    $5132
 513B: 73 0A 54       COM    $0A54
 513E: 39             RTS
-513F: DC 3C          LDD    $3C
+513F: DC 3C          LDD    current_level_x_position_003c
 5141: 10 83 10 00    CMPD   #$1000
 5145: 25 EB          BCS    $5132
 5147: 73 0A 54       COM    $0A54
@@ -1690,17 +1692,17 @@ jump_table_50c0:
 515B: 8A 80          ORA    #$80
 515D: B7 09 F2       STA    $09F2
 5160: 39             RTS
-5161: DC 3C          LDD    $3C
+5161: DC 3C          LDD    current_level_x_position_003c
 5163: 10 83 12 00    CMPD   #$1200
 5167: 25 03          BCS    $516C
 5169: 73 0A 54       COM    $0A54
 516C: 39             RTS
-516D: DC 3C          LDD    $3C
+516D: DC 3C          LDD    current_level_x_position_003c
 516F: 10 83 12 41    CMPD   #$1241
 5173: 25 03          BCS    $5178
 5175: 73 0A 54       COM    $0A54
 5178: 39             RTS
-5179: DC 3C          LDD    $3C
+5179: DC 3C          LDD    current_level_x_position_003c
 517B: 10 83 13 08    CMPD   #$1308
 517F: 25 03          BCS    $5184
 5181: 73 0A 54       COM    $0A54
@@ -1722,7 +1724,7 @@ jump_table_50c0:
 51AA: 39             RTS
 51AB: B6 09 F2       LDA    $09F2
 51AE: 2B 34          BMI    $51E4
-51B0: 96 36          LDA    $36
+51B0: 96 36          LDA    current_level_0036
 51B2: D6 38          LDB    $38
 51B4: 10 83 03 01    CMPD   #$0301
 51B8: 24 2A          BCC    $51E4
@@ -1743,26 +1745,30 @@ jump_table_50c0:
 51E1: B7 0E 3F       STA    $0E3F
 51E4: 39             RTS
 
-lb0_51e5:    ; [global]
+lb0_handle_events_51e5:    ; [global]
 51E5: B6 0A FB       LDA    $0AFB
 51E8: 85 01          BITA   #$01
 51EA: 26 24          BNE    $5210
 51EC: 85 80          BITA   #$80
 51EE: 26 03          BNE    $51F3
 51F0: BD 52 11       JSR    $5211
+; table of events depending on level X position and level number
 51F3: 8E 54 0B       LDX    #$540B
-51F6: 96 36          LDA    $36
+51F6: 96 36          LDA    current_level_0036
 51F8: 48             ASLA
 51F9: AE 86          LDX    A,X	; [bank_address]
-51FB: DC 3C          LDD    $3C
+51FB: DC 3C          LDD    current_level_x_position_003c
 51FD: 10 A3 02       CMPD   $2,X	; [bank_address]
 5200: 24 0E          BCC    $5210
 5202: C3 00 C0       ADDD   #$00C0
 5205: 10 A3 84       CMPD   ,X	; [bank_address]
 5208: 25 06          BCS    $5210
+; trigger an event
 520A: BD 52 23       JSR    $5223
-520D: BD 53 B0       JSR    lb0_open_doors_53b0
+520D: BD 53 B0       JSR    lb0_show_hide_tiles_53b0
 5210: 39             RTS
+
+
 
 5211: 7F 0A FC       CLR    $0AFC
 5214: 7F 0A FD       CLR    $0AFD
@@ -1783,7 +1789,7 @@ lb0_51e5:    ; [global]
 523C: BD 52 58       JSR    $5258
 523F: 24 16          BCC    $5257
 5241: 86 80          LDA    #$80
-5243: D6 36          LDB    $36
+5243: D6 36          LDB    current_level_0036
 5245: 27 02          BEQ    $5249
 5247: 8A 01          ORA    #$01
 5249: B7 0E 17       STA    $0E17
@@ -1803,7 +1809,7 @@ lb0_51e5:    ; [global]
 5269: 31 AB          LEAY   D,Y		; [bank_address]
 526B: 10 AF E4       STY    ,S	; [local]
 526E: 10 8E 53 1C    LDY    #$531C
-5272: 96 36          LDA    $36
+5272: 96 36          LDA    current_level_0036
 5274: 27 04          BEQ    $527A
 5276: 10 8E 53 2E    LDY    #$532E
 527A: 10 AF 62       STY    $2,S	; [local]
@@ -1893,7 +1899,7 @@ lb0_51e5:    ; [global]
 537B: 7A 0A FD       DEC    $0AFD
 537E: 26 0E          BNE    $538E
 5380: 86 40          LDA    #$40
-5382: D6 36          LDB    $36
+5382: D6 36          LDB    current_level_0036
 5384: 27 02          BEQ    $5388
 5386: 8A 01          ORA    #$01
 5388: B7 0E 17       STA    $0E17
@@ -1914,13 +1920,13 @@ lb0_51e5:    ; [global]
 53AC: B7 0A FB       STA    $0AFB
 53AF: 39             RTS
 
-b0_open_doors_53b0:
+lb0_show_hide_tiles_53b0:
 53B0: 32 79          LEAS   -$7,S   ; [alloc_locals]
 53B2: 96 51          LDA    $51
 53B4: 84 03          ANDA   #$03
 53B6: 26 50          BNE    $5408
 53B8: 8E 54 0B       LDX    #$540B
-53BB: 96 36          LDA    $36
+53BB: 96 36          LDA    current_level_0036
 53BD: 48             ASLA
 53BE: AE 86          LDX    A,X	; [bank_address]
 53C0: EC 84          LDD    ,X	; [bank_address]
@@ -1943,7 +1949,7 @@ b0_open_doors_53b0:
 53E1: BD FE 30       JSR    $FE30
 53E4: ED 64          STD    $4,S	; [local]
 53E6: 10 8E 54 3D    LDY    #$543D
-53EA: 96 36          LDA    $36
+53EA: 96 36          LDA    current_level_0036
 53EC: 48             ASLA
 53ED: 10 AE A6       LDY    A,Y	; [bank_address]
 53F0: B6 0A FC       LDA    $0AFC
@@ -1953,7 +1959,8 @@ b0_open_doors_53b0:
 53F9: 48             ASLA
 53FA: EC A6          LDD    A,Y		; [bank_address]
 53FC: AE 64          LDX    $4,S	; [local]
-53FE: ED 84          STD    ,X		; [video_address_word] open door when girl arrives
+; for instance clear door tiles when girl arrives / restore them
+53FE: ED 84          STD    ,X		; [video_address_word] 
 5400: 6C 66          INC    $6,S	; [local]
 5402: A6 66          LDA    $6,S	; [local]
 5404: 81 0F          CMPA   #$0F
@@ -1966,7 +1973,7 @@ b0_open_doors_53b0:
 54BA: 27 15          BEQ    $54D1
 54BC: 10 83 03 01    CMPD   #$0301
 54C0: 27 0F          BEQ    $54D1
-54C2: 96 36          LDA    $36
+54C2: 96 36          LDA    current_level_0036
 54C4: D6 38          LDB    $38
 54C6: 10 83 03 01    CMPD   #$0301
 54CA: 27 05          BEQ    $54D1
@@ -1987,7 +1994,7 @@ b0_open_doors_53b0:
 54F3: 27 02          BEQ    $54F7
 54F5: 20 12          BRA    $5509
 54F7: BD 55 0A       JSR    $550A
-54FA: 96 36          LDA    $36
+54FA: 96 36          LDA    current_level_0036
 54FC: 81 03          CMPA   #$03
 54FE: 24 09          BCC    $5509
 5500: BD 55 3E       JSR    $553E
@@ -2016,11 +2023,11 @@ b0_open_doors_53b0:
 553E: B6 0A F1       LDA    $0AF1
 5541: 85 40          BITA   #$40
 5543: 26 2D          BNE    $5572
-5545: 96 36          LDA    $36
+5545: 96 36          LDA    current_level_0036
 5547: 81 02          CMPA   #$02
 5549: 26 19          BNE    $5564
 554B: CC 13 00       LDD    #$1300
-554E: 10 93 3C       CMPD   $3C
+554E: 10 93 3C       CMPD   current_level_x_position_003c
 5551: 24 1F          BCC    $5572
 5553: B6 09 EF       LDA    $09EF
 5556: 81 07          CMPA   #$07
@@ -2116,7 +2123,7 @@ b0_open_doors_53b0:
 5632: 39             RTS
 
 5633: BE 0A EF       LDX    $0AEF
-5636: DC 3C          LDD    $3C
+5636: DC 3C          LDD    current_level_x_position_003c
 5638: 10 A3 04       CMPD   $4,X
 563B: 24 0C          BCC    $5649
 563D: C3 01 00       ADDD   #$0100
@@ -2206,7 +2213,7 @@ b0_open_doors_53b0:
 lb0_588f:    ; [global]
 588F: B6 0B 19       LDA    $0B19
 5892: 2B 2C          BMI    $58C0
-5894: 96 36          LDA    $36
+5894: 96 36          LDA    current_level_0036
 5896: D6 38          LDB    $38
 5898: 10 83 00 01    CMPD   #$0001
 589C: 27 08          BEQ    $58A6
@@ -2223,7 +2230,7 @@ lb0_588f:    ; [global]
 58B8: B6 0B 19       LDA    $0B19
 58BB: 8A 80          ORA    #$80
 58BD: B7 0B 19       STA    $0B19
-58C0: 96 36          LDA    $36
+58C0: 96 36          LDA    current_level_0036
 58C2: 81 00          CMPA   #$00
 58C4: 26 19          BNE    $58DF
 58C6: B6 0E 15       LDA    $0E15
@@ -2314,7 +2321,7 @@ lb0_588f:    ; [global]
 59A0: 86 C1          LDA    #$C1
 59A2: A7 84          STA    ,X
 59A4: 86 04          LDA    #$04
-59A6: D6 36          LDB    $36
+59A6: D6 36          LDB    current_level_0036
 59A8: 27 02          BEQ    $59AC
 59AA: 86 07          LDA    #$07
 59AC: A7 01          STA    $1,X
@@ -2341,7 +2348,7 @@ lb0_588f:    ; [global]
 59DC: 39             RTS
 59DD: B6 0A 95       LDA    $0A95
 59E0: 2B 34          BMI    $5A16
-59E2: DC 3C          LDD    $3C
+59E2: DC 3C          LDD    current_level_x_position_003c
 59E4: 10 83 18 C0    CMPD   #$18C0
 59E8: 25 2C          BCS    $5A16
 59EA: BD 45 B1       JSR    lb0_random_45b1
@@ -2448,7 +2455,7 @@ lb0_5b1f:    ; [global]
 5B27: B6 0E 15       LDA    $0E15
 5B2A: B4 0A 93       ANDA   $0A93
 5B2D: 27 0F          BEQ    $5B3E
-5B2F: 0D 36          TST    $36
+5B2F: 0D 36          TST    current_level_0036
 5B31: 27 0B          BEQ    $5B3E
 5B33: B6 0A 92       LDA    $0A92
 5B36: 8B 02          ADDA   #$02
@@ -2457,7 +2464,7 @@ lb0_5b1f:    ; [global]
 5B3E: 78 0A 93       ASL    $0A93
 5B41: 7C 0A 92       INC    $0A92
 5B44: 8E 5B 6F       LDX    #$5B6F
-5B47: 96 36          LDA    $36
+5B47: 96 36          LDA    current_level_0036
 5B49: A6 86          LDA    A,X			; [bank_address]
 5B4B: B1 0A 92       CMPA   $0A92
 5B4E: 26 D7          BNE    $5B27
@@ -2484,7 +2491,7 @@ lb0_5b1f:    ; [global]
 5B81: 48             ASLA
 5B82: AE 86          LDX    A,X			; [bank_address]
 5B84: 7F 0A 94       CLR    $0A94
-5B87: DC 3C          LDD    $3C
+5B87: DC 3C          LDD    current_level_x_position_003c
 5B89: C3 01 00       ADDD   #$0100
 5B8C: 10 A3 84       CMPD   ,X			; [bank_address]
 5B8F: 25 08          BCS    $5B99
@@ -2492,7 +2499,7 @@ lb0_5b1f:    ; [global]
 5B94: 8A 40          ORA    #$40
 5B96: B7 0A 94       STA    $0A94
 5B99: EC 02          LDD    $2,X	; [bank_address]
-5B9B: 10 93 3C       CMPD   $3C
+5B9B: 10 93 3C       CMPD   current_level_x_position_003c
 5B9E: 25 08          BCS    $5BA8
 5BA0: B6 0A 94       LDA    $0A94
 5BA3: 8A 20          ORA    #$20
@@ -2564,7 +2571,7 @@ lb0_5c93:   ; [global]
 5CE5: BD 5F 2B       JSR    $5F2B
 5CE8: 39             RTS
 
-5CEC: DC 3C          LDD    $3C
+5CEC: DC 3C          LDD    current_level_x_position_003c
 5CEE: 10 83 07 50    CMPD   #$0750
 5CF2: 25 04          BCS    $5CF8
 5CF4: 1A 01          ORCC   #$01
@@ -2832,11 +2839,11 @@ lb0_5f85:  ; [global]
 5F8A: 27 20          BEQ    $5FAC
 5F8C: 81 FF          CMPA   #$FF
 5F8E: 27 30          BEQ    $5FC0
-5F90: 96 36          LDA    $36
+5F90: 96 36          LDA    current_level_0036
 5F92: D6 38          LDB    $38
 5F94: 10 83 02 04    CMPD   #$0204
 5F98: 27 12          BEQ    $5FAC
-5F9A: 96 36          LDA    $36
+5F9A: 96 36          LDA    current_level_0036
 5F9C: 4C             INCA
 5F9D: 5F             CLRB
 5F9E: 10 B3 0B 04    CMPD   $0B04
@@ -2844,11 +2851,11 @@ lb0_5f85:  ; [global]
 5FA4: FD 0B 04       STD    $0B04
 5FA7: 7F 0A AE       CLR    $0AAE
 5FAA: 20 14          BRA    $5FC0
-5FAC: 96 36          LDA    $36
+5FAC: 96 36          LDA    current_level_0036
 5FAE: D6 38          LDB    $38
 5FB0: 10 B3 0B 04    CMPD   $0B04
 5FB4: 23 0A          BLS    $5FC0
-5FB6: 96 36          LDA    $36
+5FB6: 96 36          LDA    current_level_0036
 5FB8: D6 38          LDB    $38
 5FBA: FD 0B 04       STD    $0B04
 5FBD: 7F 0A AE       CLR    $0AAE
@@ -2879,7 +2886,7 @@ lb0_5f85:  ; [global]
 5FFE: 10 8E 66 D2    LDY    #$66D2
 6002: 10 BF 0A BA    STY    $0ABA
 6006: 10 BE 0A BA    LDY    $0ABA
-600A: DC 3C          LDD    $3C
+600A: DC 3C          LDD    current_level_x_position_003c
 600C: 10 A3 A4       CMPD   ,Y		; [bank_address]
 600F: 24 04          BCC    $6015
 6011: 31 3C          LEAY   -$4,Y
@@ -2951,7 +2958,7 @@ lb0_5f85:  ; [global]
 60B7: 48             ASLA
 60B8: 49             ROLA
 60B9: 5F             CLRB
-60BA: D3 3C          ADDD   $3C
+60BA: D3 3C          ADDD   current_level_x_position_003c
 60BC: C3 00 30       ADDD   #$0030
 60BF: A7 88 48       STA    $48,X
 60C2: 31 2A          LEAY   $A,Y	; [bank_address]
@@ -3145,7 +3152,7 @@ lb0_5f85:  ; [global]
 6281: 26 55          BNE    $62D8
 6283: 6F 62          CLR    $2,S		; [local]
 6285: EC 04          LDD    $4,X
-6287: 93 3C          SUBD   $3C
+6287: 93 3C          SUBD   current_level_x_position_003c
 6289: 2A 0B          BPL    $6296
 628B: ED E4          STD    ,S		; [local]
 628D: 86 20          LDA    #$20
@@ -3196,7 +3203,7 @@ lb0_5f85:  ; [global]
 62F4: 20 44          BRA    $633A
 62F6: A6 88 45       LDA    $45,X
 62F9: 27 1C          BEQ    $6317
-62FB: DC 3C          LDD    $3C
+62FB: DC 3C          LDD    current_level_x_position_003c
 62FD: 4C             INCA
 62FE: ED E4          STD    ,S		; [local]
 6300: E6 A4          LDB    ,Y	; [bank_address]
@@ -3214,7 +3221,7 @@ lb0_5f85:  ; [global]
 6317: A6 01          LDA    $1,X
 6319: BD 64 19       JSR    $6419
 631C: E7 88 1F       STB    $1F,X	; store enemy health
-631F: 96 36          LDA    $36
+631F: 96 36          LDA    current_level_0036
 6321: 81 01          CMPA   #$01
 6323: 26 05          BNE    $632A
 6325: A6 88 17       LDA    $17,X
@@ -3354,7 +3361,7 @@ lb0_5f85:  ; [global]
 64B6: E7 88 1F       STB    $1F,X
 64B9: 86 00          LDA    #$00
 64BB: A7 88 1B       STA    $1B,X
-64BE: DC 3C          LDD    $3C
+64BE: DC 3C          LDD    current_level_x_position_003c
 64C0: C3 01 08       ADDD   #$0108
 64C3: ED 04          STD    $4,X
 64C5: CC 01 40       LDD    #$0140
@@ -3378,7 +3385,7 @@ lb0_5f85:  ; [global]
 64F2: 26 3B          BNE    $652F
 64F4: 8E 07 06       LDX    #$0706
 64F7: 10 8E 65 34    LDY    #$6534
-64FB: 96 36          LDA    $36
+64FB: 96 36          LDA    current_level_0036
 64FD: 48             ASLA
 64FE: 10 AE A6       LDY    A,Y	; [bank_address]
 6501: A6 A4          LDA    ,Y
@@ -4241,7 +4248,7 @@ lb0_6d64:   ; [global]
 7A10: 84 7F          ANDA   #$7F
 7A12: 81 03          CMPA   #$03
 7A14: 27 5E          BEQ    $7A74
-7A16: DC 3C          LDD    $3C
+7A16: DC 3C          LDD    current_level_x_position_003c
 7A18: 10 A3 24       CMPD   $4,Y
 7A1B: 24 57          BCC    $7A74
 7A1D: C3 01 00       ADDD   #$0100
@@ -4297,7 +4304,7 @@ lb0_6d64:   ; [global]
 7A9A: A6 A6          LDA    A,Y	; [bank_address]
 7A9C: 35 20          PULS   Y
 7A9E: 26 6C          BNE    $7B0C
-7AA0: DC 3C          LDD    $3C
+7AA0: DC 3C          LDD    current_level_x_position_003c
 7AA2: 10 A3 04       CMPD   $4,X
 7AA5: 24 65          BCC    $7B0C
 7AA7: C3 01 30       ADDD   #$0130
@@ -4676,13 +4683,13 @@ lb0_6d64:   ; [global]
 
 
 
-7FDD: 96 36          LDA    $36
+7FDD: 96 36          LDA    current_level_0036
 7FDF: D6 38          LDB    $38
 7FE1: 10 83 03 01    CMPD   #$0301
 7FE5: 26 13          BNE    $7FFA
 7FE7: 7D 09 EF       TST    $09EF
 7FEA: 26 0E          BNE    $7FFA
-7FEC: DC 3C          LDD    $3C
+7FEC: DC 3C          LDD    current_level_x_position_003c
 7FEE: 10 83 1A 05    CMPD   #$1A05
 7FF2: 24 06          BCC    $7FFA
 7FF4: CC 01 00       LDD    #$0100

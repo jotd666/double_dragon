@@ -327,7 +327,7 @@ subcpu_processing_411e:
 4277: 35 F6       PULS   D,X,Y,U,PC
 
 4279: 34 30       PSHS   Y,X
-427B: 96 36       LDA    $36
+427B: 96 36       LDA    current_level_0036
 427D: 81 03       CMPA   #$03
 427F: 26 48       BNE    $42C9
 4281: 0D 37       TST    $37
@@ -1028,7 +1028,7 @@ subcpu_processing_411e:
 48E5: 32 61       LEAS   $1,S   ; [free_locals]
 48E7: 39          RTS
 
-48E8: 96 36       LDA    $36
+48E8: 96 36       LDA    current_level_0036
 48EA: 81 03       CMPA   #$03
 48EC: 27 4E       BEQ    $493C
 48EE: 86 80       LDA    #$80
@@ -1040,7 +1040,7 @@ subcpu_processing_411e:
 48FC: 48          ASLA
 48FD: 8B 0E       ADDA   #$0E
 48FF: A7 0E       STA    $E,X
-4901: 96 36       LDA    $36
+4901: 96 36       LDA    current_level_0036
 4903: 10 8E 49 C3 LDY    #$49C3
 4907: 48          ASLA
 4908: EC A6       LDD    A,Y		; [bank_address]
@@ -1290,7 +1290,7 @@ subcpu_processing_411e:
 4B64: 39          RTS
 
 4B7B: 10 8E 4B CA LDY    #$4BCA
-4B7F: 96 36       LDA    $36
+4B7F: 96 36       LDA    current_level_0036
 4B81: 48          ASLA
 4B82: 10 AE A6    LDY    A,Y		; [bank_address]
 4B85: A6 88 4B    LDA    $4B,X
@@ -1364,7 +1364,7 @@ subcpu_processing_411e:
 4C59: ED 06       STD    $6,X
 4C5B: 35 44       PULS   B,U
 4C5D: 20 1B       BRA    $4C7A
-4C5F: 96 36       LDA    $36
+4C5F: 96 36       LDA    current_level_0036
 4C61: 48          ASLA
 4C62: EE C6       LDU    A,U		; [bank_address]
 4C64: E6 88 4B    LDB    $4B,X
@@ -1451,7 +1451,7 @@ subcpu_processing_411e:
 
 4D90: 34 7E       PSHS   U,Y,X,DP,D
 4D92: 6F 03       CLR    $3,X
-4D94: 96 36       LDA    $36
+4D94: 96 36       LDA    current_level_0036
 4D96: 81 01       CMPA   #$01
 4D98: 26 06       BNE    $4DA0
 4D9A: A6 03       LDA    $3,X
@@ -2998,7 +2998,7 @@ subcpu_processing_411e:
 5C81: 7A 0E 38    DEC    $0E38
 5C84: 6F A4       CLR    ,Y
 5C86: 35 96       PULS   D,X,PC
-5C88: 96 36       LDA    $36
+5C88: 96 36       LDA    current_level_0036
 5C8A: 81 01       CMPA   #$01
 5C8C: 26 5F       BNE    $5CED
 5C8E: B6 0A 56    LDA    $0A56
@@ -3053,7 +3053,7 @@ subcpu_processing_411e:
 5D02: 7F 0B 4A    CLR    $0B4A
 5D05: BD 5D 74    JSR    $5D74
 5D08: 25 67       BCS    $5D71
-5D0A: 96 36       LDA    $36
+5D0A: 96 36       LDA    current_level_0036
 5D0C: 81 02       CMPA   #$02
 5D0E: 26 1D       BNE    $5D2D
 5D10: A6 01       LDA    $1,X
@@ -3212,7 +3212,7 @@ subcpu_processing_411e:
 5E7B: 25 04       BCS    $5E81
 5E7D: 86 00       LDA    #$00
 5E7F: A7 0D       STA    $D,X
-5E81: 96 36       LDA    $36
+5E81: 96 36       LDA    current_level_0036
 5E83: 81 03       CMPA   #$03
 5E85: 26 09       BNE    $5E90
 5E87: 0D 38       TST    $38
@@ -3246,7 +3246,7 @@ subcpu_processing_411e:
 5EC4: 39          RTS
 5EC5: 6D 84       TST    ,X
 5EC7: 2A 12       BPL    $5EDB
-5EC9: 96 36       LDA    $36
+5EC9: 96 36       LDA    current_level_0036
 5ECB: 81 03       CMPA   #$03
 5ECD: 26 0C       BNE    $5EDB
 5ECF: 0D 38       TST    $38
@@ -3412,7 +3412,7 @@ subcpu_processing_411e:
 6066: A3 61       SUBD   $1,S		; [local]
 6068: 10 83 00 40 CMPD   #$0040
 606C: 25 61       BCS    $60CF
-606E: 96 36       LDA    $36
+606E: 96 36       LDA    current_level_0036
 6070: 81 03       CMPA   #$03
 6072: 26 04       BNE    $6078
 6074: 0D 38       TST    $38
@@ -3525,7 +3525,7 @@ subcpu_processing_411e:
 ; < X: shadow sprite zone ($3xx->$7xx ?)
 lb1_push_player_sprite_61d5:
 61D5: 32 7C       LEAS   -$4,S   ; [alloc_locals]
-61D7: 0D 36       TST    $36
+61D7: 0D 36       TST    current_level_0036
 61D9: 27 04       BEQ    $61DF
 61DB: 6D 84       TST    ,X
 61DD: 2A 58       BPL    $6237
@@ -3546,7 +3546,7 @@ lb1_push_player_sprite_61d5:
 6202: 86 07       LDA    #$07
 6204: A7 02       STA    $2,X
 6206: 10 8E 62 3A LDY    #$623A
-620A: 96 36       LDA    $36
+620A: 96 36       LDA    current_level_0036
 620C: 84 02       ANDA   #$02
 620E: A7 E4       STA    ,S		; [local]
 6210: 48          ASLA
@@ -3554,7 +3554,7 @@ lb1_push_player_sprite_61d5:
 6213: 31 A6       LEAY   A,Y
 6215: EC A1       LDD    ,Y++		; [bank_address]
 6217: ED E4       STD    ,S		; [local]
-6219: 96 36       LDA    $36
+6219: 96 36       LDA    current_level_0036
 621B: 26 0B       BNE    $6228
 621D: 0D 2A       TST    $2A
 621F: 27 07       BEQ    $6228
@@ -3705,7 +3705,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 6378: B6 0B 22    LDA    $0B22
 637B: 81 03       CMPA   #$03
 637D: 24 5C       BCC    $63DB
-637F: 96 36       LDA    $36
+637F: 96 36       LDA    current_level_0036
 6381: 81 03       CMPA   #$03
 6383: 26 56       BNE    $63DB
 6385: 96 38       LDA    $38
@@ -3833,7 +3833,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 64A7: ED 06       STD    $6,X
 64A9: 39          RTS
 64AA: 39          RTS
-64AB: 96 36       LDA    $36
+64AB: 96 36       LDA    current_level_0036
 64AD: 81 03       CMPA   #$03
 64AF: 26 1B       BNE    $64CC
 64B1: 96 38       LDA    $38
@@ -3850,7 +3850,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 64CC: 39          RTS
 
 64CD: 32 7E       LEAS   -$2,S   ; [alloc_locals]
-64CF: 96 36       LDA    $36
+64CF: 96 36       LDA    current_level_0036
 64D1: 81 01       CMPA   #$01
 64D3: 26 29       BNE    $64FE
 64D5: DC 3C       LDD    $3C
@@ -4401,7 +4401,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 6A26: C3 00 40    ADDD   #$0040
 6A29: 10 93 3C    CMPD   $3C
 6A2C: 25 35       BCS    $6A63
-6A2E: 96 36       LDA    $36
+6A2E: 96 36       LDA    current_level_0036
 6A30: 10 8E 69 E5 LDY    #$69E5
 6A34: 48          ASLA
 6A35: 10 AE A6    LDY    A,Y		; [bank_address]
@@ -4717,7 +4717,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 6D15: 32 64       LEAS   $4,S   ; [free_locals]
 6D17: 35 A0       PULS   Y,PC	; [manual_stack_pull]
 
-6D19: 96 36       LDA    $36
+6D19: 96 36       LDA    current_level_0036
 6D1B: D6 37       LDB    $37
 6D1D: 10 83 02 01 CMPD   #$0201
 6D21: 26 3F       BNE    $6D62
@@ -4749,7 +4749,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 6D5F: A7 88 38    STA    $38,X
 6D62: 39          RTS
 6D63: 34 40       PSHS   U
-6D65: 96 36       LDA    $36
+6D65: 96 36       LDA    current_level_0036
 6D67: 81 01       CMPA   #$01
 6D69: 26 65       BNE    $6DD0
 6D6B: DC 3C       LDD    $3C

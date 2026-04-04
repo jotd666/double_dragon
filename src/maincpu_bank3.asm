@@ -544,7 +544,7 @@ jump_table_70a7:
 715B: 6F 84          CLR    ,X
 715D: 39             RTS
 715E: 34 7A          PSHS   U,Y,X,DP,A
-7160: 96 36          LDA    $36
+7160: 96 36          LDA    current_level_0036
 7162: 81 03          CMPA   #$03
 7164: 26 24          BNE    $718A
 7166: 96 29          LDA    $29
@@ -946,7 +946,7 @@ jump_table_748f:
 74E2: A7 88 18       STA    $18,X
 74E5: 35 FE          PULS   D,DP,X,Y,U,PC
 
-74E7: 96 36          LDA    $36
+74E7: 96 36          LDA    current_level_0036
 74E9: 81 03          CMPA   #$03
 74EB: 26 06          BNE    $74F3
 74ED: 17 00 04       LBSR   $74F4
@@ -958,7 +958,7 @@ jump_table_748f:
 74FB: 8E 09 6B       LDX    #$096B
 74FE: A6 84          LDA    ,X
 7500: 2B 28          BMI    $752A
-7502: 96 36          LDA    $36
+7502: 96 36          LDA    current_level_0036
 7504: 81 03          CMPA   #$03
 7506: 26 22          BNE    $752A
 7508: DC 3C          LDD    $3C
@@ -1044,7 +1044,7 @@ jump_table_748f:
 75C3: 86 FF          LDA    #$FF
 75C5: B7 0E 2D       STA    $0E2D
 75C8: 86 04          LDA    #$04
-75CA: 97 36          STA    $36
+75CA: 97 36          STA    current_level_0036
 75CC: 39             RTS
 75CD: BD 76 37       JSR    $7637
 75D0: 86 0C          LDA    #$0C
