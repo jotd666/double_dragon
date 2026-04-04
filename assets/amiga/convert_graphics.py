@@ -543,7 +543,6 @@ def quantize_palette(rgb_tuples,img_type,nb_quantize,transparent=None,dump_it=Fa
 # foreground tiles doesn't seem to change palette (we'll see) but context selection allows to avoid too much global
 # quantization, so the colors won't look so washed up
 fg_tile_sheet_dict = {i:Image.open(sheets_path / "fg_tiles" / f"pal_{i:02x}.png") for i in range(FG_NB_CLUTS)}
-sprite_sheet_dict = {i:Image.open(sheets_path / "sprites" / f"pal_{i:02x}.png") for i in range(SPRITE_NB_CLUTS)}
 
 
 #######################################################
@@ -589,7 +588,7 @@ for context in context_list:
 
 
     for i,tsd in fg_tile_sheet_dict.items():
-        _,tile_set = load_tileset(tsd,i,8,8,"fg_tiles",dump_dir,dump=dump_it,
+        _,tile_set = load_tileset(tsd,i,8,8,"fg_tiles"/pathlib.Path(context) ,dump_dir,dump=dump_it,
         cluts=fg_tile_cluts,
         name_dict=None)
 
@@ -682,7 +681,7 @@ for context in context_list:
     bg_tile_set_list = []
 
     for i,tsd in bg_tile_sheet_dict.items():
-        tp,tile_set = load_tileset(tsd,i,16,16,pathlib.Path(context) / "bg_tiles",dump_dir,dump=dump_it,
+        tp,tile_set = load_tileset(tsd,i,16,16,"bg_tiles" / pathlib.Path(context) ,dump_dir,dump=dump_it,
         cluts=bg_tile_cluts,
         name_dict=None)
 
@@ -741,9 +740,10 @@ for context in context_list:
     sprite_cluts = {}
     size_table = {}
     context = pathlib.Path(context)
+    sprite_sheet_dict = {i:Image.open(sheets_path / "sprites" / context / f"pal_{i:02x}.png") for i in range(SPRITE_NB_CLUTS)}
     read_used_tiles(context/"used_sprites",sprite_cluts,SPRITE_NB_TILES,SPRITE_NB_CLUTS,size_table)
     for i,tsd in sprite_sheet_dict.items():
-        tp,tile_set = load_tileset(tsd,i,16,16,"sprites",dump_dir / context,dump=dump_it, cluts=sprite_cluts,
+        tp,tile_set = load_tileset(tsd,i,16,16,"sprites" / context,dump_dir,dump=dump_it, cluts=sprite_cluts,
         name_dict=get_sprite_names(),
         is_bob=True,
         size_table=size_table)

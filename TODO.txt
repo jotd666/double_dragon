@@ -4,7 +4,8 @@ video:
   
 - context change: BA3267F2 972B4DF4 7C2231AE => D265AE25
 in this context, the palette is different (after intro): re-dump pics as enemies have the wrong colors
-- lockup when girl appears, door doesn't open? bank 0: 53B0 called by 51E5
+- lockup when girl appears, door doesn't open? bank 0: 53B0 called by 51E5: debug in MAME what triggers door open
+  as door tiles aren't even cleared it seems, door sprites don't appear to cover girl
 - scrolling doesn't feed from right / wrong positions (seems OK from left)
 
 - group laterally like in VBall
