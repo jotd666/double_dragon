@@ -144,6 +144,7 @@ lb0_401e:   ; [global]
 4113: A3 0D          SUBD   $D,X
 4115: ED 88 11       STD    $11,X
 4118: 35 FE          PULS   D,DP,X,Y,U,PC
+
 411A: 34 7E          PSHS   U,Y,X,DP,D
 411C: E6 0E          LDB    $E,X
 411E: A6 0D          LDA    $D,X
@@ -1771,7 +1772,7 @@ lb0_handle_events_51e5:    ; [global]
 
 
 
-5211: 7F 0A FC       CLR    $0AFC
+5211: 7F 0A FC       CLR    some_state_0afc
 5214: 7F 0A FD       CLR    $0AFD
 5217: 7F 0B 0F       CLR    $0B0F
 521A: 7F 0B 10       CLR    $0B10
@@ -1780,26 +1781,28 @@ lb0_handle_events_51e5:    ; [global]
 5222: 39             RTS
 
 5223: 8E 52 2D       LDX   #table_522d
-5226: F6 0A FC       LDB    $0AFC
+5226: F6 0A FC       LDB    some_state_0afc
 5229: 58             ASLB
 522A: AD 95          JSR    [B,X]	; [indirect_jump] [nb_entries=5]
 522C: 39             RTS
 
+; state 0
 5237: B6 0A FD       LDA    $0AFD  ; timer?        
 523A: 26 18          BNE    $5254
-523C: BD 52 58       JSR    $5258
-523F: 24 16          BCC    $5257
+523C: BD 52 58       JSR    insert_enemy_5258
+523F: 24 16          BCC    $5257		; could not find a free slot, wait
 5241: 86 80          LDA    #$80
 5243: D6 36          LDB    current_level_0036
 5245: 27 02          BEQ    $5249
 5247: 8A 01          ORA    #$01
 5249: B7 0E 17       STA    $0E17
-524C: 7C 0A FC       INC    $0AFC
+524C: 7C 0A FC       INC    some_state_0afc		; next state
 524F: 7F 0A FD       CLR    $0AFD
 5252: 20 03          BRA    $5257
 5254: 7A 0A FD       DEC    $0AFD
 5257: 39             RTS
 
+insert_enemy_5258:
 5258: 32 78          LEAS   -$8,S   ; [alloc_locals]
 525A: 7F 0B 0F       CLR    $0B0F
 525D: 10 8E 53 04    LDY    #$5304
@@ -1869,12 +1872,13 @@ found_a_free_slot_5292:
 52F4: 26 8E          BNE    $5284
 52F6: B6 0B 0F       LDA    $0B0F
 52F9: 27 04          BEQ    $52FF
-52FB: 1A 01          ORCC   #$01
+52FB: 1A 01          ORCC   #$01		; carry set: not done
 52FD: 20 02          BRA    $5301
-52FF: 1C FE          ANDCC  #$FE
+52FF: 1C FE          ANDCC  #$FE		; carry clear: success
 5301: 32 68          LEAS   $8,S   ; [free_locals]
 5303: 39             RTS
 
+; state 1
 5340: B6 0E 18       LDA    $0E18
 5343: 85 01          BITA   #$01
 5345: 27 33          BEQ    $537A
@@ -1896,10 +1900,11 @@ found_a_free_slot_5292:
 536B: 20 0D          BRA    $537A
 536D: 7A 0A FD       DEC    $0AFD
 5370: 20 08          BRA    $537A
-5372: 7C 0A FC       INC    $0AFC
+5372: 7C 0A FC       INC    some_state_0afc		; next state
 5375: 86 80          LDA    #$80
 5377: B7 0A FD       STA    $0AFD
 537A: 39             RTS
+
 537B: 7A 0A FD       DEC    $0AFD
 537E: 26 0E          BNE    $538E
 5380: 86 40          LDA    #$40
@@ -1907,18 +1912,20 @@ found_a_free_slot_5292:
 5384: 27 02          BEQ    $5388
 5386: 8A 01          ORA    #$01
 5388: B7 0E 17       STA    $0E17
-538B: 7C 0A FC       INC    $0AFC
+538B: 7C 0A FC       INC    some_state_0afc
 538E: 39             RTS
+
 538F: B6 0E 18       LDA    $0E18
 5392: 85 01          BITA   #$01
 5394: 26 08          BNE    $539E
 5396: 86 FF          LDA    #$FF
 5398: B7 0A FD       STA    $0AFD
-539B: 7C 0A FC       INC    $0AFC
+539B: 7C 0A FC       INC    some_state_0afc
 539E: 39             RTS
+
 539F: 7A 0A FD       DEC    $0AFD
 53A2: 26 0B          BNE    $53AF
-53A4: 7F 0A FC       CLR    $0AFC
+53A4: 7F 0A FC       CLR    some_state_0afc
 53A7: B6 0A FB       LDA    $0AFB
 53AA: 8A 01          ORA    #$01
 53AC: B7 0A FB       STA    $0AFB
@@ -1956,7 +1963,7 @@ lb0_show_hide_tiles_53b0:
 53EA: 96 36          LDA    current_level_0036
 53EC: 48             ASLA
 53ED: 10 AE A6       LDY    A,Y	; [bank_address]
-53F0: B6 0A FC       LDA    $0AFC
+53F0: B6 0A FC       LDA    some_state_0afc
 53F3: 48             ASLA
 53F4: 10 AE A6       LDY    A,Y		; [bank_address]
 53F7: A6 66          LDA    $6,S	; [local]
@@ -2308,7 +2315,7 @@ lb0_588f:    ; [global]
 5964: 86 80          LDA    #$80
 5966: A7 84          STA    ,X
 5968: 6F 01          CLR    $1,X
-596A: A6 A4          LDA    ,Y
+596A: A6 A4          LDA    ,Y		; [bank_address]
 596C: A7 02          STA    $2,X
 596E: A6 21          LDA    $1,Y
 5970: A7 03          STA    $3,X
@@ -2317,7 +2324,7 @@ lb0_588f:    ; [global]
 5976: A6 84          LDA    ,X
 5978: 8A 20          ORA    #$20
 597A: A7 84          STA    ,X
-597C: 10 AE 22       LDY    $2,Y
+597C: 10 AE 22       LDY    $2,Y		; [bank_address]
 597F: 10 AF 04       STY    $4,X
 5982: 35 B0          PULS   X,Y,PC
 

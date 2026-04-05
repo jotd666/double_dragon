@@ -1835,9 +1835,11 @@ jump_table_5caf:
 5E98: 2A 04          BPL    $5E9E
 5E9A: 7F 0E 18       CLR    $0E18
 5E9D: 39             RTS
+
 5E9E: 86 01          LDA    #$01
 5EA0: B7 0E 18       STA    $0E18
 5EA3: 39             RTS
+
 5EA4: 10 8E 5E B7    LDY    #$5EB7
 5EA8: A6 88 18       LDA    $18,X
 5EAB: 48             ASLA

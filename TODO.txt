@@ -1,6 +1,8 @@
 - trace from 520A girl doesn't move, no doors sprites
-  => AFC is now incremented but remains at 1 trace bank 0 (523C)
+  => AFC is now incremented but remains at 1 trace bank 0 (523C) BBC8 never calls BC14
+  doors never appear
 - sprite clipping too soon on the right: mockup
+- cheat check enemy states kill them on one keypress
   
 - context change: BA3267F2 972B4DF4 7C2231AE => D265AE25
 in this context, the palette is different (after intro): re-dump pics as enemies have the wrong colors

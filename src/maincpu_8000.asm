@@ -180,6 +180,7 @@ nb_objects_to_convert_03a1 = $3a1
 attract_mode_timer_0e50 = $e50
 player_1_struct_03a2 = $3A2
 player_2_struct_0400 = $400
+some_state_0afc = $afc
 
 ; contains the array on pointers on logical object structures, located just after the array, at $3A2
 ; a logical object is a combination of sprites
@@ -192,7 +193,7 @@ player_2_struct_0400 = $400
 ; - 395: thug in white outfit (55D)
 ; - 397: machine gun boss (5B2)
 ;
-; object structure (?? bytes)
+; object structure ($55 bytes for enemies)
 ; 0:
 ; 1: object type: examples (from intro)
 ;    0: player 1
@@ -204,7 +205,7 @@ player_2_struct_0400 = $400
 ;    14: curtain
 ;    1F: girl
 ; 2: animation frame id
-; 3:
+; 3: direction bit
 ; 4.W: X coordinate
 ; 6.W: Y coordinate
 ; $1F: energy (P1 energy: 3C1, P2: 41F)
@@ -248,7 +249,7 @@ reset_8000:     ; [global]
 8043: 86 20          LDA    #$20
 8045: BD B7 56       JSR    vbl_delay_b756
 8048: BD FF 4A       JSR    switch_to_bank_3_ff4a
-804B: BD 6C 00       JSR    $6C00  ; [banks=3]
+804B: BD 6C 00       JSR    lb3_6C00
 804E: BD FC 8F       JSR    switch_to_bank_0_fc8f
 8051: 1C AF          ANDCC  #$AF
 8053: 7E 80 BA       JMP    $80BA
@@ -580,7 +581,7 @@ demo_8215:
 8313: BD FC 5A       JSR    $FC5A
 8316: BD FC BE       JSR    $FCBE
 8319: BD FC 82       JSR    switch_to_bank_5_fc82
-831C: BD 40 5A       JSR    $405A		 ; [banks=5]
+831C: BD 40 5A       JSR    lb5_405A
 831F: BD FC 8F       JSR    switch_to_bank_0_fc8f
 8322: B6 03 EE       LDA    $03EE
 8325: 84 5F          ANDA   #$5F
@@ -2188,7 +2189,7 @@ read_player_commands_8b8b:
 94DC: 39             RTS
 
 94E9: BD FC 82       JSR    switch_to_bank_5_fc82
-94EC: BD 40 78       JSR    $4078 ; [banks=5]
+94EC: BD 40 78       JSR    lb5_4078
 94EF: BD FC 8F       JSR    switch_to_bank_0_fc8f
 94F2: 39             RTS
 
@@ -2665,10 +2666,12 @@ read_player_commands_8b8b:
 995F: A7 C8 17       STA    $17,U
 9962: BD 9E 7B       JSR    $9E7B
 9965: 35 C0          PULS   U,PC
+
 9967: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
 996A: BD 40 78       JSR    lb1_4078
 996D: BD FD B2       JSR    restore_previous_bank_fdb2
 9970: 39             RTS
+
 9971: 34 40          PSHS   U
 9973: A6 88 21       LDA    nb_credits_0021,X
 9976: 10 27 00 51    LBEQ   $99CB
@@ -3642,6 +3645,7 @@ A309: 4F             CLRA
 A30A: E3 04          ADDD   $4,X
 A30C: ED 04          STD    $4,X
 A30E: 39             RTS
+
 A30F: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
 A312: BD 40 5D       JSR    lb1_405D
 A315: 34 01          PSHS   CC
@@ -4201,6 +4205,7 @@ A8E1: BD FC 82       JSR    switch_to_bank_5_fc82
 A8E4: BD 40 60       JSR    lb5_4060
 A8E7: BD FC 8F       JSR    switch_to_bank_0_fc8f
 A8EA: 39             RTS
+
 A8EB: BD FD A0       JSR    save_and_switch_to_bank_1_fda0
 A8EE: BD 40 A2       JSR    lb1_40A2
 A8F1: BD FD B2       JSR    restore_previous_bank_fdb2
@@ -4332,18 +4337,22 @@ AA92: 35 C0          PULS   U,PC
 AACE: 86 00          LDA    #$00
 AAD0: A7 88 1B       STA    $1B,X
 AAD3: 39             RTS
+
 AAD4: BD FC 82       JSR    switch_to_bank_5_fc82
-AAD7: BD 40 DB       JSR    $40DB		 ; [banks=5]
+AAD7: BD 40 DB       JSR    lb5_40DB
 AADA: BD FC 8F       JSR    switch_to_bank_0_fc8f
 AADD: 39             RTS
+
 AADE: BD FC 82       JSR    switch_to_bank_5_fc82
-AAE1: BD 40 DE       JSR    $40DE		 ; [banks=5]
+AAE1: BD 40 DE       JSR    lb5_40DE
 AAE4: BD FC 8F       JSR    switch_to_bank_0_fc8f
 AAE7: 39             RTS
+
 AAE8: BD FC 82       JSR    switch_to_bank_5_fc82
-AAEB: BD 40 D8       JSR    $40D8	 ; [banks=5]
+AAEB: BD 40 D8       JSR    lb5_40D8
 AAEE: BD FC 8F       JSR    switch_to_bank_0_fc8f
 AAF1: 39             RTS
+
 AAF2: 34 40          PSHS   U
 AAF4: CE 03 A2       LDU    #player_1_struct_03a2
 AAF7: A6 88 14       LDA    $14,X
@@ -4415,7 +4424,7 @@ AB96: A7 88 1B       STA    $1B,X
 AB99: 35 C0          PULS   U,PC
 
 ABA6: BD FC 82       JSR    switch_to_bank_5_fc82
-ABA9: BD 40 D5       JSR    $40D5 ; [banks=5]
+ABA9: BD 40 D5       JSR    lb5_40D5
 ABAC: BD FC 8F       JSR    switch_to_bank_0_fc8f
 ABAF: 39             RTS
 
@@ -4689,6 +4698,7 @@ AE38: BD FC 82       JSR    switch_to_bank_5_fc82
 AE3B: BD 40 E1       JSR    lb5_40E1
 AE3E: BD FC 8F       JSR    switch_to_bank_0_fc8f
 AE41: 39             RTS
+
 AE42: 34 40          PSHS   U
 AE44: CE AE 9C       LDU    #$AE9C
 AE47: 96 36          LDA    current_level_0036
@@ -5912,10 +5922,12 @@ BA93: 81 09          CMPA   #$09
 BA95: 10 25 FF 35    LBCS   $B9CE
 BA99: BD F9 7E       JSR    $F97E
 BA9C: 39             RTS
+
 BA9D: BD BB 40       JSR    switch_to_bank_1_bb40
-BAA0: BD 40 75       JSR    $4075 ; [banks=1]
+BAA0: BD 40 75       JSR    lb1_4075
 BAA3: BD BB 4D       JSR    switch_to_bank_0_bb4d
 BAA6: 39             RTS
+
 BAA7: A6 84          LDA    ,X
 BAA9: 2A 31          BPL    $BADC
 BAAB: 85 40          BITA   #$40
@@ -5941,20 +5953,23 @@ BAD9: BD F9 88       JSR    $F988
 BADC: 39             RTS
 
 BB15: BD BB 40       JSR    switch_to_bank_1_bb40
-BB18: BD 40 36       JSR    $4036 ; [banks=1]
-BB1B: 34 01          PSHS   CC
+BB18: BD 40 36       JSR    lb1_4036
+BB1B: 34 01          PSHS   CC		; the only time the game saves CC when switching banks!
 BB1D: BD BB 4D       JSR    switch_to_bank_0_bb4d
 BB20: 35 81          PULS   CC,PC
+
 BB22: BD BB 40       JSR    switch_to_bank_1_bb40
-BB25: BD 40 2A       JSR    $402A ; [banks=1]
+BB25: BD 40 2A       JSR    lb1_402A
 BB28: BD BB 4D       JSR    switch_to_bank_0_bb4d
 BB2B: 39             RTS
+
 BB2C: BD BB 40       JSR    switch_to_bank_1_bb40
-BB2F: BD 40 2D       JSR    $402D ; [banks=1]
+BB2F: BD 40 2D       JSR    lb1_402D
 BB32: BD BB 4D       JSR    switch_to_bank_0_bb4d
 BB35: 39             RTS
+
 BB36: BD BB 40       JSR    switch_to_bank_1_bb40
-BB39: BD 40 33       JSR    $4033 ; [banks=1]
+BB39: BD 40 33       JSR    lb1_4033
 BB3C: BD BB 4D       JSR    switch_to_bank_0_bb4d
 BB3F: 39             RTS
 
@@ -5975,27 +5990,33 @@ BB55: B7 38 08       STA    bankswitch_3808
 BB58: 35 83          PULS   CC,A,PC
 
 BB5A: BD BB 40       JSR    switch_to_bank_1_bb40
-BB5D: BD 40 72       JSR    $4072 ; [banks=1]
+BB5D: BD 40 72       JSR    lb1_4072
 BB60: BD BB 4D       JSR    switch_to_bank_0_bb4d
 BB63: 39             RTS
+
 BB64: BD BB 40       JSR    switch_to_bank_1_bb40
-BB67: BD 40 7E       JSR    $407E ; [banks=1]
+BB67: BD 40 7E       JSR    lb1_407E
 BB6A: BD BB 4D       JSR    switch_to_bank_0_bb4d
 BB6D: 39             RTS
+
 BB6E: BD BB 40       JSR    switch_to_bank_1_bb40
-BB71: BD 40 81       JSR    $4081 ; [banks=1]
+BB71: BD 40 81       JSR    lb1_4081
 BB74: BD BB 4D       JSR    switch_to_bank_0_bb4d
 BB77: 39             RTS
+
 BB78: BD BB 40       JSR    switch_to_bank_1_bb40
-BB7B: BD 40 84       JSR    $4084 ; [banks=1]
+BB7B: BD 40 84       JSR    lb1_4084
 BB7E: BD BB 4D       JSR    switch_to_bank_0_bb4d
 BB81: 39             RTS
 
 BB82: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 BB84: 6F E4          CLR    ,S		; [local]
-BB86: 8E 07 5B       LDX    #$075B
+BB86: 8E 07 5B       LDX    #$075B	; enemy start at 75B
+; looks for a free slot 16 times
+search_loop_bb89:
 BB89: A6 84          LDA    ,X
 BB8B: 10 2A 00 46    LBPL   $BBD5
+; enemy active
 BB8F: A6 E4          LDA    ,S		; [local]
 BB91: 98 51          EORA   $51
 BB93: 84 01          ANDA   #$01
@@ -6010,7 +6031,7 @@ BBA4: 24 1B          BCC    $BBC1
 BBA6: E6 88 16       LDB    $16,X
 BBA9: 2A 16          BPL    $BBC1
 BBAB: 10 AE 88 1F    LDY    $1F,X
-BBAF: E6 A8 21       LDB    nb_credits_0021,Y
+BBAF: E6 A8 21       LDB    $21,Y
 BBB2: 26 0D          BNE    $BBC1
 BBB4: CC 00 00       LDD    #$0000
 BBB7: A7 84          STA    ,X
@@ -6030,7 +6051,7 @@ BBD7: 3A             ABX
 BBD8: 6C E4          INC    ,S		; [local]
 BBDA: A6 E4          LDA    ,S		; [local]
 BBDC: 81 10          CMPA   #$10
-BBDE: 25 A9          BCS    $BB89
+BBDE: 25 A9          BCS    search_loop_bb89
 BBE0: 96 51          LDA    $51
 BBE2: 84 01          ANDA   #$01
 BBE4: 97 2A          STA    current_player_002a
@@ -9247,12 +9268,12 @@ F938: BD FC 3A       JSR    switch_to_saved_bank_fc3a
 F93B: 39             RTS
 l_f93c:
 F93C: BD FC 28       JSR    save_and_switch_to_bank_5_fc28
-F93F: BD 40 90       JSR    $4090 ; [banks=5]
+F93F: BD 40 90       JSR    lb5_4090
 F942: BD FC 3A       JSR    switch_to_saved_bank_fc3a
 F945: 39             RTS
 l_f946:
 F946: BD FB 24       JSR    save_and_switch_to_bank_0_fb24
-F949: BD 40 1B       JSR    $401B ; [banks=0]
+F949: BD 40 1B       JSR    lb0_401B
 F94C: BD FB 34       JSR    switch_to_saved_bank_fb34
 F94F: 39             RTS
 
@@ -9493,6 +9514,7 @@ FB76: BD FB 24       JSR    save_and_switch_to_bank_0_fb24
 FB79: BD 40 12       JSR    lb0_4012
 FB7C: BD FB 34       JSR    switch_to_saved_bank_fb34
 FB7F: 39             RTS
+
 FB80: BD FB 24       JSR    save_and_switch_to_bank_0_fb24
 FB83: BD 40 15       JSR    lb0_4015
 FB86: BD FB 34       JSR    switch_to_saved_bank_fb34
@@ -10184,7 +10206,7 @@ jump_table_bbec:
 	dc.w	$bc58	; $bc10
 	dc.w	$bc58	; $bc12
 
-; it can be bank 1 or bank 5, only those banks have so many vectors. debugging shows it's bank 5 (reached at section 2 of level 1)
+; bank 5 jump table
 jump_table_bc27:
 	dc.w	lb5_401e 
 	dc.w	lb5_401e 
