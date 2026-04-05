@@ -8,9 +8,9 @@ sprite_names = get_sprite_names()
 
 mirror_sprites = get_mirror_sprites()
 
-nb_planes = 6
-max_nb_sprite_colors = 32
-max_nb_bg_tile_colors = 32
+nb_planes = 7
+max_nb_sprite_colors = 1<<(nb_planes-1)
+max_nb_bg_tile_colors = max_nb_sprite_colors
 
 
 possible_hw_sprites = set()
@@ -753,7 +753,7 @@ for context in context_list:
         for k,v in sprite_names.items():
             if "boss" in v:
                 sprite_cluts.pop(k,None)
-            elif "girl" in v and k not in [0xFDA,0xFDC]:
+            elif "girl" in v and k not in [0xFDA,0xFDB,0xFDC]:
                 sprite_cluts.pop(k,None)
 
     for i,tsd in sprite_sheet_dict.items():

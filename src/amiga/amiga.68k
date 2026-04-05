@@ -35,11 +35,12 @@ AFB_68020 = 1
 *NO68020 = 1
 
 
-NB_PLAYFIELD_PLANES = 6  | this is externally defined!!
+NB_PLAYFIELD_PLANES = 7  | this is externally defined!!
 	.ifndef	NB_PLAYFIELD_PLANES
 	.error	"NB_PLAYFIELD_PLANES must be defined via --defsym"
 	.endif
 
+NB_USED_COLOR_BANKS = 5  | 4+1 for sprites at color 128
 
 * proportional to the number of bitplanes
 BLITTER_LIST_SIZE = 10000*NB_PLAYFIELD_PLANES
@@ -62,8 +63,8 @@ GAME_MAX_SCROLL_Y = 0x200
 BG_TILE_WIDTH = 16
 
 FG_TILE_FILE_MAX_SIZE = 0x8000
-BG_TILE_FILE_MAX_SIZE = 0x30000
-SPRITE_FILE_MAX_SIZE = 0x80000
+BG_TILE_FILE_MAX_SIZE = 0x40000
+SPRITE_FILE_MAX_SIZE = 0x90000
 
 	.if		OPT_CD32_VERSION==0
 BIGGEST_MUSIC_SIZE = 385000
@@ -155,7 +156,7 @@ OPT_AGA_MODE=0
 
 * a plane of attached sprites	
 NB_FG_PLANES = 4
-NB_BG_PLANES = 5
+NB_BG_PLANES = NB_PLAYFIELD_PLANES-1
 
 NB_FG_COLORS = 1<<NB_FG_PLANES
 NB_BG_COLORS = 1<<NB_BG_PLANES
@@ -173,7 +174,7 @@ BASE_BPLCON2_VALUE = 0x0264			| killehb (we're using 6 real bitplanes) sprites a
 BASE_BPLCON2_VALUE = 0x0064
 	.endif
 
-BASE_BPLCON4_VALUE = 0x0044	  | sprites palette starts at color 64
+BASE_BPLCON4_VALUE = 0x0088	  | sprites palette starts at color 128
 
 NB_FIRST_ROWS = 0x80-0x21
 NB_SECOND_ROWS = 0x80-NB_THIRD_ROWS
@@ -996,7 +997,7 @@ osd_set_tile_palette:
 	OSD_ENTER
 	movem.l	d0-a6,-(a7)
 
-	move.l	color_copper_pointers,a1	| entries 0-31
+	lea		color_copper_pointers,a1	| entries 0-...
 	move.w	#TOTAL_NB_COLORS/2,d0
 	jbsr	load_palette
 
@@ -1057,7 +1058,7 @@ load_context:
 
 	* set fg palette (attached sprites)
 	lea		fg_table_buffer,a0
-	move.l	color_copper_pointers+TOTAL_NB_COLORS*4,a1	| entries 64-80
+	lea		color_copper_pointers+(128*4),a1	| entries 128-142, valid for 64 and 128 color versions
 	move.w	#NB_FG_COLORS,d0
 	jbsr	load_palette
 
@@ -1090,7 +1091,7 @@ load_context:
 	
 	* set bg palette
 	lea		bg_table_buffer,a0
-	move.l	color_copper_pointers,a1	| entries 0-32
+	lea		color_copper_pointers,a1	| entries 0-32
 	move.w	#NB_BG_COLORS,d0
 	jbsr	load_palette
 
@@ -1110,7 +1111,7 @@ load_context:
 	
 	* load the sprites palette
 	lea		sprite_table_buffer,a0
-	move.l	color_copper_pointers+TOTAL_NB_COLORS*2,a1
+	lea		color_copper_pointers+TOTAL_NB_COLORS*2,a1
 	move.w	#NB_SPRITE_COLORS,d0
 	jbsr	load_palette
 0:
@@ -1147,7 +1148,7 @@ load_title_picture:
 	jbsr	load_file
 	* just set the palette for now
 	lea		sprite_table_buffer,a0
-	move.l	color_copper_pointers,a1	| entries 0-xx
+	lea		color_copper_pointers,a1	| entries 0-xx
 	move.w	(a0)+,d1				| nb bitplanes
 	moveq	#1,d0
 	lsl.w	d1,d0
@@ -1426,6 +1427,9 @@ draw_column_tiles:
 	lsl.w	#6,d0	
 	move.w	d0,x_offset
 	move.w	(a7)+,d0	
+	
+	rts
+	
 	GET_MEMORY_START_AND_DP
 
 	lea		(bg_tiles_address_3000,a6),a5
@@ -3189,7 +3193,7 @@ platform_init:
 	* init color table handling the bank switch issue
 	lea		copperlist_colors,a0
 	lea		color_copper_pointers,a1
-	moveq	#(TOTAL_NB_COLORS/32),d0		| nb banks for all colors + sprite color bank
+	move.w	#NB_USED_COLOR_BANKS-1,d0		| nb banks for all colors + sprite color bank
 0:
 	.ifne	OPT_AGA_MODE
 	addq.w	#4,a0		| skip set bank
@@ -3200,6 +3204,8 @@ platform_init:
 	addq.w	#4,a0
 	dbf		d1,1b
 	dbf		d0,0b
+	
+	lea	color_copper_pointers,a1
 	
 	
 	
@@ -3308,13 +3314,15 @@ platform_init:
 * < A1: copperlist
 * < D0: number of colors to load	
 load_palette:
+	move.l	a2,-(a7)
 	subq.w	#1,d0
 	beq.b	2f
 1:
-	addq.w	#2,a1
-	move.w	(a0)+,(a1)+
+	move.l	(a1)+,a2
+	move.w	(a0)+,(2,a2)
 	dbf		d0,1b
 2:
+	move.l	(a7)+,a2
 	rts
 * < D0: row, if 0: do nothing
 wrap_bitplanes:
@@ -5657,7 +5665,7 @@ x_offset:
 
 
 color_copper_pointers:
-	.skip	TOTAL_NB_COLORS*4*4
+	.skip	256*4
 osd_entry_count:
 	.byte	0
 
@@ -5935,7 +5943,7 @@ copperlist_colors:
 	DECL_32_COLORS
 	.else
 	.set	bpl_count,0
-	.rept	NB_PLAYFIELD_PLANES+1		| one more bank for sprites
+	.rept	NB_USED_COLOR_BANKS
 	.word	bplcon3,(bpl_count<<13)+(BORDERBLANK<<5)
 	.set	bpl_count,bpl_count+1
 	DECL_32_COLORS
