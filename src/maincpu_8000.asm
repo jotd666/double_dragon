@@ -203,6 +203,7 @@ some_state_0afc = $afc
 ;    8: tshirt thug with curly hair
 ;    9: barechested thug
 ;    14: curtain
+;    19: hooker
 ;    1F: girl
 ; 2: animation frame id
 ; 3: direction bit
@@ -345,7 +346,7 @@ swi_interrupt:
 80EC: 97 25          STA    $25
 80EE: D7 3A          STB    bank_switch_copy_3a
 80F0: 86 01          LDA    #$01
-80F2: BD FE B6       JSR    $FEB6
+80F2: BD FE B6       JSR    play_sound_feb6
 80F5: 0F 26          CLR    game_in_play_0026
 80F7: 0F 29          CLR    number_of_players_flag_0029
 80F9: 7F 03 EE       CLR    $03EE
@@ -617,7 +618,7 @@ demo_8215:
 8365: 10 8E 83 72    LDY    #$8372
 8369: 96 36          LDA    current_level_0036
 836B: A6 A6          LDA    A,Y
-836D: BD FE B6       JSR    $FEB6
+836D: BD FE B6       JSR    play_sound_feb6
 8370: 20 0C          BRA    activate_nmi_flag_837e		; [useless]
 activate_nmi_flag_837e:
 837E: B6 0E 71       LDA    nmi_active_flag_0e71
@@ -839,7 +840,7 @@ play_intro_animation_84f8:
 8577: 7F 0E 3F       CLR    $0E3F
 857A: 7F 0E 15       CLR    $0E15
 857D: 86 0C          LDA    #$0C
-857F: BD FE B6       JSR    $FEB6
+857F: BD FE B6       JSR    play_sound_feb6
 8582: 96 36          LDA    current_level_0036
 8584: 81 03          CMPA   #$03
 8586: 27 5D          BEQ    $85E5
@@ -890,7 +891,7 @@ play_intro_animation_84f8:
 85F3: A6 A6          LDA    A,Y
 85F5: 81 FF          CMPA   #$FF
 85F7: 27 03          BEQ    $85FC
-85F9: BD FE B6       JSR    $FEB6
+85F9: BD FE B6       JSR    play_sound_feb6
 85FC: B6 0E 71       LDA    nmi_active_flag_0e71
 85FF: 8A 80          ORA    #$80
 8601: B7 0E 71       STA    nmi_active_flag_0e71
@@ -979,7 +980,7 @@ play_intro_animation_84f8:
 86D2: 81 03          CMPA   #$03
 86D4: 10 26 FC 21    LBNE   $82F9
 86D8: 86 09          LDA    #$09
-86DA: BD FE B6       JSR    $FEB6
+86DA: BD FE B6       JSR    play_sound_feb6
 86DD: 7E 83 7E       JMP    activate_nmi_flag_837e
 
 86EC: 96 36          LDA    current_level_0036
@@ -1924,7 +1925,7 @@ read_player_commands_8b8b:
 920B: AB A5          ADDA   B,Y
 920D: A7 88 19       STA    $19,X
 9210: 86 82          LDA    #$82
-9212: BD FE B6       JSR    $FEB6
+9212: BD FE B6       JSR    play_sound_feb6
 9215: A6 88 1F       LDA    $1F,X
 9218: 26 0E          BNE    $9228
 921A: A6 01          LDA    $1,X
@@ -2342,7 +2343,7 @@ read_player_commands_8b8b:
 964C: 81 02          CMPA   #$02
 964E: 24 05          BCC    $9655
 9650: 86 86          LDA    #$86
-9652: BD FE B6       JSR    $FEB6
+9652: BD FE B6       JSR    play_sound_feb6
 9655: 6A 88 19       DEC    $19,X
 9658: 26 1E          BNE    $9678
 965A: 6C 88 18       INC    $18,X
@@ -2383,7 +2384,7 @@ read_player_commands_8b8b:
 96AB: 81 02          CMPA   #$02
 96AD: 24 05          BCC    $96B4
 96AF: 86 86          LDA    #$86
-96B1: BD FE B6       JSR    $FEB6
+96B1: BD FE B6       JSR    play_sound_feb6
 96B4: 6A 88 19       DEC    $19,X
 96B7: 26 24          BNE    $96DD
 96B9: A6 88 18       LDA    $18,X
@@ -2579,7 +2580,7 @@ read_player_commands_8b8b:
 9895: 26 09          BNE    $98A0
 9897: 34 02          PSHS   A
 9899: 86 8F          LDA    #$8F
-989B: BD FE B6       JSR    $FEB6
+989B: BD FE B6       JSR    play_sound_feb6
 989E: 35 02          PULS   A
 98A0: 81 03          CMPA   #$03
 98A2: 26 34          BNE    $98D8
@@ -2693,7 +2694,7 @@ read_player_commands_8b8b:
 999D: 4C             INCA
 999E: A7 88 19       STA    $19,X
 99A1: 86 8E          LDA    #$8E
-99A3: BD FE B6       JSR    $FEB6
+99A3: BD FE B6       JSR    play_sound_feb6
 99A6: 6A 88 19       DEC    $19,X
 99A9: 26 25          BNE    $99D0
 99AB: 6C 88 18       INC    $18,X
@@ -2776,7 +2777,7 @@ read_player_commands_8b8b:
 9A68: A6 A6          LDA    A,Y
 9A6A: 81 FF          CMPA   #$FF
 9A6C: 27 03          BEQ    $9A71
-9A6E: BD FE B6       JSR    $FEB6
+9A6E: BD FE B6       JSR    play_sound_feb6
 9A71: 6A 88 19       DEC    $19,X
 9A74: 26 05          BNE    $9A7B
 9A76: 86 00          LDA    #$00
@@ -2893,7 +2894,7 @@ read_player_commands_8b8b:
 9B88: 86 02          LDA    #$02
 9B8A: A7 88 19       STA    $19,X
 9B8D: 86 81          LDA    #$81
-9B8F: BD FE B6       JSR    $FEB6
+9B8F: BD FE B6       JSR    play_sound_feb6
 9B92: A6 01          LDA    $1,X
 9B94: 81 02          CMPA   #$02
 9B96: 24 05          BCC    $9B9D
@@ -3709,7 +3710,7 @@ A3A1: 25 02          BCS    $A3A5
 A3A3: 80 17          SUBA   #$17
 A3A5: 10 8E A3 B9    LDY    #$A3B9
 A3A9: A6 A6          LDA    A,Y
-A3AB: BD FE B6       JSR    $FEB6
+A3AB: BD FE B6       JSR    play_sound_feb6
 A3AE: BD FE 80       JSR    $FE80
 A3B1: 39             RTS
 
@@ -3817,7 +3818,7 @@ A4B1: A7 02          STA    $2,X
 A4B3: 86 02          LDA    #$02
 A4B5: A7 88 19       STA    $19,X
 A4B8: 86 8C          LDA    #$8C
-A4BA: BD FE B6       JSR    $FEB6
+A4BA: BD FE B6       JSR    play_sound_feb6
 A4BD: A6 01          LDA    $1,X
 A4BF: A7 88 1D       STA    $1D,X
 A4C2: 86 16          LDA    #$16
@@ -4092,12 +4093,13 @@ A78D: 81 02          CMPA   #$02
 A78F: 25 12          BCS    $A7A3
 A791: A6 88 1F       LDA    $1F,X
 A794: 26 0D          BNE    $A7A3
+; enemy dead.
 A796: 86 88          LDA    #$88
-A798: E6 01          LDB    $1,X
+A798: E6 01          LDB    $1,X	; enemy type?
 A79A: C1 0A          CMPB   #$0A
 A79C: 26 02          BNE    $A7A0
 A79E: 86 91          LDA    #$91
-A7A0: BD FE B6       JSR    $FEB6
+A7A0: BD FE B6       JSR    play_sound_feb6
 A7A3: A6 88 31       LDA    $31,X
 A7A6: 84 18          ANDA   #$18
 A7A8: 27 2B          BEQ    $A7D5
@@ -4647,7 +4649,7 @@ ADBA: A7 02          STA    $2,X
 ADBC: A6 A4          LDA    ,Y
 ADBE: A7 88 19       STA    $19,X
 ADC1: 86 98          LDA    #$98
-ADC3: BD FE B6       JSR    $FEB6
+ADC3: BD FE B6       JSR    play_sound_feb6
 ADC6: 10 AE 88 2D    LDY    $2D,X
 ADCA: A6 A8 21       LDA    nb_credits_0021,Y
 ADCD: 27 0E          BEQ    $ADDD
@@ -4717,7 +4719,7 @@ AE63: 24 01          BCC    $AE66
 AE65: 4C             INCA
 AE66: A7 88 19       STA    $19,X
 AE69: 86 8D          LDA    #$8D
-AE6B: BD FE B6       JSR    $FEB6
+AE6B: BD FE B6       JSR    play_sound_feb6
 AE6E: 6A 88 19       DEC    $19,X
 AE71: 26 23          BNE    $AE96
 AE73: 6C 88 18       INC    $18,X
@@ -5288,7 +5290,7 @@ B465: 26 0A          BNE    $B471
 B467: 86 01          LDA    #$01
 B469: A7 88 1B       STA    $1B,X
 B46C: 86 99          LDA    #$99
-B46E: 17 4A 45       LBSR   $FEB6
+B46E: 17 4A 45       LBSR   play_sound_feb6
 B471: 39             RTS
 B472: A6 88 1B       LDA    $1B,X
 B475: 2B 1F          BMI    $B496
@@ -5363,7 +5365,7 @@ B516: A6 88 18       LDA    $18,X
 B519: 84 01          ANDA   #$01
 B51B: 27 05          BEQ    $B522
 B51D: 86 92          LDA    #$92
-B51F: 17 49 94       LBSR   $FEB6
+B51F: 17 49 94       LBSR   play_sound_feb6
 B522: A6 88 18       LDA    $18,X
 B525: 81 04          CMPA   #$04
 B527: 25 03          BCS    $B52C
@@ -5445,7 +5447,7 @@ B5DB: A6 88 18       LDA    $18,X
 B5DE: 84 01          ANDA   #$01
 B5E0: 26 05          BNE    $B5E7
 B5E2: 86 92          LDA    #$92
-B5E4: 17 48 CF       LBSR   $FEB6
+B5E4: 17 48 CF       LBSR   play_sound_feb6
 B5E7: 6F 88 19       CLR    $19,X
 B5EA: 6C 88 18       INC    $18,X
 B5ED: A6 88 18       LDA    $18,X
@@ -5475,7 +5477,7 @@ B629: A6 88 18       LDA    $18,X
 B62C: 81 02          CMPA   #$02
 B62E: 26 05          BNE    $B635
 B630: 86 80          LDA    #$80
-B632: 17 48 81       LBSR   $FEB6
+B632: 17 48 81       LBSR   play_sound_feb6
 B635: 39             RTS
 
 ; initialize the 3 enemies that don't move during the intro scene
@@ -6162,7 +6164,7 @@ BD2D: 86 10          LDA    #$10
 BD2F: 17 10 4A       LBSR   $CD7C
 BD32: 39             RTS
 BD33: 86 84          LDA    #$84
-BD35: 17 41 7E       LBSR   $FEB6
+BD35: 17 41 7E       LBSR   play_sound_feb6
 BD38: CC 00 00       LDD    #$0000
 BD3B: A3 88 11       SUBD   $11,X
 BD3E: ED 88 11       STD    $11,X
@@ -6453,7 +6455,7 @@ C044: 86 10          LDA    #$10
 C046: 17 0D 33       LBSR   $CD7C
 C049: 39             RTS
 C04A: 86 8A          LDA    #$8A
-C04C: 17 3E 67       LBSR   $FEB6
+C04C: 17 3E 67       LBSR   play_sound_feb6
 C04F: CC 00 00       LDD    #$0000
 C052: A3 88 11       SUBD   $11,X
 C055: ED 88 11       STD    $11,X
@@ -6711,7 +6713,7 @@ C2F2: 86 10          LDA    #$10
 C2F4: 17 0A 85       LBSR   $CD7C
 C2F7: 39             RTS
 C2F8: 86 85          LDA    #$85
-C2FA: 17 3B B9       LBSR   $FEB6
+C2FA: 17 3B B9       LBSR   play_sound_feb6
 C2FD: CC 00 00       LDD    #$0000
 C300: A3 88 11       SUBD   $11,X
 C303: ED 88 11       STD    $11,X
@@ -7236,7 +7238,7 @@ C824: 86 0D          LDA    #$0D
 C826: 17 05 53       LBSR   $CD7C
 C829: 39             RTS
 C82A: 86 93          LDA    #$93
-C82C: 17 36 87       LBSR   $FEB6
+C82C: 17 36 87       LBSR   play_sound_feb6
 C82F: 17 FF E1       LBSR   $C813
 C832: 39             RTS
 C833: A6 03          LDA    $3,X
@@ -7729,7 +7731,7 @@ CCB3: C1 06          CMPB   #$06
 CCB5: 26 09          BNE    $CCC0
 CCB7: 34 02          PSHS   A
 CCB9: 86 90          LDA    #$90
-CCBB: 17 31 F8       LBSR   $FEB6
+CCBB: 17 31 F8       LBSR   play_sound_feb6
 CCBE: 35 02          PULS   A
 CCC0: C6 06          LDB    #$06
 CCC2: 81 06          CMPA   #$06
@@ -7819,7 +7821,7 @@ CD6F: 26 0A          BNE    $CD7B
 CD71: 86 0C          LDA    #$0C
 CD73: A7 88 1B       STA    $1B,X
 CD76: 86 8C          LDA    #$8C
-CD78: 17 31 3B       LBSR   $FEB6
+CD78: 17 31 3B       LBSR   play_sound_feb6
 CD7B: 39             RTS
 CD7C: 32 71          LEAS   -$F,S   ; [alloc_locals]
 CD7E: A7 E4          STA    ,S		; [local]
@@ -9871,7 +9873,8 @@ display_credit_feb0:
 FEB0: 7E FC 50       JMP    display_credit_fc50
 
 FEB3: 7E FC 78       JMP    $FC78
-FEB6: 7E 44 CD       JMP    lb0_44CD
+play_sound_feb6:
+FEB6: 7E 44 CD       JMP    lb0_play_sound_44cd
 read_player_commands_feb9:
 FEB9: 7E 44 49       JMP    lb0_read_player_commands_4449
 FEBC: 7E 47 36       JMP    lb0_4736

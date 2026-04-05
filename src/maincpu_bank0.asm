@@ -18,7 +18,7 @@ lb0_4012:   ; [global]
 lb0_4015:   ; [global]
 4015: 7E 46 A3       JMP    $46A3
 lb0_4018:   ; [global]
-4018: 7E 44 CD       JMP    lb0_44cd
+4018: 7E 44 CD       JMP    lb0_play_sound_44cd
 lb0_401b:   ; [global]
 401B: 7E 42 D3       JMP    $42D3
 
@@ -461,7 +461,7 @@ lb0_42b4:   ; [global]
 4383: A7 88 48       STA    $48,X
 4386: 6C 88 4D       INC    $4D,X
 4389: 86 04          LDA    #$04
-438B: BD 44 CD       JSR    lb0_44cd
+438B: BD 44 CD       JSR    lb0_play_sound_44cd
 438E: BD FA 70       JSR    $FA70
 4391: 96 25          LDA    $25
 4393: A0 88 4B       SUBA   $4B,X
@@ -551,7 +551,7 @@ read_from_controllers_445e:
 44C4: 10 83 04 00    CMPD   #$0400
 44C8: 25 DA          BCS    $44A4
 44CA: 7E 44 CA       JMP    $44CA
-lb0_44cd:   ; [global]
+lb0_play_sound_44cd:   ; [global]
 44CD: D6 26          LDB    game_in_play_0026
 44CF: 26 07          BNE    $44D8
 44D1: F6 38 04       LDB    $3804
@@ -1424,7 +1424,7 @@ lb0_4ddd:  ; [global]
 4E3A: 10 83 19 60    CMPD   #$1960
 4E3E: 25 0A          BCS    $4E4A
 4E40: 86 01          LDA    #$01
-4E42: BD 44 CD       JSR    lb0_44cd
+4E42: BD 44 CD       JSR    lb0_play_sound_44cd
 4E45: 86 80          LDA    #$80
 4E47: B7 0B 21       STA    $0B21
 4E4A: 39             RTS
@@ -2044,7 +2044,7 @@ lb0_show_hide_tiles_53b0:
 5556: 81 07          CMPA   #$07
 5558: 22 18          BHI    $5572
 555A: 86 03          LDA    #$03
-555C: BD 44 CD       JSR    lb0_44cd
+555C: BD 44 CD       JSR    lb0_play_sound_44cd
 555F: 86 80          LDA    #$80
 5561: B7 0A EC       STA    $0AEC
 5564: 7F 0A ED       CLR    $0AED
@@ -3385,7 +3385,7 @@ lb0_5f85:  ; [global]
 64D4: B7 09 F2       STA    $09F2
 64D7: 7C 09 EF       INC    $09EF
 64DA: 86 03          LDA    #$03
-64DC: BD 44 CD       JSR    lb0_44cd
+64DC: BD 44 CD       JSR    lb0_play_sound_44cd
 64DF: 39             RTS
 64E0: B6 09 F2       LDA    $09F2
 64E3: 85 01          BITA   #$01
@@ -4089,7 +4089,7 @@ lb0_6d64:   ; [global]
 
 6DF0: 39             RTS
 6DF1: 86 80          LDA    #$80
-6DF3: BD 44 CD       JSR    lb0_44cd
+6DF3: BD 44 CD       JSR    lb0_play_sound_44cd
 6DF6: 39             RTS
 6DF7: 10 8E 6E 57    LDY    #$6E57
 6DFB: BE 0A 76       LDX    $0A76
@@ -4099,7 +4099,7 @@ lb0_6d64:   ; [global]
 6E05: A6 A6          LDA    A,Y	; [bank_address]
 6E07: 81 00          CMPA   #$00
 6E09: 27 03          BEQ    $6E0E
-6E0B: BD 44 CD       JSR    lb0_44cd
+6E0B: BD 44 CD       JSR    lb0_play_sound_44cd
 6E0E: 39             RTS
 6E0F: B6 0A 75       LDA    $0A75
 6E12: 81 01          CMPA   #$01
@@ -4557,7 +4557,7 @@ lb0_6d64:   ; [global]
 7D03: 86 01          LDA    #$01
 7D05: A7 A8 1B       STA    $1B,Y
 7D08: 86 90          LDA    #$90
-7D0A: BD 44 CD       JSR    lb0_44cd
+7D0A: BD 44 CD       JSR    lb0_play_sound_44cd
 7D0D: 1A 01          ORCC   #$01
 7D0F: 20 02          BRA    $7D13
 7D11: 1C FE          ANDCC  #$FE
