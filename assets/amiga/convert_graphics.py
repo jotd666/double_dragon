@@ -227,7 +227,10 @@ dump=False,name_dict=None,cluts=None,tile_number=0,is_bob=False,size_table=None)
         for tile_number,wtile in enumerate(tileset_1):
             # hardware grouped tiles
             if wtile:
-                tile_size = size_table[tile_number]
+                tile_size = size_table.get(tile_number)
+                if tile_size is None:
+                    print(f"Warning: no size set for sprite ${tile_number:04x}")
+                    tile_size = 1
                 if tile_size == 1:
                     pass
                 elif tile_size == 2:
@@ -739,11 +742,22 @@ for context in context_list:
     sprite_set_list = []
     sprite_cluts = {}
     size_table = {}
-    context = pathlib.Path(context)
-    sprite_sheet_dict = {i:Image.open(sheets_path / "sprites" / context / f"pal_{i:02x}.png") for i in range(SPRITE_NB_CLUTS)}
-    read_used_tiles(context/"used_sprites",sprite_cluts,SPRITE_NB_TILES,SPRITE_NB_CLUTS,size_table)
+    pcontext = pathlib.Path(context)
+    sprite_sheet_dict = {i:Image.open(sheets_path / "sprites" / pcontext / f"pal_{i:02x}.png") for i in range(SPRITE_NB_CLUTS)}
+    read_used_tiles(pcontext/"used_sprites",sprite_cluts,SPRITE_NB_TILES,SPRITE_NB_CLUTS,size_table)
+
+    if context=="level_1":
+        # remove some parasite tiles
+        for x in [0xFE2,0xFE4,0xFE6,0xFE7]:
+            sprite_cluts.pop(x)
+        for k,v in sprite_names.items():
+            if "boss" in v:
+                sprite_cluts.pop(k,None)
+            elif "girl" in v and k not in [0xFDA,0xFDC]:
+                sprite_cluts.pop(k,None)
+
     for i,tsd in sprite_sheet_dict.items():
-        tp,tile_set = load_tileset(tsd,i,16,16,"sprites" / context,dump_dir,dump=dump_it, cluts=sprite_cluts,
+        tp,tile_set = load_tileset(tsd,i,16,16,"sprites" / pcontext,dump_dir,dump=dump_it, cluts=sprite_cluts,
         name_dict=get_sprite_names(),
         is_bob=True,
         size_table=size_table)

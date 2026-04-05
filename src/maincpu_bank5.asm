@@ -1787,7 +1787,7 @@ jump_table_5caf:
 5E08: A7 A4          STA    ,Y
 5E0A: 10 8E 5E 24    LDY    #$5E24
 5E0E: F6 0E 15       LDB    $0E15
-5E11: EA A6          ORB    A,Y
+5E11: EA A6          ORB    A,Y		; [bank_address]
 5E13: F7 0E 15       STB    $0E15
 5E16: 6F 84          CLR    ,X
 5E18: 20 09          BRA    $5E23

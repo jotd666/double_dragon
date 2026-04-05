@@ -1,26 +1,20 @@
-- trace from 520A girl doesn't move, no doors sprites
-  => AFC is now incremented but remains at 1 trace bank 0 (523C) BBC8 never calls BC14
-  doors never appear
 - sprite clipping too soon on the right: mockup
-- cheat check enemy states kill them on one keypress
-  
-- context change: BA3267F2 972B4DF4 7C2231AE => D265AE25
-in this context, the palette is different (after intro): re-dump pics as enemies have the wrong colors
-- lockup when girl appears, door doesn't open? bank 0: 53B0 called by 51E5: debug in MAME what triggers door open
-  as door tiles aren't even cleared it seems, door sprites don't appear to cover girl
+- weak enemies doesn't work with hooker
+- move sprite palette to the >128 bank
+- will probably have to use 64+64 colors, 32+32 don't cut it,
+- try 16+16 color version
+
 - scrolling doesn't feed from right / wrong positions (seems OK from left)
 
 - group laterally like in VBall
 - copy sprite colors from billy to jimmy
-- don't log sprites if not visible (enemies leaving at start, context changes) or remove from used sprites
-  when converting graphics to save memory/palette entries
+- remove from used sprites when converting graphics to save memory/palette entries
 - set DSW difficulty lives, etc.
 - cache subcontext (loaded fg/bg/sprite files)
 - don't forget temp breakpoints for stack params!
 
 - sounds
 - title fading in not supported
-- will probably have to use 64+64 colors, 32+32 don't cut it
   
   optim for 6809 generator:
  	xxx_W_TO_REG	a0,d2                         	| [$5bd5: pulu   x,y]

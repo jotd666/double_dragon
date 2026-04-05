@@ -234,6 +234,9 @@ def handle_bank(line):
     if "[bank_address" in line:
         # give me the original instruction
         line = line.replace("_ADDRESS","_BANK_ADDRESS")
+    if "[select_address" in line:
+        # give me the original instruction
+        line = line.replace("_ADDRESS","_SELECT_ADDRESS")
 
     return line
 

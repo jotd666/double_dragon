@@ -130,7 +130,19 @@ def f_handle_bank4_line(address,lines,i):
 \tjeq\tlb4_4363
 \tjra\tlb4_442f
 """
-
+    elif address == 0x452B:
+        line = """\tGET_REG_BANK_ADDRESS\t1,d2
+\tMOVE_W_TO_REG\ta0,d2
+\tlea\tlb4_4546,a0
+\tcmp.w\t#0x4546,d2
+\tjeq\t10f
+\tlea\tlb4_45ac,a0
+\tcmp.w\t#0x45AC,d2
+\tjeq\t10f
+\tBREAKPOINT  "illegal jump at 452B bank 0"
+10:
+\tjsr\t(a0)   | [$452b: jsr    [$01,X]]
+"""
     elif address in [0x446e,0x442d]:
         # remove useless jra to next instruction
         line = remove_instruction(lines,i)
@@ -154,7 +166,8 @@ def f_handle_bank5_line(address,lines,i):
         line = change_instruction("jra\tlb5_6d17",lines,i)
         lines[i+1] = remove_error(lines[i+1])
     elif address == 0x6D12:
-        line = change_instruction('BREAKPOINT  "6D12_b5"',lines,i)  # TEMP
+        line = change_instruction("move.w\t(sp),d1",lines,i)  # pushed parameter out of local stack
+        line += '   BREAKPOINT "check 6D12_bank5"\n'
     elif address in {0x44DD,0x5696,0x582C}:
         # protect carry from target stack restore
         line = f"\tPUSH_SR  | save carry\n{line}\tPOP_SR  | restore carry\n"

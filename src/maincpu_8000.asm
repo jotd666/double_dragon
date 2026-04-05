@@ -6201,7 +6201,7 @@ BD7A: A6 88 1B       LDA    $1B,X
 BD7D: 84 7F          ANDA   #$7F
 BD7F: 48             ASLA
 BD80: 10 8E BD 91    LDY   #jump_table_bd91
-BD84: AD B6          JSR    [A,Y]        ; [indirect_jump] [nb_entries=16]
+BD84: AD B6          JSR    [A,Y]        ; [indirect_jump] [nb_entries=20]
 BD86: A6 03          LDA    $3,X
 BD88: 2A 06          BPL    $BD90
 BD8A: A6 02          LDA    $2,X
@@ -6370,7 +6370,8 @@ BF5D: 6F 88 19       CLR    $19,X
 BF60: 6C 88 18       INC    $18,X
 BF63: 39             RTS
 
-BF70: 6C 88 19       INC    $19,X
+BF6C: 86 05          LDA    #$05                                       
+BF6E: A7 02          STA    $2,X                                       
 BF73: A6 88 19       LDA    $19,X
 BF76: 81 04          CMPA   #$04
 BF78: 25 02          BCS    $BF7C
@@ -10277,6 +10278,11 @@ jump_table_bd91:
 	dc.w	$beef	; $bdab
 	dc.w	$bf18	; $bdad
 	dc.w	$bf41	; $bdaf
+    dc.w	$bdb9
+	dc.w	$bdb9 
+	dc.w	$bf6c 
+	dc.w	$be19 
+
 
 jump_table_bfa7:
 	dc.w	$bfd0	; $bfa7

@@ -1483,7 +1483,7 @@ lb0_4e76:    ; [global]
 4EBA: AD 95          JSR    [B,X]		; [indirect_jump] [nb_entries=4]
 4EBC: 39             RTS
 
-4EC5: FC 0A 5F       LDQ    $0A5F 	; [6309_instruction]
+4EC5: FC 0A 5F       LDD    $0A5F
 4EC8: 10 83 05 00    CMPD   #$0500
 4ECC: 24 08          BCC    $4ED6
 4ECE: CC 01 00       LDD    #$0100
@@ -2414,7 +2414,7 @@ lb0_588f:    ; [global]
 5A87: BD 5A BB       JSR    $5ABB
 5A8A: 39             RTS
 
-5A91: B6 0A 96       LDW    $0A96	; [6309_instruction]
+5A91: B6 0A 96       LDA    $0A96
 5A94: 26 21          BNE    $5AB7
 5A96: BD 5A E5       JSR    $5AE5
 5A99: 24 1F          BCC    $5ABA
@@ -2521,17 +2521,17 @@ lb0_5b1f:    ; [global]
 5BAD: 26 39          BNE    $5BE8
 5BAF: A6 06          LDA    $6,X	; [bank_address]
 5BB1: 97 00          STA    $00
-5BB3: 10 AE 07       LDY    $7,X	; [bank_address]
+5BB3: 10 AE 07       LDY    $7,X	; [select_address]
 5BB6: 96 00          LDA    $00
 5BB8: 48             ASLA
 5BB9: 31 A6          LEAY   A,Y
 5BBB: 4F             CLRA
-5BBC: E6 A4          LDB    ,Y	; [bank_address]
-5BBE: E3 84          ADDD   ,X	; [bank_address]
+5BBC: E6 A4          LDB    ,Y	; [select_address]
+5BBE: E3 84          ADDD   ,X	; [select_address]
 5BC0: ED E4          STD    ,S		; [local]
 5BC2: 4F             CLRA
-5BC3: E6 21          LDB    $1,Y	; [bank_address]
-5BC5: E3 04          ADDD   $4,X	; [bank_address]
+5BC3: E6 21          LDB    $1,Y	; [select_address]
+5BC5: E3 04          ADDD   $4,X	; [select_address]
 5BC7: ED 62          STD    $2,S	; [local]
 5BC9: 36 30          PSHU   Y,X
 5BCB: AE E4          LDX    ,S		; [local]
@@ -2539,12 +2539,12 @@ lb0_5b1f:    ; [global]
 5BD0: BD FE 30       JSR    $FE30
 5BD3: ED 64          STD    $4,S	; [local]
 5BD5: 37 30          PULU   X,Y
-5BD7: 10 AE 09       LDY    $9,X	; [bank_address]
+5BD7: 10 AE 09       LDY    $9,X	; [select_address]
 5BDA: 96 00          LDA    $00
 5BDC: 48             ASLA
-5BDD: EC A6          LDD    A,Y		; [bank_address]
+5BDD: EC A6          LDD    A,Y		; [video_address_word]
 5BDF: 10 AE 64       LDY    $4,S	; [local]
-5BE2: ED A4          STD    ,Y
+5BE2: ED A4          STD    ,Y		; [video_address_word]
 5BE4: 0A 00          DEC    $00
 5BE6: 2A CB          BPL    $5BB3
 5BE8: 32 66          LEAS   $6,S   ; [free_locals]
@@ -3400,7 +3400,7 @@ lb0_5f85:  ; [global]
 64FB: 96 36          LDA    current_level_0036
 64FD: 48             ASLA
 64FE: 10 AE A6       LDY    A,Y	; [bank_address]
-6501: A6 A4          LDA    ,Y
+6501: A6 A4          LDA    ,Y	; [bank_address]
 6503: 81 FF          CMPA   #$FF
 6505: 27 28          BEQ    $652F
 6507: 10 AF 88 43    STY    $43,X
@@ -3408,7 +3408,7 @@ lb0_5f85:  ; [global]
 650D: 8A 91          ORA    #$91
 650F: A7 84          STA    ,X
 6511: 7C 09 EF       INC    $09EF
-6514: A6 29          LDA    $9,Y
+6514: A6 29          LDA    $9,Y	; [bank_address]
 6516: A7 88 48       STA    $48,X
 6519: 86 00          LDA    #$00
 651B: A7 88 47       STA    $47,X
@@ -3438,7 +3438,7 @@ lb0_675d:   ; [global]
 677D: 81 7F          CMPA   #$7F
 677F: 26 08          BNE    $6789
 6781: 10 AE 88 2D    LDY    $2D,X
-6785: A6 22          LDA    $2,Y
+6785: A6 22          LDA    $2,Y	; [bank_address]
 6787: 84 7F          ANDA   #$7F
 6789: 97 00          STA    $00
 678B: 4F             CLRA
@@ -3467,6 +3467,7 @@ lb0_675d:   ; [global]
 67BF: 4F             CLRA
 67C0: A7 88 1F       STA    $1F,X
 67C3: 39             RTS
+
 67C4: A6 88 24       LDA    $24,X
 67C7: 27 08          BEQ    $67D1
 67C9: 6A 88 24       DEC    $24,X
@@ -4540,15 +4541,15 @@ lb0_6d64:   ; [global]
 7CDB: 4F             CLRA
 7CDC: 10 8E 6E E0    LDY    #$6EE0
 7CE0: 10 AE AB       LDY    D,Y	; [bank_address]
-7CE3: 10 AE A4       LDY    ,Y
-7CE6: 10 AE 24       LDY    $4,Y
-7CE9: EC A1          LDD    ,Y++
+7CE3: 10 AE A4       LDY    ,Y	; [bank_address]
+7CE6: 10 AE 24       LDY    $4,Y	; [bank_address]
+7CE9: EC A1          LDD    ,Y++	; [bank_address]
 7CEB: 97 07          STA    $07
 7CED: D7 09          STB    $09
 7CEF: CC 00 06       LDD    #$0006
 7CF2: 97 08          STA    $08
 7CF4: D7 0B          STB    $0B
-7CF6: EC A1          LDD    ,Y++
+7CF6: EC A1          LDD    ,Y++	; [bank_address]
 7CF8: 97 0A          STA    $0A
 7CFA: D7 0C          STB    $0C
 7CFC: 35 20          PULS   Y
@@ -4562,6 +4563,7 @@ lb0_6d64:   ; [global]
 7D0F: 20 02          BRA    $7D13
 7D11: 1C FE          ANDCC  #$FE
 7D13: 39             RTS
+
 7D14: 34 70          PSHS   U,Y,X
 7D16: CE 7E 30       LDU    #$7E30
 7D19: A6 A8 17       LDA    $17,Y

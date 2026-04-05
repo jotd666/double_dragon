@@ -1756,12 +1756,13 @@ subcpu_processing_411e:
 5088: 81 04       CMPA   #$04
 508A: 24 0E       BCC    $509A
 508C: 84 01       ANDA   #$01
-508E: A6 A6       LDA    A,Y
+508E: A6 A6       LDA    A,Y		; [bank_address]
 5090: AA 03       ORA    $3,X
 5092: A7 02       STA    $2,X
 5094: 86 08       LDA    #$08
 5096: A7 88 19    STA    $19,X
 5099: 39          RTS
+
 509A: 86 00       LDA    #$00
 509C: A7 88 1B    STA    $1B,X
 509F: 86 10       LDA    #$10
@@ -3362,7 +3363,7 @@ subcpu_processing_411e:
 5FD2: BD FB 76    JSR    $FB76
 5FD5: 84 07       ANDA   #$07
 5FD7: AA E4       ORA    ,S		; [handled]
-5FD9: E6 A6       LDB    A,Y
+5FD9: E6 A6       LDB    A,Y	; [bank_address]
 5FDB: 35 02       PULS   A	; [manual_stack_pull]
 5FDD: E7 88 1E    STB    $1E,X
 5FE0: 86 07       LDA    #$07

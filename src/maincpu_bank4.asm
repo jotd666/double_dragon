@@ -617,8 +617,8 @@ table_4317:
 4522: E1 84          CMPB   ,X		; [bank_address]
 4524: 26 F6          BNE    $451C
 4526: 20 06          BRA    $452E
-4528: 10 AE 03       LDY    $3,X		; [bank_address]
-452B: AD 98 01       JSR    [$01,X]		; [breakpoint]
+4528: 10 AE 03       LDY    $3,X		; [bank_address] data
+452B: AD 98 01       JSR    [$01,X]		; code
 452E: 9E 56          LDX    $56
 4530: 30 88 21       LEAX   $21,X
 4533: 9F 56          STX    $56
@@ -627,7 +627,9 @@ table_4317:
 4538: 26 D4          BNE    $450E
 453A: 39             RTS
 
-4544: C4 FF          ANDB   #$FF
+;453B:  01 4546 45B9 04 45AC 45C4 FF 
+
+lb4_4546:
 4546: C6 01          LDB    #$01
 4548: D7 58          STB    $58
 454A: BD 40 E6       JSR    $40E6
@@ -679,6 +681,8 @@ table_4317:
 45A7: DC 5A          LDD    $5A
 45A9: DD 5C          STD    $5C
 45AB: 39             RTS
+
+lb4_45ac:
 45AC: 9E 56          LDX    $56
 45AE: E6 88 1B       LDB    $1B,X
 45B1: C4 7F          ANDB   #$7F
