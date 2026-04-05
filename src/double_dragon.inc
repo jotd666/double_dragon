@@ -442,7 +442,9 @@ end_\@:
 
 	* when we restore a DP pointer we need to memorize it so the next manual load loads that value
 	.macro	STORE_DP_IN_MEMORY
+	PUSH_SR
 	move.l	a5,m6809_direct_page_pointer
+	POP_SR
 	.endm
 
 	.macro SET_DP_FROM_A

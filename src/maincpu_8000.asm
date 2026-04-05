@@ -142,6 +142,7 @@
 bank_switch_copy_3a = $3a
 current_level_x_position_003c = $3c 
 current_level_0036 = $36
+current_level_x_position_0a5f = $a5f
 
 bank_address_4000 = $4000
 port_1_3800 = $3800
@@ -202,14 +203,16 @@ some_state_0afc = $afc
 ;    3: punk
 ;    8: tshirt thug with curly hair
 ;    9: barechested thug
+;    A: hooker
 ;    14: curtain
-;    19: hooker
+;    19: elevator door
 ;    1F: girl
 ; 2: animation frame id
 ; 3: direction bit
 ; 4.W: X coordinate
 ; 6.W: Y coordinate
 ; $1F: energy (P1 energy: 3C1, P2: 41F)
+; $2d.W: pointer to targeted player (3A2, 400)
 logical_objects_array_0381 = $381
 number_of_players_flag_0029 = $29
 current_player_002a = $002a
@@ -636,7 +639,7 @@ gameloop_8389:
 839C: BD FD 0C       JSR    $FD0C
 839F: BD FE D7       JSR    $FED7
 83A2: BD FA 56       JSR    $FA56
-83A5: BD FD 15       JSR    $FD15
+83A5: BD FD 15       JSR    handle_elevator_doors_fd15
 83A8: BD FE F5       JSR    $FEF5
 83AB: BD FC C8       JSR    $FCC8
 83AE: BD B7 CA       JSR    $B7CA
@@ -909,7 +912,7 @@ play_intro_animation_84f8:
 861E: 27 18          BEQ    $8638
 8620: BD AE BE       JSR    $AEBE
 8623: BD FD 0C       JSR    $FD0C
-8626: BD FD 15       JSR    $FD15
+8626: BD FD 15       JSR    handle_elevator_doors_fd15
 8629: BD FE D7       JSR    $FED7
 862C: BD 84 45       JSR    $8445
 862F: BD FD F9       JSR    $FDF9
@@ -5927,7 +5930,7 @@ BA9C: 39             RTS
 
 BA9D: BD BB 40       JSR    switch_to_bank_1_bb40
 BAA0: BD 40 75       JSR    lb1_4075
-BAA3: BD BB 4D       JSR    switch_to_bank_0_bb4d
+BAA3: BD BB 4D       JSR    switch_to_bank_0_cc_safe_bb4d
 BAA6: 39             RTS
 
 BAA7: A6 84          LDA    ,X
@@ -5957,22 +5960,22 @@ BADC: 39             RTS
 BB15: BD BB 40       JSR    switch_to_bank_1_bb40
 BB18: BD 40 36       JSR    lb1_4036
 BB1B: 34 01          PSHS   CC		; the only time the game saves CC when switching banks!
-BB1D: BD BB 4D       JSR    switch_to_bank_0_bb4d
+BB1D: BD BB 4D       JSR    switch_to_bank_0_cc_safe_bb4d
 BB20: 35 81          PULS   CC,PC
 
 BB22: BD BB 40       JSR    switch_to_bank_1_bb40
 BB25: BD 40 2A       JSR    lb1_402A
-BB28: BD BB 4D       JSR    switch_to_bank_0_bb4d
+BB28: BD BB 4D       JSR    switch_to_bank_0_cc_safe_bb4d
 BB2B: 39             RTS
 
 BB2C: BD BB 40       JSR    switch_to_bank_1_bb40
 BB2F: BD 40 2D       JSR    lb1_402D
-BB32: BD BB 4D       JSR    switch_to_bank_0_bb4d
+BB32: BD BB 4D       JSR    switch_to_bank_0_cc_safe_bb4d
 BB35: 39             RTS
 
 BB36: BD BB 40       JSR    switch_to_bank_1_bb40
 BB39: BD 40 33       JSR    lb1_4033
-BB3C: BD BB 4D       JSR    switch_to_bank_0_bb4d
+BB3C: BD BB 4D       JSR    switch_to_bank_0_cc_safe_bb4d
 BB3F: 39             RTS
 
 switch_to_bank_1_bb40:
@@ -5983,7 +5986,7 @@ BB46: 97 3A          STA    bank_switch_copy_3a
 BB48: B7 38 08       STA    bankswitch_3808
 BB4B: 35 82          PULS   A,PC
 
-switch_to_bank_0_bb4d:
+switch_to_bank_0_cc_safe_bb4d:
 BB4D: 34 03          PSHS   A,CC
 BB4F: 96 3A          LDA    bank_switch_copy_3a
 BB51: 84 1F          ANDA   #$1F
@@ -5993,32 +5996,32 @@ BB58: 35 83          PULS   CC,A,PC
 
 BB5A: BD BB 40       JSR    switch_to_bank_1_bb40
 BB5D: BD 40 72       JSR    lb1_4072
-BB60: BD BB 4D       JSR    switch_to_bank_0_bb4d
+BB60: BD BB 4D       JSR    switch_to_bank_0_cc_safe_bb4d
 BB63: 39             RTS
 
 BB64: BD BB 40       JSR    switch_to_bank_1_bb40
 BB67: BD 40 7E       JSR    lb1_407E
-BB6A: BD BB 4D       JSR    switch_to_bank_0_bb4d
+BB6A: BD BB 4D       JSR    switch_to_bank_0_cc_safe_bb4d
 BB6D: 39             RTS
 
 BB6E: BD BB 40       JSR    switch_to_bank_1_bb40
 BB71: BD 40 81       JSR    lb1_4081
-BB74: BD BB 4D       JSR    switch_to_bank_0_bb4d
+BB74: BD BB 4D       JSR    switch_to_bank_0_cc_safe_bb4d
 BB77: 39             RTS
 
 BB78: BD BB 40       JSR    switch_to_bank_1_bb40
 BB7B: BD 40 84       JSR    lb1_4084
-BB7E: BD BB 4D       JSR    switch_to_bank_0_bb4d
+BB7E: BD BB 4D       JSR    switch_to_bank_0_cc_safe_bb4d
 BB81: 39             RTS
 
 BB82: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 BB84: 6F E4          CLR    ,S		; [local]
-BB86: 8E 07 5B       LDX    #$075B	; enemy start at 75B
+BB86: 8E 07 5B       LDX    #$075B	; object start at 75B
 ; looks for a free slot 16 times
 search_loop_bb89:
 BB89: A6 84          LDA    ,X
 BB8B: 10 2A 00 46    LBPL   $BBD5
-; enemy active
+; object active
 BB8F: A6 E4          LDA    ,S		; [local]
 BB91: 98 51          EORA   $51
 BB93: 84 01          ANDA   #$01
@@ -6061,7 +6064,8 @@ BBE6: BD BC 59       JSR    $BC59
 BBE9: 32 61          LEAS   $1,S   ; [free_locals]
 BBEB: 39             RTS
 
-
+; < X: elevator object
+handle_elevator_doors_bc14:
 BC14: BD FC 82       JSR    switch_to_bank_5_fc82
 BC17: A6 88 17       LDA    $17,X
 BC1A: 84 1F          ANDA   #$1F
@@ -6072,14 +6076,15 @@ BC23: BD FC 8F       JSR    switch_to_bank_0_fc8f
 BC26: 39             RTS
 
 BC4F: BD FC 82       JSR    switch_to_bank_5_fc82
-BC52: BD 40 81       JSR    $4081 ; [banks=5]
+BC52: BD 40 81       JSR    lb5_4081
 BC55: BD FC 8F       JSR    switch_to_bank_0_fc8f
 BC58: 39             RTS
 
 BC59: BD FC 82       JSR    switch_to_bank_5_fc82
-BC5C: BD 40 66       JSR    $4066 ; [banks=5]
+BC5C: BD 40 66       JSR    lb5_4066
 BC5F: BD FC 8F       JSR    switch_to_bank_0_fc8f
 BC62: 39             RTS
+
 BC63: 34 7E          PSHS   U,Y,X,DP,D
 BC65: 17 00 0B       LBSR   $BC73
 BC68: 17 0E BF       LBSR   $CB2A
@@ -7968,7 +7973,7 @@ E0A1: 8E EA F2       LDX    #$EAF2
 E0A4: D6 36          LDB    current_level_0036
 E0A6: 58             ASLB
 E0A7: EC 85          LDD    B,X
-E0A9: B7 0A 5F       STA    $0A5F
+E0A9: B7 0A 5F       STA    current_level_x_position_0a5f
 E0AC: F7 0A 62       STB    $0A62
 E0AF: CC 00 00       LDD    #$0000
 E0B2: FD 0A 60       STD    $0A60
@@ -7979,7 +7984,7 @@ E0BC: FC 0A 62       LDD    $0A62
 E0BF: FD 0A 49       STD    $0A49
 E0C2: C3 01 10       ADDD   #$0110
 E0C5: FD 0A 68       STD    $0A68
-E0C8: FC 0A 5F       LDD    $0A5F
+E0C8: FC 0A 5F       LDD    current_level_x_position_0a5f
 E0CB: 34 06          PSHS   D
 E0CD: FD 0A 65       STD    $0A65
 E0D0: C3 01 40       ADDD   #$0140
@@ -7988,7 +7993,7 @@ E0D6: BD E5 BD       JSR    $E5BD
 E0D9: FC 0A 46       LDD    $0A46
 E0DC: FD 0A 65       STD    $0A65
 E0DF: 35 06          PULS   D
-E0E1: FD 0A 5F       STD    $0A5F
+E0E1: FD 0A 5F       STD    current_level_x_position_0a5f
 E0E4: BD E9 1E       JSR    update_scrolling_registers_e91e
 E0E7: 39             RTS
 E0E8: 8E 0A 41       LDX    #$0A41
@@ -7998,7 +8003,7 @@ E0F0: 26 F9          BNE    $E0EB
 E0F2: BD E2 8E       JSR    $E28E
 E0F5: 39             RTS
 E0F6: CC 00 00       LDD    #$0000
-E0F9: FD 0A 5F       STD    $0A5F
+E0F9: FD 0A 5F       STD    current_level_x_position_0a5f
 E0FC: FD 0A 62       STD    $0A62
 E0FF: DD 3C          STD    current_level_x_position_003c
 E101: DD 3F          STD    $3F
@@ -8029,7 +8034,7 @@ E143: BD ED DE       JSR    $EDDE
 E146: 39             RTS
 E147: BD E5 BD       JSR    $E5BD
 E14A: FC 0A 46       LDD    $0A46
-E14D: FD 0A 5F       STD    $0A5F
+E14D: FD 0A 5F       STD    current_level_x_position_0a5f
 E150: B6 0A 48       LDA    $0A48
 E153: B7 0A 61       STA    $0A61
 E156: 39             RTS
@@ -8132,7 +8137,7 @@ E23E: 96 36          LDA    current_level_0036
 E240: D6 38          LDB    $38
 E242: 10 83 02 04    CMPD   #$0204
 E246: 26 14          BNE    $E25C
-E248: FC 0A 5F       LDD    $0A5F
+E248: FC 0A 5F       LDD    current_level_x_position_0a5f
 E24B: 10 83 11 61    CMPD   #$1161
 E24F: 24 0B          BCC    $E25C
 E251: FC 0A 44       LDD    $0A44
@@ -8160,7 +8165,7 @@ E285: 24 06          BCC    $E28D
 E287: CC FF 00       LDD    #$FF00
 E28A: FD 0A 44       STD    $0A44
 E28D: 39             RTS
-E28E: FC 0A 5F       LDD    $0A5F
+E28E: FC 0A 5F       LDD    current_level_x_position_0a5f
 E291: DD 3C          STD    current_level_x_position_003c
 E293: B6 0A 61       LDA    $0A61
 E296: 97 3E          STA    $3E
@@ -8307,14 +8312,14 @@ E400: ED 61          STD    $1,S		; [local]
 E402: F6 0A 42       LDB    $0A42
 E405: 1D             SEX
 E406: 89 00          ADCA   #$00
-E408: BB 0A 5F       ADDA   $0A5F
+E408: BB 0A 5F       ADDA   current_level_x_position_0a5f
 E40B: A7 E4          STA    ,S		; [local]
 E40D: 2A 0A          BPL    $E419
 E40F: CC 00 00       LDD    #$0000
 E412: ED E4          STD    ,S		; [local]
 E414: E7 62          STB    $2,S		; [local]
 E416: 16 00 97       LBRA   $E4B0
-E419: B6 0A 5F       LDA    $0A5F
+E419: B6 0A 5F       LDA    current_level_x_position_0a5f
 E41C: F6 0A 62       LDB    $0A62
 E41F: BD E7 9A       JSR    $E79A
 E422: B6 0A 62       LDA    $0A62
@@ -8322,7 +8327,7 @@ E425: E6 80          LDB    ,X+
 E427: ED 63          STD    $3,S		; [local]
 E429: E6 80          LDB    ,X+
 E42B: ED 65          STD    $5,S		; [local]
-E42D: B6 0A 5F       LDA    $0A5F
+E42D: B6 0A 5F       LDA    current_level_x_position_0a5f
 E430: E6 80          LDB    ,X+
 E432: ED 67          STD    $7,S		; [local]
 E434: E6 80          LDB    ,X+
@@ -8342,7 +8347,7 @@ E451: E6 80          LDB    ,X+
 E453: ED E8 11       STD    $11,S		; [local]
 E456: 7D 0A 42       TST    $0A42
 E459: 2B 2A          BMI    $E485
-E45B: B6 0A 5F       LDA    $0A5F
+E45B: B6 0A 5F       LDA    current_level_x_position_0a5f
 E45E: A1 E4          CMPA   ,S		; [local]
 E460: 26 09          BNE    $E46B
 E462: EC 69          LDD    $9,S		; [local]
@@ -8360,7 +8365,7 @@ E47D: 25 02          BCS    $E481
 E47F: 20 2F          BRA    $E4B0
 E481: EC 69          LDD    $9,S		; [local]
 E483: 20 45          BRA    $E4CA
-E485: B6 0A 5F       LDA    $0A5F
+E485: B6 0A 5F       LDA    current_level_x_position_0a5f
 E488: A1 E4          CMPA   ,S		; [local]
 E48A: 26 09          BNE    $E495
 E48C: EC 67          LDD    $7,S		; [local]
@@ -8383,7 +8388,7 @@ E4B2: FD 0A 46       STD    $0A46
 E4B5: A6 62          LDA    $2,S		; [local]
 E4B7: B7 0A 48       STA    $0A48
 E4BA: 20 16          BRA    $E4D2
-E4BC: FC 0A 5F       LDD    $0A5F
+E4BC: FC 0A 5F       LDD    current_level_x_position_0a5f
 E4BF: FD 0A 46       STD    $0A46
 E4C2: B6 0A 61       LDA    $0A61
 E4C5: B7 0A 48       STA    $0A48
@@ -8409,7 +8414,7 @@ E4F5: CC 00 00       LDD    #$0000
 E4F8: ED E4          STD    ,S		; [local]
 E4FA: E7 62          STB    $2,S		; [local]
 E4FC: 16 00 98       LBRA   $E597
-E4FF: B6 0A 5F       LDA    $0A5F
+E4FF: B6 0A 5F       LDA    current_level_x_position_0a5f
 E502: F6 0A 62       LDB    $0A62
 E505: BD E7 9A       JSR    $E79A
 E508: B6 0A 62       LDA    $0A62
@@ -8417,12 +8422,12 @@ E50B: E6 80          LDB    ,X+
 E50D: ED 63          STD    $3,S		; [local]
 E50F: E6 80          LDB    ,X+
 E511: ED 65          STD    $5,S		; [local]
-E513: B6 0A 5F       LDA    $0A5F
+E513: B6 0A 5F       LDA    current_level_x_position_0a5f
 E516: E6 80          LDB    ,X+
 E518: ED 67          STD    $7,S		; [local]
 E51A: E6 80          LDB    ,X+
 E51C: ED 69          STD    $9,S		; [local]
-E51E: B6 0A 5F       LDA    $0A5F
+E51E: B6 0A 5F       LDA    current_level_x_position_0a5f
 E521: E6 E4          LDB    ,S		; [local]
 E523: BD E7 9A       JSR    $E79A
 E526: A6 E4          LDA    ,S		; [local]
@@ -8430,7 +8435,7 @@ E528: E6 80          LDB    ,X+
 E52A: ED 6B          STD    $B,S		; [local]
 E52C: E6 80          LDB    ,X+
 E52E: ED 6D          STD    $D,S		; [local]
-E530: B6 0A 5F       LDA    $0A5F
+E530: B6 0A 5F       LDA    current_level_x_position_0a5f
 E533: E6 80          LDB    ,X+
 E535: ED 6F          STD    $F,S		; [local]
 E537: E6 80          LDB    ,X+
@@ -8447,7 +8452,7 @@ E54F: 20 46          BRA    $E597
 E551: EC E4          LDD    ,S		; [local]
 E553: 10 A3 6D       CMPD   $D,S		; [local]
 E556: 22 10          BHI    $E568
-E558: FC 0A 5F       LDD    $0A5F
+E558: FC 0A 5F       LDD    current_level_x_position_0a5f
 E55B: 10 A3 E8 11    CMPD   $11,S		; [local]
 E55F: 22 07          BHI    $E568
 E561: 10 A3 6F       CMPD   $F,S		; [local]
@@ -8465,7 +8470,7 @@ E57A: 20 1B          BRA    $E597
 E57C: EC E4          LDD    ,S		; [local]
 E57E: 10 A3 6B       CMPD   $B,S		; [local]
 E581: 22 10          BHI    $E593
-E583: FC 0A 5F       LDD    $0A5F
+E583: FC 0A 5F       LDD    current_level_x_position_0a5f
 E586: 10 A3 E8 11    CMPD   $11,S		; [local]
 E58A: 22 07          BHI    $E593
 E58C: 10 A3 6F       CMPD   $F,S		; [local]
@@ -8494,17 +8499,17 @@ E5C1: 32 E8 EE       LEAS   -$12,S   ; [alloc_locals]
 E5C4: FC 0A 46       LDD    $0A46
 E5C7: C4 F0          ANDB   #$F0
 E5C9: 34 06          PSHS   D		; [manual_stack_push]
-E5CB: FC 0A 5F       LDD    $0A5F
+E5CB: FC 0A 5F       LDD    current_level_x_position_0a5f
 E5CE: C4 F0          ANDB   #$F0
 E5D0: 10 A3 E1       CMPD   ,S++
 E5D3: 10 27 00 CA    LBEQ   $E6A1
-E5D7: FC 0A 5F       LDD    $0A5F
+E5D7: FC 0A 5F       LDD    current_level_x_position_0a5f
 E5DA: 10 B3 0A 46    CMPD   $0A46
 E5DE: 23 10          BLS    $E5F0
 E5E0: FC 0A 46       LDD    $0A46
 E5E3: C4 F0          ANDB   #$F0
 E5E5: ED E4          STD    ,S		; [local]
-E5E7: FC 0A 5F       LDD    $0A5F
+E5E7: FC 0A 5F       LDD    current_level_x_position_0a5f
 E5EA: C4 F0          ANDB   #$F0
 E5EC: ED 62          STD    $2,S		; [local]
 E5EE: 20 17          BRA    $E607
@@ -8513,7 +8518,7 @@ E5F3: C4 F0          ANDB   #$F0
 E5F5: ED E4          STD    ,S		; [local]
 E5F7: FC 0A 65       LDD    $0A65
 E5FA: F3 0A 46       ADDD   $0A46
-E5FD: B3 0A 5F       SUBD   $0A5F
+E5FD: B3 0A 5F       SUBD   current_level_x_position_0a5f
 E600: C3 00 0F       ADDD   #$000F
 E603: C4 F0          ANDB   #$F0
 E605: ED 62          STD    $2,S		; [local]
@@ -8569,7 +8574,7 @@ E672: ED 68          STD    $8,S		; [local]
 E674: 10 A3 62       CMPD   $2,S		; [local]
 E677: 27 02          BEQ    $E67B
 E679: 20 9E          BRA    $E619
-E67B: FC 0A 5F       LDD    $0A5F
+E67B: FC 0A 5F       LDD    current_level_x_position_0a5f
 E67E: C4 F0          ANDB   #$F0
 E680: 34 06          PSHS   D		; [manual_stack_push]
 E682: FC 0A 46       LDD    $0A46
@@ -8580,7 +8585,7 @@ E68C: FD 0A 65       STD    $0A65
 E68F: B6 0A 48       LDA    $0A48
 E692: B7 0A 67       STA    $0A67
 E695: FC 0A 46       LDD    $0A46
-E698: FD 0A 5F       STD    $0A5F
+E698: FD 0A 5F       STD    current_level_x_position_0a5f
 E69B: B6 0A 48       LDA    $0A48
 E69E: B7 0A 61       STA    $0A61
 E6A1: 32 E8 12       LEAS   $12,S   ; [free_locals]
@@ -8616,7 +8621,7 @@ E6EA: B3 0A 62       SUBD   $0A62
 E6ED: C3 00 0F       ADDD   #$000F
 E6F0: C4 F0          ANDB   #$F0
 E6F2: ED 66          STD    $6,S     ; [local]
-E6F4: FC 0A 5F       LDD    $0A5F
+E6F4: FC 0A 5F       LDD    current_level_x_position_0a5f
 E6F7: C4 F0          ANDB   #$F0
 E6F9: ED E4          STD    ,S     ; [local]
 E6FB: FC 0A 65       LDD    $0A65
@@ -8895,7 +8900,7 @@ E91A: B7 0E 71       STA    nmi_active_flag_0e71
 E91D: 39             RTS
 
 update_scrolling_registers_e91e:
-E91E: FC 0A 5F       LDD    $0A5F
+E91E: FC 0A 5F       LDD    current_level_x_position_0a5f
 E921: F7 38 09       STB    scroll_x_lo_3809
 E924: 84 01          ANDA   #$01
 E926: 34 02          PSHS   A	; [manual_stack_push]
@@ -8967,7 +8972,7 @@ E988: 58             ASLB
 E989: 58             ASLB
 E98A: 8E EA 14       LDX    #$EA14
 E98D: 30 85          LEAX   B,X
-E98F: FC 0A 5F       LDD    $0A5F
+E98F: FC 0A 5F       LDD    current_level_x_position_0a5f
 E992: 10 A3 89 00 00 CMPD   $0000,X
 E997: 25 04          BCS    $E99D
 E999: 6C E4          INC    ,S	; [local]
@@ -9240,32 +9245,32 @@ EED3: 35 94          PULS   B,X,PC
 
 l_f900:
 F900: BD FC 28       JSR    save_and_switch_to_bank_5_fc28                                      
-F903: BD 40 96       JSR    $4096 ; [banks=5]
+F903: BD 40 96       JSR    lb5_4096
 F906: BD FC 3A       JSR    switch_to_saved_bank_fc3a                                      
 F909: 39             RTS                                               
 l_f90a:
 F90A: BD FC 28       JSR    save_and_switch_to_bank_5_fc28
-F90D: BD 40 99       JSR    $4099 ; [banks=5]
+F90D: BD 40 99       JSR    lb5_4099
 F910: BD FC 3A       JSR    switch_to_saved_bank_fc3a
 F913: 39             RTS
 l_f914:
 F914: BD FC 28       JSR    save_and_switch_to_bank_5_fc28
-F917: BD 40 9C       JSR    $409C ; [banks=5]
+F917: BD 40 9C       JSR    lb5_409C
 F91A: BD FC 3A       JSR    switch_to_saved_bank_fc3a
 F91D: 39             RTS
 l_f91e:
 F91E: BD FC 28       JSR    save_and_switch_to_bank_5_fc28
-F921: BD 40 84       JSR    $4084 ; [banks=5]
+F921: BD 40 84       JSR    lb5_4084
 F924: BD FC 3A       JSR    switch_to_saved_bank_fc3a
 F927: 39             RTS
 l_f928:
 F928: BD FC 28       JSR    save_and_switch_to_bank_5_fc28
-F92B: BD 40 87       JSR    $4087 ; [banks=5]
+F92B: BD 40 87       JSR    lb5_4087
 F92E: BD FC 3A       JSR    switch_to_saved_bank_fc3a
 F931: 39             RTS
 l_f932:
 F932: BD FC 28       JSR    save_and_switch_to_bank_5_fc28
-F935: BD 40 7B       JSR    $407B ; [banks=5]
+F935: BD 40 7B       JSR    lb5_407B
 F938: BD FC 3A       JSR    switch_to_saved_bank_fc3a
 F93B: 39             RTS
 l_f93c:
@@ -9280,29 +9285,29 @@ F94C: BD FB 34       JSR    switch_to_saved_bank_fb34
 F94F: 39             RTS
 
 F950: BD FC 28       JSR    save_and_switch_to_bank_5_fc28
-F953: BD 40 7E       JSR    $407E ; [banks=5]
+F953: BD 40 7E       JSR    lb5_407E
 F956: BD FC 3A       JSR    switch_to_saved_bank_fc3a
 F959: 39             RTS
 
 F960: BD FC 82       JSR    switch_to_bank_5_fc82
-F963: BD 40 69       JSR    $4069 ; [banks=5]
+F963: BD 40 69       JSR    lb5_4069
 F966: BD FC 8F       JSR    switch_to_bank_0_fc8f
 F969: 39             RTS
 F96A: BD FC 82       JSR    switch_to_bank_5_fc82
-F96D: BD 40 6F       JSR    $406F ; [banks=5]
+F96D: BD 40 6F       JSR    lb5_406F
 F970: BD FC 8F       JSR    switch_to_bank_0_fc8f
 F973: 39             RTS
 F974: BD FC 82       JSR    switch_to_bank_5_fc82
-F977: BD 40 8A       JSR    $408A ; [banks=5]
+F977: BD 40 8A       JSR    lb5_408A
 F97A: BD FC 8F       JSR    switch_to_bank_0_fc8f
 F97D: 39             RTS
 F97E: BD FC 82       JSR    switch_to_bank_5_fc82
-F981: BD 40 8D       JSR    $408D ; [banks=5]
+F981: BD 40 8D       JSR    lb5_408D
 F984: BD FC 8F       JSR    switch_to_bank_0_fc8f
 F987: 39             RTS
 F988: BD BB 40       JSR    switch_to_bank_1_bb40
-F98B: BD 40 12       JSR    $4012 ; [banks=1]
-F98E: BD BB 4D       JSR    switch_to_bank_0_bb4d
+F98B: BD 40 12       JSR    lb1_4012
+F98E: BD BB 4D       JSR    switch_to_bank_0_cc_safe_bb4d
 F991: 39             RTS
 F992: BD FC 82       JSR    switch_to_bank_5_fc82
 F995: BD 40 63       JSR    lb5_4063
@@ -9310,7 +9315,7 @@ F998: BD FC 8F       JSR    switch_to_bank_0_fc8f
 F99B: 39             RTS
 F99C: BD BB 40       JSR    switch_to_bank_1_bb40
 F99F: BD 40 15       JSR    lb1_4015
-F9A2: BD BB 4D       JSR    switch_to_bank_0_bb4d
+F9A2: BD BB 4D       JSR    switch_to_bank_0_cc_safe_bb4d
 F9A5: 39             RTS
 F9A6: BD FC 82       JSR    switch_to_bank_5_fc82
 F9A9: BD 40 9F       JSR    lb5_409F
@@ -9318,27 +9323,27 @@ F9AC: BD FC 8F       JSR    switch_to_bank_0_fc8f
 F9AF: 39             RTS
 F9B0: BD BB 40       JSR    switch_to_bank_1_bb40
 F9B3: BD 40 18       JSR    lb1_4018
-F9B6: BD BB 4D       JSR    switch_to_bank_0_bb4d
+F9B6: BD BB 4D       JSR    switch_to_bank_0_cc_safe_bb4d
 F9B9: 39             RTS
 F9BA: BD BB 40       JSR    switch_to_bank_1_bb40
 F9BD: BD 40 1B       JSR    lb1_401B
-F9C0: BD BB 4D       JSR    switch_to_bank_0_bb4d
+F9C0: BD BB 4D       JSR    switch_to_bank_0_cc_safe_bb4d
 F9C3: 39             RTS
 F9C4: BD BB 40       JSR    switch_to_bank_1_bb40
 F9C7: BD 40 1E       JSR    lb1_401E
-F9CA: BD BB 4D       JSR    switch_to_bank_0_bb4d
+F9CA: BD BB 4D       JSR    switch_to_bank_0_cc_safe_bb4d
 F9CD: 39             RTS
 F9CE: BD BB 40       JSR    switch_to_bank_1_bb40
 F9D1: BD 40 21       JSR    lb1_4021
-F9D4: BD BB 4D       JSR    switch_to_bank_0_bb4d
+F9D4: BD BB 4D       JSR    switch_to_bank_0_cc_safe_bb4d
 F9D7: 39             RTS
 F9D8: BD BB 40       JSR    switch_to_bank_1_bb40
 F9DB: BD 40 24       JSR    lb1_4024
-F9DE: BD BB 4D       JSR    switch_to_bank_0_bb4d
+F9DE: BD BB 4D       JSR    switch_to_bank_0_cc_safe_bb4d
 F9E1: 39             RTS
 F9E2: BD BB 40       JSR    switch_to_bank_1_bb40
 F9E5: BD 40 27       JSR    lb1_4027
-F9E8: BD BB 4D       JSR    switch_to_bank_0_bb4d
+F9E8: BD BB 4D       JSR    switch_to_bank_0_cc_safe_bb4d
 F9EB: 39             RTS
 
 l_fa00:
@@ -9393,7 +9398,7 @@ FA79: 39             RTS
 l_fa80:
 FA80: BD FA 8A       JSR    switch_to_bank_4_fa8a
 FA83: BD 78 00       JSR    lb4_7800
-FA86: BD FF 9C       JSR    $FF9C
+FA86: BD FF 9C       JSR    switch_to_bank_3_ff9c
 FA89: 39             RTS
 
 switch_to_bank_4_fa8a:
@@ -9529,7 +9534,7 @@ FB93: 39             RTS
 l_fb94:
 FB94: BD FC 28       JSR    save_and_switch_to_bank_5_fc28
 FB97: BD 40 09       JSR    lb5_4009
-FB90: BD FC 3A       JSR    switch_to_saved_bank_fc3a
+FB9A: BD FC 3A       JSR    switch_to_saved_bank_fc3a
 FB9D: 39             RTS
 l_fb9e:
 FB9E: BD FC 28       JSR    save_and_switch_to_bank_5_fc28
@@ -9545,27 +9550,27 @@ FBB1: 39             RTS
 
 FBC0: BD BB 40       JSR    switch_to_bank_1_bb40
 FBC3: BD 40 06       JSR    lb1_4006
-FBC6: BD BB 4D       JSR    switch_to_bank_0_bb4d
+FBC6: BD BB 4D       JSR    switch_to_bank_0_cc_safe_bb4d
 FBC9: 39             RTS
 
 FBCA: BD BB 40       JSR    switch_to_bank_1_bb40
 FBCD: BD 40 09       JSR    lb1_4009
-FBD0: BD BB 4D       JSR    switch_to_bank_0_bb4d
+FBD0: BD BB 4D       JSR    switch_to_bank_0_cc_safe_bb4d
 FBD3: 39             RTS
 
 FBD4: BD BB 40       JSR    switch_to_bank_1_bb40
 FBD7: BD 40 0C       JSR    lb1_400C 
-FBDA: BD BB 4D       JSR    switch_to_bank_0_bb4d
+FBDA: BD BB 4D       JSR    switch_to_bank_0_cc_safe_bb4d
 FBDD: 39             RTS
 
 FBDE: BD BB 40       JSR    switch_to_bank_1_bb40
 FBE1: BD 40 0F       JSR    lb1_400F
-FBE4: BD BB 4D       JSR    switch_to_bank_0_bb4d
+FBE4: BD BB 4D       JSR    switch_to_bank_0_cc_safe_bb4d
 FBE7: 39             RTS
 
 FBE8: BD BB 40       JSR    switch_to_bank_1_bb40
 FBEB: BD 40 6F       JSR    lb1_406F
-FBEE: BD BB 4D       JSR    switch_to_bank_0_bb4d
+FBEE: BD BB 4D       JSR    switch_to_bank_0_cc_safe_bb4d
 FBF1: 39             RTS
 
 FBF2: BD FC 82       JSR    switch_to_bank_5_fc82
@@ -9710,7 +9715,9 @@ FD09: 7E FB DE       JMP    $FBDE
 FD0C: 7E B9 B0       JMP    $B9B0
 FD0F: 7E F9 C4       JMP    $F9C4
 FD12: 7E F9 88       JMP    $F988
+handle_elevator_doors_fd15:
 FD15: 7E BB 82       JMP    $BB82
+
 FD18: 96 36          LDA    current_level_0036
 FD1A: 81 03          CMPA   #$03
 FD1C: 26 09          BNE    $FD27
@@ -9733,17 +9740,17 @@ FD4D: 39             RTS
 
 FD4E: BD BB 40       JSR    switch_to_bank_1_bb40
 FD51: BD 40 63       JSR    lb1_4063
-FD54: BD BB 4D       JSR    switch_to_bank_0_bb4d
+FD54: BD BB 4D       JSR    switch_to_bank_0_cc_safe_bb4d
 FD57: 39             RTS
 
 FD58: BD BB 40       JSR    switch_to_bank_1_bb40
 FD5B: BD 40 66       JSR    lb1_4066
-FD5E: BD BB 4D       JSR    switch_to_bank_0_bb4d
+FD5E: BD BB 4D       JSR    switch_to_bank_0_cc_safe_bb4d
 FD61: 39             RTS
 
 FD62: BD BB 40       JSR    switch_to_bank_1_bb40
 FD65: BD 40 69       JSR    lb1_4069
-FD68: BD BB 4D       JSR    switch_to_bank_0_bb4d
+FD68: BD BB 4D       JSR    switch_to_bank_0_cc_safe_bb4d
 FD6B: 39             RTS
 
 FD70: BD FC 82       JSR    switch_to_bank_5_fc82
@@ -10189,21 +10196,21 @@ jump_table_badd:
 
 jump_table_bbec:
 	dc.w	$bc63	; $bbec
-	dc.w	$bc14	; $bbee
-	dc.w	$bc14	; $bbf0
+	dc.w	handle_elevator_doors_bc14	; $bbee
+	dc.w	handle_elevator_doors_bc14	; $bbf0
 	dc.w	$c233	; $bbf2
 	dc.w	$bf7d	; $bbf4
 	dc.w	$c7bf	; $bbf6
 	dc.w	$c4c6	; $bbf8
 	dc.w	$c69c	; $bbfa
-	dc.w	$bc14	; $bbfc
-	dc.w	$bc14	; $bbfe
-	dc.w	$bc14	; $bc00
-	dc.w	$bc14	; $bc02
-	dc.w	$bc14	; $bc04
-	dc.w	$bc14	; $bc06
+	dc.w	handle_elevator_doors_bc14	; $bbfc
+	dc.w	handle_elevator_doors_bc14	; $bbfe
+	dc.w	handle_elevator_doors_bc14	; $bc00
+	dc.w	handle_elevator_doors_bc14	; $bc02
+	dc.w	handle_elevator_doors_bc14	; $bc04
+	dc.w	handle_elevator_doors_bc14	; $bc06
 	dc.w	$c9fb	; $bc08
-	dc.w	$bc14	; $bc0a
+	dc.w	handle_elevator_doors_bc14	; $bc0a
 	dc.w	$bc58	; $bc0c
 	dc.w	$bc58	; $bc0e
 	dc.w	$bc58	; $bc10
@@ -10223,7 +10230,7 @@ jump_table_bc27:
 	dc.w	lb5_4036
 	dc.w	lb5_402a
 	dc.w	lb5_402d
-	dc.w	lb5_4030
+	dc.w	lb5_doors_open_4030
 	dc.w	lb5_4033
 	dc.w	lb5_4033 
 	dc.w	lb5_4027

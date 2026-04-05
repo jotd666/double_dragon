@@ -30,8 +30,8 @@ lb5_402a:      ; [global]
 402A: 7E 5D E4       JMP    $5DE4
 lb5_402d:      ; [global]
 402D: 7E 5E 2E       JMP    $5E2E
-lb5_4030:      ; [global]
-4030: 7E 5E 78       JMP    $5E78
+lb5_doors_open_4030:      ; [global]
+4030: 7E 5E 78       JMP    doors_open_5e78
 lb5_4033:      ; [global]
 4033: 7E 5E BB       JMP    $5EBB
 lb5_4036:      ; [global]
@@ -228,18 +228,19 @@ jump_table_42bf:
 	dc.w	$436B 
 	dc.w	$42CE 
 
-42CD: 39             RTS                                                 
+42CD: 39             RTS         
+                                        
 42CE: 10 8E 43 51    LDY    #$4351                                     
 42D2: A6 01          LDA    $1,X
 42D4: 81 22          CMPA   #$22
 42D6: 25 02          BCS    $42DA
 42D8: 80 17          SUBA   #$17
 42DA: 48             ASLA
-42DB: E6 A6          LDB    A,Y
+42DB: E6 A6          LDB    A,Y		; [bank_address]
 42DD: E1 88 1C       CMPB   $1C,X
 42E0: 26 06          BNE    $42E8
 42E2: 4C             INCA
-42E3: A6 A6          LDA    A,Y
+42E3: A6 A6          LDA    A,Y		; [bank_address]
 42E5: A7 88 1C       STA    $1C,X
 42E8: A6 01          LDA    $1,X
 42EA: 81 03          CMPA   #$03
@@ -1539,7 +1540,7 @@ jump_table_5839:
 5BB0: 86 40          LDA    #$40
 5BB2: A7 E4          STA    ,S	; [local]
 5BB4: DC 3C          LDD    $3C
-5BB6: 10 A3 A1       CMPD   ,Y++
+5BB6: 10 A3 A1       CMPD   ,Y++		; [bank_address]
 5BB9: 25 14          BCS    $5BCF
 5BBB: BD 58 0E       JSR    $580E
 5BBE: 24 0F          BCC    $5BCF
@@ -1745,6 +1746,7 @@ jump_table_5caf:
 5DA6: B7 0E 1A       STA    $0E1A
 5DA9: FD 0E 1B       STD    $0E1B
 5DAC: 39             RTS
+
 5DAD: 10 8E 5D E0    LDY    #$5DE0
 5DB1: A6 88 1B       LDA    $1B,X
 5DB4: 2B 03          BMI    $5DB9
@@ -1819,6 +1821,7 @@ jump_table_5caf:
 5E5E: E7 88 19       STB    $19,X
 5E61: 39             RTS
 
+doors_open_5e78:
 5E78: 6A 88 19       DEC    $19,X
 5E7B: 26 26          BNE    $5EA3
 5E7D: A6 88 16       LDA    $16,X
@@ -2467,9 +2470,9 @@ flip_screen_if_needed_66e6:
 6793: 81 16          CMPA   #$16
 6795: 27 9B          BEQ    $6732
 6797: 10 AE 88 35    LDY    $35,X
-679B: A6 A8 17       LDA    $17,Y      ; [bank_address]
+679B: A6 A8 17       LDA    $17,Y
 679E: CE 68 85       LDU    #$6885
-67A1: A6 C6          LDA    A,U
+67A1: A6 C6          LDA    A,U      ; [bank_address]
 67A3: 81 FF          CMPA   #$FF
 67A5: 27 8B          BEQ    $6732
 67A7: A7 88 1B       STA    $1B,X
@@ -3200,11 +3203,11 @@ flip_screen_if_needed_66e6:
 6EB2: 81 07          CMPA   #$07
 6EB4: 24 14          BCC    $6ECA
 6EB6: CE 73 4F       LDU    #$734F
-6EB9: A6 C6          LDA    A,U
+6EB9: A6 C6          LDA    A,U		; [bank_address]
 6EBB: 81 FF          CMPA   #$FF
 6EBD: 27 0B          BEQ    $6ECA
 6EBF: CE 73 56       LDU    #$7356
-6EC2: EE C6          LDU    A,U
+6EC2: EE C6          LDU    A,U		; [bank_address]
 6EC4: 6D C4          TST    ,U
 6EC6: 27 02          BEQ    $6ECA
 6EC8: 6A C4          DEC    ,U

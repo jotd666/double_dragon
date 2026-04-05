@@ -1933,12 +1933,12 @@ subcpu_processing_411e:
 5221: CE 52 6C    LDU    #$526C
 5224: 48          ASLA
 5225: EE C6       LDU    A,U		; [bank_address]
-5227: A6 C4       LDA    ,U
+5227: A6 C4       LDA    ,U		; [bank_address]
 5229: 81 FF       CMPA   #$FF
 522B: 27 25       BEQ    $5252
 522D: A6 88 17    LDA    $17,X
 5230: 84 1F       ANDA   #$1F
-5232: A1 C0       CMPA   ,U+
+5232: A1 C0       CMPA   ,U+		; [bank_address]
 5234: 26 F1       BNE    $5227
 5236: A6 A8 1B    LDA    $1B,Y
 5239: 84 3F       ANDA   #$3F

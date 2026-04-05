@@ -2317,7 +2317,7 @@ lb0_588f:    ; [global]
 5968: 6F 01          CLR    $1,X
 596A: A6 A4          LDA    ,Y		; [bank_address]
 596C: A7 02          STA    $2,X
-596E: A6 21          LDA    $1,Y
+596E: A6 21          LDA    $1,Y		; [bank_address]
 5970: A7 03          STA    $3,X
 5972: 81 01          CMPA   #$01
 5974: 23 06          BLS    $597C
@@ -2526,11 +2526,11 @@ lb0_5b1f:    ; [global]
 5BB8: 48             ASLA
 5BB9: 31 A6          LEAY   A,Y
 5BBB: 4F             CLRA
-5BBC: E6 A4          LDB    ,Y
+5BBC: E6 A4          LDB    ,Y	; [bank_address]
 5BBE: E3 84          ADDD   ,X	; [bank_address]
 5BC0: ED E4          STD    ,S		; [local]
 5BC2: 4F             CLRA
-5BC3: E6 21          LDB    $1,Y
+5BC3: E6 21          LDB    $1,Y	; [bank_address]
 5BC5: E3 04          ADDD   $4,X	; [bank_address]
 5BC7: ED 62          STD    $2,S	; [local]
 5BC9: 36 30          PSHU   Y,X
@@ -2542,7 +2542,7 @@ lb0_5b1f:    ; [global]
 5BD7: 10 AE 09       LDY    $9,X	; [bank_address]
 5BDA: 96 00          LDA    $00
 5BDC: 48             ASLA
-5BDD: EC A6          LDD    A,Y
+5BDD: EC A6          LDD    A,Y		; [bank_address]
 5BDF: 10 AE 64       LDY    $4,S	; [local]
 5BE2: ED A4          STD    ,Y
 5BE4: 0A 00          DEC    $00
@@ -3299,7 +3299,7 @@ lb0_5f85:  ; [global]
 63BB: 86 80          LDA    #$80
 63BD: A7 A8 16       STA    $16,Y
 63C0: 86 80          LDA    #$80
-63C2: A7 A4          STA    ,Y
+63C2: A7 A4          STA    ,Y		; activate object
 63C4: AF A8 1F       STX    $1F,Y
 63C7: CC FF FF       LDD    #$FFFF
 63CA: ED 24          STD    $4,Y
