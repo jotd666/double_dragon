@@ -572,10 +572,10 @@ lb0_44dc:    ; [global]
 44EE: 1F 23          TFR    Y,U
 44F0: 0D 02          TST    $02
 44F2: 2B 34          BMI    $4528
-44F4: B6 0B C0       LDA    $0BC0
+44F4: B6 0B C0       LDA    nb_palettes_to_update_0bc0
 44F7: 81 10          CMPA   #$10
 44F9: 10 24 00 5F    LBCC   $455C
-44FD: 7C 0B C0       INC    $0BC0
+44FD: 7C 0B C0       INC    nb_palettes_to_update_0bc0
 4500: C6 04          LDB    #$04
 4502: 3D             MUL
 4503: 10 8E 0B 80    LDY    #$0B80
@@ -600,10 +600,10 @@ lb0_44dc:    ; [global]
 4522: 35 04          PULS   B
 4524: ED A4          STD    ,Y
 4526: 20 34          BRA    $455C
-4528: B6 0D E1       LDA    $0DE1
+4528: B6 0D E1       LDA    nb_palettes_to_update_0de1
 452B: 81 10          CMPA   #$10
 452D: 24 2D          BCC    $455C
-452F: 7C 0D E1       INC    $0DE1
+452F: 7C 0D E1       INC    nb_palettes_to_update_0de1
 4532: C6 22          LDB    #$22
 4534: 3D             MUL
 4535: 10 8E 0B C1    LDY    #$0BC1
@@ -632,9 +632,9 @@ lb0_44dc:    ; [global]
 455C: 32 68          LEAS   $8,S   ; [free_locals]
 455E: 35 F6          PULS   D,X,Y,U,PC
 
-lb0_4566:   ; [global]
+lb0_set_bg_tiles_palette_4566:   ; [global]
 4566: 34 76          PSHS   U,Y,X,D                                      
-4568: B6 0B C0       LDA    $0BC0
+4568: B6 0B C0       LDA    nb_palettes_to_update_0bc0
 456B: 27 1B          BEQ    $4588
 456D: 8E 0B 80       LDX    #$0B80
 4570: C6 04          LDB    #$04
@@ -643,12 +643,12 @@ lb0_4566:   ; [global]
 4574: 30 8B          LEAX   D,X
 4576: 10 AE 81       LDY    ,X++
 4579: A6 80          LDA    ,X+
-457B: A7 A4          STA    ,Y
+457B: A7 A4          STA    ,Y		; set palette color (RG)
 457D: A6 80          LDA    ,X+
-457F: A7 A9 02 00    STA    $0200,Y
-4583: 7A 0B C0       DEC    $0BC0
+457F: A7 A9 02 00    STA    $0200,Y	; set palette color (B)
+4583: 7A 0B C0       DEC    nb_palettes_to_update_0bc0
 4586: 20 E0          BRA    $4568
-4588: B6 0D E1       LDA    $0DE1
+4588: B6 0D E1       LDA    nb_palettes_to_update_0de1
 458B: 27 22          BEQ    $45AF
 458D: 8E 0B C1       LDX    #$0BC1
 4590: C6 22          LDB    #$22
@@ -658,13 +658,13 @@ lb0_4566:   ; [global]
 4596: 10 AE 81       LDY    ,X++
 4599: C6 10          LDB    #$10
 459B: A6 80          LDA    ,X+
-459D: A7 A4          STA    ,Y
+459D: A7 A4          STA    ,Y		; set palette color (RG)
 459F: A6 80          LDA    ,X+
-45A1: A7 A9 02 00    STA    $0200,Y
+45A1: A7 A9 02 00    STA    $0200,Y	; set palette color (B)
 45A5: 31 21          LEAY   $1,Y
 45A7: 5A             DECB
 45A8: 26 F1          BNE    $459B
-45AA: 7A 0D E1       DEC    $0DE1
+45AA: 7A 0D E1       DEC    nb_palettes_to_update_0de1
 45AD: 20 D9          BRA    $4588
 45AF: 35 F6          PULS   D,X,Y,U,PC
 

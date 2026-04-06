@@ -819,7 +819,6 @@ demo_game:
 	* but relies on vbl sync flags
 	
 	jbsr	cache_fg_tiles_address
-	jbsr	cache_bg_tiles_address
 
 *	lea		level_12_music,a0
 *	move.l	a0,current_music_name
@@ -1417,6 +1416,7 @@ draw_left_tiles:
 	sub.w	#BG_TILE_WIDTH,d0		| else refresh will be okay but visible
 	jra		draw_column_tiles
 draw_right_tiles:
+	BREAKPOINT	"draw right"
 	move.w	max_scroll_x,d0
 
 draw_column_tiles:
@@ -1427,9 +1427,8 @@ draw_column_tiles:
 	lsl.w	#6,d0	
 	move.w	d0,x_offset
 	move.w	(a7)+,d0	
-	
-	rts
-	
+
+
 	GET_MEMORY_START_AND_DP
 
 	lea		(bg_tiles_address_3000,a6),a5
@@ -3536,13 +3535,30 @@ osd_video_byte_dirty:
 	jra	osd_w_videoram_out	
 	.endif
 0:
-* bg tile
-	and.w	#0x7FE,d7
+	and.w	#0x7FE,d7		| even
+	
+	* we need to see if the tile is on screen considering X scolling
+	* positions. Compute first X & last X coord visible
+
+
+	lea		dd2gng_table,a0
+	move.w	(a0,d7.w),d6
+	jbsr	compute_x_offset
+	jmi		osd_w_videoram_out
+	
+	* tile is in screen considered the current scrolling: update it
+	* (don't check Y we need update no matter when in that case)
+	
+	
 	lea		(BG_SCREEN_TILE_ADDRESS,a6),a0
-	move.b	(a0,d7.w),d1
 	move.b	(1,a0,d7.w),d0
+	move.b	(a0,d7.w),d1
+
+	* here we have to compute x_offset, this is the game displaying a random
+	* tile on screen
 
 	jbsr	update_bg_tile
+
 	jra		osd_w_videoram_out
 	
 maybe_fg_tile:
@@ -3579,34 +3595,7 @@ osd_w_videoram_out:
 	OSD_EXIT
 	rts	
 	
-bg_tile:
-	and.w	#0x7FE,d7
-	
-	* we need to see if the tile is on screen considering X scolling
-	* positions. Compute first X & last X coord visible
 
-
-	lea		dd2gng_table,a0
-	move.w	(a0,d7.w),d6
-	jbsr	compute_x_offset
-	jmi		osd_w_videoram_out
-	
-	* tile is in screen considered the current scrolling: update it
-	* (don't check Y we need update no matter when in that case)
-	
-	
-	lea		(BG_SCREEN_TILE_ADDRESS,a6),a0
-	move.b	(1,a0,d7.w),d0
-	move.b	(a0,d7.w),d1
-
-
-	* here we have to compute x_offset, this is the game displaying a random
-	* tile on screen
-
-	jbsr	update_bg_tile
-
-	jra		osd_w_videoram_out
-	
 	
 	.macro	COPY_TILE8_PLANE_ROW
 	move.b	d0,(offset,a1)  | buffer
@@ -3680,42 +3669,8 @@ compute_x_offset:
 	moveq	#-1,d0
 	jra		2b
 	
-* create 2 caches
 
-cache_bg_tiles_address:
-	* 1 cache: tile-accurate X,Y => address
-	lea		bg_tile_xy2address_cache,a0
-	moveq	#0,d1
-0:
-	moveq	#0,d0
-1:
-	move.w	d0,d2
-	lsl.w	#5,d2		| X*32
-	add.w	d1,d2		| plus Y
-	move.w	d2,(a0)+
-	addq	#1,d0
-	cmp.w	#0x20,d0
-	jne		1b
-	addq	#1,d1
-	cmp.w	#0x20,d1
-	jne		0b
-	
-	* 2 cache: address => tile-accurate X,Y
-	lea		bg_tile_address2xy_cache,a0
-	move.w	#0,d7
-0:
-	move.w	d7,d0
-	lsr.w	#5,d0
-	lsl.w	#8,d0
-	move.w	d7,d1
-	and.b	#0x1F,d1
-	or.b	d1,d0
-	move.w	d0,(a0)+
-	addq	#1,d7
-	cmp.w	#0x400,d7
-	jne		0b
-	
-	rts
+
 	
 	.macro	COPY_TILE16_PLANE_ROW
 	move.w	d0,(offset,a1)  | buffer
@@ -3771,6 +3726,12 @@ update_bg_tile:
 	jne		0f
 	* skip all this crap altogether, blit the big pic
 	jra		blit_title_pic
+0:
+	cmp.b	#0xC7,d0
+	jne	0f
+	cmp.w	#0x4A0,d7
+	jne	0f
+*	BREAKPOINT	"LADDER"
 0:
 	* now convert address to GnG layout. The screen size is the same
 	* and all routines work, so let's not rewrite everything
@@ -5575,11 +5536,6 @@ difficulty_table:
 	.align	2
 
 	
-
-bg_tile_xy2address_cache:
-	.skip	0x800
-bg_tile_address2xy_cache:
-	.skip	0x800
 	
 old_intena:
 	.long	0

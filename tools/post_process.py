@@ -66,6 +66,17 @@ def f_handle_bank0_line(address,lines,i):
     elif address in {0x46dd,0x5301}:
         # protect carry from target stack restore
         line = f"\tPUSH_SR  | save carry\n{line}\tPOP_SR  | restore carry\n"
+    # handling of palette update
+    elif address == 0x4568:
+        line += "\tclr.b\tneed_palette_update_flag\n"
+    elif address in {0x456D,0x458D}:
+        line += "\tst.b\tneed_palette_update_flag\n"
+    elif address == 0x45AF:
+        line = """\ttst.b\tneed_palette_update_flag
+\tjeq\t0f
+\tjbsr\tosd_palette_updated
+0:
+"""+line
     lines[i] = line
 
 def f_handle_bank1_line(address,lines,i):

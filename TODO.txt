@@ -1,17 +1,18 @@
+- doesn't write column where: write upper right part of "sell" poster: Y=272, addr=3702 tile=7B0 color=2
+  debug "set_scroll_values" that triggers at start already ??? wtf
 - sprite clipping too soon on the right: mockup
 - still red flashes when giant breaks the wall
-Warning: no size set for sprite $0885
-Warning: no size set for sprite $092d
+Warning: no size set for sprite $0885^: check 884
+Warning: no size set for sprite $092d: 92c!!
 Warning: no size set for sprite $0fe3
-Warning: no size set for sprite $0fe5
+Warning: no size set for sprite $0fe5: repair sprite used json dump which is missing
+
 - try 16+16 color version (this is going to suck!)
 
-- scrolling doesn't feed from right / wrong positions (seems OK from left)
-  column scroll disabled, so x_offset maybe computed wrong except that it works
-  for sprites! so is that gng2dd conversion issue with write bg_tiles? pick a tile that should
-  be displayed at some point and which is displayed elsewhere like the "moto" poster
-  first tiles going wrong are the ladder ones, seems that they're 1 half screen too soon
+- when resetting context, redraw all tiles as palette has changed
 
+- merge tile+sprite palette to try to get 64 color version, as in intro palette is different for tiles too
+  (end level barrels!)
 - group laterally like in VBall
 - weak enemies: doesn't work with hooker and giant bosses
 - copy sprite colors from billy to jimmy

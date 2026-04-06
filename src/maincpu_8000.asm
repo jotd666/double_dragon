@@ -182,6 +182,8 @@ attract_mode_timer_0e50 = $e50
 player_1_struct_03a2 = $3A2
 player_2_struct_0400 = $400
 some_state_0afc = $afc
+nb_palettes_to_update_0de1 = $de1
+nb_palettes_to_update_0bc0 = $bc0
 
 ; contains the array on pointers on logical object structures, located just after the array, at $3A2
 ; a logical object is a combination of sprites
@@ -276,7 +278,7 @@ nmi_8056:   ; [global]
 806E: BD FD FC       JSR    update_scrolling_fdfc
 8071: BD FF 24       JSR    save_and_switch_to_bank_0_ff24
 8074: BD FE A4       JSR    update_sprite_memory_fea4	; copy from subcpu memory to sprite memory
-8077: BD FE A7       JSR    $FEA7			; ??? tried disabling it, the game runs normally...
+8077: BD FE A7       JSR    set_bg_tiles_palette_fea7
 807A: BD FD F3       JSR    set_palettes_fdf3
 807D: BD FF 34       JSR    restore_previous_bank_ff34
 ; "ack" nmi graphic update by setting bit 2 
@@ -9872,7 +9874,8 @@ set_screen_orientation_fea1:
 FEA1: 7E 42 B4       JMP    lb0_42B4
 update_sprite_memory_fea4:
 FEA4: 7E 42 31       JMP    lb0_update_sprite_memory_4231
-FEA7: 7E 45 66       JMP    lb0_4566
+set_bg_tiles_palette_fea7:
+FEA7: 7E 45 66       JMP    lb0_set_bg_tiles_palette_4566
 FEAA: 7E 41 BF       JMP    lb0_41BF
 clear_sprite_slots_fead:
 FEAD: 7E 41 F0       JMP    lb0_clear_sprite_slots_41f0

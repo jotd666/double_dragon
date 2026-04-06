@@ -667,7 +667,7 @@ with open(bank,"w") as f:
     asm2bin(bank)
 
 # background tiles & sprite contexts
-context_list = ["level_1"]
+context_list = ["level_1_1","level_1_2"]
 for context in context_list:
 
     bg_tile_sheet_dict = {i:Image.open(sheets_path / "bg_tiles" / context / f"pal_{i:02x}.png") for i in range(BG_NB_CLUTS)}
