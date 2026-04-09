@@ -557,7 +557,7 @@ lb0_play_sound_44cd:   ; [global]
 44D1: F6 38 04       LDB    $3804
 44D4: C4 04          ANDB   #$04
 44D6: 27 03          BEQ    $44DB
-44D8: B7 38 0E       STA    $380E
+44D8: B7 38 0E       STA    sound_irq_380e
 44DB: 39             RTS
 
 lb0_44dc:    ; [global]

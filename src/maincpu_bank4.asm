@@ -163,7 +163,7 @@ lb4_4000:   ; [global]
 417B: 58             ASLB
 417C: E3 84          ADDD   ,X		; [bank_address] 
 417E: 1F 01          TFR    D,X
-4180: 10 AE 84       LDY    ,X		; [bank_address] 
+4180: 10 AE 84       LDY    ,X		; [select_address] 
 4183: 10 9F 56       STY    $56
 4186: 8E 0B 31       LDX    #$0B31
 4189: 96 37          LDA    $37

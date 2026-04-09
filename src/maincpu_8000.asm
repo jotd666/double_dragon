@@ -1318,7 +1318,7 @@ check_for_coin_inserted_8990:    ; [global]
 89E6: 84 E0          ANDA   #$E0
 89E8: 26 F2          BNE    $89DC
 l_89ea:
-89EA: 86 02          LDA    #$02
+89EA: 86 02          LDA    #$02				; credit
 89EC: B7 38 0E       STA    sound_irq_380e
 89EF: 6F E4          CLR    ,S	; [local]
 89F1: 5F             CLRB

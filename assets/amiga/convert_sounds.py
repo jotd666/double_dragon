@@ -11,26 +11,7 @@ sound_dir = this_dir / ".." / "sounds"
 # default channel = 3, default priority = 40
 # put below some exceptions
 sound_settings_dict = {
-0x1 : {"channel":2,"priority":100},   # lose armour
-0x10 : {"channel":2,"priority":100},  # wear armour
-0x2 : {"channel":2,"priority":100},
-0xb : {"channel":3,"priority":5},  # flying goblin (low pri)
-0x3 : {"channel":2,"priority":100},
-0x37 : {"channel":2,"priority":100},  # extra life
-0x20 : {"channel":2,"priority":50},
-0x23 : {"channel":3,"priority":100},
-0x12 : {"channel":3,"priority":100},
-0x19 : {"channel":3,"priority":100},  # bag enemies
-0x14 : {"channel":3,"priority":50},  # small enemy hit
-0x11 : {"channel":3,"priority":50},  # enemy hit
-0x1d : {"channel":3,"priority":50},  # bonus picked up
-0x1B : {"channel":3,"priority":50},  # enemy killed
-0x3A : {"channel":1,"priority":100},  # intro tune
-0xc : {"channel":3,"priority":1},  # giant stomps
-0xd : {"channel":3,"priority":60},  # shot bounces
-0xf : {"channel":3,"priority":100},
-0x6 : {"channel":3,"priority":5},   # player shot
-0x21 : {"channel":3,"priority":100},  # dragon
+#0x1 : {"channel":2,"priority":100},   # lose armour
 }
 
 def convert():
@@ -54,14 +35,7 @@ def convert():
     EMPTY_SND = "EMPTY_SND"
 
     dummy_sounds = {
-    0x28,  # second part of highscore (2nd place) tune
-    0x3F,  # stop tune
-    0,     # stop ???
-    0x39,  # unused jingle
-    0x11,  # unused?
-    0x13,  # unused step
-    0x15, 0x16, 0x9, 0xa,  # unmapped by game (skipped in self-test!)
-    0xFF}
+    }
 
 
     sound_dict = {}
@@ -91,25 +65,8 @@ def convert():
 
 
     music_dict = {
-    "LEVEL12_TUNE_SND"      :{"index":0x2B,"pattern":0,"volume":16},
-    "LEVEL34_TUNE_SND"      :{"index":0x33,"pattern":0,"volume":16},
-    "LEVEL56_TUNE_SND"      :{"index":0x29,"pattern":0,"volume":26},
-    "KILLED_TUNE_SND"      :{"index":0x31,"pattern":12,"volume":32},
-    "GAME_OVER_SND"      :{"index":0x2F,"pattern":14,"volume":32},
-    "BOSS12_TUNE_SND"      :{"index":0x2D,"pattern":7,"volume":30},
-    "BOSS34_TUNE_SND"      :{"index":0x34,"pattern":3,"volume":26},
-    "BOSS56_TUNE_SND"      :{"index":0x2E,"pattern":6,"volume":30},
-    "LEVEL7_END1_SND"      :{"index":0x1C,"pattern":0x10,"volume":32},
-    "LEVEL7_END2_SND"      :{"index":0x32,"pattern":0x11,"volume":32},
-    "BOSS7_TUNE_SND"      :{"index":0x2A,"pattern":0x2,"volume":28},
-    "BOSS7_RESOLVE_TUNE_SND"      :{"index":0x38,"pattern":0,"volume":32},
-    "HURRY_UP_SND"      :{"index":0x18,"pattern":11,"volume":20},
-    "FIRST_PLACE_TUNE_SND"      :{"index":0x26,"pattern":0,"volume":32},
-    "FIRST_PLACE_JINGLE_TUNE_SND"      :{"index":0x25,"pattern":0,"volume":32},
-    "SECOND_PLACE_TUNE_SND"      :{"index":0x2C,"pattern":0,"volume":32},
-    "SECOND_PLACE_JINGLE_TUNE_SND"      :{"index":0x27,"pattern":0,"volume":32},
-    "LEVEL_COMPLETE_TUNE_SND"      :{"index":0x3E,"pattern":16,"volume":32},
-    "LEVEL_START_TUNE_SND"      :{"index":0x30,"pattern":13,"volume":32},
+    "TITLE_TUNE_SND"      :{"index":0x1,"pattern":0,"volume":32},
+
     }
 
     sound_dict.update(music_dict)
