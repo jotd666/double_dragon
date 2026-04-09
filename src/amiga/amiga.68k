@@ -1128,11 +1128,11 @@ load_context:
 ***	move.w	#LEVEL12_TUNE_SND*8,d0
 *	jbsr	load_music_if_needed
 *0:
-*	* at start redraw everything
-*	move.w	#START_X,game_scroll_x
-*	move.w	#START_Y,game_scroll_y
-*	move.w	game_scroll_x,previous_scroll_x
-*	jbsr force_all_screen_redraw
+*	* at start redraw everything & set scroll values
+	move.w	#START_X,game_scroll_x
+	move.w	#START_Y,game_scroll_y
+	move.w	game_scroll_x,previous_scroll_x
+	jbsr force_all_screen_redraw
 
 	jbsr	osd_enable_interrupts
 
@@ -1416,7 +1416,6 @@ draw_left_tiles:
 	sub.w	#BG_TILE_WIDTH,d0		| else refresh will be okay but visible
 	jra		draw_column_tiles
 draw_right_tiles:
-	BREAKPOINT	"draw right"
 	move.w	max_scroll_x,d0
 
 draw_column_tiles:
@@ -1517,8 +1516,9 @@ set_scroll_values:
 	* min overshoot: we have to do something on the left
 
 	jbsr	draw_left_tiles
-	sub.w	#BG_TILE_WIDTH,max_scroll_x
-	sub.w	#BG_TILE_WIDTH,min_scroll_x
+	move.w	#BG_TILE_WIDTH,d0
+	sub.w	d0,max_scroll_x
+	sub.w	d0,min_scroll_x
 	
 	jra		5f
 0:
@@ -1529,8 +1529,9 @@ set_scroll_values:
 	* max overshoot: we have to do something on the right: draw the tiles
 
 	jbsr	draw_right_tiles
-	add.w	#BG_TILE_WIDTH,max_scroll_x
-	add.w	#BG_TILE_WIDTH,min_scroll_x
+	move.w	#BG_TILE_WIDTH,d0
+	add.w	d0,max_scroll_x
+	add.w	d0,min_scroll_x
 
 5:
 

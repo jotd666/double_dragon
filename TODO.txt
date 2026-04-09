@@ -23,6 +23,13 @@ Warning: no size set for sprite $0fe5: repair sprite used json dump which is mis
 - sounds
 - title fading in not supported
   
+optimize: remove this sequence: 
+    PUSH_SR                                	| [...]
+	MAKE_A                                 	| [...]
+	POP_SR                                 	| [...]
+	MAKE_D
+
+  
   optim for 6809 generator:
  	xxx_W_TO_REG	a0,d2                         	| [$5bd5: pulu   x,y]
 	addq	#2,a0
