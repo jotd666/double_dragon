@@ -59,6 +59,7 @@ mul\value\()_table:
 	move.w	d0,-(a7)
 	clr.w	d0
 loop\@:
+	clr.w	_custom+bplcon3
 	move.w	d0,_custom+color
 	btst	#6,0xbfe001
 	beq.b	out\@

@@ -965,7 +965,7 @@ context_switch_found:
 	move.l	(a0)+,d2		| now d2 is the context
 	movem.l	d0-a6,-(a7)
 	move.l	d2,d0
-
+	jbsr	osd_blitz
 	jbsr	load_context
 	movem.l	(a7)+,d0-a6
 	moveq	#0,d1

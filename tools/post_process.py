@@ -177,8 +177,7 @@ def f_handle_bank5_line(address,lines,i):
         line = change_instruction("jra\tlb5_6d17",lines,i)
         lines[i+1] = remove_error(lines[i+1])
     elif address == 0x6D12:
-        line = change_instruction("move.w\t(sp),d1",lines,i)  # pushed parameter out of local stack
-        line += '   BREAKPOINT "check 6D12_bank5"\n'
+        line = change_instruction("move.l\t(sp),d1",lines,i)  # pushed parameter out of local stack, as LONG
     elif address in {0x44DD,0x5696,0x582C}:
         # protect carry from target stack restore
         line = f"\tPUSH_SR  | save carry\n{line}\tPOP_SR  | restore carry\n"

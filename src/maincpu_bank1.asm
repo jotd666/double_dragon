@@ -1509,11 +1509,11 @@ subcpu_processing_411e:
 4E08: A6 C6       LDA    A,U		; [bank_address]
 4E0A: A7 88 37    STA    $37,X
 4E0D: EE 88 2D    LDU    $2D,X
-4E10: A6 C8 1B    LDA    $1B,U		; [bank_address]
+4E10: A6 C8 1B    LDA    $1B,U
 4E13: 84 7F       ANDA   #$7F
 4E15: 81 00       CMPA   #$00
 4E17: 26 2C       BNE    $4E45
-4E19: A6 C8 37    LDA    $37,U		; [bank_address]
+4E19: A6 C8 37    LDA    $37,U
 4E1C: 81 02       CMPA   #$02
 4E1E: 25 25       BCS    $4E45
 4E20: A6 88 38    LDA    $38,X

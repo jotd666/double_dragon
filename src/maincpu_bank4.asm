@@ -645,21 +645,22 @@ lb4_4546:
 4560: C1 05          CMPB   #$05
 4562: 25 E6          BCS    $454A
 4564: 39             RTS
+
 4565: 9E 56          LDX    $56
 4567: EC 06          LDD    $6,X
-4569: E3 22          ADDD   $2,Y
+4569: E3 22          ADDD   $2,Y	; [bank_address]
 456B: DD 64          STD    $64
 456D: EC 08          LDD    $8,X
-456F: E3 24          ADDD   $4,Y
+456F: E3 24          ADDD   $4,Y	; [bank_address]
 4571: 93 64          SUBD   $64
 4573: D3 64          ADDD   $64
 4575: DD 66          STD    $66
-4577: A6 29          LDA    $9,Y
+4577: A6 29          LDA    $9,Y	; [bank_address]
 4579: 84 C0          ANDA   #$C0
 457B: 81 40          CMPA   #$40
 457D: 24 10          BCC    $458F
 457F: EC 04          LDD    $4,X
-4581: E3 A4          ADDD   ,Y
+4581: E3 A4          ADDD   ,Y			; [bank_address]
 4583: 93 64          SUBD   $64
 4585: DD 62          STD    $62
 4587: DC 5A          LDD    $5A
@@ -668,7 +669,7 @@ lb4_4546:
 458D: 20 1C          BRA    $45AB
 458F: 26 10          BNE    $45A1
 4591: EC 04          LDD    $4,X
-4593: E3 A4          ADDD   ,Y
+4593: E3 A4          ADDD   ,Y			; [bank_address]
 4595: D3 64          ADDD   $64
 4597: DD 62          STD    $62
 4599: DC 5A          LDD    $5A
@@ -676,7 +677,7 @@ lb4_4546:
 459D: DD 5C          STD    $5C
 459F: 20 0A          BRA    $45AB
 45A1: EC 04          LDD    $4,X
-45A3: E3 A4          ADDD   ,Y
+45A3: E3 A4          ADDD   ,Y			; [bank_address]
 45A5: DD 62          STD    $62
 45A7: DC 5A          LDD    $5A
 45A9: DD 5C          STD    $5C

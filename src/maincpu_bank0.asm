@@ -587,7 +587,7 @@ lb0_44dc:    ; [global]
 4510: 96 04          LDA    $04
 4512: 33 C6          LEAU   A,U
 4514: EF A1          STU    ,Y++
-4516: EC 81          LDD    ,X++
+4516: EC 81          LDD    ,X++	; [select_address]
 4518: 34 04          PSHS   B
 451A: 58             ASLB
 451B: 49             ROLA
@@ -615,7 +615,7 @@ lb0_44dc:    ; [global]
 4542: EF A1          STU    ,Y++
 4544: 86 10          LDA    #$10
 4546: A7 62          STA    $2,S		; [local]
-4548: EC 81          LDD    ,X++
+4548: EC 81          LDD    ,X++		; [normal_address]
 454A: 34 04          PSHS   B
 454C: 58             ASLB
 454D: 49             ROLA
@@ -2578,7 +2578,7 @@ lb0_5c93:   ; [global]
 5CD8: 84 F8          ANDA   #$F8
 5CDA: 8E 5C E9       LDX    #$5CE9
 5CDD: F6 0A F1       LDB    $0AF1
-5CE0: AA 85          ORA    B,X
+5CE0: AA 85          ORA    B,X		; [bank_address]
 5CE2: B7 0E 16       STA    $0E16
 5CE5: BD 5F 2B       JSR    $5F2B
 5CE8: 39             RTS
@@ -2658,7 +2658,7 @@ lb0_5c93:   ; [global]
 5D9F: 7C 09 EF       INC    $09EF
 5DA2: 34 20          PSHS   Y
 5DA4: 10 9E 00       LDY    $00
-5DA7: A6 A0          LDA    ,Y+
+5DA7: A6 A0          LDA    ,Y+		; [bank_address]
 5DA9: 10 9F 00       STY    $00
 5DAC: 35 20          PULS   Y
 5DAE: A7 01          STA    $1,X
@@ -2669,7 +2669,7 @@ lb0_5c93:   ; [global]
 5DBA: A7 88 1B       STA    $1B,X
 5DBD: 34 20          PSHS   Y
 5DBF: 10 9E 02       LDY    $02
-5DC2: EC A1          LDD    ,Y++
+5DC2: EC A1          LDD    ,Y++	; [bank_address]
 5DC4: 10 9F 02       STY    $02
 5DC7: 35 20          PULS   Y
 5DC9: ED 04          STD    $4,X
@@ -3775,7 +3775,7 @@ lb0_681b:  ; [global]
 6AD2: 10 2B 02 8B    LBMI   $6D61
 6AD6: BE 0A 78       LDX    $0A78
 6AD9: 10 BE 0A 85    LDY    $0A85
-6ADD: A6 84          LDA    ,X	; [bank_address]
+6ADD: A6 84          LDA    ,X	; [select_address] sometimes FFFF original bug or expected?
 6ADF: A1 A4          CMPA   ,Y	; [bank_address]
 6AE1: 10 2B 02 7C    LBMI   $6D61
 6AE5: 26 06          BNE    $6AED
@@ -4578,17 +4578,17 @@ lb0_6d64:   ; [global]
 7D2A: 58             ASLB
 7D2B: 49             ROLA
 7D2C: EE CB          LDU    D,U		; [bank_address]
-7D2E: A6 C0          LDA    ,U+		; [bank_address]
+7D2E: A6 C0          LDA    ,U+		; [select_address]
 7D30: 97 01          STA    $01
-7D32: A6 C0          LDA    ,U+		; [bank_address]
+7D32: A6 C0          LDA    ,U+		; [select_address]
 7D34: 97 02          STA    $02
-7D36: A6 C0          LDA    ,U+		; [bank_address]
+7D36: A6 C0          LDA    ,U+		; [select_address]
 7D38: 97 03          STA    $03
-7D3A: A6 C0          LDA    ,U+		; [bank_address]
+7D3A: A6 C0          LDA    ,U+		; [select_address]
 7D3C: 97 04          STA    $04
-7D3E: A6 C0          LDA    ,U+		; [bank_address]
+7D3E: A6 C0          LDA    ,U+		; [select_address]
 7D40: 97 05          STA    $05
-7D42: A6 C0          LDA    ,U+		; [bank_address]
+7D42: A6 C0          LDA    ,U+		; [select_address]
 7D44: 97 06          STA    $06
 7D46: E6 02          LDB    $2,X
 7D48: C4 7F          ANDB   #$7F
