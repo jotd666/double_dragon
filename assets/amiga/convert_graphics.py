@@ -665,7 +665,8 @@ with open(bank,"w") as f:
     asm2bin(bank)
 
 # background tiles & sprite contexts
-context_list = ["level_1_1","level_1_2","level_2"]
+context_list = ["level_1_1","level_1_2","level_2","level_3_1","level_3_2","level_3_3"]
+context_list = ["level_3_3"]
 
 for context in context_list:
 
@@ -732,8 +733,9 @@ for context in context_list:
 ###############
 
 
-context_list = ["intro","level_1","level_2"]
-context_list = ["level_2"]
+context_list = ["intro","level_1","level_2","level_3","level_3_3"]
+context_list = ["level_3_3"]
+
 for context in context_list:
     bob_plane_cache = {}
     sprite_palette = set()
@@ -745,6 +747,10 @@ for context in context_list:
 
     # correct incorrectly logged size (why??)
     size_table[0x884] = 2
+    size_table[0x5EE] = 1
+    size_table[0x5F0] = 1
+    size_table[0x8A4] = 1
+    size_table[0x8A6] = 1
 
     read_used_tiles(pcontext/"used_sprites",sprite_cluts,SPRITE_NB_TILES,SPRITE_NB_CLUTS,size_table)
 

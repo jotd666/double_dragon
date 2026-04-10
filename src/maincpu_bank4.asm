@@ -151,7 +151,7 @@ lb4_4000:   ; [global]
 4165: E3 E1          ADDD   ,S++
 4167: C3 47 80       ADDD   #$4780
 416A: 1F 01          TFR    D,X
-416C: EC 84          LDD    ,X		; [bank_address]
+416C: EC 84          LDD    ,X		; [select_address]
 416E: 26 03          BNE    $4173
 4170: BD 41 A1       JSR    pop_2_levels_41a1
 4173: DC 60          LDD    $60
@@ -161,7 +161,7 @@ lb4_4000:   ; [global]
 4179: 54             LSRB
 417A: 54             LSRB
 417B: 58             ASLB
-417C: E3 84          ADDD   ,X		; [bank_address] 
+417C: E3 84          ADDD   ,X		; [select_address] 
 417E: 1F 01          TFR    D,X
 4180: 10 AE 84       LDY    ,X		; [select_address] 
 4183: 10 9F 56       STY    $56
@@ -1150,7 +1150,7 @@ lb4_7bb4:  ; [global]
 7E82: ED 64          STD    $4,S	; [local]
 7E84: 9E 01          LDX    $01
 7E86: 10 AE 66       LDY    $6,S	; [local]
-7E89: EC A1          LDD    ,Y++
+7E89: EC A1          LDD    ,Y++		; [bank_address]
 7E8B: 10 AF 66       STY    $6,S	; [local]
 7E8E: 10 AE 64       LDY    $4,S	; [local]
 7E91: ED A4          STD    ,Y

@@ -323,6 +323,7 @@ osd_enter_\@:
 	
 	.global	osd_set_flash_color
 	.global	osd_palette_updated
+	.global osd_main_loop_hook
 	
 	.global	current_rom_bank
 	
@@ -887,6 +888,43 @@ dump_and_quit:
 	illegal
 	.endif
 
+* called at start of mainloop, A6 contains RAM start
+
+osd_main_loop_hook:
+	tst.l	_resload
+	jeq		10f
+	tst.b	save_state_requested
+	jeq		5f
+	clr.b	save_state_requested
+	movem.l	d0-d1/a0-a2,-(a7)
+	lea		saved_state_filename,a0
+	move.l	a6,a1
+	move.l	_resload,a2
+	move.l	#0x3800,d0
+	jbsr	resload_SaveFile(a2)
+	movem.l	(a7)+,d0-d1/a0-a2
+	jra		10f
+5:
+	tst.b	load_state_requested
+	jeq		10f
+	move.l	_resload,a2
+	clr.b	load_state_requested
+	movem.l	d0-d7/a0-a6,-(a7)
+	lea		saved_state_filename,a0
+	jbsr	resload_GetFileSize(a2)
+	tst.l	d0
+	jeq		9f
+	move.l	a6,a1
+	lea		saved_state_filename,a0
+	jbsr	resload_LoadFile(a2)
+	* now we should load the context
+	jbsr	osd_palette_updated
+9:
+	movem.l	(a7)+,d0-d7/a0-a6
+	
+10:
+	rts
+	
 *osd_black_colors:
 *	lea		sprite_palette,a0
 *	move.l	color_copper_pointers,a1	| tile entries 0-32
@@ -916,20 +954,7 @@ osd_call_main_irq:
 	movem.l	(a7)+,d0-a6
 	rts
 	
-osd_colors_cycled:
-* < A0: tile palette in RAM (but shadows hardware palette)
-* format (RGB4) is: offset=$RG, offset+$40=$B0
-* I imagine that on NeoGeo we just set the palette and so be it but here we have eliminated
-* duplicate entries for tiles and were lucky enough on level 1 for instance to keep the exact unique
-* colors for the tiles. So the RGB values used are the same as in the game, but the game uses 4 slots
-* and we only have 3 slots. We'll have to adapt I doubt it will be noticeable
-	OSD_ENTER
-	movem.l	d0-a6,-(a7)
-	GET_MEMORY_START_IN_A6
 
-	movem.l	(a7)+,d0-a6
-	OSD_EXIT
-	rts
 
 
 * called when palette is updated
@@ -965,7 +990,7 @@ context_switch_found:
 	move.l	(a0)+,d2		| now d2 is the context
 	movem.l	d0-a6,-(a7)
 	move.l	d2,d0
-	jbsr	osd_blitz
+	*jbsr	osd_blitz
 	jbsr	load_context
 	movem.l	(a7)+,d0-a6
 	moveq	#0,d1
@@ -1026,8 +1051,6 @@ load_context:
 	move.w	current_context,previous_context
 	move.w	d0,current_context
 
-
-1:
 	lea	context_table,A0
 	lsl.w	#4,d0		| 4 pointers
 	lea 	(a0,d0.w),a2
@@ -1117,10 +1140,10 @@ load_context:
 
 	
 	* optimize: should we mirror Y tiles? only in some contexts
-*	move.w	current_context,d0
-*	lea		mirror_y_tile_table,a0
-*	tst.b	(a0,d0.w)
-*	sne		must_mirror_y_tiles
+	move.w	current_context,d0
+	lea		mirror_y_tile_table,a0
+	tst.b	(a0,d0.w)
+	sne		must_mirror_y_tiles
 	
 *	* if level 1 set (intro), pre-load level 12 music as may has been overwritten by highscore tune
 *	tst.w	current_context
@@ -3728,12 +3751,7 @@ update_bg_tile:
 	* skip all this crap altogether, blit the big pic
 	jra		blit_title_pic
 0:
-	cmp.b	#0xC7,d0
-	jne	0f
-	cmp.w	#0x4A0,d7
-	jne	0f
-*	BREAKPOINT	"LADDER"
-0:
+
 	* now convert address to GnG layout. The screen size is the same
 	* and all routines work, so let's not rewrite everything
 	* there's this damn layout by quadrant that we eliminate that way
@@ -4729,6 +4747,14 @@ handle_keyboard:
 	st.b	coin2_requested
 0:
 
+	cmp.b	#33,d0	| "S"
+	jne		0f
+	st.b	save_state_requested
+0:
+	cmp.b	#40,d0	| "L"
+	jne		0f
+	st.b	load_state_requested
+0:
     cmp.b   #0x19,d0	| "P" key
     bne.b   0f
 
@@ -5639,12 +5665,16 @@ current_rom_bank:
 	
 * this table indicates the tile engine if Y mirror is needed
 mirror_y_tile_table:
-	.byte	0       | level 1 graveyard
-	.byte	1       | level 2 town 
-	.byte	1       | level 3 cave
-	.byte	0       | level 4 bridge
-	.byte	1       | level 5 castle 1
-	.byte	1       | level 6 castle 2
+	.byte	0       |
+	.byte	0       |
+	.byte	0       | level 1 town
+	.byte	0       | level 1 town part 2
+	.byte	0       | level 2 factory 
+	.byte	1       | level 3 town/forest
+	.byte	1       | level 3 town/forest part 2
+	.byte	1       | level 4 base
+	.byte	0       | level 5 
+	.byte	0       | level 6 
 	.byte	0       | map
 	.align	2
 
@@ -5733,6 +5763,9 @@ floppy_file:
 	.asciz	"floppy"
 title_pic_filename:
 	.asciz	"title_pic"
+saved_state_filename:
+	.asciz	"savestate"
+
 temp_filename_buffer:
 	.skip	255
 	.align	2
@@ -5743,10 +5776,7 @@ mirror_table:
 	DECL_BLITLISTS	BLITTER_LIST_SIZE
 		
   
-
-	.align 2
-
-	.section 	.data
+	.section	.data
 	.ifndef	RELEASE
 interrupted_code_pc:
 	.long	0
@@ -5759,8 +5789,15 @@ cpu_log_prev_state:
 osd_debug_active:
 	.byte	0
 	.endif
+	
+
 
 	.section	.bsspublic
+save_state_requested:
+	.byte	0
+load_state_requested:
+	.byte	0
+	.align 2
 
 mirror_buffer_ptr:
 	.long	0

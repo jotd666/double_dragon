@@ -258,7 +258,8 @@ def f_handle_main_line(address,lines,i):
     elif address in {0Xb39c,0Xb3a0}:
         # remove subcpu sync shit / optims
         line = remove_instruction(lines,i,continuing_lines=False)
-
+    elif address == 0x8389:
+        line = "\tjbsr\tosd_main_loop_hook  | useful to save/restore the state\n"+line
     # HACK TO BE ABLE TO START GAME MUST BE IMPROVED ELSE DEMO WON'T SHOW
     elif address == 0x8124 and True:
         # set 5 credits right away. Problem with the current game architecture is that

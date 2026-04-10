@@ -34,8 +34,8 @@ def convert():
 
     EMPTY_SND = "EMPTY_SND"
 
-    dummy_sounds = {
-    }
+    dummy_sounds = set()
+
 
 
     sound_dict = {}
