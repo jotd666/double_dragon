@@ -1,14 +1,12 @@
-
-- tile orientation not implemented
+- palette change at level 4, seems it's only the boss door, so maybe hack the tilesheets
+- tile orientation not implemented level 4 complete bogus then
 - trashed tiles at level 1-2, memory is at fault ex 37A0 takes value 0001.W instead of expected 0005.W, a lot of tiles
-  on the bottom are trashed
+  on the bottom are trashed: probably address problem when giants break the wall debug this (same at level 4)
 - group laterally like in VBall: use script in a .bat drag & drop note in json + delete dumped files
 - sprite clipping too soon on the right: mockup
 - still red flashes when giant: missing size tiles?
 Warning: no size set for sprite $0fe3
 Warning: no size set for sprite $0fe5: repair sprite used json dump which is missing
-
-- "merge" all player used frames to apply them on every sprite context by default
 
 - when completing level 1 & 2, tiles are trashed as long as level 1 scrolls to level 2 there's an 
   intermediate tile context to capture

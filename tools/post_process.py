@@ -126,6 +126,12 @@ def f_handle_bank3_line(address,lines,i):
         # we removed the cmp, and optimizer removed the load for  $47,x
         # make up for this and gain a few cycles
         lines[i+3] = change_instruction("move.b\td0,(2,a0)",lines,i+3)
+    elif address == 0x6E0F:
+        # allocate for 1 byte of manual stack
+        line += "\tsubq\t#1,d5\n"
+    elif address == 0x6E34:
+        # allocate for 1 byte of manual stack
+        line += "\taddq\t#1,d5\n"
     lines[i] = line
 
 def f_handle_bank4_line(address,lines,i):

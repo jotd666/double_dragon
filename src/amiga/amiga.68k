@@ -64,7 +64,7 @@ BG_TILE_WIDTH = 16
 
 FG_TILE_FILE_MAX_SIZE = 0x8000
 BG_TILE_FILE_MAX_SIZE = 0x40000
-SPRITE_FILE_MAX_SIZE = 0x90000
+SPRITE_FILE_MAX_SIZE = 0xA0000
 
 	.if		OPT_CD32_VERSION==0
 BIGGEST_MUSIC_SIZE = 385000
@@ -5672,10 +5672,9 @@ mirror_y_tile_table:
 	.byte	0       | level 2 factory 
 	.byte	1       | level 3 town/forest
 	.byte	1       | level 3 town/forest part 2
+	.byte	1       | level 3 town/forest part 2
 	.byte	1       | level 4 base
-	.byte	0       | level 5 
-	.byte	0       | level 6 
-	.byte	0       | map
+
 	.align	2
 
 rows_table:

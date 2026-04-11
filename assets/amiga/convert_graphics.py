@@ -674,12 +674,6 @@ for context in context_list:
     bg_tile_cluts = {}
     read_used_tiles(pathlib.Path(context)/"bg_used_tiles",bg_tile_cluts,BG_NB_TILES,BG_NB_CLUTS)
 
-    # stupid cornercase for level 2
-    # level starts with ice towers, but palette is then different
-    # more annoying: after palette switch, the colors are there they're
-    # just in another clut (clut 5 => clut 6) as the water needs displaying afterwards anyway
-    # so almost everything can be solved statically by switching the clut index
-
     bg_tile_palette = set()
     bg_tile_set_list = []
 
@@ -762,6 +756,18 @@ for context in context_list:
             sprite_cluts_dict = {hex(k):[hex(x) for x in v] for k,v in sprite_cluts.items() if v}
             json.dump(sprite_cluts_dict,f,indent=2)
 
+    for k,v in sprite_names.items():
+        # all player 1 frames for player 2 in all contexts
+        if v.startswith("player"):
+            # can't just force 0,1 as green punk uses most of player frames
+            existing = set(sprite_cluts.get(k) or [])
+            # we have to make sure that player 1 frame exists else double size
+            # and green punk define cluts where the rest of the python code doesn't expect
+            # and we get errors with multi-sized tiles. I don't want to debug that crap
+            # Leave the game log only the proper tiles
+            if 0 in existing:
+                existing.add(1)
+                sprite_cluts[k] = existing
 
     if context=="level_1":
         # remove some parasite tiles

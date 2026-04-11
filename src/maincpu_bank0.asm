@@ -2368,15 +2368,15 @@ lb0_588f:    ; [global]
 59EA: BD 45 B1       JSR    lb0_random_45b1
 59ED: 84 1F          ANDA   #$1F
 59EF: 8E 5A 27       LDX    #$5A27
-59F2: A6 86          LDA    A,X
+59F2: A6 86          LDA    A,X		; [bank_address]
 59F4: 8E 5A 17       LDX    #$5A17
 59F7: 48             ASLA
 59F8: 30 86          LEAX   A,X
-59FA: A6 80          LDA    ,X+
+59FA: A6 80          LDA    ,X+   	; [bank_address]
 59FC: B7 0E 13       STA    $0E13
 59FF: 86 00          LDA    #$00
 5A01: B7 0A 96       STA    $0A96
-5A04: E6 84          LDB    ,X
+5A04: E6 84          LDB    ,X   	; [bank_address]
 5A06: F7 0E 14       STB    $0E14
 5A09: C6 80          LDB    #$80
 5A0B: F7 0A 97       STB    $0A97
@@ -2391,7 +2391,7 @@ lb0_588f:    ; [global]
 5A4C: B6 0E 13       LDA    $0E13
 5A4F: 84 07          ANDA   #$07
 5A51: 8E 5A 8B       LDX    #$5A8B
-5A54: A6 86          LDA    A,X
+5A54: A6 86          LDA    A,X			; [bank_address]
 5A56: 34 02          PSHS   A		; [manual_stack_push]
 5A58: B6 0E 15       LDA    $0E15
 5A5B: A5 E0          BITA   ,S+
@@ -2443,7 +2443,7 @@ lb0_588f:    ; [global]
 5ACB: B6 0E 14       LDA    $0E14
 5ACE: 84 07          ANDA   #$07
 5AD0: 48             ASLA
-5AD1: 10 AE A6       LDY    A,Y
+5AD1: 10 AE A6       LDY    A,Y		; [bank_address]
 5AD4: BD 59 9E       JSR    $599E
 5AD7: B6 0E 14       LDA    $0E14
 5ADA: 8A 80          ORA    #$80
@@ -2975,7 +2975,7 @@ lb0_5f85:  ; [global]
 60BA: D3 3C          ADDD   current_level_x_position_003c
 60BC: C3 00 30       ADDD   #$0030
 60BF: A7 88 48       STA    $48,X
-60C2: 31 2A          LEAY   $A,Y	; [bank_address]
+60C2: 31 2A          LEAY   $A,Y
 60C4: 20 87          BRA    $604D
 60C6: 30 88 55       LEAX   $55,X
 60C9: 8C 07 06       CMPX   #$0706
@@ -3004,29 +3004,29 @@ lb0_5f85:  ; [global]
 6105: 48             ASLA
 6106: 10 AE A6       LDY    A,Y		; [bank_address]
 6109: 8E 04 5E       LDX    #$045E
-610C: A6 A4          LDA    ,Y		; [bank_address]
+610C: A6 A4          LDA    ,Y		; [select_address]
 610E: 81 FF          CMPA   #$FF
 6110: 10 27 00 C6    LBEQ   $61DA
 6114: 81 FE          CMPA   #$FE
 6116: 26 11          BNE    $6129
 6118: B6 0A AE       LDA    $0AAE
 611B: 84 F0          ANDA   #$F0
-611D: AA 21          ORA    $1,Y		; [bank_address]
+611D: AA 21          ORA    $1,Y		; [select_address]
 611F: 8A 10          ORA    #$10
 6121: B7 0A AE       STA    $0AAE
-6124: 31 22          LEAY   $2,Y		; [bank_address]
+6124: 31 22          LEAY   $2,Y
 6126: 16 FF E3       LBRA   $610C
 6129: 81 FD          CMPA   #$FD
 612B: 26 04          BNE    $6131
-612D: 31 21          LEAY   $1,Y		; [bank_address]
+612D: 31 21          LEAY   $1,Y
 612F: 20 DB          BRA    $610C
 6131: 81 FC          CMPA   #$FC
 6133: 26 04          BNE    $6139
-6135: 31 21          LEAY   $1,Y		; [bank_address]
+6135: 31 21          LEAY   $1,Y
 6137: 20 D3          BRA    $610C
 6139: 81 FB          CMPA   #$FB
 613B: 26 05          BNE    $6142
-613D: 10 AE 21       LDY    $1,Y		; [bank_address]
+613D: 10 AE 21       LDY    $1,Y		; [select_address]
 6140: 20 CA          BRA    $610C
 6142: B6 0A AE       LDA    $0AAE
 6145: 84 40          ANDA   #$40
@@ -3054,7 +3054,7 @@ lb0_5f85:  ; [global]
 617B: 27 06          BEQ    $6183
 617D: 6A 88 45       DEC    $45,X
 6180: 7C 0A B5       INC    $0AB5
-6183: A6 24          LDA    $4,Y		; [bank_address]
+6183: A6 24          LDA    $4,Y		; [select_address]
 6185: 84 40          ANDA   #$40
 6187: 1C FE          ANDCC  #$FE
 6189: 48             ASLA
@@ -3078,7 +3078,7 @@ lb0_5f85:  ; [global]
 61B5: 84 EF          ANDA   #$EF
 61B7: B7 0A AE       STA    $0AAE
 61BA: 7F 0A B3       CLR    $0AB3
-61BD: 31 2A          LEAY   $A,Y		; [bank_address]
+61BD: 31 2A          LEAY   $A,Y		; [select_address]
 61BF: 16 FF 4A       LBRA   $610C
 61C2: 30 88 55       LEAX   $55,X
 61C5: 8C 07 06       CMPX   #$0706
@@ -3268,7 +3268,7 @@ lb0_5f85:  ; [global]
 6372: A6 84          LDA    ,X
 6374: 85 10          BITA   #$10
 6376: 27 06          BEQ    $637E
-6378: A6 28          LDA    $8,Y		; [bank_address]
+6378: A6 28          LDA    $8,Y		; [select_address]
 637A: 85 20          BITA   #$20
 637C: 26 04          BNE    $6382
 637E: 86 07          LDA    #$07
@@ -3846,7 +3846,7 @@ lb0_681b:  ; [global]
 6B93: BE 0A 83       LDX    $0A83
 6B96: 10 BE 0A 8D    LDY    $0A8D
 6B9A: 4F             CLRA
-6B9B: E6 21          LDB    $1,Y	; [bank_address]
+6B9B: E6 21          LDB    $1,Y	; [select_address]
 6B9D: E3 08          ADDD   $8,X
 6B9F: FD 0A 89       STD    $0A89
 6BA2: FC 0A 7C       LDD    $0A7C
@@ -3862,7 +3862,7 @@ lb0_681b:  ; [global]
 6BBF: E1 03          CMPB   $3,X	; [bank_address]
 6BC1: 10 22 01 9C    LBHI   $6D61
 6BC5: 10 BE 0A 78    LDY    $0A78
-6BC9: 10 AE 26       LDY    $6,Y	; [bank_address]
+6BC9: 10 AE 26       LDY    $6,Y	; [select_address]
 6BCC: 10 BF 0A 8F    STY    $0A8F
 6BD0: BE 0A 83       LDX    $0A83
 6BD3: A6 A4          LDA    ,Y	; [bank_address]

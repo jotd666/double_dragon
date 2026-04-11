@@ -4,10 +4,10 @@ import os
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
 
-tilesdir = os.path.join(this_dir,os.pardir,"sheets","bg_tiles","level_1_2")
+tilesdir = os.path.join(this_dir,os.pardir,"sheets","bg_tiles","level_4")
 
-with open(r"screen","rb") as f:
-#with open(r"K:\Emulation\MAME\fg_tiles","rb") as f:
+#with open(r"screen","rb") as f:
+with open(r"K:\Emulation\MAME\end_arena","rb") as f:
     contents = f.read()
 
 
@@ -15,6 +15,12 @@ side = 8
 
 blank_image = Image.new("RGB",(side,side))
 
+def get_transformed(img,flipx,flipy):
+    if flipx:
+        img = ImageOps.mirror(img)
+    elif flipy:
+        img = ImageOps.flip(img)
+    return img
 
 
 def load_tileset(image_name,side,dump_prefix=""):
@@ -76,9 +82,12 @@ for address in range(0,0x800,2):
     if tile_color >= max_clut:
         tile_color = max_clut-1
 
+    flipx = attr & 0x40
+    flipy = attr & 0x80
+
     sheet = ts_title_list[tile_color]
     img = sheet[tile_code]
-
+    img = get_transformed(img,flipx,flipy)
     if tile_code:
         print(f"code={tile_code:04x},{x},{y}")
     layer.paste(img,box=(x,y))

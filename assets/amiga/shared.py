@@ -131,7 +131,10 @@ def get_sprite_names():
     rval |= {k:"player" for k in range(0x101,0x23A)}
     rval |= {k:"player" for k in range(0x25C,0x2C5)}
     rval |= {k:"player" for k in range(0x300,0x348)}
+    rval |= {k:"player" for k in range(0x850,0x861)}
+    rval |= {k:"player" for k in range(0x84A,0x84F)}
     rval |= {k:"player" for k in range(0xB00,0xB37)}
+    rval |= {k:"player" for k in range(0xE34,0xE45)}
     rval |= {k:"girl" for k in range(0x348,0x360)}
     rval |= {k:"girl" for k in range(0xFCA,0xFE1)}
     rval |= {k:"hooker" for k in range(0xCD8,0xD62)}
@@ -153,6 +156,7 @@ def get_sprite_names():
     rval |= {k:"player_marker" for k in range(0x5BA,0x5C1)}
     rval |= {k:"garage_door" for k in list(range(0xE50,0xE5E))+[0xE45]}
 
+    rval[0x100] = "player"
     return rval
 
 def get_mirror_sprites():

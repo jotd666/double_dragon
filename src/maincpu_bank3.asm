@@ -233,20 +233,20 @@ jump_table_6cdc:
 6E09: 25 D2          BCS    $6DDD
 6E0B: 35 FE          PULS   D,DP,X,Y,U,PC
 
-6E0D: 34 7E          PSHS   U,Y,X,DP,D
+6E0D: 34 7E          PSHS   U,Y,X,DP,D		; D is saved only probably to allocate space
 6E0F: 17 91 C1       LBSR   $FFD3
 6E12: 1F 89          TFR    A,B
 6E14: 84 70          ANDA   #$70
 6E16: A7 88 43       STA    $43,X
-6E19: A7 E4          STA    ,S		; [breakpoint]
+6E19: A7 E4          STA    ,S
 6E1B: A8 88 44       EORA   $44,X
-6E1E: A4 E4          ANDA   ,S		; [breakpoint]
+6E1E: A4 E4          ANDA   ,S
 6E20: 44             LSRA
 6E21: 44             LSRA
 6E22: 44             LSRA
 6E23: 44             LSRA
 6E24: A7 88 40       STA    $40,X
-6E27: A6 E4          LDA    ,S		; [breakpoint]
+6E27: A6 E4          LDA    ,S
 6E29: A7 88 44       STA    $44,X
 6E2C: C4 0F          ANDB   #$0F
 6E2E: 10 8E 6E 39    LDY    #$6E39
