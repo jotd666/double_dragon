@@ -666,7 +666,7 @@ with open(bank,"w") as f:
 
 # background tiles & sprite contexts
 context_list = ["level_1_1","level_1_2","level_2","level_3_1","level_3_2","level_3_3"]
-context_list = ["level_3_3"]
+context_list = ["level_4"]
 
 for context in context_list:
 
@@ -734,7 +734,7 @@ for context in context_list:
 
 
 context_list = ["intro","level_1","level_2","level_3","level_3_3"]
-context_list = ["level_3_3"]
+context_list = ["level_4"]
 
 for context in context_list:
     bob_plane_cache = {}

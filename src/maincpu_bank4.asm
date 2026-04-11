@@ -352,7 +352,7 @@ pop_2_levels_41a1:
 42EB: 81 0D          CMPA   #$0D
 42ED: 26 1A          BNE    $4309
 42EF: 9E 54          LDX    $54
-42F1: A6 01          LDA    $1,X	; [bank_address]
+42F1: A6 01          LDA    $1,X	; [select_address]
 42F3: 81 02          CMPA   #$02
 42F5: 25 12          BCS    $4309
 42F7: DC 5E          LDD    $5E
@@ -1153,7 +1153,7 @@ lb4_7bb4:  ; [global]
 7E89: EC A1          LDD    ,Y++		; [bank_address]
 7E8B: 10 AF 66       STY    $6,S	; [local]
 7E8E: 10 AE 64       LDY    $4,S	; [local]
-7E91: ED A4          STD    ,Y
+7E91: ED A4          STD    ,Y		;  [video_address]
 7E93: 0C 00          INC    $00
 7E95: D6 00          LDB    $00
 7E97: C1 06          CMPB   #$06

@@ -4,9 +4,9 @@ import os
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
 
-tilesdir = os.path.join(this_dir,os.pardir,"sheets","bg_tiles","level_1")
+tilesdir = os.path.join(this_dir,os.pardir,"sheets","bg_tiles","level_1_2")
 
-with open(r"bgtiles","rb") as f:
+with open(r"screen","rb") as f:
 #with open(r"K:\Emulation\MAME\fg_tiles","rb") as f:
     contents = f.read()
 

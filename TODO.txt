@@ -1,19 +1,22 @@
-- save memory state at start of level 2, then hack to load it instead of loading level 1 context, to warp to level 2
-  directly
-  
+
+- tile orientation not implemented
+- trashed tiles at level 1-2, memory is at fault ex 37A0 takes value 0001.W instead of expected 0005.W, a lot of tiles
+  on the bottom are trashed
+- group laterally like in VBall: use script in a .bat drag & drop note in json + delete dumped files
 - sprite clipping too soon on the right: mockup
 - still red flashes when giant: missing size tiles?
 Warning: no size set for sprite $0fe3
 Warning: no size set for sprite $0fe5: repair sprite used json dump which is missing
 
+- "merge" all player used frames to apply them on every sprite context by default
+
 - when completing level 1 & 2, tiles are trashed as long as level 1 scrolls to level 2 there's an 
   intermediate tile context to capture
 - when resetting context, redraw all tiles as palette has changed but do not reset scroll, ever
   only reset x_scroll at level 1
-- level 3 end door is it sprite or tiles? problem with orientation
+- level 3 end door is it sprite or tiles? problem with orientation, same thing missing tiles level 1_2
 - sprites "wrap" in Y: top enemies appear on the bottom
 
-- group laterally like in VBall
 - weak enemies: doesn't work with hooker and giant bosses
 - copy sprite colors from billy to jimmy, propagate used tiles for all levels
 - set DSW difficulty lives, etc.
