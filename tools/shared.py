@@ -14,6 +14,7 @@ input_dict = {"bankswitch_3808":"set_bank",
 "irq_ack_380d":"",
 "nmi_ack_380b":"",
 "firq_ack_380c":"",
+"sound_irq_380e":"sound_start",
 }
 
 sorted_cmp = False

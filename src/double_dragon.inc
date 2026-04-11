@@ -718,7 +718,7 @@ get_bank_address:
 	.endm
 
 	
-	* to trace at some virtual PCs, insert this macro
+	* to trace at some virtual PCs, insert this macro (slow)
 	.macro	LOG_REGS__	the_pc,the_bank
 	move.w	sr,-(a7)
 	move.w	#0x\the_pc,-(a7)

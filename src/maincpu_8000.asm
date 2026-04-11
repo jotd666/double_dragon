@@ -6374,11 +6374,13 @@ BF63: 39             RTS
 
 BF6C: 86 05          LDA    #$05                                       
 BF6E: A7 02          STA    $2,X                                       
+BF70: 6C 88 19       INC    $19,X
 BF73: A6 88 19       LDA    $19,X
 BF76: 81 04          CMPA   #$04
 BF78: 25 02          BCS    $BF7C
 BF7A: 6F 84          CLR    ,X
 BF7C: 39             RTS
+
 BF7D: 34 7E          PSHS   U,Y,X,DP,D
 BF7F: 17 00 0B       LBSR   $BF8D
 BF82: 17 0B A5       LBSR   $CB2A
@@ -10219,6 +10221,7 @@ jump_table_bbec:
 	dc.w	$bc58	; $bc0e
 	dc.w	$bc58	; $bc10
 	dc.w	$bc58	; $bc12
+
 
 ; bank 5 jump table
 jump_table_bc27:

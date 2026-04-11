@@ -2546,7 +2546,7 @@ lb0_5b1f:    ; [global]
 5BDC: 48             ASLA
 5BDD: EC A6          LDD    A,Y		; [video_address_word]
 5BDF: 10 AE 64       LDY    $4,S	; [local]
-5BE2: ED A4          STD    ,Y		; [video_address_word]
+5BE2: ED A4          STD    ,Y		; [video_address_word] ex: destroy wall tiles
 5BE4: 0A 00          DEC    $00
 5BE6: 2A CB          BPL    $5BB3
 5BE8: 32 66          LEAS   $6,S   ; [free_locals]
@@ -3106,35 +3106,35 @@ lb0_5f85:  ; [global]
 61FF: A6 88 45       LDA    $45,X
 6202: 26 15          BNE    $6219
 6204: BD 63 50       JSR    $6350
-6207: A6 29          LDA    $9,Y	; [bank_address]
-6209: E6 A4          LDB    ,Y	; [bank_address]
+6207: A6 29          LDA    $9,Y	; [select_address]
+6209: E6 A4          LDB    ,Y	; [select_address]
 620B: ED 04          STD    $4,X
 620D: 6F 0A          CLR    $A,X
-620F: EC 21          LDD    $1,Y		; [bank_address]
+620F: EC 21          LDD    $1,Y		; [select_address]
 6211: 1E 89          EXG    A,B
 6213: 84 0F          ANDA   #$0F
 6215: ED 06          STD    $6,X
 6217: 6F 0B          CLR    $B,X
-6219: EC 26          LDD    $6,Y	; [bank_address]
+6219: EC 26          LDD    $6,Y	; [select_address]
 621B: 84 03          ANDA   #$03
 621D: ED 08          STD    $8,X
 621F: 6F 0C          CLR    $C,X
-6221: A6 22          LDA    $2,Y	; [bank_address]
+6221: A6 22          LDA    $2,Y	; [select_address]
 6223: 84 F0          ANDA   #$F0
 6225: A7 88 46       STA    $46,X
-6228: A6 24          LDA    $4,Y	; [bank_address]
+6228: A6 24          LDA    $4,Y	; [select_address]
 622A: 84 1F          ANDA   #$1F
 622C: A7 88 17       STA    $17,X
 622F: CE 63 45       LDU    #$6345
-6232: E6 C6          LDB    A,U	; [bank_address]
+6232: E6 C6          LDB    A,U	; [select_address]
 6234: E7 01          STB    $1,X
 6236: 86 80          LDA    #$80
 6238: A7 03          STA    $3,X
-623A: A6 28          LDA    $8,Y	; [bank_address]
+623A: A6 28          LDA    $8,Y	; [select_address]
 623C: 84 C0          ANDA   #$C0
 623E: AA 88 17       ORA    $17,X
 6241: A7 88 17       STA    $17,X
-6244: A6 26          LDA    $6,Y	; [bank_address]
+6244: A6 26          LDA    $6,Y	; [select_address]
 6246: 1F 89          TFR    A,B
 6248: 59             ROLB
 6249: 59             ROLB
@@ -3146,10 +3146,10 @@ lb0_5f85:  ; [global]
 6252: 44             LSRA
 6253: 84 07          ANDA   #$07
 6255: A7 88 4B       STA    $4B,X
-6258: A6 28          LDA    $8,Y	; [bank_address]
+6258: A6 28          LDA    $8,Y	; [select_address]
 625A: 84 0F          ANDA   #$0F
 625C: BD 63 94       JSR    $6394
-625F: A6 25          LDA    $5,Y	; [bank_address]
+625F: A6 25          LDA    $5,Y	; [select_address]
 6261: A7 88 1B       STA    $1B,X
 6264: 2A 10          BPL    $6276
 6266: 48             ASLA
@@ -3174,20 +3174,20 @@ lb0_5f85:  ; [global]
 6291: CC 00 00       LDD    #$0000
 6294: A3 E4          SUBD   ,S		; [local]
 6296: ED E4          STD    ,S		; [local]
-6298: A6 24          LDA    $4,Y	; [bank_address]
+6298: A6 24          LDA    $4,Y	; [select_address]
 629A: A8 62          EORA   $2,S		; [local]
 629C: 84 20          ANDA   #$20
 629E: 10 26 00 98    LBNE   $633A
 62A2: 4F             CLRA
-62A3: E6 23          LDB    $3,Y	; [bank_address]
+62A3: E6 23          LDB    $3,Y	; [select_address]
 62A5: 58             ASLB
 62A6: 49             ROLA
 62A7: 58             ASLB
 62A8: 49             ROLA
 62A9: 58             ASLB
 62AA: 49             ROLA
-62AB: 10 A3 E4       CMPD   ,S		; [local] (usless cmp)
-62AE: A6 24          LDA    $4,Y	; [bank_address]
+62AB: 10 A3 E4       CMPD   ,S		; [local] (useless cmp)
+62AE: A6 24          LDA    $4,Y	; [select_address]
 62B0: 84 20          ANDA   #$20
 62B2: 26 06          BNE    $62BA
 62B4: 10 25 00 82    LBCS   $633A

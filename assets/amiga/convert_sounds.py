@@ -3,7 +3,7 @@ import shutil
 
 from shared import *
 
-gamename = "ghosts_and_goblins"
+gamename = "double_dragon"
 sox = "sox"
 
 sound_dir = this_dir / ".." / "sounds"
@@ -34,7 +34,10 @@ def convert():
 
     EMPTY_SND = "EMPTY_SND"
 
-    dummy_sounds = set()
+    dummy_sounds = {1,9,3,
+    0x8D,  # whip
+    0xFE,
+    0xFF}
 
 
 
@@ -65,7 +68,9 @@ def convert():
 
 
     music_dict = {
-    "TITLE_TUNE_SND"      :{"index":0x1,"pattern":0,"volume":32},
+    #"TITLE_TUNE_SND"      :{"index":0x1,"pattern":0,"volume":32,"intro.mod"},
+    #"LEVEL1_TUNE_SND"      :{"index":0x9,"pattern":0,"volume":32,"filename":"level1.mod"},
+    #"BOSS_TUNE_SND"      :{"index":0x3,"pattern":0,"volume":32,"filename":"boss.mod"},
 
     }
 
@@ -248,9 +253,9 @@ def convert():
     for f in sound_dir.glob("*.mod"):
         shutil.copy(f,data_dir)
 
-    unused_indexes = set(range(0,0x3E))-sfx_list-dummy_sounds-music_list
-    print("Unmapped sound indexes: ")
-    print(sorted(hex(x) for x in unused_indexes))
+##    unused_indexes = set(range(0,0x3E))-sfx_list-dummy_sounds-music_list
+##    print("Unmapped sound indexes: ")
+##    print(sorted(hex(x) for x in unused_indexes))
 convert()
 
 

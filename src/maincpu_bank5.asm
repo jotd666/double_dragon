@@ -1322,7 +1322,7 @@ jump_table_5839:
 58CA: 86 04          LDA    #$04
 58CC: A7 88 19       STA    $19,X
 58CF: 86 87          LDA    #$87
-58D1: BD 66 E6       JSR    flip_screen_if_needed_66e6
+58D1: BD 66 E6       JSR    play_game_sound_66e6
 58D4: 32 64          LEAS   $4,S   ; [free_locals]
 58D6: 39             RTS
 
@@ -1358,7 +1358,7 @@ jump_table_5839:
 5945: 6F 88 18       CLR    $18,X
 5948: 6F 03          CLR    $3,X
 594A: 86 8B          LDA    #$8B
-594C: BD 66 E6       JSR    flip_screen_if_needed_66e6
+594C: BD 66 E6       JSR    play_game_sound_66e6
 594F: 32 61          LEAS   $1,S   ; [free_locals]
 5951: 39             RTS
 
@@ -1703,7 +1703,7 @@ jump_table_5caf:
 5D40: 5A             DECB
 5D41: 26 FD          BNE    $5D40
 5D43: 86 03          LDA    #$03
-5D45: BD 66 E6       JSR    flip_screen_if_needed_66e6
+5D45: BD 66 E6       JSR    play_game_sound_66e6
 5D48: B6 0E 1A       LDA    $0E1A
 5D4B: 84 03          ANDA   #$03
 5D4D: 81 03          CMPA   #$03
@@ -1716,7 +1716,7 @@ jump_table_5caf:
 5D5C: 8A 80          ORA    #$80
 5D5E: A7 88 1B       STA    $1B,X
 5D61: 86 10          LDA    #$10
-5D63: BD 66 E6       JSR    flip_screen_if_needed_66e6
+5D63: BD 66 E6       JSR    play_game_sound_66e6
 5D66: EC 08          LDD    $8,X
 5D68: 83 00 02       SUBD   #$0002
 5D6B: ED 08          STD    $8,X
@@ -1730,7 +1730,7 @@ jump_table_5caf:
 5D80: 8A 04          ORA    #$04
 5D82: B7 0E 1A       STA    $0E1A
 5D85: 86 FE          LDA    #$FE
-5D87: BD 66 E6       JSR    flip_screen_if_needed_66e6
+5D87: BD 66 E6       JSR    play_game_sound_66e6
 5D8A: 86 02          LDA    #$02
 5D8C: 97 4B          STA    $4B
 5D8E: EC 08          LDD    $8,X
@@ -1874,7 +1874,7 @@ doors_open_5e78:
 5EE6: 8A 20          ORA    #$20
 5EE8: B7 0E 16       STA    $0E16
 5EEB: 86 11          LDA    #$11
-5EED: BD 66 E6       JSR    flip_screen_if_needed_66e6
+5EED: BD 66 E6       JSR    play_game_sound_66e6
 5EF0: 20 01          BRA    $5EF3
 5EF2: 39             RTS
 5EF3: 6A 88 19       DEC    $19,X
@@ -2389,13 +2389,13 @@ jump_table_5f4f:
 66E1: BD 66 68       JSR    $6668
 66E4: 35 82          PULS   A,PC		; [manual_stack_pull]
 
-flip_screen_if_needed_66e6:
+play_game_sound_66e6:
 66E6: D6 26          LDB    game_in_play_0026
 66E8: 26 07          BNE    $66F1
 66EA: F6 38 04       LDB    dsw_1_3804
 66ED: C4 04          ANDB   #$04
-66EF: 27 03          BEQ    $66F4
-66F1: B7 38 0E       STA    $380E
+66EF: 27 03          BEQ    $66F4	; no attract: skip
+66F1: B7 38 0E       STA    sound_irq_380e
 66F4: 39             RTS
 
 66F5: 34 40          PSHS   U
@@ -3606,7 +3606,7 @@ flip_screen_if_needed_66e6:
 723E: 7C 0E 42       INC    $0E42
 7241: 34 02          PSHS   A
 7243: 86 12          LDA    #$12
-7245: BD 66 E6       JSR    flip_screen_if_needed_66e6
+7245: BD 66 E6       JSR    play_game_sound_66e6
 7248: 35 02          PULS   A
 724A: BD 72 5E       JSR    $725E
 724D: B6 0E 42       LDA    $0E42
@@ -4025,7 +4025,7 @@ jump_table_72a9:
 77AC: A6 88 31       LDA    $31,X
 77AF: 26 0A          BNE    $77BB
 77B1: 86 96          LDA    #$96
-77B3: BD 66 E6       JSR    flip_screen_if_needed_66e6
+77B3: BD 66 E6       JSR    play_game_sound_66e6
 77B6: 86 01          LDA    #$01
 77B8: A7 88 31       STA    $31,X
 77BB: 6A 88 19       DEC    $19,X
@@ -4034,7 +4034,7 @@ jump_table_72a9:
 77C3: A6 88 18       LDA    $18,X
 77C6: 81 02          CMPA   #$02
 77C8: 24 0D          BCC    $77D7
-77CA: E6 A6          LDB    A,Y
+77CA: E6 A6          LDB    A,Y		; [bank_address]
 77CC: EA 03          ORB    $3,X
 77CE: E7 02          STB    $2,X
 77D0: C6 02          LDB    #$02

@@ -1,5 +1,4 @@
-- palette change at level 4, seems it's only the boss door, so maybe hack the tilesheets
-- tile orientation not implemented level 4 complete bogus then
+- end of game: issue jump table index out of range?? break at BBC8 trace cpu??
 - trashed tiles at level 1-2, memory is at fault ex 37A0 takes value 0001.W instead of expected 0005.W, a lot of tiles
   on the bottom are trashed: probably address problem when giants break the wall debug this (same at level 4)
 - group laterally like in VBall: use script in a .bat drag & drop note in json + delete dumped files
@@ -12,14 +11,12 @@ Warning: no size set for sprite $0fe5: repair sprite used json dump which is mis
   intermediate tile context to capture
 - when resetting context, redraw all tiles as palette has changed but do not reset scroll, ever
   only reset x_scroll at level 1
-- level 3 end door is it sprite or tiles? problem with orientation, same thing missing tiles level 1_2
 - sprites "wrap" in Y: top enemies appear on the bottom
 
 - weak enemies: doesn't work with hooker and giant bosses
-- copy sprite colors from billy to jimmy, propagate used tiles for all levels
 - set DSW difficulty lives, etc.
 - cache subcontext (loaded fg/bg/sprite files)
-- don't forget temp breakpoints for stack params!
+
 - try 16+16 color version (this is going to suck!)
 
 - sounds
@@ -52,3 +49,6 @@ winuae: check value written is FF
 w 0 rA6+$A78 1 W VFF.B
 w 1 rA6+$A85 1 W VFF.B
 w 2 rA6+$A6D 1 W VFF.B
+
+log sounds: wpset 380E,1,W,wpdata!=$FF
+record: bpset 89EC,,{bpclear;A=$81;g}

@@ -665,8 +665,8 @@ with open(bank,"w") as f:
     asm2bin(bank)
 
 # background tiles & sprite contexts
-context_list = ["level_1_1","level_1_2","level_2","level_3_1","level_3_2","level_3_3"]
-context_list = ["level_4"]
+context_list = ["level_1_1","level_1_2","level_2","level_3_1","level_3_2","level_3_3","level_4"]
+context_list = ["level_1_2"]
 
 for context in context_list:
 
