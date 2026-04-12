@@ -5120,6 +5120,7 @@ osd_sound_start:
 	* music
 4:
 
+ 	movem.l	d0/a0,-(a7)
 	moveq	#0,d0
 	move.b	(7,a0,d0.w),d0	| module index
 	lea		module_table,a0
@@ -5127,6 +5128,7 @@ osd_sound_start:
 	add.w	d0,d0
 	move.l	(a0,d0.w),a0
 	jbsr	load_music_if_needed
+	movem.l	(a7)+,d0/a0
 	
 	* don't play if already playing
 	* (music_tick value is not important for looped tunes
