@@ -1111,7 +1111,7 @@ jump_table_748f:
 7662: BD 76 A6       JSR    $76A6
 7665: 7F 0A 5F       CLR    $0A5F
 7668: E6 80          LDB    ,X+		; [bank_address]
-766A: ED A1          STD    ,Y++
+766A: ED A1          STD    ,Y++	; [video_address_word]
 766C: 7C 0A 5F       INC    $0A5F
 766F: F6 0A 5F       LDB    $0A5F
 7672: C1 10          CMPB   #$10

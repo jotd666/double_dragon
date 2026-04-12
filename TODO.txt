@@ -1,6 +1,8 @@
 - highscore screen after attract (make attract faster!!) then crash (tile-related): see if intro context
   is reloaded
 - create a fg tile context for highscores (else it destroys colors)
+- rip outtro tiles & generate bg tiles
+- sprites FEF/FF3 doesn't display / aren't logged?? (player legs at the end)
 - re-detect title context the second time (0x200??), unload sprites (seems to crash if left alone), remove sprite filter
 
 

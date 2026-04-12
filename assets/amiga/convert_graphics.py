@@ -6,8 +6,8 @@ from shared import *
 sprite_context_list = ["intro","level_1","level_2","level_3","level_3_3","level_4"]
 bg_tile_context_list = ["level_1_1","level_1_2","level_2","level_3_1","level_3_2","level_3_3","level_4"]
 
-sprite_context_list = ["level_4"]
-bg_tile_context_list = []
+sprite_context_list = []
+bg_tile_context_list = ["outtro"]
 
 sprite_names = get_sprite_names()
 
@@ -744,7 +744,9 @@ for context in context_list:
     sprite_sheet_dict = {i:Image.open(sheets_path / "sprites" / pcontext / f"pal_{i:02x}.png") for i in range(SPRITE_NB_CLUTS)}
 
     # correct incorrectly logged size (why??)
+
     size_table[0x884] = 2
+
 
     for forced_size_1 in [0x5EE,0x5F0,0x8A4,0x8A6,0x8A8,0x86E,0x9EC,0x9F0,
     0xEEA,0xEE6,0xEF0,0xEF6,0xEE2]:
