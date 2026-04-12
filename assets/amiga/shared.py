@@ -152,8 +152,8 @@ def get_sprite_names():
     rval |= {k:"knife" for k in range(0x9A8,0x9BE)}
     rval |= {k:"bat" for k in range(0x9C1,0x9E9)}
     rval |= {k:"thug" for k in range(0x700,0x7EE)}
-    rval |= {k:"thug" for k in range(0x700,0x7EE)}
-    rval |= {k:"player_marker" for k in range(0x5BA,0x5C1)}
+    rval |= {k:"thug" for k in range(0x5D2,0x5DD)}
+    rval |= {k:"player_marker" for k in range(0x800,0x804)}
     rval |= {k:"garage_door" for k in list(range(0xE50,0xE5E))+[0xE45]}
 
     rval[0x100] = "player"

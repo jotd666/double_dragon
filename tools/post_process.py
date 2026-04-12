@@ -3,6 +3,7 @@ from shared import *
 # post-conversion automatic patches, allowing not to change the asm file by hand
 
 fast_play = False
+fast_attract = True
 
 process_main = 1
 process_banks = 1
@@ -48,9 +49,9 @@ def f_handle_bank0_line(address,lines,i):
     elif address == 0x42f8:
         lines[i+2] += "\tscs\td6  | save carry as d6\n"
     elif address == 0x41df:
-        line += "\tjbsr\tosd_clear_fg_screen\n"
-    elif address == 0x41ec:
         line += "\tjbsr\tosd_clear_bg_screen\n"
+    elif address == 0x41ec:
+        line += "\tjbsr\tosd_clear_fg_screen\n"
     elif address == 0x4A47:
         line = "\tjbsr\tosd_set_flash_color\n"+line
     ### replace current line
@@ -360,6 +361,8 @@ jra        coin_inserted_8158
     elif address == 0xeed3:
         line = "\tjbsr\tosd_palette_updated\n"+line
 
+    elif address == 0x835B and fast_attract:
+        line += "\tmove.w\t#0x50,d1\n"
     elif address in {0xfc3a,0xfc8f,0xfb34,0xFF9C}:  # protect carry from switch_to_saved_bank_xxxx
         line = "\tPUSH_SR  | save carry\n"+line
     elif address in {0xfc4e,0xfc9a,0xFB42,0xFFA9}:  # protect carry from switch_to_bank_0_xxx

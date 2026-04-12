@@ -9,7 +9,7 @@ sprite_names = shared.get_sprite_names()
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
 
-tilesdir = os.path.join(this_dir,os.pardir,"sheets","sprites")
+tilesdir = os.path.join(this_dir,os.pardir,"sheets","sprites","intro")
 
 mono_clut = True
 
@@ -115,7 +115,7 @@ def doit(binname):
 
     layer.save(f"{binname}.png")
 
-doit(r"girl")
+doit(r"sprites")
 
 
 

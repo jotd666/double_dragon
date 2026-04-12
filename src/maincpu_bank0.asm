@@ -247,14 +247,14 @@ lb0_41c9:   ; [global]
 41D2: 8D EB          BSR    clear_memory_41bf
 41D4: 35 B1          PULS   CC,X,Y,PC
 lb0_41d6:   ; [global]
-clear_fg_screen_41d6:
+clear_bg_screen_41d6:
 41D6: 34 31          PSHS   Y,X,CC
 41D8: 8E 30 00       LDX    #bg_tiles_address_3000
 41DB: 10 8E 08 00    LDY    #$0800
 41DF: 8D DE          BSR    clear_memory_41bf
 41E1: 35 B1          PULS   CC,X,Y,PC
 lb0_41e3:   ; [global]
-clear_bg_screen_41e3:
+clear_fg_screen_41e3:
 41E3: 34 31          PSHS   Y,X,CC
 41E5: 8E 18 00       LDX    #fg_tiles_address_1800
 41E8: 10 8E 08 00    LDY    #$0800
@@ -985,9 +985,11 @@ lb0_4804:     ; [global]
 482A: A7 84          STA    ,X
 482C: 35 FE          PULS   D,DP,X,Y,U,PC
 
+; achieves ... nothing
 4888: 34 1F          PSHS   X,DP,D,CC
 488A: 35 9F          PULS   CC,D,DP,X,PC
 
+; save A and CC in $6x ram, doesn't seem to be called
 lb0_488c:  ; [global]
 488C: 34 37          PSHS   Y,X,D,CC
 488E: 8E 00 60       LDX    #$0060
