@@ -34,7 +34,7 @@ def convert():
 
     EMPTY_SND = "EMPTY_SND"
 
-    dummy_sounds = {1,9,3,0xC
+    dummy_sounds = {1,9,3,0xc,
     0xFE,
     0xFF}
 
@@ -67,16 +67,17 @@ def convert():
 
 
     music_dict = {
-    #"TITLE_TUNE_SND"      :{"index":0x1,"pattern":0,"volume":32,"intro.mod"},
-    #"LEVEL1_TUNE_SND"      :{"index":0x9,"pattern":0,"volume":32,"filename":"level1.mod"},
-    #"BOSS_TUNE_SND"      :{"index":0x3,"pattern":0,"volume":32,"filename":"boss.mod"},
-    #"END_TUNE_SND"      :{"index":0xc,"pattern":0,"volume":32,"filename":"boss.mod"},
+    "TITLE_TUNE_SND"      :{"index":0x1,"pattern":0,"volume":32,"module_index":0},
+    #"LEVEL1_TUNE_SND"      :{"index":0x9,"pattern":0,"volume":32,"module_number":1},
+    #"BOSS_TUNE_SND"      :{"index":0x3,"pattern":0,"volume":32,"module_number":2},
+    #"END_TUNE_SND"      :{"index":0xc,"pattern":0,"volume":32,"module_number":3},
 
     }
 
     sound_dict.update(music_dict)
 
-
+    module_names = [None]*16
+    module_names[0] = "intro.mod"
 
     with open(os.path.join(src_dir,"..","sounds.inc"),"w") as f:
         for k,v in sorted(sound_dict.items(),key = lambda x:x[1]["index"]):
@@ -133,7 +134,6 @@ def convert():
 
         fw.write("\t.section\t.datachip\n")
 
-        fw.write("\t.global\tmodule_table\n")
 
 
         for wav_file,details in sound_dict.items():
@@ -142,18 +142,6 @@ def convert():
                 fw.write("\t.global\t{}_raw\n".format(wav_name))
 
 
-        # write the table index => module (there are several modules now)
-        vals = [("0","empty")]*32
-        for k,v in sound_dict.items():
-            m = v.get("module")
-            if m:
-                index = v["index"]
-                vals[index] = (m+"_tunes",k)
-
-        fw.write("module_table:\n")
-        for i,val in enumerate(vals):
-            fw.write(f"\t.long\t{val[0]}  | {i:02x} ({val[1]})\n")
-        fw.write("\n")
 
         for wav_entry,details in sound_dict.items():
             sound_index = details["index"]
@@ -165,7 +153,7 @@ def convert():
                 if same_as is None:
                     # if music loops, ticks are set to 1 so sound orders only can happen once (else music is started 50 times per second!!)
 
-                    sound_table_set_1[sound_index] = "\t.word\t{},{},{}\n\t.byte\t{},{}".format(2,details["pattern"],0,details["volume"],int(details.get("loops",0)))
+                    sound_table_set_1[sound_index] = "\t.word\t{},{},{}\n\t.byte\t{},{}".format(2,details["pattern"],0,details["volume"],details["module_index"])
                 else:
                     # aliased sound: reuse sample for a different sound index
                     wav_entry = same_as
@@ -248,6 +236,19 @@ def convert():
             fst.write(st)
             fst.write(f" | 0x{i:02x}\n")
 
+        fst.write("\nmodule_table:\n")
+        for i,n in enumerate(module_names):
+            if n:
+                n = n.split(".")[0]
+                fst.write(f"\t.long\t{n}_name | {i}\n")
+            else:
+                fst.write(f"\t.long\t0 | {i}\n")
+
+        for n in module_names:
+            if n:
+                nm = n.split(".")[0]
+                fst.write(f"{nm}_name:\n")
+                fst.write(f'\t.asciz\t"{n}"\n')
     music_list = {v["index"] for v in music_dict.values()}
 
     for f in sound_dir.glob("*.mod"):

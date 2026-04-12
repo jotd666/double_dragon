@@ -2,7 +2,7 @@ from shared import *
 
 # post-conversion automatic patches, allowing not to change the asm file by hand
 
-
+fast_play = False
 
 process_main = 1
 process_banks = 1
@@ -267,7 +267,7 @@ def f_handle_main_line(address,lines,i):
     elif address == 0x8389:
         line = "\tjbsr\tosd_main_loop_hook  | useful to save/restore the state\n"+line
     # HACK TO BE ABLE TO START GAME MUST BE IMPROVED ELSE DEMO WON'T SHOW
-    elif address == 0x8124 and True:
+    elif address == 0x8124 and fast_play:
         # set 5 credits right away. Problem with the current game architecture is that
         # credits are inserted from fast irq, but fast irq doesn't return, so it causes us trouble
         # on the amiga because the interrupts work differently. Here just set 5 credits and jump to the routine
@@ -336,7 +336,7 @@ jra        coin_inserted_8158
         line = change_instruction("or.b\t#0x40,(nmi_active_flag_0e71,a6)",lines,i)+"\trts\n" # atomic set of interrupt flag
     elif address == 0x83e2:
         line = change_instruction("OP_W_ON_DP_ADDRESS\tor,interrupt_status_22,#1",lines,i) # atomic set of interrupt flag
-    elif address == 0x8124:
+    elif address == 0x8124 and fast_play:
         line = "\tjra\tstart_attract_mode_8147\n"  # temp skip "insert coin" flashing
     elif address == 0x8B8B and "a5," in line:  # don't do it twice!
         # allocate 1 byte on target stack

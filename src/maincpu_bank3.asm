@@ -318,18 +318,18 @@ jump_table_6cdc:
 6ED7: 4F             CLRA
 6ED8: 31 AB          LEAY   D,Y
 6EDA: 86 63          LDA    #$63
-6EDC: A7 84          STA    ,X
-6EDE: A7 02          STA    $2,X
-6EE0: A7 88 40       STA    $40,X
-6EE3: A7 88 42       STA    $42,X
+6EDC: A7 84          STA    ,X		; [video_address]
+6EDE: A7 02          STA    $2,X		; [video_address]
+6EE0: A7 88 40       STA    $40,X		; [video_address]
+6EE3: A7 88 42       STA    $42,X		; [video_address]
 6EE6: A6 A0          LDA    ,Y+		; [bank_address]
-6EE8: A7 01          STA    $1,X
+6EE8: A7 01          STA    $1,X		; [video_address]
 6EEA: A6 A0          LDA    ,Y+		; [bank_address]
-6EEC: A7 03          STA    $3,X
+6EEC: A7 03          STA    $3,X		; [video_address]
 6EEE: A6 A0          LDA    ,Y+		; [bank_address]
-6EF0: A7 88 41       STA    $41,X
+6EF0: A7 88 41       STA    $41,X		; [video_address]
 6EF3: A6 A4          LDA    ,Y		; [bank_address]
-6EF5: A7 88 43       STA    $43,X
+6EF5: A7 88 43       STA    $43,X		; [video_address]
 6EF8: 35 FE          PULS   D,DP,X,Y,U,PC
 
 

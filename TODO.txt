@@ -1,7 +1,10 @@
+- missing tiles on highscore screen after attract (make attract faster!!)
+  then crash (tile-related)
 - end of game: issue jump table index out of range?? break at BBC8 trace cpu?? right after playing sound $C (end tune?)
 - flash with giants: if fixed by changing size, missing strips in giants
   I think wrong size log size 1 (wrong) AND size 2 when it's just size 2
   same thing for beams (level 4)
+- jump with whip: missing frames
 - video: fix clip, add music
 - adaptation of ptplayer to 255 instruments
 - joystick doesn't work
