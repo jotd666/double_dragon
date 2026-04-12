@@ -1661,7 +1661,7 @@ jump_table_5caf:
 5CDF: 8A 80          ORA    #$80
 5CE1: A7 88 1B       STA    $1B,X
 5CE4: 86 10          LDA    #$10
-5CE6: B7 38 0E       STA    $380E
+5CE6: B7 38 0E       STA    sound_irq_380e
 5CE9: EC 08          LDD    $8,X
 5CEB: C3 00 02       ADDD   #$0002
 5CEE: ED 08          STD    $8,X
@@ -1693,7 +1693,7 @@ jump_table_5caf:
 5D2A: 5A             DECB
 5D2B: 26 FD          BNE    $5D2A
 5D2D: 86 FE          LDA    #$FE
-5D2F: B7 38 0E       STA    $380E
+5D2F: B7 38 0E       STA    sound_irq_380e
 5D32: 35 C0          PULS   U,PC
 5D34: A6 88 1B       LDA    $1B,X
 5D37: 2B 0F          BMI    $5D48

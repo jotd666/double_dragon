@@ -34,8 +34,7 @@ def convert():
 
     EMPTY_SND = "EMPTY_SND"
 
-    dummy_sounds = {1,9,3,
-    0x8D,  # whip
+    dummy_sounds = {1,9,3,0xC
     0xFE,
     0xFF}
 
@@ -71,6 +70,7 @@ def convert():
     #"TITLE_TUNE_SND"      :{"index":0x1,"pattern":0,"volume":32,"intro.mod"},
     #"LEVEL1_TUNE_SND"      :{"index":0x9,"pattern":0,"volume":32,"filename":"level1.mod"},
     #"BOSS_TUNE_SND"      :{"index":0x3,"pattern":0,"volume":32,"filename":"boss.mod"},
+    #"END_TUNE_SND"      :{"index":0xc,"pattern":0,"volume":32,"filename":"boss.mod"},
 
     }
 

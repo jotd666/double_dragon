@@ -1,6 +1,10 @@
-- end of game: issue jump table index out of range?? break at BBC8 trace cpu??
-- trashed tiles at level 1-2, memory is at fault ex 37A0 takes value 0001.W instead of expected 0005.W, a lot of tiles
-  on the bottom are trashed: probably address problem when giants break the wall debug this (same at level 4)
+- end of game: issue jump table index out of range?? break at BBC8 trace cpu?? right after playing sound $C (end tune?)
+- flash with giants: if fixed by changing size, missing strips in giants
+  I think wrong size log size 1 (wrong) AND size 2 when it's just size 2
+  same thing for beams (level 4)
+- video: fix clip, add music
+- adaptation of ptplayer to 255 instruments
+- joystick doesn't work
 - group laterally like in VBall: use script in a .bat drag & drop note in json + delete dumped files
 - sprite clipping too soon on the right: mockup
 - still red flashes when giant: missing size tiles?
@@ -19,7 +23,7 @@ Warning: no size set for sprite $0fe5: repair sprite used json dump which is mis
 
 - try 16+16 color version (this is going to suck!)
 
-- sounds
+
 - title fading in not supported
   
 optimize: remove this sequence: 

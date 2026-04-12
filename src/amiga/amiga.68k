@@ -1152,9 +1152,19 @@ load_context:
 *	jbsr	load_music_if_needed
 *0:
 *	* at start redraw everything & set scroll values
+
+	move.w	current_context,d0
+	cmp.w	#CTX_TITLE,d0
+	jeq		5f
+	cmp.w	#CTX_LEVEL4,d0
+	jne		6f
+5:
+	* only reset scrolling parameters for some contexts
 	move.w	#START_X,game_scroll_x
 	move.w	#START_Y,game_scroll_y
 	move.w	game_scroll_x,previous_scroll_x
+	jbsr	reset_scrolling_parameters
+6:
 	jbsr force_all_screen_redraw
 
 	jbsr	osd_enable_interrupts
@@ -1365,6 +1375,18 @@ compute_mirror_bitplanes:
 	movem.l	(a7)+,d0-a6
 	rts
 	
+reset_scrolling_parameters:
+	* given the current scroll X/Y, draw all tiles on screen
+	move.w	game_scroll_x,d0
+	move.w	d0,previous_scroll_x
+	add.w	#START_HOST_SCROLL_X,d0			| give us some leeway to the left: 10 screens before havoc
+	move.w	d0,host_scroll_x
+	move.w	d0,min_scroll_x
+	move.w	d0,d1
+	add.w	#VISIBLE_SCROLL_WIDTH+BG_TILE_WIDTH,d1		| after that it triggers tile refresh
+	move.w	d1,max_scroll_x
+	rts
+	
 * force screen redraw. Also wired on Ghosts'N'Goblins screen layout
 * we'll use a conversion table
 force_all_screen_redraw:
@@ -1377,16 +1399,6 @@ force_all_screen_redraw:
 	* retrieve tile values
 	* this requires to convert the GnG address to DD address
 	
-	
-	* given the current scroll X/Y, draw all tiles on screen
-	move.w	game_scroll_x,d0
-	move.w	d0,previous_scroll_x
-	add.w	#START_HOST_SCROLL_X,d0			| give us some leeway to the left: 10 screens before havoc
-	move.w	d0,host_scroll_x
-	move.w	d0,min_scroll_x
-	move.w	d0,d1
-	add.w	#VISIBLE_SCROLL_WIDTH+BG_TILE_WIDTH,d1		| after that it triggers tile refresh
-	move.w	d1,max_scroll_x
 	
 	move.w	host_scroll_x,d0
 	
@@ -1522,6 +1534,8 @@ set_scroll_values:
 	* from somewhere else than a starting point. It could happen on
 	* real hardware with BG_TILE_WIDTH value (screen "shake" because of high
 	* object redraw time + erratic behaviour from the player :))
+
+	jbsr	reset_scrolling_parameters
 	jbsr	force_all_screen_redraw
 	
 	rts

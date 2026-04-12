@@ -1165,5 +1165,5 @@ jump_table_748f:
 7E61: F6 38 04       LDB    $3804
 7E64: C4 04          ANDB   #$04
 7E66: 27 03          BEQ    $7E6B
-7E68: B7 38 0E       STA    $380E
+7E68: B7 38 0E       STA    sound_irq_380e
 7E6B: 39             RTS

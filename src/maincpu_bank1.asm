@@ -3041,7 +3041,7 @@ subcpu_processing_411e:
 5CE3: B6 0E 3F    LDA    $0E3F
 5CE6: 26 05       BNE    $5CED
 5CE8: 86 FE       LDA    #$FE
-5CEA: B7 38 0E    STA    $380E
+5CEA: B7 38 0E    STA    sound_irq_380e
 5CED: 39          RTS
 5CEE: B6 0B 4A    LDA    $0B4A
 5CF1: 81 04       CMPA   #$04
@@ -3816,7 +3816,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 647B: F6 38 04    LDB    $3804
 647E: C4 04       ANDB   #$04
 6480: 27 03       BEQ    $6485
-6482: B7 38 0E    STA    $380E
+6482: B7 38 0E    STA    sound_irq_380e
 6485: 39          RTS
 
 6486: DC 3C       LDD    $3C
@@ -4084,7 +4084,7 @@ lb1_push_sprites_in_pre_shadow_memory_6281:
 66E8: F6 38 04    LDB    $3804
 66EB: C4 04       ANDB   #$04
 66ED: 27 03       BEQ    $66F2
-66EF: B7 38 0E    STA    $380E
+66EF: B7 38 0E    STA    sound_irq_380e
 66F2: 39          RTS
 66F3: 34 40       PSHS   U
 66F5: 10 AE 88 35 LDY    $35,X

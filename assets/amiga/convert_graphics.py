@@ -3,6 +3,11 @@ import os,sys,bitplanelib,math
 
 from shared import *
 
+sprite_context_list = ["intro","level_1","level_2","level_3","level_3_3","level_4"]
+bg_tile_context_list = ["level_1_1","level_1_2","level_2","level_3_1","level_3_2","level_3_3","level_4"]
+
+sprite_context_list = ["level_4"]
+bg_tile_context_list = ["level_4"]
 
 sprite_names = get_sprite_names()
 
@@ -665,8 +670,7 @@ with open(bank,"w") as f:
     asm2bin(bank)
 
 # background tiles & sprite contexts
-context_list = ["level_1_1","level_1_2","level_2","level_3_1","level_3_2","level_3_3","level_4"]
-context_list = ["level_1_2"]
+context_list = bg_tile_context_list
 
 for context in context_list:
 
@@ -727,8 +731,8 @@ for context in context_list:
 ###############
 
 
-context_list = ["intro","level_1","level_2","level_3","level_3_3"]
-context_list = ["level_4"]
+context_list = sprite_context_list
+
 
 for context in context_list:
     bob_plane_cache = {}
@@ -741,10 +745,12 @@ for context in context_list:
 
     # correct incorrectly logged size (why??)
     size_table[0x884] = 2
-    size_table[0x5EE] = 1
-    size_table[0x5F0] = 1
-    size_table[0x8A4] = 1
-    size_table[0x8A6] = 1
+
+    for forced_size_1 in [0x5EE,0x5F0,0x8A4,0x8A6,0x8A8,0x86E,0x9EC,0x9F0,
+    0xEEA,0xEE6,0xEF0,0xEF6,0xEE2]:
+        size_table[forced_size_1] = 1
+
+
 
     read_used_tiles(pcontext/"used_sprites",sprite_cluts,SPRITE_NB_TILES,SPRITE_NB_CLUTS,size_table)
 
