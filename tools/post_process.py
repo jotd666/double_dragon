@@ -2,8 +2,8 @@ from shared import *
 
 # post-conversion automatic patches, allowing not to change the asm file by hand
 
-fast_play = False
-fast_attract = True
+fast_play = True
+fast_attract = False
 
 process_main = 1
 process_banks = 1
@@ -133,6 +133,13 @@ def f_handle_bank3_line(address,lines,i):
     elif address == 0x6E34:
         # allocate for 1 byte of manual stack
         line += "\taddq\t#1,d5\n"
+    elif address == 0x7642:
+        # game does a clear of everything, we can't put
+        # video_address tags as there's some non-video zone in between
+        # just clear screens in the end
+        line += """\tjbsr\tosd_clear_bg_screen
+\tjbsr\tosd_clear_fg_screen
+"""
     lines[i] = line
 
 def f_handle_bank4_line(address,lines,i):
@@ -267,6 +274,17 @@ def f_handle_main_line(address,lines,i):
         line = remove_instruction(lines,i,continuing_lines=False)
     elif address == 0x8389:
         line = "\tjbsr\tosd_main_loop_hook  | useful to save/restore the state\n"+line
+    elif address == 0x8571:
+        # remove active loop for sound
+        line = remove_instruction(lines,i)
+    elif address == 0xbbc3:
+        # the game avoids a nasty bug by reading $FF in shared memory around 610E (bank 0)
+        # we're not emulating this invalid FF shit so we fall into the cracks: high value written
+        # in jump index: just skip it (happens only at the end of the game)
+        line += """
+    cmp.w    #0x14,d0
+    jcc        l_bbca
+"""
     # HACK TO BE ABLE TO START GAME MUST BE IMPROVED ELSE DEMO WON'T SHOW
     elif address == 0x8124 and fast_play:
         # set 5 credits right away. Problem with the current game architecture is that

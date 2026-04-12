@@ -568,7 +568,7 @@ jump_table_70a7:
 7191: 84 40          ANDA   #$40
 7193: 26 57          BNE    $71EC
 7195: 10 8E 09 6B    LDY    #$096B
-7199: A6 88 31       LDA    $31,X
+7199: A6 88 31       LDA    $31,X	; [bank_address]
 719C: 5F             CLRB
 719D: 8E 03 A2       LDX    #$03A2
 71A0: A6 84          LDA    ,X
@@ -668,7 +668,7 @@ jump_table_7229:
 726B: 86 40          LDA    #$40
 726D: A7 0D          STA    $D,X
 726F: 86 06          LDA    #$06
-7271: 17 0B E9       LBSR   $7E5D
+7271: 17 0B E9       LBSR   play_game_sound_7e5d	; end of game tune
 7274: 39             RTS
 7275: 17 88 E0       LBSR   $FB58
 7278: 39             RTS
@@ -759,7 +759,7 @@ jump_table_7290:
 7333: 81 14          CMPA   #$14
 7335: 26 05          BNE    $733C
 7337: 86 9A          LDA    #$9A
-7339: 17 0B 21       LBSR   $7E5D
+7339: 17 0B 21       LBSR   play_game_sound_7e5d
 733C: A6 88 18       LDA    $18,X
 733F: 81 02          CMPA   #$02
 7341: 26 0C          BNE    $734F
@@ -767,7 +767,7 @@ jump_table_7290:
 7346: 81 10          CMPA   #$10
 7348: 26 05          BNE    $734F
 734A: 86 FE          LDA    #$FE
-734C: 17 0B 0E       LBSR   $7E5D
+734C: 17 0B 0E       LBSR   play_game_sound_7e5d
 734F: 10 8E 73 87    LDY    #$7387
 7353: A6 88 13       LDA    $13,X
 7356: 27 04          BEQ    $735C
@@ -779,7 +779,7 @@ jump_table_7290:
 7366: 10 8E 73 8F    LDY    #$738F
 736A: E6 88 18       LDB    $18,X
 736D: A6 88 19       LDA    $19,X
-7370: A1 A5          CMPA   B,Y
+7370: A1 A5          CMPA   B,Y		; [bank_address]
 7372: 25 12          BCS    $7386
 7374: 6F 88 19       CLR    $19,X
 7377: 6C 88 18       INC    $18,X
@@ -812,8 +812,9 @@ jump_table_7290:
 73BB: B6 0B 03       LDA    $0B03
 73BE: 8A 81          ORA    #$81
 73C0: B7 0B 03       STA    $0B03
+; display credits in the end
 73C3: 8E 18 00       LDX    #$1800
-73C6: 6F 80          CLR    ,X+
+73C6: 6F 80          CLR    ,X+		; [video_address]
 73C8: 8C 20 00       CMPX   #$2000
 73CB: 25 F9          BCS    $73C6
 73CD: 32 7F          LEAS   -$1,S   ; [alloc_locals]
@@ -822,8 +823,8 @@ jump_table_7290:
 73D3: 8E 18 42       LDX    #$1842
 73D6: 10 8E 1F 82    LDY    #$1F82
 73DA: CC 00 62       LDD    #$0062
-73DD: ED 81          STD    ,X++
-73DF: ED A1          STD    ,Y++
+73DD: ED 81          STD    ,X++	; [video_address_word]
+73DF: ED A1          STD    ,Y++	; [video_address_word]
 73E1: 6A E4          DEC    ,S			; [local]
 73E3: 26 F5          BNE    $73DA
 73E5: 8E 18 00       LDX    #$1800
@@ -831,8 +832,8 @@ jump_table_7290:
 73EC: C6 20          LDB    #$20
 73EE: E7 E4          STB    ,S			; [local]
 73F0: CC 00 62       LDD    #$0062
-73F3: ED 84          STD    ,X
-73F5: ED A4          STD    ,Y
+73F3: ED 84          STD    ,X     ; [video_address_word]
+73F5: ED A4          STD    ,Y     ; [video_address_word]
 73F7: 30 88 40       LEAX   $40,X
 73FA: 31 A8 40       LEAY   $40,Y
 73FD: 6A E4          DEC    ,S			; [local]
@@ -1091,7 +1092,7 @@ jump_table_748f:
 7636: 39             RTS
 7637: CC 00 00       LDD    #$0000
 763A: 8E 18 00       LDX    #$1800
-763D: ED 81          STD    ,X++		; [video_address_word]
+763D: ED 81          STD    ,X++		; [unchecked_address]
 763F: 8C 38 00       CMPX   #$3800
 7642: 26 F9          BNE    $763D
 7644: CC 01 00       LDD    #$0100
@@ -1109,7 +1110,7 @@ jump_table_748f:
 765F: BD 76 91       JSR    $7691
 7662: BD 76 A6       JSR    $76A6
 7665: 7F 0A 5F       CLR    $0A5F
-7668: E6 80          LDB    ,X+
+7668: E6 80          LDB    ,X+		; [bank_address]
 766A: ED A1          STD    ,Y++
 766C: 7C 0A 5F       INC    $0A5F
 766F: F6 0A 5F       LDB    $0A5F
@@ -1160,6 +1161,7 @@ jump_table_748f:
 76BD: 35 10          PULS   X
 76BF: 39             RTS
 
+play_game_sound_7e5d:
 7E5D: D6 26          LDB    $26
 7E5F: 26 07          BNE    $7E68
 7E61: F6 38 04       LDB    $3804

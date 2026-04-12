@@ -845,7 +845,7 @@ play_intro_animation_84f8:
 8577: 7F 0E 3F       CLR    $0E3F
 857A: 7F 0E 15       CLR    $0E15
 857D: 86 0C          LDA    #$0C
-857F: BD FE B6       JSR    play_sound_feb6
+857F: BD FE B6       JSR    play_sound_feb6		; play end of level tune
 8582: 96 36          LDA    current_level_0036
 8584: 81 03          CMPA   #$03
 8586: 27 5D          BEQ    $85E5
@@ -6046,7 +6046,7 @@ BBB9: A7 88 16       STA    $16,X
 BBBC: ED 88 1F       STD    $1F,X
 BBBF: 20 14          BRA    $BBD5
 BBC1: 84 1F          ANDA   #$1F
-BBC3: 10 8E BB EC    LDY   #jump_table_bbec
+BBC3: 10 8E BB EC    LDY    #jump_table_bbec
 BBC7: 48             ASLA
 BBC8: AD B6          JSR    [A,Y]        ; [indirect_jump] [nb_entries=20]
 BBCA: BD FE FB       JSR    $FEFB

@@ -992,7 +992,7 @@ lb4_7809:  ; [global]
 786E: 1F 02          TFR    D,Y
 7870: 86 10          LDA    #$10
 7872: 97 01          STA    $01
-7874: EC 81          LDD    ,X++
+7874: EC 81          LDD    ,X++		; [bank_address]
 7876: E7 A9 02 00    STB    $0200,Y
 787A: A7 A0          STA    ,Y+
 787C: 0A 01          DEC    $01

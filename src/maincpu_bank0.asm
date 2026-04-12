@@ -2884,12 +2884,14 @@ lb0_5f85:  ; [global]
 5FD0: BD 78 A2       JSR    $78A2
 5FD3: BD 64 E0       JSR    $64E0
 5FD6: BD 64 87       JSR    $6487
+; loop on sprite objects to do something
 5FD9: 8E 04 5E       LDX    #$045E
 5FDC: A6 84          LDA    ,X
 5FDE: 85 80          BITA   #$80
 5FE0: 27 07          BEQ    $5FE9
 5FE2: 85 10          BITA   #$10
 5FE4: 27 03          BEQ    $5FE9
+; sprite object active
 5FE6: BD 61 EC       JSR    $61EC
 5FE9: 30 88 55       LEAX   $55,X
 5FEC: 8C 07 5B       CMPX   #$075B
@@ -3006,14 +3008,14 @@ lb0_5f85:  ; [global]
 6105: 48             ASLA
 6106: 10 AE A6       LDY    A,Y		; [bank_address]
 6109: 8E 04 5E       LDX    #$045E
-610C: A6 A4          LDA    ,Y		; [select_address]
-610E: 81 FF          CMPA   #$FF
+610C: A6 A4          LDA    ,Y		; [select_address] load data in exchange zone 21xx or in bank
+610E: 81 FF          CMPA   #$FF	; can get data not ready: value at $21xx when subcpu is working
 6110: 10 27 00 C6    LBEQ   $61DA
 6114: 81 FE          CMPA   #$FE
 6116: 26 11          BNE    $6129
 6118: B6 0A AE       LDA    $0AAE
 611B: 84 F0          ANDA   #$F0
-611D: AA 21          ORA    $1,Y		; [select_address]
+611D: AA 21          ORA    $1,Y	; [select_address]
 611F: 8A 10          ORA    #$10
 6121: B7 0A AE       STA    $0AAE
 6124: 31 22          LEAY   $2,Y
@@ -3028,7 +3030,7 @@ lb0_5f85:  ; [global]
 6137: 20 D3          BRA    $610C
 6139: 81 FB          CMPA   #$FB
 613B: 26 05          BNE    $6142
-613D: 10 AE 21       LDY    $1,Y		; [select_address]
+613D: 10 AE 21       LDY    $1,Y	; [select_address]
 6140: 20 CA          BRA    $610C
 6142: B6 0A AE       LDA    $0AAE
 6145: 84 40          ANDA   #$40
