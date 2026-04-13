@@ -3351,6 +3351,8 @@ load_palette:
 2:
 	move.l	(a7)+,a2
 	rts
+	
+	.ifdef	NEED_ROWS
 * < D0: row, if 0: do nothing
 wrap_bitplanes:
 	movem.l	a0-a2/d0-d3,-(a7)
@@ -3385,7 +3387,7 @@ wrap_bitplanes:
 * < A1: part of the pointers list
 * < D0: number of rows to fill
 
-	.ifdef	NEED_ROWS
+
 generate_row_table:
 	* generate row table, set jumps
 	move.w	#(first_rows_end-first_rows)/NB_FIRST_ROWS,d7	| block size
@@ -4485,31 +4487,35 @@ update_players_controls:
 	st.b	detect_controllers
 	bclr	#BIT_START_2P,d0
 0:	
-	move.b	d0,(port_1_3800,a6)
 
+
+	* directions + fire
+	move.l	joypad_1_state(pc),d1
+	jbsr	decode_joypad_controls
+	move.b	d0,(port_1_3800,a6)
+	
 	move.b	#0x0F,d0
 	tst.b	(0x40,a0)		| space
 	beq.b	0f
 	bclr	#BIT_PUNCH_1P,d0
 0:	
 
-	* directions + fire
-	move.l	joypad_1_state(pc),d1
-	jbsr	decode_joypad_controls
+	move.b	#0x0F,d0
 	btst	#JPB_BTN_GRN,d1
 	jeq		0f
 	bclr	#BIT_PUNCH_1P,d0
 0:
 	move.b	d0,(extra_3802,a6)
 	
+	moveq	#-1,d0
 	move.l	joypad_2_state(pc),d1
 	jbsr	decode_joypad_controls
+	move.b	d0,(port_2_3801,a6)
 	btst	#JPB_BTN_GRN,d1
 	jeq		0f
 	bclr	#BIT_PUNCH_2P,(extra_3802,a6)
 0:
 	
-	move.b	d0,(port_2_3801,a6)
 	rts
 	
 decode_joypad_controls:
@@ -5692,12 +5698,14 @@ mirror_y_tile_table:
 	.byte	1       | level 3 town/forest part 2
 	.byte	1       | level 3 town/forest part 2
 	.byte	1       | level 4 base
+	.byte	1       | rolling credits
 
 	.align	2
-
+	.ifdef	NEED_ROWS
 rows_table:
 	.skip	0x120*4
-
+	.endif
+	
 keyboard_table:
 	.skip	0x100
 

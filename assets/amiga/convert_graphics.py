@@ -7,7 +7,7 @@ sprite_context_list = ["intro","level_1","level_2","level_3","level_3_3","level_
 bg_tile_context_list = ["level_1_1","level_1_2","level_2","level_3_1","level_3_2","level_3_3","level_4"]
 
 sprite_context_list = []
-bg_tile_context_list = ["outtro"]
+bg_tile_context_list = ["outro"]
 
 sprite_names = get_sprite_names()
 
@@ -828,7 +828,8 @@ for context in context_list:
         dump_bob_layer(sprite_table,f,relative_root="bob_table")
     asm2bin(bank)
 
-print(f"Used sprite colors: {len(sprite_palette)}")
+if context_list:
+    print(f"Used sprite colors: {len(sprite_palette)}")
 
 
 

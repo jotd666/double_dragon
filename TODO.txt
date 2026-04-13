@@ -5,14 +5,14 @@
 - sprites FEF/FF3 doesn't display / aren't logged?? (player legs at the end)
 - re-detect title context the second time (0x200??), unload sprites (seems to crash if left alone), remove sprite filter
 
-
 - flash with giants: if fixed by changing size, missing strips in giants
   I think wrong size log size 1 (wrong) AND size 2 when it's just size 2
   same thing for beams (level 4)
+- doors redrawing all the time: tiles or sprites? in video byte dirty use a previous value buffer
+  to avoid drawing the tiles over and over
 
 - get out of attract mode with "fire"/"insert coin" manually to redirect without interrupt hijack
 - adaptation of ptplayer to 255 instruments
-- joystick doesn't work
 - group laterally like in VBall: use script in a .bat drag & drop note in json + delete dumped files
 
 - propagate all player moves from level 1 to all levels
@@ -23,10 +23,13 @@
 - when resetting context, redraw all tiles as palette has changed but do not reset scroll, ever
   only reset x_scroll at level 1: to test
 - sprites "wrap" in Y: top enemies appear on the bottom: test again
+- weak enemies: doesn't work with hooker and giant bosses
+
+- set DSW difficulty lives, etc.
+- cheat add 10000 to score 
 - highscore load/save
 - detect not game in play for insert coin
-- weak enemies: doesn't work with hooker and giant bosses
-- set DSW difficulty lives, etc.
+
 - cache subcontext (loaded fg/bg/sprite files)
 
 - try 16+16 color version (this is going to suck!)
