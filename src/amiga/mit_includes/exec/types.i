@@ -26,6 +26,10 @@ EXEC_TYPES_I = 1
 	LONG		\arg
 	.endm
 	
+	.macro		ULONG	arg
+	LONG		\arg
+	.endm
+	
 	.macro		UWORD	arg
 \arg = _foffset
 	.set	_foffset,_foffset+2

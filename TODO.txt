@@ -1,15 +1,20 @@
 - highscore screen after attract (make attract faster!!) then crash (tile-related): see if intro context
   is reloaded
-  
+- sounds at start (intro) seem wrong wrong freq or such  
 - sprites disappearing too soon this time on the left!
 - create a fg tile context for highscores (else it destroys in-game HUD colors)
 - outro: some tiles aren't erased
 - sprites FEF/FF3 doesn't display / aren't logged?? (player legs at the end)
+  what happens is FEE/FF2 can be displayed as simple or double.
+  if forced to simple: end of legs missing (but no missing tiles FEF/FF3)
+  if left to double: end of legs OK but missing tiles FEF/FF3
+  check which tiles can be double height & simple height and do a table, add extra codes
+  ex: if double height and in special table, add xxx to sprite index (like in Bad Dudes)
+  
 - re-detect title context the second time (0x200??), unload sprites (seems to crash if left alone), remove sprite filter
 
 - flash with giants: if fixed by changing size, missing strips in giants
-  I think wrong size log size 1 (wrong) AND size 2 when it's just size 2
-  same thing for beams (level 4)
+  same for beams (level 4), elevator (level 2) and player leg in the end (easier, static)
 
 - get out of attract mode with "fire"/"insert coin" manually to redirect without interrupt hijack
 - adaptation of ptplayer to 255 instruments
@@ -19,7 +24,7 @@
 
 - when completing level 1 & 2, tiles are trashed as long as level 1 scrolls to level 2 there's an 
   intermediate tile context to capture
-- level 2 and 3: sfx to rip
+- level 3: sfx to rip
 - when resetting context, redraw all tiles as palette has changed but do not reset scroll, ever
   only reset x_scroll at level 1: to test
 - sprites "wrap" in Y: top enemies appear on the bottom: test again

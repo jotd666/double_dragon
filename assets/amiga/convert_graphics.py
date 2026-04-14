@@ -5,8 +5,8 @@ from shared import *
 
 sprite_context_list = ["intro","level_1","level_2","level_3","level_3_3","level_4"]
 bg_tile_context_list = ["level_1_1","level_1_2","level_2","level_3_1","level_3_2","level_3_3","level_4","outro"]
-bg_tile_context_list = ["level_1_1"]
-
+bg_tile_context_list = []
+sprite_context_list = ["level_4"]
 sprite_names = get_sprite_names()
 
 mirror_sprites = get_mirror_sprites()
@@ -659,16 +659,13 @@ for context in context_list:
     pcontext = pathlib.Path(context)
     sprite_sheet_dict = {i:Image.open(sheets_path / "sprites" / pcontext / f"pal_{i:02x}.png") for i in range(SPRITE_NB_CLUTS)}
 
-    # correct incorrectly logged size (why??)
+
+
 
     size_table[0x884] = 2
-
-
     for forced_size_1 in [0x5EE,0x5F0,0x8A4,0x8A6,0x8A8,0x86E,0x9EC,0x9F0,
-    0xEEA,0xEE6,0xEF0,0xEF6,0xEE2]:
+    0xEEA,0xEE6,0xEF0,0xEF6,0xEE2,0xFEE,0xFF2]:
         size_table[forced_size_1] = 1
-
-
 
     read_used_tiles(pcontext/"used_sprites",sprite_cluts,SPRITE_NB_TILES,SPRITE_NB_CLUTS,size_table)
 
@@ -678,7 +675,9 @@ for context in context_list:
         sdump_dir.mkdir(exist_ok=True)
         with open(sdump_dir / f"used_sprites_{pcontext}.json","w") as f:
             sprite_cluts_dict = {hex(k):[hex(x) for x in v] for k,v in sprite_cluts.items() if v}
-            json.dump(sprite_cluts_dict,f,indent=2)
+            json.dump({"cluts":sprite_cluts_dict,"sizes":{hex(k):v} for k,v in size_table.items()},f,indent=2)
+
+    # correct incorrectly logged size (why??)
 
     for k,v in sprite_names.items():
         # all player 1 frames for player 2 in all contexts

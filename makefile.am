@@ -127,6 +127,8 @@ sounds.o: $(AMIGASRC)/sounds.68k
 	$(ASM) -I$(AMIGASRC) $(AMIGASRC)/sounds.68k -o sounds.o
 ReadJoyPad.o: $(AMIGASRC)/ReadJoyPad.68k amiga/ReadJoyPad.i
 	$(ASM) -I$(AMIGASRC) -I$(AMIGASRC)/mit_includes $(AMIGASRC)/ReadJoyPad.68k -o ReadJoyPad.o
+savegame.o: $(AMIGASRC)/savegame.68k
+	$(ASM) -I$(AMIGASRC) -I$(AMIGASRC)/mit_includes $(AMIGASRC)/savegame.68k -o savegame.o
 
 
 
