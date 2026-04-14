@@ -1,6 +1,10 @@
 from PIL import Image,ImageOps
 import os,sys,bitplanelib,subprocess,json,pathlib
 
+# turn off for faster operation
+dump_it = True
+
+
 this_dir = pathlib.Path(__file__).absolute().parent
 
 data_dir = this_dir / ".." / ".." / "data"
@@ -23,6 +27,101 @@ FG_NB_CLUTS = 8
 BG_NB_TILES = 0x800
 BG_NB_CLUTS = 8
 SPRITE_NB_CLUTS = 8
+
+def apply_color_replacement(sprite_set_list,quantized):
+    """ change colors for list of tilesets (tiles, sprites)
+    quantized: RGB => RGB color replacement dictionary
+    """
+
+    for sset in sprite_set_list:
+        for tile in sset:
+            if tile:
+                bitplanelib.replace_color_from_dict(tile,quantized)
+
+def quantize_palette(rgb_tuples,img_type,nb_quantize,transparent=None,dump_it=False):
+    rgb_configs = set(rgb_tuples)
+
+    nb_target_colors = nb_quantize
+    if transparent:
+        rgb_configs.remove(transparent)
+        # remove black, white, we don't want it quantized
+        immutable_colors = (transparent,(0,0,0))
+    else:
+        immutable_colors = ((0,0,0),)
+
+    for c in immutable_colors:
+        rgb_configs.discard(c)
+        nb_quantize -= 1
+
+    dump_graphics = False
+    # now compose an image with the colors
+    clut_img = Image.new("RGB",(len(rgb_configs),1))
+    for i,rgb in enumerate(rgb_configs):
+        #rgb_value = (rgb[0]<<16)+(rgb[1]<<8)+rgb[2]
+        clut_img.putpixel((i,0),rgb)
+
+    reduced_colors_clut_img = clut_img.quantize(colors=nb_quantize,dither=0).convert('RGB')
+
+    # get the reduced palette
+    reduced_palette = [reduced_colors_clut_img.getpixel((i,0)) for i,_ in enumerate(rgb_configs)]
+    # apply rounding now, else possible color duplicates, which would be a pity
+    reduced_palette = bitplanelib.palette_round(reduced_palette,0xF0)
+
+    # now create a dictionary by associating the original & reduced colors
+    rval = dict(zip(rgb_configs,reduced_palette))
+
+    # add black & white & transparent back
+    for c in immutable_colors:
+        rval[c] = c
+
+
+    if dump_it:  # debug it, create 2 rows, 1 non-quantized, and 1 quantized, separated by bloack
+        s = clut_img.size
+        ns = (s[0]*30,s[1]*30)
+        clut_img = clut_img.resize(ns,resample=0)
+        whole_image = Image.new("RGB",(clut_img.size[0],clut_img.size[1]*3))
+        whole_image.paste(clut_img,(0,0))
+        reduced_colors_clut_img = reduced_colors_clut_img.resize(ns,resample=0)
+        whole_image.paste(reduced_colors_clut_img,(0,clut_img.size[1]*2))
+        whole_image.save(dump_dir / "{}_colors.png".format(img_type))
+
+    result_nb = len(set(reduced_palette))
+    if nb_quantize < result_nb:
+        raise Exception(f"quantize: {img_type}: {nb_quantize} expected, found {result_nb}")
+    # return it
+    return rval
+
+def quantize_image_sets(sprite_set_list,max_used_nb_colors,image_type="image",remove_color=None):
+
+    # temp extract palette
+    sprite_palette = set()
+    for imglist in sprite_set_list:
+        for img in imglist:
+            if img:
+                imp = bitplanelib.palette_extract(img)
+                sprite_palette.update(imp)
+
+    if remove_color:
+        sprite_palette.remove(remove_color)
+
+    if len(sprite_palette)>max_used_nb_colors:
+        print(f"Too many colors in {image_type} tiles ({len(sprite_palette)}), quantizing")
+        # if we specify 32 right away, the algorithm can provide less colors than 32, wasting entries
+        # by attempting to quantize with higher values, we guarantee not to waste colors
+        for attempt_nb_colors in [max_used_nb_colors+3,max_used_nb_colors+2,max_used_nb_colors+1,max_used_nb_colors]:
+            sprite_replacement_dict = quantize_palette(sprite_palette,image_type,attempt_nb_colors,dump_it=dump_it)
+            new_sprite_palette = sorted(set(sprite_replacement_dict.values()))
+            if len(new_sprite_palette)<=max_used_nb_colors:
+                print(f"Quantization achieved {len(new_sprite_palette)} colors with start colors = {attempt_nb_colors}")
+                sprite_palette = new_sprite_palette
+                break
+        else:
+            raise Exception("quantize error")  # not really possible since we try 32 as last chance!
+
+        apply_color_replacement(sprite_set_list,sprite_replacement_dict)
+
+    return sorted(sprite_palette)
+
 
 def dump_asm_bytes(*args,**kwargs):
     bitplanelib.dump_asm_bytes(*args,**kwargs,mit_format=True)
