@@ -122,7 +122,7 @@ def quantize_pixels(rgb_tuples,img_type,nb_quantize,transparent=None,dump_it=Fal
         #rgb_value = (rgb[0]<<16)+(rgb[1]<<8)+rgb[2]
         clut_img.putpixel((i,0),rgb)
 
-    reduced_colors_clut_img = clut_img.quantize(colors=nb_quantize,dither=0).convert('RGB')
+    reduced_colors_clut_img = clut_img.quantize(colors=nb_quantize,method=Image.FASTOCTREE,dither=Image.NONE).convert('RGB')
 
     # get the reduced palette
     reduced_palette = [reduced_colors_clut_img.getpixel((i,0)) for i,_ in enumerate(weighted_pixels)]
@@ -174,7 +174,7 @@ def quantize_image_sets(sprite_set_list,max_used_nb_colors,image_type="image",re
         # if we specify 32 right away, the algorithm can provide less colors than 32, wasting entries
         # by attempting to quantize with higher values, we guarantee not to waste colors
         for attempt_nb_colors in [max_used_nb_colors+3,max_used_nb_colors+2,max_used_nb_colors+1,max_used_nb_colors]:
-            sprite_replacement_dict = quantize_palette(pixels,image_type,attempt_nb_colors,dump_it=dump_it)
+            sprite_replacement_dict = quantize_palette(set(pixels),image_type,attempt_nb_colors,dump_it=dump_it)
             new_sprite_palette = sorted(set(sprite_replacement_dict.values()))
             if len(new_sprite_palette)<=max_used_nb_colors:
                 print(f"Quantization achieved {len(new_sprite_palette)} colors with start colors = {attempt_nb_colors}")

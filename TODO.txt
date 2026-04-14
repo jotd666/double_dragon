@@ -1,8 +1,7 @@
 - highscore screen after attract (make attract faster!!) then crash (tile-related): see if intro context
   is reloaded
-- quantize: try overshoot for fg & bg tiles too (only for sprites atm)
-  The quantization I use is probably not the best. It's not considering the number of pixels of each color, so each color is treated equally. Maybe with more weight on more frequent colors it could be better. I have to try it. 
   
+- sprites disappearing too soon this time on the left!
 - create a fg tile context for highscores (else it destroys in-game HUD colors)
 - outro: some tiles aren't erased
 - sprites FEF/FF3 doesn't display / aren't logged?? (player legs at the end)
@@ -11,8 +10,6 @@
 - flash with giants: if fixed by changing size, missing strips in giants
   I think wrong size log size 1 (wrong) AND size 2 when it's just size 2
   same thing for beams (level 4)
-- doors redrawing all the time: tiles or sprites? in video byte dirty use a previous value buffer
-  to avoid drawing the tiles over and over
 
 - get out of attract mode with "fire"/"insert coin" manually to redirect without interrupt hijack
 - adaptation of ptplayer to 255 instruments

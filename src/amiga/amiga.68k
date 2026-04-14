@@ -5069,7 +5069,12 @@ osd_sound_start:
 	
 
 	moveq	#0,d2
-	
+	cmp.b	#0xFE,d0
+	jne		0f
+	jbsr	force_sound_stop
+	jra		10f
+0:
+
 	and.w	#0xFF,d0
 	lsl.w	#3,d0
 	lea		sound_table,a0
@@ -5130,7 +5135,7 @@ osd_sound_start:
 
 	moveq	#0,d1
 	move.b	(7,a0,d0.w),d1	| module index
-	tst.b	currently_playing_module
+	cmp.b	currently_playing_module,d1
 	jeq		10b
 	move.b	d1,currently_playing_module
 	
@@ -5145,8 +5150,6 @@ osd_sound_start:
 	* don't play if already playing
 	* (music_tick value is not important for looped tunes
 	* as long as it's not zero)
-
-		
 
     movem.l d0-a6,-(a7)
 	bsr		force_sound_stop

@@ -78,6 +78,13 @@ def f_handle_bank0_line(address,lines,i):
 \tjbsr\tosd_palette_updated
 0:
 """+line
+    elif address in [0x5be2,0x53fe]:
+        # optimization: don't redraw broken brick wall/opened door again and again
+        line += """    CMP_W_TO_REG    a0,d1
+    jeq        0f
+"""
+        lines[i+1] += "0:\n"
+
     lines[i] = line
 
 def f_handle_bank1_line(address,lines,i):

@@ -1973,6 +1973,7 @@ lb0_show_hide_tiles_53b0:
 53FA: EC A6          LDD    A,Y		; [bank_address]
 53FC: AE 64          LDX    $4,S	; [local]
 ; for instance clear door tiles when girl arrives / restore them
+; not very optimized as it writes to screen constantly
 53FE: ED 84          STD    ,X		; [video_address_word] 
 5400: 6C 66          INC    $6,S	; [local]
 5402: A6 66          LDA    $6,S	; [local]
