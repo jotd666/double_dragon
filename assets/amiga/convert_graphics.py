@@ -5,7 +5,8 @@ from shared import *
 
 sprite_context_list = ["intro","level_1","level_2","level_3","level_3_3","level_4"]
 bg_tile_context_list = ["level_1_1","level_1_2","level_2","level_3_1","level_3_2","level_3_3","level_4","outro"]
-
+bg_tile_context_list = ["level_1_1"]
+sprite_context_list = ["intro","level_1"]
 sprite_names = get_sprite_names()
 
 mirror_sprites = get_mirror_sprites()
@@ -14,7 +15,7 @@ nb_planes = 7
 max_nb_sprite_colors = 1<<(nb_planes-1)
 max_nb_bg_tile_colors = max_nb_sprite_colors
 
-max_used_nb_bg_tile_colors = max_used_nb_sprite_colors = 64
+max_used_nb_bg_tile_colors = max_used_nb_sprite_colors = 16
 
 possible_hw_sprites = set()
 
@@ -612,7 +613,7 @@ for context in context_list:
         bg_tile_set_list.append(tile_set)
 
 
-    bg_tile_palette = quantize_image_sets(bg_tile_set_list,max_nb_bg_tile_colors,f"{context} bg_tiles")
+    bg_tile_palette = quantize_image_sets(bg_tile_set_list,max_used_nb_bg_tile_colors,f"{context} bg_tiles")
 
     palette_pad(bg_tile_palette,max_nb_bg_tile_colors)
 
@@ -710,7 +711,7 @@ for context in context_list:
         sprite_set_list.append(tile_set)
 
     # compute palette & apply quantization if needed
-    sprite_palette = quantize_image_sets(sprite_set_list,max_nb_sprite_colors,image_type="sprite",remove_color=magenta)
+    sprite_palette = quantize_image_sets(sprite_set_list,max_used_nb_sprite_colors,image_type="sprite",remove_color=magenta)
 
     palette_pad(sprite_palette,max_nb_sprite_colors)
     empty_32_cols = []
