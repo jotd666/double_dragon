@@ -12,6 +12,8 @@
   ex: if double height and in special table, add xxx to sprite index (like in Bad Dudes)
   
 - re-detect title context the second time (0x200??), unload sprites (seems to crash if left alone), remove sprite filter
+- ECS: limit to 1 clut, enable EHB extra plane of zeroes or ones if clut odd or even: saves memory and gives
+  diversity. Then EHB can also be used for tiles
 
 - flash with giants: if fixed by changing size, missing strips in giants
   same for beams (level 4), elevator (level 2) and player leg in the end (easier, static)

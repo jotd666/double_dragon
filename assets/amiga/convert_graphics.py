@@ -675,7 +675,7 @@ for context in context_list:
         sdump_dir.mkdir(exist_ok=True)
         with open(sdump_dir / f"used_sprites_{pcontext}.json","w") as f:
             sprite_cluts_dict = {hex(k):[hex(x) for x in v] for k,v in sprite_cluts.items() if v}
-            json.dump({"cluts":sprite_cluts_dict,"sizes":{hex(k):v} for k,v in size_table.items()},f,indent=2)
+            json.dump({"cluts":sprite_cluts_dict,"sizes":{hex(k):v for k,v in size_table.items()}},f,indent=2)
 
     # correct incorrectly logged size (why??)
 
