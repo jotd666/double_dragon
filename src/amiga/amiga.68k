@@ -64,7 +64,7 @@ BG_TILE_WIDTH = 16
 
 FG_TILE_FILE_MAX_SIZE = 0x8000
 BG_TILE_FILE_MAX_SIZE = 0x40000
-SPRITE_FILE_MAX_SIZE = 0xB0000
+SPRITE_FILE_MAX_SIZE = 0xB8000
 
 	.if		OPT_CD32_VERSION==0
 BIGGEST_MUSIC_SIZE = 300000
@@ -1292,7 +1292,7 @@ relocate_sprites_file:
 	dbf		d6,1b
 10:
 	addq	#1,d7
-	cmp.w	#SPRITE_COUNT,d7  
+	cmp.w	#SPRITE_COUNT*2,d7    | 2 different sizes
 	jne		0b
 	
 	move.l	sprite_tile_table,d7
@@ -2248,6 +2248,8 @@ update_one_bob:
 	add.w	#SPRITE_X_CORRECTION,d0		| d0: X
 	.endif
 	
+	moveq	#0,d6
+	move.b	(TARGET_SPRITE_CODE,a0),d6
 	btst	#0,d5
 	jeq		0f
 	* double Y: subtract 16 to start Y
@@ -2259,22 +2261,28 @@ update_one_bob:
 	move.b	d2,d3
 	lsr.b	#4,d3		| d3: color
 	
-	* which = src[i + 3] | ((src[i + 2] & 0x0f) << 8)
-	moveq	#0,d6
-	move.b	(TARGET_SPRITE_CODE,a0),d6
-	* filter out dragon sprites in title
-	cmp.w	#0x398,d6
-	jcs		0f
-	cmp.w	#0x3D8,D6
-	jcc		2f
-0:
 	and.b	#0xF,d2
 	lsl.w	#8,d2
 	or.w	d6,d2		| d2: code
+	
+	* which = src[i + 3] | ((src[i + 2] & 0x0f) << 8)
+	* filter out dragon sprites in title
+	cmp.w	#0x398,d2
+	jcs		0f
+	cmp.w	#0x3d8,D2
+	jcs		2f
+0:
+	
 	.ifndef	RELEASE
 	move.w	d2,last_sprite_code
 	move.w	d3,last_sprite_color
 	.endif
+
+	btst	#0,d5
+	jeq		0f
+	* double Y: add 0x1000 to sprite code (artificial shift)
+	bset	#12,d2
+0:
 	
 	
 	tst.w	d1

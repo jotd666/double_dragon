@@ -29,6 +29,10 @@ BG_NB_TILES = 0x800
 BG_NB_CLUTS = 8
 SPRITE_NB_CLUTS = 8
 
+# sprite tiles that have 2 different sizes
+force_multi_size_list = [0x5EE,0x5F0,0x8A4,0x8A6,0x8A8,0x86E,0x9EC,0x9F0,0x70C,
+    0xEEA,0xEE6,0xEF0,0xEF6,0xEE2,0xFEE,0xFF2,0xFF0,0xFEC,0x2ec,0xf4e,0x5eb]
+
 def apply_color_replacement(sprite_set_list,quantized):
     """ change colors for list of tilesets (tiles, sprites)
     quantized: RGB => RGB color replacement dictionary
@@ -173,7 +177,8 @@ def quantize_image_sets(sprite_set_list,max_used_nb_colors,image_type="image",re
         print(f"Too many colors in {image_type} tiles ({len(sprite_palette)}), quantizing")
         # if we specify 32 right away, the algorithm can provide less colors than 32, wasting entries
         # by attempting to quantize with higher values, we guarantee not to waste colors
-        for attempt_nb_colors in [max_used_nb_colors+3,max_used_nb_colors+2,max_used_nb_colors+1,max_used_nb_colors]:
+        for overshoot in reversed(range(5)):
+            attempt_nb_colors = max_used_nb_colors+overshoot
             sprite_replacement_dict = quantize_palette(set(pixels),image_type,attempt_nb_colors,dump_it=dump_it)
             new_sprite_palette = sorted(set(sprite_replacement_dict.values()))
             if len(new_sprite_palette)<=max_used_nb_colors:
@@ -266,26 +271,29 @@ def add_tile(table,index,cluts=[0],merge_cluts=True):
 
 
 def read_used_tiles(used_tiles_name,tile_cluts,nb_tiles,nb_cluts,size_table=None):
+
     with open(used_graphics_dir / used_tiles_name,"rb") as f:
         for index in range(nb_tiles):
             d = f.read(nb_cluts)
             cluts = []
+            double_y = False
             for i,c in enumerate(d):
+                if c==3:
+                    # fix wrong logging. 3 (single Y & double Y can happen only if forced
+                    # from passed size_table parameter)
+                    c=2
                 if c:
                     cluts.append(i)
                     if size_table is not None:
-                        if c&1 and c!=1:
-                            # correct wrong size logging
-                            c&=0xFE
-                        if index not in size_table:
-                            size_table[index] = c
-                        else:
-                            c = size_table[index]
-                        if c==2:
+                        size_table[index] = c | size_table.get(index,0)
+                        if c&2:
                             # Y size we have to declare the next tile as used too
-                            add_tile(tile_cluts,index+1,cluts=cluts)
+                            double_y = True
             if cluts:
                 add_tile(tile_cluts,index,cluts=cluts)
+                if double_y:
+                    add_tile(tile_cluts,index+1,cluts=cluts)
+
 
 
 def get_sprite_names():

@@ -69,8 +69,8 @@ _name	dc.b	"Double Dragon (arcade)"
 	dc.b	0
 _copy	dc.b	'2026 JOTD',0
 _info
-    *dc.b    "Music by IM76",10
-    dc.b    "Original 1986 Taito",0
+    dc.b    "Music by no9",10
+    dc.b    "Original 1987 Taito",0
 	dc.b	0
 _kickname   dc.b    0
 ;--- version id

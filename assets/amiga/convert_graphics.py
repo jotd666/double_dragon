@@ -6,7 +6,7 @@ from shared import *
 sprite_context_list = ["intro","level_1","level_2","level_3","level_3_3","level_4"]
 bg_tile_context_list = ["level_1_1","level_1_2","level_2","level_3_1","level_3_2","level_3_3","level_4","outro"]
 bg_tile_context_list = []
-sprite_context_list = ["level_4"]
+#sprite_context_list = ["level_1"]
 sprite_names = get_sprite_names()
 
 mirror_sprites = get_mirror_sprites()
@@ -221,33 +221,34 @@ dump=False,name_dict=None,cluts=None,tile_number=0,is_bob=False,size_table=None)
             tile_number += 1
 
     if is_bob:
-
+        # double the tileset as sometimes sprite can have single size, double size or both in different contexts
+        tileset_length = len(tileset_1)
+        tileset_1 += [None]*tileset_length
         # rework & dump grouped / non grouped sprites
         # rework tiles which are grouped
+        # first pass create double height clones in index*2
         for tile_number,wtile in enumerate(tileset_1):
-            # hardware grouped tiles
+            # create hardware Y-grouped tiles
+            if tile_number == tileset_length:
+                break
             if wtile:
-                tile_size = size_table.get(tile_number)
-                if tile_size is None:
-                    print(f"Warning: no size set for sprite ${tile_number:04x}")
-                    tile_size = 1
-                if tile_size == 1:
-                    pass
-                elif tile_size == 2:
+                tile_size = size_table.get(tile_number,0)
+                if tile_size & 2:
                     # Y group
                     other_tile_index = tile_number+1
                     other_tile = tileset_1[other_tile_index]
                     if not other_tile:
-                        raise Exception(f"YHW size: pair: 0x{tile_number:02x} ok but other tile index 0x{other_tile_index:02x} not found")
+                        raise Exception(f"YHW size: pair: palette_index: {palette_index}: 0x{tile_number:02x} ok but other tile index 0x{other_tile_index:02x} not found")
                     new_tile = Image.new("RGB",(wtile.size[0],wtile.size[1]*2))
                     new_tile.paste(wtile,box=(0,0))
                     new_tile.paste(other_tile,box=(0,16))
-                    tileset_1[tile_number] = new_tile
-                    tileset_1[other_tile_index] = None  # discatd
+                    tileset_1[tile_number+tileset_length] = new_tile  # insert tile in the upper double Y space (tile id + 0x1000)
+                    if tile_size & 1 == 0:
+                        tileset_1[tile_number] = None  # discard
+                        tileset_1[other_tile_index] = None  # discard
                     wtile = new_tile
-                else:
-                    # TODO when we encounter it
-                    raise Exception(f"Unsupported size {tile_size}")
+
+        for tile_number,wtile in enumerate(tileset_1):
             # software grouped tiles, not enabled, and wrong too: it doesn't follow a logic, it needs to be specified by hand
             if wtile:
                 if tile_number in group_sprite_pairs:
@@ -661,11 +662,10 @@ for context in context_list:
 
 
 
-
-    size_table[0x884] = 2
-    for forced_size_1 in [0x5EE,0x5F0,0x8A4,0x8A6,0x8A8,0x86E,0x9EC,0x9F0,
-    0xEEA,0xEE6,0xEF0,0xEF6,0xEE2,0xFEE,0xFF2]:
-        size_table[forced_size_1] = 1
+    # logging has a tendency to log tiles with sizes 1 & 2 when it's only 2. Why?
+    # not really a problem, there are only a few exceptions, let's correct this here
+    for forced_multi_size in force_multi_size_list:
+        size_table[forced_multi_size] = 3
 
     read_used_tiles(pcontext/"used_sprites",sprite_cluts,SPRITE_NB_TILES,SPRITE_NB_CLUTS,size_table)
 
