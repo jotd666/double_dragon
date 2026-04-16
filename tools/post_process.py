@@ -293,17 +293,17 @@ def f_handle_main_line(address,lines,i):
     jcc        l_bbca
 """
     # HACK TO BE ABLE TO START GAME MUST BE IMPROVED ELSE DEMO WON'T SHOW
-    elif address == 0x8124 and fast_play:
+    elif address == 0x8124:
         # set 5 credits right away. Problem with the current game architecture is that
         # credits are inserted from fast irq, but fast irq doesn't return, so it causes us trouble
         # on the amiga because the interrupts work differently. Here just set 5 credits and jump to the routine
         # that fastirq calls when there are credits. problem is: with that there's no attract mode anymore
-        line = """\tmoveq    #5,d1
-\tOP_W_ON_DP_ADDRESS    move,nb_credits_0021,d1
-\tmoveq\t#1,d1
+        line = """\tmove.b #0,0x110\nOP_R_ON_DP_ADDRESS    move,nb_credits_0021,d1
+\tjeq\t0f
 \tOP_W_ON_DP_ADDRESS    move,game_in_play_0026,d1
-jra        coin_inserted_8158
-#"""
+\tjra        coin_inserted_8158
+0:
+#"""+line
     elif address == 0xB671:
         # replace stack pull by direct read of B/D1
         line = change_instruction("move.b\td1,d0",lines,i)

@@ -10,6 +10,8 @@
 - missing size in beams (level 4), elevator (level 2)
 
 - get out of attract mode with "fire"/"insert coin" manually to redirect without interrupt hijack
+  8437: attract mode check credit here too
+  
 - adaptation of ptplayer to 255 instruments
 - group laterally like in VBall: use script in a .bat drag & drop note in json + delete dumped files
 

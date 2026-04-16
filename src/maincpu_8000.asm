@@ -699,6 +699,7 @@ gameloop_8389:
 842D: 10 26 01 33    LBNE   $8564
 8431: 96 26          LDA    game_in_play_0026
 8433: 10 26 FF 52    LBNE   gameloop_8389
+; attract mode
 8437: FC 0E 50       LDD    attract_mode_timer_0e50
 843A: 83 00 01       SUBD   #$0001
 843D: FD 0E 50       STD    attract_mode_timer_0e50
@@ -723,7 +724,7 @@ gameloop_8389:
 8468: 8A 60          ORA    #$60		; bank=3
 846A: B7 38 08       STA    bankswitch_3808
 846D: 97 3A          STA    bank_switch_copy_3a
-846F: BD 6C 1E       JSR    $6C1E ; [banks=3]
+846F: BD 6C 1E       JSR    lb3_6C1E
 8472: 96 3A          LDA    bank_switch_copy_3a
 8474: 84 1F          ANDA   #$1F
 8476: B7 38 08       STA    bankswitch_3808

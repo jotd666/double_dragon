@@ -4767,6 +4767,19 @@ kill_all_enemies:
 	movem.l	(a7)+,d0-a6
 	rts
 	
+insert_coin:
+	movem.l	d0-a6,-(a7)
+	GET_MEMORY_START_IN_A6
+	move.b	(nb_credits_0021,a6),d0
+	moveq	#2,d1
+	roxr.w	#1,d1	| clear X
+	abcd	d1,d0
+	move.b	d0,(nb_credits_0021,a6)
+	move.w	#CREDIT_02_SND,d0
+	jbsr	osd_sound_start
+	movem.l	(a7)+,d0-a6
+	rts
+	
 	
 handle_keyboard:
 	movem.l	D0/A0/A5,-(a7)
@@ -4788,7 +4801,7 @@ handle_keyboard:
 
 	cmp.b	#5,d0	| "5" key like in MAME
 	bne.b	0f
-	st.b	coin1_requested
+	jbsr	insert_coin
 0:
 	cmp.b	#6,d0	| "5" key like in MAME
 	bne.b	0f
