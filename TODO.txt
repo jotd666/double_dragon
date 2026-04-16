@@ -1,22 +1,14 @@
 - highscore screen after attract (make attract faster!!) then crash (tile-related): see if intro context
   is reloaded
-- sounds at start (intro) seem wrong wrong freq or such  
+- sounds at start (intro) seem wrong wrong freq or such, sometimes lose sound (level 2)
 - sprites disappearing too soon this time on the left!
 - create a fg tile context for highscores (else it destroys in-game HUD colors)
 - outro: some tiles aren't erased
-- sprites FEF/FF3 doesn't display / aren't logged?? (player legs at the end)
-  what happens is FEE/FF2 can be displayed as simple or double.
-  if forced to simple: end of legs missing (but no missing tiles FEF/FF3)
-  if left to double: end of legs OK but missing tiles FEF/FF3
-  check which tiles can be double height & simple height and do a table, add extra codes
-  ex: if double height and in special table, add xxx to sprite index (like in Bad Dudes)
-  
 - re-detect title context the second time (0x200??), unload sprites (seems to crash if left alone), remove sprite filter
 - ECS: limit to 1 clut, enable EHB extra plane of zeroes or ones if clut odd or even: saves memory and gives
   diversity. Then EHB can also be used for tiles
-
-- flash with giants: if fixed by changing size, missing strips in giants
-  same for beams (level 4), elevator (level 2) and player leg in the end (easier, static)
+- space doesn't punch anymore
+- missing size in beams (level 4), elevator (level 2)
 
 - get out of attract mode with "fire"/"insert coin" manually to redirect without interrupt hijack
 - adaptation of ptplayer to 255 instruments

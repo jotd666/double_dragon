@@ -9,6 +9,10 @@
 CHIPSIZE = $200000
 EXPMEM = $800000
 
+BASE_CHIP = $400
+SAVEGAME_SIZE = $2800
+START_CHIP = BASE_CHIP+SAVEGAME_SIZE
+
 _base	SLAVE_HEADER					; ws_security + ws_id
 	dc.w	17					; ws_version (was 10)
 	dc.w	WHDLF_NoError
@@ -51,7 +55,7 @@ _config
 	ENDC
 
 DECL_VERSION:MACRO
-	dc.b	"1.1"
+	dc.b	"1.0"
 	IFD BARFLY
 		dc.b	" "
 		INCBIN	"T:date"
@@ -110,7 +114,7 @@ _Relocate	movem.l	d0-d1/a0-a2,-(sp)
 ;        pea     -1                      ;true
 ;        pea     WHDLTAG_LOADSEG
 		IFNE		EXPMEM
-        move.l  #$400,-(a7)       ;chip area
+        move.l  #START_CHIP,-(a7)       ;chip area
         pea     WHDLTAG_CHIPPTR        
         pea     8                       ;8 byte alignment
         pea     WHDLTAG_ALIGN
@@ -127,6 +131,35 @@ _Relocate	movem.l	d0-d1/a0-a2,-(sp)
         movem.l	(sp)+,d0-d1/a0-a2
 		rts
 
+; < A0: game RAM
+loadgame
+    movem.l a0/a2,-(a7)
+	lea	BASE_CHIP,a1
+	bsr	_sg_load
+	lea	BASE_CHIP,a1
+    movem.l (a7)+,a0/a2
+	; D0 success
+	rts
+	
+
+
+savegame
+    movem.l a2,-(a7)
+;	move.l	trainer(PC),d0
+;	bne.s	.skip		;no save on trainer
+	lea	BASE_CHIP,a1
+	move.l	#$3800,d0	; size of RAM
+	bsr	_sg_save
+.skip
+    movem.l (a7)+,a2
+	rts
+	
+_exit:
+	pea	TDREASON_OK
+	move.l	_resload(pc),-(a7)
+	addq.l	#resload_Abort,(a7)
+	rts
+	
 _resload:
 	dc.l	0
 progstart
@@ -134,3 +167,6 @@ progstart
 exe
 
 	dc.b	"DoubleDragon_aga",0
+	even
+	include	savegame.s
+
