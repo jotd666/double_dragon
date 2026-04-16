@@ -64,7 +64,7 @@ BG_TILE_WIDTH = 16
 
 FG_TILE_FILE_MAX_SIZE = 0x8000
 BG_TILE_FILE_MAX_SIZE = 0x40000
-SPRITE_FILE_MAX_SIZE = 0xB8000
+SPRITE_FILE_MAX_SIZE = 0xC8000
 
 	.if		OPT_CD32_VERSION==0
 BIGGEST_MUSIC_SIZE = 300000
@@ -340,9 +340,11 @@ _user:
     cmp.l   #0x05748444c,D0	| WHDL
     bne.b   .standard
 	move.b	d1,_keyexit
-    move.l a0,_resload
-
-	move.l	a0,a2
+    move.l (a0)+,a2
+	move.l	a2,_resload
+	move.l	(a0)+,loadgame_function
+	move.l	(a0)+,savegame_function
+	
 	lea	(_tag,pc),a0
 	jsr	(resload_Control,a2)
 	
@@ -888,6 +890,25 @@ dump_and_quit:
 	illegal
 	.endif
 
+prepare_custom_registers:
+	lea	_custom,a5
+	move.w	#0x80,(dmacon,a5)
+	clr.w	(bplcon3,a5)
+	move.w	#0x30A0,(diwstrt,a5)
+	move.w	#0xd0,(ddfstop,a5)	
+	move.w	#0x0,(bplcon2,a5)	
+	move.l	#0x3800,d0
+	move.l	a6,a0			| RAM
+	lea		savegame_file,a2
+	rts
+
+
+restore_custom_registers:
+	lea	_custom,a5
+	jbsr	set_screen_params
+	move.w	#0x8080,(dmacon,a5)
+	rts	
+	
 * called at start of mainloop, A6 contains RAM start
 
 osd_main_loop_hook:
@@ -896,27 +917,24 @@ osd_main_loop_hook:
 	tst.b	save_state_requested
 	jeq		5f
 	clr.b	save_state_requested
-	movem.l	d0-d1/a0-a2,-(a7)
-	lea		saved_state_filename,a0
-	move.l	a6,a1
-	move.l	_resload,a2
-	move.l	#0x3800,d0
-	jbsr	resload_SaveFile(a2)
-	movem.l	(a7)+,d0-d1/a0-a2
+	movem.l	d0-d7/a0-a6,-(a7)
+	move.l	savegame_function,a1
+	jbsr	prepare_custom_registers
+	jbsr	(a1)
+	jbsr	restore_custom_registers
+	movem.l	(a7)+,d0-d7/a0-a6
 	jra		10f
 5:
 	tst.b	load_state_requested
 	jeq		10f
-	move.l	_resload,a2
 	clr.b	load_state_requested
 	movem.l	d0-d7/a0-a6,-(a7)
-	lea		saved_state_filename,a0
-	jbsr	resload_GetFileSize(a2)
+	move.l	loadgame_function,a1
+	jbsr	prepare_custom_registers
+	jbsr	(a1)
+	jbsr	restore_custom_registers
 	tst.l	d0
-	jeq		9f
-	move.l	a6,a1
-	lea		saved_state_filename,a0
-	jbsr	resload_LoadFile(a2)
+	*jne		9f
 	* now we should load the context
 	jbsr	osd_palette_updated
 9:
@@ -3106,30 +3124,7 @@ restore_system:
 	moveq	#0,d0
 	rts
 
-
-	
-platform_init:
-	bsr		store_system
-	
-
-	lea		_custom,a5
-	move.w	#0x7FFF,dmacon(a5)
-	move.w	#0x7FFF,intena(a5)
-	* set blitter parameters
-	move.l	#-1,bltafwm(a5)
-	
-	move.l	monitor,d0
-	cmp.l	#NTSC_MONITOR_ID,D0
-	bne		0f
-	st.b	ntsc_flag
-	* disable extra mid-screen interrupt, as it would be too fast (NTSC)
-	move.w	#COPPER_NOP,pal_intreq_block_game
-	* also change screen start position, make it higher
-	move.w	#0x01+(0xC<<8),screen_start
-
-	
-	*move.w	#0x0401,pal_wait			| else intreq never happens
-0:
+set_screen_params:
 	.if		NB_PLAYFIELD_PLANES==8
     move.w #0x0210+BORDERBLANK,bplcon0(a5) | 8 bitplanes, borderblank
 	.else
@@ -3172,6 +3167,32 @@ platform_init:
 	* 0 modulo (OCS)
     move.w d0,bpl1mod(a5)
     move.w d0,bpl2mod(a5)
+	rts
+	
+	
+platform_init:
+	bsr		store_system
+	
+
+	lea		_custom,a5
+	move.w	#0x7FFF,dmacon(a5)
+	move.w	#0x7FFF,intena(a5)
+	* set blitter parameters
+	move.l	#-1,bltafwm(a5)
+	
+	move.l	monitor,d0
+	cmp.l	#NTSC_MONITOR_ID,D0
+	bne		0f
+	st.b	ntsc_flag
+	* disable extra mid-screen interrupt, as it would be too fast (NTSC)
+	move.w	#COPPER_NOP,pal_intreq_block_game
+	* also change screen start position, make it higher
+	move.w	#0x01+(0xC<<8),screen_start
+
+	
+	*move.w	#0x0401,pal_wait			| else intreq never happens
+0:
+	jbsr	set_screen_params
 
 	.ifdef	NEED_ROWS
 	lea		rows_table,a1
@@ -4508,7 +4529,6 @@ update_players_controls:
 	bclr	#BIT_PUNCH_1P,d0
 0:	
 
-	move.b	#0x0F,d0
 	btst	#JPB_BTN_GRN,d1
 	jeq		0f
 	bclr	#BIT_PUNCH_1P,d0
@@ -5577,8 +5597,9 @@ highscore_loaded:
 last_sound_played:
 	.byte	0
 normal_hiscorename:
-	.asciz	"gng.high"
-	
+	.asciz	"double_dragon.high"
+savegame_file:
+	.asciz	"savegame"
 
 lives_table:
 	.byte	4
@@ -5733,6 +5754,10 @@ no_main_tune:
 vbl_sync:
 	.word	0
 _resload:
+	.long	0
+loadgame_function:
+	.long	0
+savegame_function:
 	.long	0
 joypad_1_state:
 	.long	0

@@ -99,7 +99,12 @@ start:
 	jsr	(resload_LoadFileDecrunch,a2)
 	move.l  progstart(pc),a0
     bsr   _Relocate
-	move.l	_resload(pc),a0
+	lea		_resload(pc),a0		; note: address of pointer on resload+_savegame_func+_loadgame_func
+	lea	loadgame(pc),a1
+	move.l	a1,(4,a0)
+	lea	savegame(pc),a1
+	move.l	a1,(8,a0)
+	
     move.l  #'WHDL',d0
     move.b  _keyexit(pc),d1
 	move.l  progstart(pc),-(a7)
@@ -140,15 +145,16 @@ loadgame
     movem.l (a7)+,a0/a2
 	; D0 success
 	rts
-	
 
 
+; < A0: game ram
 savegame
     movem.l a2,-(a7)
 ;	move.l	trainer(PC),d0
 ;	bne.s	.skip		;no save on trainer
 	lea	BASE_CHIP,a1
 	move.l	#$3800,d0	; size of RAM
+	move.b	#0,$200
 	bsr	_sg_save
 .skip
     movem.l (a7)+,a2
@@ -161,7 +167,10 @@ _exit:
 	rts
 	
 _resload:
-	dc.l	0
+	dc.l	0	; resload
+	dc.l	0	; load game function
+	dc.l	0	; save game function
+	
 progstart
     dc.l    0
 exe

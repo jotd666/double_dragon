@@ -11,13 +11,17 @@
 ;		font with a char size of width=6, height=8 by doing INCBIN of
 ;		it prior including this source with a label _font and define
 ;		a variable EXTSGFONT=1
-;  :Author.	Wepl
-;  :Version.	$Id: savegame.s 1.5 2007/07/29 15:56:17 wepl Exp wepl $
+;  :Author.	Wepl, JOTD, ross
 ;  :History.	14.06.98 extracted from Interphase slave
 ;		15.06.98 returncode fixed
 ;			 problem with savegames larger than $7fff fixed
 ;		23.01.00 better selection on loading
 ;		23.07.00 adapted for whdload v12 and WHDLTAG_KEYTRANS_GET
+;		29.07.07 name of the savegame file must be overgiven now
+;			 other font file can specified
+;		13.11.19 fix for FantasticDizzyAGA (ross)
+;		09.03.20 made pc-relative (JOTD)
+;		26.04.20 reworked fixes from 13.11.19
 ;  :Requires.	_keyexit	byte variable containing rawkey code
 ;		_exit		function to quit
 ;  :Copyright.	Public Domain
@@ -35,10 +39,12 @@
 		move.l	#100,d0			;savegame size
 		lea	$3e900,a0		;address of savegame
 		lea	$65000,a1		;free mem for screen
+		lea	(_savename,pc),a2	;name of savegame file
 		bsr	_sg_load
 	;	move.w	#$4100,(_custom+bplcon0)
 	;	move.w	#320/8*3,(_custom+bpl1mod)
 	;	move.l	#$00000eee,(_custom+color)
+	;	move.w	#$x,(_custom+fmode)
 
 	ENDC
 
@@ -46,6 +52,7 @@
 ; IN:	d0 = ULONG size (only on function save required)
 ;	a0 = APTR  address of load/save area
 ;	a1 = APTR  space for the screen ($2800 bytes)
+;	a2 = CPTR  name of the savegame file
 ; OUT:	d0 = BOOL  success
 ;	d1/a0/a1 destroyed
 
@@ -62,6 +69,7 @@ CHARHEIGHT	= 8
 	NSTRUCTURE	SaveGame,0
 		NLONG	sg_screen
 		NLONG	sg_size
+		NLONG	sg_name
 		NLONG	sg_address
 		NLONG	sg_old68
 		NLONG	sg_old6c
@@ -263,7 +271,7 @@ _sg_save_in	bsr	_sg_loaddir
 
 		move.l	#SAVEDIRLEN,d0		;size
 		moveq	#0,d1			;offset
-		lea	(_sg_name,pc),a0	;filename
+		move.l	(sg_name,a5),a0		;filename
 		lea	(sg_save_id,a5),a1	;address
 		move.w	#resload_SaveFileOffset,a2
 		bsr	_sg_exec_resload
@@ -274,7 +282,7 @@ _sg_save_in	bsr	_sg_loaddir
 .loop		add.l	d0,d1			;offset
 .loopin		subq.w	#1,d6
 		bpl	.loop
-		lea	(_sg_name,pc),a0	;filename
+		move.l	(sg_name,a5),a0		;filename
 		move.l	(sg_address,a5),a1	;address
 		move.w	#resload_SaveFileOffset,a2
 		bsr	_sg_exec_resload
@@ -415,7 +423,7 @@ _sg_load_in	bsr	_sg_loaddir
 .loop		add.l	d0,d1			;offset
 .loopin		subq.w	#1,d6
 		bpl	.loop
-		lea	(_sg_name,pc),a0	;filename
+		move.l	(sg_name,a5),a0		;filename
 		move.l	(sg_address,a5),a1	;address
 		move.w	#resload_LoadFileOffset,a2
 		bsr	_sg_exec_resload
@@ -429,7 +437,7 @@ _sg_load_in	bsr	_sg_loaddir
 ; OUT:	D0 = BOOL success
 ;	flags on D0
 
-_sg_loaddir	lea	(_sg_name,pc),a0
+_sg_loaddir	move.l	(sg_name,a5),a0
 		move.w	#resload_GetFileSize,a2
 		bsr	_sg_exec_resload
 		tst.l	d0
@@ -437,7 +445,7 @@ _sg_loaddir	lea	(_sg_name,pc),a0
 
 		move.l	#SAVEDIRLEN,d0		;size
 		moveq	#0,d1			;offset
-		lea	(_sg_name,pc),a0	;filename
+		move.l	(sg_name,a5),a0		;filename
 		lea	(sg_save_id,a5),a1	;address
 		move.w	#resload_LoadFileOffset,a2
 		bsr	_sg_exec_resload
@@ -482,17 +490,18 @@ _sg_get_key	moveq	#0,d0
 
 ;--------------------------------
 
-_sg_degrade	movem.l	d2-d7/a2-a6,-(a7)
+_sg_degrade	movem.l	d2-d7/a2-a3/a6,-(a7)
 		link	a5,#sg_SIZEOF			;A5 = data
 		move.l	d0,(sg_size,a5)
 		move.l	d1,d7				;d7 = return
 		move.l	a0,(sg_address,a5)
 		move.l	a1,(sg_screen,a5)
+		move.l	a2,(sg_name,a5)
 		sf	(sg_c_on,a5)
 		sf	(sg_success,a5)
-		bsr	_sg_waitvb
 		move.w	(_custom+intenar),(sg_oldintena,a5)
 		move.w	#$7fff,(_custom+intena)
+		bsr	_sg_waitvb
 		lea	(_custom),a6			;A6 = _custom
 		move.w	(dmaconr,a6),(sg_olddmacon,a5)
 		move.w	#$7fff,(dmacon,a6)
@@ -503,13 +512,12 @@ _sg_degrade	movem.l	d2-d7/a2-a6,-(a7)
 		lea	(_sg_int6c,pc),a0
 		move.l	$6c,(sg_old6c,a5)
 		move.l	a0,$6c
-		move.w	#INTF_SETCLR|INTF_INTEN|INTF_VERTB|INTF_PORTS,(intena,a6)
-		tst.b	(ciaicr+_ciaa)			;clear all intreq
-		move.w	#INTF_VERTB|INTF_PORTS,(intreq,a6)
 		bsr	_sg_waitvb
+		move.w	#INTF_SETCLR|INTF_INTEN|INTF_VERTB|INTF_PORTS,(intena,a6)
 		move.w	#$1200,(bplcon0,a6)
 		clr.w	(bpl1mod,a6)
 		move.l	#$00000eee,(color,a6)
+		clr.w	(fmode,a6)
 		move.w	#DMAF_SETCLR|DMAF_MASTER|DMAF_RASTER,(dmacon,a6)
 	;get keymap
 		clr.l	-(a7)
@@ -532,18 +540,17 @@ _sg_restore	bsr	_sg_clrscr
 		move.b	(sg_success,a5),d0
 		ext.w	d0
 		move.w	d0,a0				;a0 = success
-		bsr	_sg_waitvb
 		move.w	#$7fff,(intena,a6)
+		bsr	_sg_waitvb
 		move.w	#$7fff,(dmacon,a6)
 		move.l	(sg_old68,a5),$68
 		move.l	(sg_old6c,a5),$6c
-		move.w	#$7fff,(intreq,a6)
 		move.w	(sg_oldintena,a5),d0
-		bset	#15,d0				;d0 = intena
+		bset	#INTB_SETCLR,d0			;d0 = intena
 		move.w	(sg_olddmacon,a5),d1
-		bset	#15,d1				;d1 = dmacon
+		bset	#INTB_SETCLR,d1			;d1 = dmacon
 		unlk	a5
-		movem.l	(a7)+,d2-d7/a2-a6
+		movem.l	(a7)+,d2-d7/a2-a3/a6
 		move.w	d0,(_custom+intena)
 		bsr	_sg_waitvb
 		move.w	d1,(_custom+dmacon)
@@ -592,6 +599,7 @@ _sg_int68	movem.l	d0-d1/a0,-(a7)
 		dbf	d1,.int2_w1			;(min=127µs max=190.5µs)
 		and.b	#~(CIACRAF_SPMODE),(ciacra+_ciaa)	;to input
 .int2_exit	move.w	#INTF_PORTS,(intreq,a6)
+		tst.w	(intreqr,a6)
 		movem.l	(a7)+,d0-d1/a0
 		rte
 
@@ -629,6 +637,7 @@ _sg_int6c	move.l	(sg_screen,a5),(bplpt,a6)
 .2		bsr	_pc
 		movem.l	(a7)+,d0-d2
 .1		move.w	#INTF_VERTB,(intreq,a6)
+		tst.w	(intreqr,a6)
 		rte
 
 ;--------------------------------
@@ -746,7 +755,6 @@ _psc		movem.l	d1/a0,-(a7)
 .1		asr.w	#1,d0
 		add.w	#LINE*4,d0
 		move.l	(a7)+,a0
-		bra	_ps
 
 ;--------------------------------
 ; print string
@@ -773,7 +781,7 @@ _ps		movem.l	d2,-(a7)
 
 _pc		movem.l	d0-d7/a0-a2,-(a7)
 
-		lea	_font(pc),a0
+		lea	(_font,pc),a0
 		cmp.l	#$3f3,(a0)
 		bne	.relok
 		sub.l	a1,a1
@@ -840,13 +848,14 @@ _pc		movem.l	d0-d7/a0-a2,-(a7)
 		movem.l	(a7)+,d0-d7/a0-a2
 		rts
 
+	IFND EXTSGFONT
 _font		INCBIN	xen_8.bin
+	ENDC
 
 ;--------------------------------
 
-_sg_name	dc.b	"savegame",0
 _info1		dc.b	"Special multiple savegame support",0
-_info2		dc.b	"Written by Wepl 1998-2000",0
+_info2		dc.b	"v1.7 by Wepl 1998-2020, ross 2019",0
 _esc		dc.b	"press Esc to cancel",0
 _save		dc.b	"»»» Save a Game «««",0
 _saveselect	dc.b	"Select a save position using keyboard '1' - '9'",0

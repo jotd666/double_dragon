@@ -1255,7 +1255,7 @@ subcpu_processing_411e:
 4B18: 48          ASLA
 4B19: 4C          INCA
 4B1A: E6 88 19    LDB    $19,X
-4B1D: E1 A6       CMPB   A,Y
+4B1D: E1 A6       CMPB   A,Y	; [bank_address]
 4B1F: 25 0D       BCS    $4B2E
 4B21: A6 88 18    LDA    $18,X
 4B24: 81 02       CMPA   #$02
@@ -1265,7 +1265,7 @@ subcpu_processing_411e:
 4B2E: 6C 88 19    INC    $19,X
 4B31: A6 88 18    LDA    $18,X
 4B34: 48          ASLA
-4B35: E6 A6       LDB    A,Y
+4B35: E6 A6       LDB    A,Y	; [bank_address]
 4B37: EA 03       ORB    $3,X
 4B39: E7 02       STB    $2,X
 4B3B: 6D 88 18    TST    $18,X

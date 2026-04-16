@@ -5,8 +5,8 @@ from shared import *
 
 sprite_context_list = ["intro","level_1","level_2","level_3","level_3_3","level_4"]
 bg_tile_context_list = ["level_1_1","level_1_2","level_2","level_3_1","level_3_2","level_3_3","level_4","outro"]
+sprite_context_list = ["level_3"]
 bg_tile_context_list = []
-#sprite_context_list = ["level_1"]
 sprite_names = get_sprite_names()
 
 mirror_sprites = get_mirror_sprites()
@@ -218,16 +218,19 @@ dump=False,name_dict=None,cluts=None,tile_number=0,is_bob=False,size_table=None)
                         name = "unknown"
 
                     img.save(os.path.join(dump_subdir,f"{name}_{tile_number:02x}_{palette_index:02x}.png"))
+
             tile_number += 1
 
     if is_bob:
         # double the tileset as sometimes sprite can have single size, double size or both in different contexts
         tileset_length = len(tileset_1)
         tileset_1 += [None]*tileset_length
+
         # rework & dump grouped / non grouped sprites
         # rework tiles which are grouped
         # first pass create double height clones in index*2
         for tile_number,wtile in enumerate(tileset_1):
+
             # create hardware Y-grouped tiles
             if tile_number == tileset_length:
                 break
@@ -245,7 +248,6 @@ dump=False,name_dict=None,cluts=None,tile_number=0,is_bob=False,size_table=None)
                     tileset_1[tile_number+tileset_length] = new_tile  # insert tile in the upper double Y space (tile id + 0x1000)
                     if tile_size & 1 == 0:
                         tileset_1[tile_number] = None  # discard
-                        tileset_1[other_tile_index] = None  # discard
                     wtile = new_tile
 
         for tile_number,wtile in enumerate(tileset_1):

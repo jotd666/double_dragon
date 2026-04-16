@@ -35,6 +35,7 @@ def convert():
     EMPTY_SND = "EMPTY_SND"
 
     dummy_sounds = {3,0xc,6,0XE,0x7,
+    0xA,  # level 3
     0xF,  # belt loop, if we include this we can't play other sounds so screw it
     0x10, # level 2 external elevator, same, it's a loop
     0xFE,
