@@ -2,8 +2,8 @@ from shared import *
 
 # post-conversion automatic patches, allowing not to change the asm file by hand
 
-fast_play = True
-fast_attract = False
+fast_play = False
+fast_attract = True
 
 process_main = 1
 process_banks = 1
@@ -293,17 +293,30 @@ def f_handle_main_line(address,lines,i):
     jcc        l_bbca
 """
     # HACK TO BE ABLE TO START GAME MUST BE IMPROVED ELSE DEMO WON'T SHOW
-    elif address == 0x8124:
-        # set 5 credits right away. Problem with the current game architecture is that
+    elif address in {0x8124,0x8437}:
+        # Problem with the current game architecture is that
         # credits are inserted from fast irq, but fast irq doesn't return, so it causes us trouble
-        # on the amiga because the interrupts work differently. Here just set 5 credits and jump to the routine
-        # that fastirq calls when there are credits. problem is: with that there's no attract mode anymore
-        line = """\tmove.b #0,0x110\nOP_R_ON_DP_ADDRESS    move,nb_credits_0021,d1
+        # on the amiga because the interrupts work differently. We removed credit insertion test altogether
+        # and replaced by some custom code done in keyboard interrupt.
+        # now if at this point there are credits, jump to title screen
+        line = """\tOP_R_ON_DP_ADDRESS    move,nb_credits_0021,d1
 \tjeq\t0f
 \tOP_W_ON_DP_ADDRESS    move,game_in_play_0026,d1
 \tjra        coin_inserted_8158
 0:
-#"""+line
+"""+line
+    elif address in {0x850E}:
+        # same thing but during intro where the bad guys take the girl:
+        # pop the stack then return to title
+        line = """\tOP_R_ON_DP_ADDRESS    move,game_in_play_0026,d1
+\tjne\t0f
+\tOP_R_ON_DP_ADDRESS    move,nb_credits_0021,d1
+\tjeq\t0f
+\tOP_W_ON_DP_ADDRESS    move,game_in_play_0026,d1
+\taddq  #4,a7       | pop caller address
+\tjra        coin_inserted_8158
+0:
+"""+line
     elif address == 0xB671:
         # replace stack pull by direct read of B/D1
         line = change_instruction("move.b\td1,d0",lines,i)
@@ -385,9 +398,10 @@ def f_handle_main_line(address,lines,i):
         line = change_instruction("jbsr\tosd_read_dsw_2",lines,i)
     elif address == 0xeed3:
         line = "\tjbsr\tosd_palette_updated\n"+line
-
+    elif address == 0x8463:
+        line += "\tjbsr\tosd_load_highscore_context\n"
     elif address == 0x835B and fast_attract:
-        line += "\tmove.w\t#0x50,d1\n"
+        line = change_instruction("move.w\t#0x50,d1",lines,i)
     elif address in {0xfc3a,0xfc8f,0xfb34,0xFF9C}:  # protect carry from switch_to_saved_bank_xxxx
         line = "\tPUSH_SR  | save carry\n"+line
     elif address in {0xfc4e,0xfc9a,0xFB42,0xFFA9}:  # protect carry from switch_to_bank_0_xxx

@@ -2064,7 +2064,7 @@ jump_table_5f4f:
 6081: 6D 42          TST    $2,U
 6083: 2A 05          BPL    $608A
 6085: A6 45          LDA    $5,U
-6087: BD FE 23       JSR    $FE23
+6087: BD FE 23       JSR    vbl_delay_fe23
 608A: 39             RTS
 
 608B: 86 00          LDA    #$00

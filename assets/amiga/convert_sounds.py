@@ -34,7 +34,7 @@ def convert():
 
     EMPTY_SND = "EMPTY_SND"
 
-    dummy_sounds = {3,0xc,6,0XE,0x7,
+    dummy_sounds = {6,0XE,0x7,
     0xA,  # level 3
     0xF,  # belt loop, if we include this we can't play other sounds so screw it
     0x10, # level 2 external elevator, same, it's a loop
@@ -73,8 +73,8 @@ def convert():
     "TITLE_TUNE_SND"      :{"index":0x1,"pattern":0,"volume":32,"module_index":0},
     "LEVEL1_TUNE_SND"      :{"index":0x9,"pattern":0,"volume":32,"module_index":1},
     #"LEVEL2_TUNE_SND"      :{"index":0x7,"pattern":0,"volume":32,"module_index":3},
-    #"BOSS_TUNE_SND"      :{"index":0x3,"pattern":0,"volume":32,"module_index":2},
-    #"LEVEL_END_TUNE_SND"      :{"index":0xc,"pattern":0,"volume":32,"module_index":3},
+    "BOSS_TUNE_SND"      :{"index":0x3,"pattern":0,"volume":32,"module_index":13},
+    "LEVEL_END_TUNE_SND"      :{"index":0xc,"pattern":0,"volume":32,"module_index":14},
     #"GAME_END_TUNE_SND"      :{"index":0x6,"pattern":0,"volume":32,"module_index":3},
 
     }
@@ -84,6 +84,8 @@ def convert():
     module_names = [None]*16
     module_names[0] = "intro.mod"
     module_names[1] = "level1.mod"
+    module_names[13] = "boss.mod"
+    module_names[14] = "level_complete.mod"
 
     with open(os.path.join(src_dir,"..","sounds.inc"),"w") as f:
         for k,v in sorted(sound_dict.items(),key = lambda x:x[1]["index"]):

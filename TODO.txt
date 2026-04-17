@@ -1,5 +1,13 @@
+- allocate frequent sounds to channel 3, and character death sounds to channel 2
+  if a sound is only in one level and that level has 2 channel music, allocate it of course on channel 2
+  
 - highscore screen after attract (make attract faster!!) then crash (tile-related): see if intro context
   is reloaded
+  
+- game not in play: ignore all sounds > 0x7F
+- continue insert coin credit check stuff in highscore table and in intro cinematics
+- level completed missing track stop
+
 - sounds at start (intro) seem wrong wrong freq or such, sometimes lose sound (level 2)
 - sprites disappearing too soon this time on the left!
 - create a fg tile context for highscores (else it destroys in-game HUD colors)

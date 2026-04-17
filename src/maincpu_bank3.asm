@@ -19,8 +19,8 @@ lb3_6c18:		; [global]
 6C18: 7E 74 E7       JMP    $74E7
 lb3_6c1b:		; [global]
 6C1B: 7E 75 2B       JMP    $752B
-lb3_6c1e:		; [global]
-6C1E: 7E 6E 49       JMP    $6E49
+lb3_display_high_scores_6c1e:		; [global]
+6C1E: 7E 6E 49       JMP    lb3_display_high_scores_6e49
 
 6C21: 39             RTS
 6C22: A6 88 4C       LDA    $4C,X
@@ -254,12 +254,13 @@ jump_table_6cdc:
 6E34: A7 88 45       STA    $45,X
 6E37: 35 FE          PULS   D,DP,X,Y,U,PC
 
+lb3_display_high_scores_6e49:
 6E49: 17 00 0E       LBSR   $6E5A
 6E4C: 17 01 2F       LBSR   $6F7E
 6E4F: 86 FF          LDA    #$FF
-6E51: 17 8F CF       LBSR   $FE23
+6E51: 17 8F CF       LBSR   vbl_delay_fe23
 6E54: 86 40          LDA    #$40
-6E56: 17 8F CA       LBSR   $FE23
+6E56: 17 8F CA       LBSR   vbl_delay_fe23
 6E59: 39             RTS
 
 6E5A: 34 7E          PSHS   U,Y,X,DP,D
@@ -1041,7 +1042,7 @@ jump_table_748f:
 75B8: 10 83 07 00    CMPD   #$0700
 75BC: 25 0E          BCS    $75CC
 75BE: 86 FF          LDA    #$FF
-75C0: BD FE 23       JSR    $FE23
+75C0: BD FE 23       JSR    vbl_delay_fe23
 75C3: 86 FF          LDA    #$FF
 75C5: B7 0E 2D       STA    $0E2D
 75C8: 86 04          LDA    #$04

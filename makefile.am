@@ -8,6 +8,7 @@ ifdef RELEASE_BUILD
 OPT_RELEASE = --defsym RELEASE=1
 endif
 
+OPT_RELEASE_LINK = -uvbl_delay_fe23
 # Bebbo's package usually installs itself there
 GCC_BIN = C:\amiga-gcc\bin
 ASM_BASE = $(GCC_BIN)/m68k-amigaos-as -c --defsym __amiga__=1

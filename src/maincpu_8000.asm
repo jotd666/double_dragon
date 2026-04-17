@@ -258,7 +258,7 @@ reset_8000:     ; [global]
 804B: BD 6C 00       JSR    lb3_6C00
 804E: BD FC 8F       JSR    switch_to_bank_0_fc8f
 8051: 1C AF          ANDCC  #$AF
-8053: 7E 80 BA       JMP    $80BA
+8053: 7E 80 BA       JMP    title_80ba
 
 nmi_8056:   ; [global]
 8056: 4F             CLRA
@@ -324,6 +324,7 @@ irq_80b0:   ; [global]
 swi_interrupt:
 80B9: 3B             RTI
 
+title_80ba:
 80BA: 86 FF          LDA    #$FF
 80BC: B7 38 0E       STA    sound_irq_380e
 80BF: C6 FF          LDB    #$FF
@@ -703,7 +704,7 @@ gameloop_8389:
 8437: FC 0E 50       LDD    attract_mode_timer_0e50
 843A: 83 00 01       SUBD   #$0001
 843D: FD 0E 50       STD    attract_mode_timer_0e50
-8440: 27 0E          BEQ    $8450
+8440: 27 0E          BEQ    show_high_scores_8450
 8442: 7E 83 89       JMP    gameloop_8389
 
 8445: 86 01          LDA    #$01
@@ -712,24 +713,26 @@ gameloop_8389:
 844C: BD FE B3       JSR    $FEB3
 844F: 39             RTS
 
+show_high_scores_8450:
 8450: 7F 0E 71       CLR    nmi_active_flag_0e71
 8453: 86 FF          LDA    #$FF
-8455: B7 38 0E       STA    sound_irq_380e
+8455: B7 38 0E       STA    sound_irq_380e		; stop sfx
 8458: BD FE 98       JSR    clear_fg_screen_fe98
 845B: BD FE 9B       JSR    clear_bg_screen_fe9b
 845E: BD FE 9E       JSR    clear_sprite_memory_fe9e
 8461: 86 FE          LDA    #$FE
-8463: B7 38 0E       STA    sound_irq_380e
+8463: B7 38 0E       STA    sound_irq_380e		; stop music
 8466: 96 3A          LDA    bank_switch_copy_3a
 8468: 8A 60          ORA    #$60		; bank=3
 846A: B7 38 08       STA    bankswitch_3808
 846D: 97 3A          STA    bank_switch_copy_3a
-846F: BD 6C 1E       JSR    lb3_6C1E
+846F: BD 6C 1E       JSR    lb3_display_high_scores_6c1e
 8472: 96 3A          LDA    bank_switch_copy_3a
 8474: 84 1F          ANDA   #$1F
 8476: B7 38 08       STA    bankswitch_3808
 8479: 97 3A          STA    bank_switch_copy_3a
-847B: 7E 80 BA       JMP    $80BA
+847B: 7E 80 BA       JMP    title_80ba
+
 847E: 96 29          LDA    number_of_players_flag_0029
 8480: 2B 1D          BMI    two_players_849f
 8482: 0F 2A          CLR    current_player_002a
@@ -976,7 +979,7 @@ play_intro_animation_84f8:
 86B6: 7F 0E 71       CLR    nmi_active_flag_0e71
 86B9: 0D 21          TST    nb_credits_0021
 86BB: 10 26 FA 99    LBNE   coin_inserted_8158
-86BF: 7E 80 BA       JMP    $80BA
+86BF: 7E 80 BA       JMP    title_80ba
 86C2: 81 03          CMPA   #$03
 86C4: 10 26 FC 31    LBNE   $82F9
 86C8: 0D 38          TST    $38
@@ -1232,7 +1235,7 @@ play_intro_animation_84f8:
 8926: 0D 21          TST    nb_credits_0021
 8928: 10 26 F8 2C    LBNE   coin_inserted_8158
 892C: 0F 26          CLR    game_in_play_0026
-892E: 7E 80 BA       JMP    $80BA
+892E: 7E 80 BA       JMP    title_80ba
 8931: 86 8B          LDA    #$8B
 8933: BD FE B0       JSR    display_credit_feb0
 8936: 86 8C          LDA    #$8C
@@ -9832,7 +9835,7 @@ FDFF: 7E E9 65       JMP    $E965
 
 l_fe20:
 FE20: 7E 90 4B       JMP    $904B
-l_fe23:
+vbl_delay_fe23:		; [global]
 FE23: 7E B7 56       JMP    vbl_delay_b756
 
 l_fe30:

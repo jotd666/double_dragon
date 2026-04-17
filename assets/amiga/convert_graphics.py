@@ -494,7 +494,7 @@ fg_tile_sheet_dict = {i:Image.open(sheets_path / "fg_tiles" / f"pal_{i:02x}.png"
 #######################################################
 
 
-context_list = ["title","game"]
+context_list = ["title","game","highscores"]
 for context in context_list:
 
     context = pathlib.Path(context)
@@ -525,10 +525,19 @@ for context in context_list:
         cluts = fg_tile_cluts.get(atc)
         if cluts:
             used_cluts.update(cluts)
+
     # now set cluts for all alphanum tiles
     for atc in alphanum_tile_codes:
         fg_tile_cluts[atc] = sorted(used_cluts)
 
+    if context == "highscores":
+        used_cluts = set()
+        for atc in range(0x300,0x380):
+            cluts = fg_tile_cluts.get(atc)
+            if cluts:
+                used_cluts.update(cluts)
+        for atc in range(0x300,0x380):
+            fg_tile_cluts[atc] = sorted(used_cluts)
 
     for i,tsd in fg_tile_sheet_dict.items():
         _,tile_set = load_tileset(tsd,i,8,8,"fg_tiles"/pathlib.Path(context) ,dump_dir,dump=dump_it,

@@ -300,6 +300,7 @@ osd_enter_\@:
 	.global	osd_set_bank
 
 	
+	.global	osd_load_highscore_context
 	.global	osd_clear_fg_screen
 	.global	osd_clear_bg_screen
 	.global	osd_video_byte_dirty
@@ -312,8 +313,7 @@ osd_enter_\@:
 	.global osd_sound_start
 	.global osd_music_stop
 	.global	force_sound_stop
-	.global music_tick
-	.global	music_track_start_number
+
 	
 	.global	osd_display_value
 	.global	osd_get_last_known_pc
@@ -1008,7 +1008,6 @@ context_switch_found:
 	move.l	(a0)+,d2		| now d2 is the context
 	movem.l	d0-a6,-(a7)
 	move.l	d2,d0
-	*jbsr	osd_blitz
 	jbsr	load_context
 	movem.l	(a7)+,d0-a6
 	moveq	#0,d1
@@ -1784,6 +1783,7 @@ level1_interrupt:
 	cmp.b	#5,d0
 	bne.b	1f
 	jbsr	call_nmi
+	bclr	#3,(extra_3802,a6)		| ack vblank once more else delay timers are too slow (60Hz)
 	clr.b	d0
 1:
 	move.b	d0,mid_screen_interrupt_count
@@ -1867,7 +1867,7 @@ level1_interrupt:
 
 	.if		OPT_BLIT_CHAIN_MODE==0
 	jbsr	set_scroll_values
-	tst.l	sprite_tile_table
+	tst.l	sprite_table_buffer_ptr
 	jeq		0f
 	jbsr		really_update_sprites
 0:
@@ -2207,11 +2207,13 @@ really_update_sprites:
 	* draw current BOBs *
 	*********************
 	
+
+	move.l	sprite_tile_table,a4
 	GET_MEMORY_START_IN_A6
 	lea		(SPRITE_ADDRESS,a6),a0
     lea _custom,A5
 	move.l	bob_previous_drawed_sprites(pc),a6
-	move.l	sprite_tile_table,a4
+	
 	moveq	#NB_TARGET_SPRITES-1,d7
 1:
 	jbsr	update_one_bob
@@ -2371,6 +2373,10 @@ update_one_bob:
 	move.l	(a0,d3.w),d4
 	.endif
 	jeq		2f		| invalid clut: can happen in transition phases
+	cmp.l	#0xCCCCCCCC,d4
+	jne		0f
+	BREAKPOINT	"uninit!!"
+0:
 	move.l	d4,a0
 
 	move.w	(a0)+,d4		| height
@@ -3236,7 +3242,6 @@ platform_init:
 	move.l	a0,playfield_drawed_screen_ptr
 	move.l	a0,playfield_displayed_screen_ptr
 	
-	st		music_track_start_number
 
 	.ifne	OPT_ENABLE_DOUBLE_BUFFERING
 	lea		bobs_screen_buffer_2,a0
@@ -3521,10 +3526,7 @@ osd_set_bank:
 osd_clear_bg_screen:
 	movem.l	d0/a0/a1/a5,-(a7)
 
-	move.w	#10,d0
-0:
-	jbsr	osd_wait_vblank_interrupt
-	dbf		d0,0b
+
 	
 	move.l	playfield_drawed_screen_ptr,a0
 	move.l	playfield_displayed_screen_ptr,a1
@@ -3541,6 +3543,16 @@ osd_clear_bg_screen:
 	.endr
 	dbf		d0,0b
 	movem.l	(a7)+,d0/a0/a1/a5
+	rts
+	
+* load the context manually, the palette doesn't change
+* but the fg tiles use other colors and that washes down
+* main fg tiles. Plus we need the sprites to be unloaded
+osd_load_highscore_context:
+	movem.l	d0-a6,-(a7)
+	move.w	#CTX_HIGHSCORES,d0
+	jbsr	load_context
+	movem.l	(a7)+,d0-a6
 	rts
 	
 * fast way to clear screen
@@ -5091,8 +5103,8 @@ force_sound_stop:
 	OSD_ENTER
 	movem.l	d0-d1/a0/a6,-(a7)
 	lea		_custom,a6
-	move.b	#-1,music_track_start_number
-    clr.w   music_tick   | not playing anymore
+	move.b	#-1,currently_playing_module
+
 	clr.b	music_playing
 	clr.l	looped_sound_enabled
 
@@ -5106,15 +5118,26 @@ force_sound_stop:
 osd_sound_start:
 	OSD_ENTER
 	movem.l	d0/d1/d2/a0/a1/a6,-(a7)
-	lea		_custom,a6
 	
-
-	moveq	#0,d2
 	cmp.b	#0xFE,d0
 	jne		0f
 	jbsr	force_sound_stop
 	jra		10f
 0:
+
+	GET_MEMORY_START_IN_A6
+	tst.b	(game_in_play_0026,a6)
+	jne		1f
+	* game not in play: filter out sounds except for credit
+	cmp.b	#CREDIT_02_SND,d0
+	jeq		0f
+	cmp.b	#0x80,d0
+	jcc		10f		| skip fight sounds, we want to leave 4 channel intro music intact
+1:
+	lea		_custom,a6
+	
+
+	moveq	#0,d2
 
 	and.w	#0xFF,d0
 	lsl.w	#3,d0

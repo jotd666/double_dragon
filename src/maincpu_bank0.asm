@@ -1141,13 +1141,13 @@ lb0_49a0:   ; [global]
 49A3: 7F 0A F6       CLR    $0AF6
 49A6: BD 4A 58       JSR    $4A58
 49A9: 86 20          LDA    #$20
-49AB: BD FE 23       JSR    $FE23
+49AB: BD FE 23       JSR    vbl_delay_fe23
 49AE: BD 49 C0       JSR    $49C0
 49B1: B6 0A F6       LDA    $0AF6
 49B4: 81 02          CMPA   #$02
 49B6: 27 07          BEQ    $49BF
 49B8: 86 01          LDA    #$01
-49BA: BD FE 23       JSR    $FE23
+49BA: BD FE 23       JSR    vbl_delay_fe23
 49BD: 20 EF          BRA    $49AE
 49BF: 39             RTS
 49C0: 8E 49 CA       LDX   #table_49ca
