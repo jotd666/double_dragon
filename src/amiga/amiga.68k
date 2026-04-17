@@ -62,12 +62,12 @@ GAME_MAX_SCROLL_X = 0x200
 GAME_MAX_SCROLL_Y = 0x200
 BG_TILE_WIDTH = 16
 
-FG_TILE_FILE_MAX_SIZE = 0x8000
-BG_TILE_FILE_MAX_SIZE = 0x40000
-SPRITE_FILE_MAX_SIZE = 0xC8000
+FG_TILE_FILE_MAX_SIZE = 12000
+BG_TILE_FILE_MAX_SIZE = 250000
+SPRITE_FILE_MAX_SIZE = 970000
 
 	.if		OPT_CD32_VERSION==0
-BIGGEST_MUSIC_SIZE = 300000
+BIGGEST_MUSIC_SIZE = 281000
 	.else
 BIGGEST_MUSIC_SIZE = 96000
 	.endif
@@ -981,10 +981,22 @@ osd_call_main_irq:
 osd_palette_updated:
 	lea		(fg_tiles_palette_1000,a6),a0
 	moveq	#0,d1
-	move.w	#0x180/4-1,d2		| "checksum" R,G of colors
+	move.w	#0x80/4-1,d2		| "checksum" R,G of colors
 0:
 	add.l	(a0)+,d1
 	dbf		d2,0b
+	add.w	#0x80,a0
+	move.w	#0x80/4-1,d2		| "checksum" R,G of colors
+0:
+	add.l	(a0)+,d1
+	dbf		d2,0b
+
+*	lea		(fg_tiles_palette_1000,a6),a0
+*	moveq	#0,d1
+*	move.w	#0x180/4-1,d2		| "checksum" R,G of colors
+*0:
+*	add.l	(a0)+,d1
+*	dbf		d2,0b
 
 	.ifndef	RELEASE
 	move.l	D1,0x200	| store current color checksum in ZP
@@ -1054,6 +1066,7 @@ load_context:
 	* same context: don't load
 	rts
 0:
+	BREAKPOINT	"LOAD NEW"
 	movem.l	d0-a6,-(a7)
 	jbsr	osd_disable_interrupts
 	
@@ -1608,6 +1621,9 @@ load_file:
 	cmp.l	d0,d2
 	jcc		0f
 	BREAKPOINT	"file size too big vs buffer. D0=size, D2=max, D3=filename"
+	ILLEGAL
+	ILLEGAL
+	ILLEGAL
 0:
 	.endif
 	movem.l	(a7),d0-d2/a0-a1
@@ -5130,7 +5146,7 @@ osd_sound_start:
 	jne		1f
 	* game not in play: filter out sounds except for credit
 	cmp.b	#CREDIT_02_SND,d0
-	jeq		0f
+	jeq		1f
 	cmp.b	#0x80,d0
 	jcc		10f		| skip fight sounds, we want to leave 4 channel intro music intact
 1:
@@ -5266,18 +5282,6 @@ load_music_if_needed:
 	movem.l	(a7)+,d0/a0/a1
 	rts
 	
-* all level modules have the same structure but in fact not atm...
-* 0-9              stage music + boss
-* 10               empty block in loop      
-* 11               low time                 
-* 12               death                    
-* 13               MAP                     
-* 14-15          game over                
-* 16-17          Key         
-* 
-* (only last boss mod)             
-* 16                bad ending
-* 17-22           good ending
 	
 
 quit_to_os:

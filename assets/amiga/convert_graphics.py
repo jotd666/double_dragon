@@ -229,6 +229,7 @@ dump=False,name_dict=None,cluts=None,tile_number=0,is_bob=False,size_table=None)
         # rework & dump grouped / non grouped sprites
         # rework tiles which are grouped
         # first pass create double height clones in index*2
+        missing_tile = False
         for tile_number,wtile in enumerate(tileset_1):
 
             # create hardware Y-grouped tiles
@@ -241,15 +242,19 @@ dump=False,name_dict=None,cluts=None,tile_number=0,is_bob=False,size_table=None)
                     other_tile_index = tile_number+1
                     other_tile = tileset_1[other_tile_index]
                     if not other_tile:
-                        raise Exception(f"YHW size: pair: palette_index: {palette_index}: 0x{tile_number:02x} ok but other tile index 0x{other_tile_index:02x} not found")
-                    new_tile = Image.new("RGB",(wtile.size[0],wtile.size[1]*2))
-                    new_tile.paste(wtile,box=(0,0))
-                    new_tile.paste(other_tile,box=(0,16))
-                    tileset_1[tile_number+tileset_length] = new_tile  # insert tile in the upper double Y space (tile id + 0x1000)
-                    if tile_size & 1 == 0:
-                        tileset_1[tile_number] = None  # discard
-                    wtile = new_tile
+                        missing_tile = True
+                        print(f"Warning: YHW size: pair: palette_index: {palette_index}: 0x{tile_number:02x}, size_mask={tile_size} ok but other tile index 0x{other_tile_index:02x} not found")
+                    else:
+                        new_tile = Image.new("RGB",(wtile.size[0],wtile.size[1]*2))
+                        new_tile.paste(wtile,box=(0,0))
+                        new_tile.paste(other_tile,box=(0,16))
+                        tileset_1[tile_number+tileset_length] = new_tile  # insert tile in the upper double Y space (tile id + 0x1000)
+                        if tile_size & 1 == 0:
+                            tileset_1[tile_number] = None  # discard
+                        wtile = new_tile
 
+        if missing_tile:
+            raise Exception("Missing tile(s) cannot continue")
         for tile_number,wtile in enumerate(tileset_1):
             # software grouped tiles, not enabled, and wrong too: it doesn't follow a logic, it needs to be specified by hand
             if wtile:
@@ -706,7 +711,7 @@ for context in context_list:
     if context=="level_1":
         # remove some parasite tiles
         for x in [0xFE2,0xFE4,0xFE6,0xFE7]:
-            sprite_cluts.pop(x)
+            sprite_cluts.pop(x,None)
         for k,v in sprite_names.items():
             if "boss" in v:
                 sprite_cluts.pop(k,None)

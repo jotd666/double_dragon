@@ -1,10 +1,15 @@
+- video of level 1 with all sounds & tunes
+
 - allocate frequent sounds to channel 3, and character death sounds to channel 2
   if a sound is only in one level and that level has 2 channel music, allocate it of course on channel 2
+
+- rip water 8C, rock 85
+- split level 3 sprites even more!
+- compute level 4 contexts with new checksums
+
   
-- highscore screen after attract (make attract faster!!) then crash (tile-related): see if intro context
-  is reloaded
-  
-- game not in play: ignore all sounds > 0x7F
+- level 2: elevator door flashes at times
+- game not in play: ignore all sounds > 0x7F OK ignore "beep" too!
 - continue insert coin credit check stuff in highscore table and in intro cinematics
 - level completed missing track stop
 
@@ -12,10 +17,9 @@
 - sprites disappearing too soon this time on the left!
 - create a fg tile context for highscores (else it destroys in-game HUD colors)
 - outro: some tiles aren't erased
-- re-detect title context the second time (0x200??), unload sprites (seems to crash if left alone), remove sprite filter
 - ECS: limit to 1 clut, enable EHB extra plane of zeroes or ones if clut odd or even: saves memory and gives
   diversity. Then EHB can also be used for tiles
-- missing size in beams (level 4), elevator (level 2)
+- missing size in beams (level 4)
 
 - get out of attract mode with "fire"/"insert coin" manually to redirect without interrupt hijack
   8437: attract mode check credit here too
