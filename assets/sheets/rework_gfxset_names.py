@@ -3,7 +3,7 @@ from PIL import Image
 
 this_dir = pathlib.Path(__file__).parent.absolute()
 
-gfx_dir = pathlib.Path("outro")
+gfx_dir = pathlib.Path("level_12_transition")
 
 for sn,ttype in ((2,"bg_tiles"),(1,"sprites"),):
     outdir = this_dir / ttype / gfx_dir

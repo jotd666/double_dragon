@@ -897,14 +897,17 @@ prepare_custom_registers:
 	move.w	#0x30A0,(diwstrt,a5)
 	move.w	#0xd0,(ddfstop,a5)	
 	move.w	#0x0,(bplcon2,a5)	
-	move.l	#0x3800,d0
+	move.w	(port_1_3800,a6),saved_3800
+	move.l	#0x3802,d0		| plus 2 bytes for context
 	move.l	a6,a0			| RAM
 	lea		savegame_file,a2
 	rts
 
 
 restore_custom_registers:
+	GET_MEMORY_START_IN_A6
 	lea	_custom,a5
+	move.w	saved_3800,(port_1_3800,a6)
 	jbsr	set_screen_params
 	move.w	#0x8080,(dmacon,a5)
 	rts	
@@ -920,6 +923,7 @@ osd_main_loop_hook:
 	movem.l	d0-d7/a0-a6,-(a7)
 	move.l	savegame_function,a1
 	jbsr	prepare_custom_registers
+	move.w	current_context,(port_1_3800,a6)
 	jbsr	(a1)
 	jbsr	restore_custom_registers
 	movem.l	(a7)+,d0-d7/a0-a6
@@ -932,11 +936,14 @@ osd_main_loop_hook:
 	move.l	loadgame_function,a1
 	jbsr	prepare_custom_registers
 	jbsr	(a1)
+	move.w	(port_1_3800,a6),d2		| save previous context that we loaded
 	jbsr	restore_custom_registers
+	swap	d0		| returncode seems broken! if escaped MSW is zero
 	tst.l	d0
-	*jne		9f
+	jeq		9f
+	move.w	d2,d0
 	* now we should load the context
-	jbsr	osd_palette_updated
+	jbsr	load_context
 9:
 	movem.l	(a7)+,d0-d7/a0-a6
 	
@@ -975,52 +982,52 @@ osd_call_main_irq:
 
 
 
-* called when palette is updated
+* called when palette is updated which could mean
+* that we have reached a "checkpoint" and we must change
+* the context. Note that this is not necessarily the case
+*
 * can use D1 & D2 as restored just afterwards
 * < A6: memory
 osd_palette_updated:
-	lea		(fg_tiles_palette_1000,a6),a0
-	moveq	#0,d1
-	move.w	#0x80/4-1,d2		| "checksum" R,G of colors
-0:
-	add.l	(a0)+,d1
-	dbf		d2,0b
-	add.w	#0x80,a0
-	move.w	#0x80/4-1,d2		| "checksum" R,G of colors
-0:
-	add.l	(a0)+,d1
-	dbf		d2,0b
-
-*	lea		(fg_tiles_palette_1000,a6),a0
-*	moveq	#0,d1
-*	move.w	#0x180/4-1,d2		| "checksum" R,G of colors
-*0:
-*	add.l	(a0)+,d1
-*	dbf		d2,0b
-
+	move.l	d3,-(a7)
 	.ifndef	RELEASE
 	move.l	D1,0x200	| store current color checksum in ZP
 	.endif
 	
+	move.w	(current_level_0036,a6),d1
+	swap 	d1
+	moveq	#0,d1	| atm do we need current level?
+	move.w	(current_level_x_position_003c,a6),d1
 	lea		context_lookup_table,a0
 0:
 	move.l	(a0)+,d2
-	cmp.l 	#-1,d2
-	jeq		0f
+	jmi		0f
+	move.l	(a0)+,d3
+	addq 	#1,d3
 	cmp.l	d1,d2
-	jeq		context_switch_found
+	jeq		2f		| exact lower bound: OK
+	jcc		1f
+	* current pos > min pos
+	cmp.l	d1,d3
+	jcc		2f	| branch if current pos <= max pos
+1:
 	addq	#4,a0
 	jra		0b
 0:
 	moveq	#0,d1
 	moveq	#0,d2
+	move.l	(a7)+,d3
 	rts
-
+2:
+	move.l	(a7)+,d3
 context_switch_found:
 	move.l	(a0)+,d2		| now d2 is the context
+	.ifndef	RELEASE
+	move.l	D2,0x204	| store current context
+	.endif
 	movem.l	d0-a6,-(a7)
 	move.l	d2,d0
-**	jbsr	load_context
+	jbsr	load_context
 	movem.l	(a7)+,d0-a6
 	moveq	#0,d1
 	moveq	#0,d2
@@ -1066,9 +1073,11 @@ load_context:
 	* same context: don't load
 	rts
 0:
+	move.b	#0,0x110
 	movem.l	d0-a6,-(a7)
 	move.l	d0,d1
 	jbsr	osd_disable_interrupts
+	
 	
 	.ifne	OPT_ENABLE_LOGGING
 	jbsr	purge_sprite_log_data
@@ -5561,7 +5570,7 @@ sprite_mem_name:
 	.endif	
 
 
-
+	
 	.align	2
 dyn_color_indexes:
 	.word	0
@@ -5577,7 +5586,10 @@ last_sprite_code:
 last_sprite_color:
 	.word	0
 	.endif
-	
+
+saved_3800:
+	.word	0
+
 looped_sound_enabled:
 	.long	0
 

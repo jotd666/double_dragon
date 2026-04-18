@@ -398,9 +398,6 @@ def f_handle_main_line(address,lines,i):
         line = change_instruction("jbsr\tosd_read_dsw_2",lines,i)
     elif address == 0xeed3:
         line = "\tjbsr\tosd_palette_updated\n"+line
-    elif address == 0x833A:
-        # load of context highscore
-        line = "\tLOAD_CONTEXT\tINTRO\n"+line
     elif address == 0x8463:
         # load of context highscore
         line += "\tLOAD_CONTEXT\tHIGHSCORES\n"
@@ -410,6 +407,11 @@ def f_handle_main_line(address,lines,i):
         line = "\tPUSH_SR  | save carry\n"+line
     elif address in {0xfc4e,0xfc9a,0xFB42,0xFFA9}:  # protect carry from switch_to_bank_0_xxx
         line += "\tPOP_SR | restore carry\n"
+    # manual context loads
+    elif address == 0x833A:
+        # load of intro context, then level 1 part 1
+        line = "\tLOAD_CONTEXT\tINTRO\n"+line+"\tLOAD_CONTEXT\tLEVEL1_1\n"
+
 
     if "multiply_ab" in line and "MAKE_D" in lines[i+1]:
         lines[i+1] = ""

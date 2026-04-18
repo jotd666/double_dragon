@@ -4,9 +4,9 @@ import os,sys,bitplanelib,math
 from shared import *
 
 sprite_context_list = ["intro","level_1","level_2","level_3","level_3_3","level_4"]
-bg_tile_context_list = ["level_1_1","level_1_2","level_2","level_3_1","level_3_2","level_3_3","level_4","outro"]
-sprite_context_list = ["intro"]
-bg_tile_context_list = []
+bg_tile_context_list = ["level_1_1","level_1_2","level_2","level_3_1","level_3_2","level_3_3","level_4","outro","level_12_transition"]
+sprite_context_list = []
+bg_tile_context_list = ["level_12_transition"]
 
 sprite_names = get_sprite_names()
 
@@ -73,13 +73,16 @@ def is_in_level(prefix,context):
     # included only if context defined and matches
     return not levels or context in levels
 
+def get_sprite_name(i):
+    return sprite_names.get(i,sprite_names.get(i-0x1000,"bob"))
+
 def dump_bob_layer(sprite_table,f,relative_root=None):
     if relative_root:
         f.write(f"{relative_root}:\n")
     for i,tile_entry in enumerate(sprite_table):
         f.write("\t.long\t")
         if i not in possible_hw_sprites and any(tile_entry):
-            prefix = sprite_names.get(i,sprite_names.get(i-0x1000,"bob"))
+            prefix = get_sprite_name(i)
             f.write(f"{prefix}_{i:02x}")
             if relative_root:
                 f.write(f"-{relative_root}")
@@ -91,7 +94,7 @@ def dump_bob_layer(sprite_table,f,relative_root=None):
 
     for i,tile_entry in enumerate(sprite_table):
         if i not in possible_hw_sprites and any(tile_entry):
-            prefix = sprite_names.get(i,"bob")
+            prefix = get_sprite_name(i)
             f.write(f"{prefix}_{i:02x}:\n")
             for j,t in enumerate(tile_entry):
                 f.write("\t.long\t")
@@ -107,7 +110,7 @@ def dump_bob_layer(sprite_table,f,relative_root=None):
 
     for i,tile_entry in enumerate(sprite_table):
         if i not in possible_hw_sprites and any(tile_entry):
-            prefix = sprite_names.get(i,"bob")
+            prefix = get_sprite_name(i)
             for j,t in enumerate(tile_entry):
                 if t:
                     name = f"{prefix}_{i:02x}_{j:02x}"
@@ -244,7 +247,7 @@ dump=False,name_dict=None,cluts=None,tile_number=0,is_bob=False,size_table=None)
                     other_tile = tileset_1[other_tile_index]
                     if not other_tile:
                         missing_tile = True
-                        print(f"Warning: YHW size: pair: palette_index: {palette_index}: 0x{tile_number:02x}, size_mask={tile_size} ok but other tile index 0x{other_tile_index:02x} not found")
+                        print(f"Warning: YHW size: pair: palette_index: {palette_index}: 0x{tile_number:02x} ({get_sprite_name(tile_number)}), size_mask={tile_size} ok but other tile index 0x{other_tile_index:02x} not found")
                     else:
                         new_tile = Image.new("RGB",(wtile.size[0],wtile.size[1]*2))
                         new_tile.paste(wtile,box=(0,0))
@@ -345,10 +348,15 @@ plane_orientations = [("standard",lambda x:x),
 
 def asm2bin(bank):
     banko = bank.parent / f"{bank.stem}.o"
+    banke = bank.parent / f"{bank.stem}"
     cmd = ["m68k-amigaos-as","-o",banko,bank]
     subprocess.run(cmd,check=True)
+    # link the result. Not necessary when generation is OK, but
+    # not everything is solved (dangling references), we'll detect it
+    cmd = ["m68k-amigaos-ld","-o",banke,banko]
+    subprocess.run(cmd,check=True)
     bankbin = data_dir / f"{bank.stem}"
-    cmd = ["m68k-amigaos-objcopy","-O","binary",banko,bankbin]
+    cmd = ["m68k-amigaos-objcopy","-O","binary",banke,bankbin]
     subprocess.run(cmd,check=True)
 
 
@@ -711,16 +719,6 @@ for context in context_list:
             if 0 in existing:
                 existing.add(1)
                 sprite_cluts[k] = existing
-
-    if context=="level_1":
-        # remove some parasite tiles
-        for x in [0xFE2,0xFE4,0xFE6,0xFE7]:
-            sprite_cluts.pop(x,None)
-        for k,v in sprite_names.items():
-            if "boss" in v:
-                sprite_cluts.pop(k,None)
-            elif "girl" in v and k not in [0xFDA,0xFDB,0xFDC]:
-                sprite_cluts.pop(k,None)
 
 
 

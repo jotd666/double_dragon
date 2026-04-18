@@ -286,10 +286,14 @@ def read_used_tiles(used_tiles_name,tile_cluts,nb_tiles,nb_cluts,size_table=None
                 if c:
                     cluts.append(i)
                     if size_table is not None:
-                        size_table[index] = c | size_table.get(index,0)
                         if c&2:
+                            # if we force double & simple, only take it into account if this
+                            # context has size 2 logged
+                            size_table[index] = c | size_table.get(index,0)
                             # Y size we have to declare the next tile as used too
                             double_y = True
+                        else:
+                            size_table[index] = 1
             if cluts:
                 add_tile(tile_cluts,index,cluts=cluts)
                 if double_y:

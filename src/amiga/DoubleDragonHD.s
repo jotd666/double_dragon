@@ -139,9 +139,9 @@ _Relocate	movem.l	d0-d1/a0-a2,-(sp)
 ; < A0: game RAM
 loadgame
     movem.l a0/a2,-(a7)
+	move.l	#$3804,d0	; size of RAM
 	lea	BASE_CHIP,a1
 	bsr	_sg_load
-	lea	BASE_CHIP,a1
     movem.l (a7)+,a0/a2
 	; D0 success
 	rts
@@ -153,7 +153,7 @@ savegame
 ;	move.l	trainer(PC),d0
 ;	bne.s	.skip		;no save on trainer
 	lea	BASE_CHIP,a1
-	move.l	#$3800,d0	; size of RAM
+	move.l	#$3804,d0	; size of RAM
 	move.b	#0,$200
 	bsr	_sg_save
 .skip

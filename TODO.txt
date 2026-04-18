@@ -1,16 +1,16 @@
-- crash intro context
+- missing HUD heads WTF
+- when loading, infamous right strip scrolling issue, compare values before/after load (tiles redraw probably fucks up
+  some parameter)
+- maybe load/save should be for dev version only as if we don't reset corkscrew it could fail after a while
 - why logging detects player 5 sprite with no size??
 - redo all contexts switches: wait for write in palette, get current level & game X
   and if it matches a known setup, load the context (like in GnG). If we don't know where we are (level+x), BREAK
-- also save current context in game saves! as now color checksum doesn't help. put context info at offset 3800
-  (we need to save the current value beforehand)
+
 
 - video of level 1 with all sounds & tunes
 
 - allocate frequent sounds to channel 3, and character death sounds to channel 2
   if a sound is only in one level and that level has 2 channel music, allocate it of course on channel 2
-
-- rip water 8C, rock 85
 
 
   
@@ -84,4 +84,4 @@ w 1 rA6+$A85 1 W VFF.B
 w 2 rA6+$A6D 1 W VFF.B
 
 log sounds: wpset 380E,1,W,wpdata!=$FF
-record: bpset 89EC,,{bpclear;A=$81;g}
+record: bpset 89EC,,{bpclear;A=$85;g}
