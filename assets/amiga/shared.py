@@ -293,6 +293,9 @@ def read_used_tiles(used_tiles_name,tile_cluts,nb_tiles,nb_cluts,size_table=None
             if cluts:
                 add_tile(tile_cluts,index,cluts=cluts)
                 if double_y:
+                    # those tiles are in the table but have a size = 0
+                    # they should not be dumped individually, they're here only so
+                    # when creating the double tile we have the data available
                     add_tile(tile_cluts,index+1,cluts=cluts)
 
 

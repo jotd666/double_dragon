@@ -300,7 +300,7 @@ osd_enter_\@:
 	.global	osd_set_bank
 
 	
-	.global	osd_load_highscore_context
+	.global	osd_load_context
 	.global	osd_clear_fg_screen
 	.global	osd_clear_bg_screen
 	.global	osd_video_byte_dirty
@@ -1020,7 +1020,7 @@ context_switch_found:
 	move.l	(a0)+,d2		| now d2 is the context
 	movem.l	d0-a6,-(a7)
 	move.l	d2,d0
-	jbsr	load_context
+**	jbsr	load_context
 	movem.l	(a7)+,d0-a6
 	moveq	#0,d1
 	moveq	#0,d2
@@ -1066,8 +1066,8 @@ load_context:
 	* same context: don't load
 	rts
 0:
-	BREAKPOINT	"LOAD NEW"
 	movem.l	d0-a6,-(a7)
+	move.l	d0,d1
 	jbsr	osd_disable_interrupts
 	
 	.ifne	OPT_ENABLE_LOGGING
@@ -1613,23 +1613,25 @@ load_file:
 	move.l	_resload,d1
 	jeq		1f
 	move.l	a2,-(a7)
-	movem.l	d0-d2/a0-a1,-(a7)
+	movem.l	d0-d3/a0-a1,-(a7)
 	move.l	d1,a2
+	move.l	a0,d3
 	move.l	d0,d2		| store max size
 	jbsr	resload_GetFileSizeDec(a2)
 	.ifndef	RELEASE
 	cmp.l	d0,d2
 	jcc		0f
-	BREAKPOINT	"file size too big vs buffer. D0=size, D2=max, D3=filename"
+	move.l	d0,d4
+	BREAKPOINT	"file size too big vs buffer. D4=size, D2=max, D3=filename"
 	ILLEGAL
 	ILLEGAL
 	ILLEGAL
 0:
 	.endif
-	movem.l	(a7),d0-d2/a0-a1
+	movem.l	(a7),d0-d3/a0-a1
 	
 	jbsr	resload_LoadFileDecrunch(a2)
-	movem.l	(a7)+,d0-d2/a0-a1
+	movem.l	(a7)+,d0-d3/a0-a1
 	move.l	(a7)+,a2
 	rts
 0:
@@ -3561,14 +3563,13 @@ osd_clear_bg_screen:
 	movem.l	(a7)+,d0/a0/a1/a5
 	rts
 	
-* load the context manually, the palette doesn't change
-* but the fg tiles use other colors and that washes down
-* main fg tiles. Plus we need the sprites to be unloaded
-osd_load_highscore_context:
-	movem.l	d0-a6,-(a7)
-	move.w	#CTX_HIGHSCORES,d0
+* load the context manually. Trying to track down
+* palette changes is just a nightmare
+
+osd_load_context:
+	movem.l	d1-a6,-(a7)
 	jbsr	load_context
-	movem.l	(a7)+,d0-a6
+	movem.l	(a7)+,d1-a6
 	rts
 	
 * fast way to clear screen

@@ -5,8 +5,9 @@ from shared import *
 
 sprite_context_list = ["intro","level_1","level_2","level_3","level_3_3","level_4"]
 bg_tile_context_list = ["level_1_1","level_1_2","level_2","level_3_1","level_3_2","level_3_3","level_4","outro"]
-sprite_context_list = ["level_1"]
+sprite_context_list = ["intro"]
 bg_tile_context_list = []
+
 sprite_names = get_sprite_names()
 
 mirror_sprites = get_mirror_sprites()
@@ -15,7 +16,7 @@ nb_planes = 7
 max_nb_sprite_colors = 1<<(nb_planes-1)
 max_nb_bg_tile_colors = max_nb_sprite_colors
 
-max_used_nb_bg_tile_colors = max_used_nb_sprite_colors = 64
+max_used_nb_bg_tile_colors = max_used_nb_sprite_colors = max_nb_sprite_colors
 
 possible_hw_sprites = set()
 
@@ -78,7 +79,7 @@ def dump_bob_layer(sprite_table,f,relative_root=None):
     for i,tile_entry in enumerate(sprite_table):
         f.write("\t.long\t")
         if i not in possible_hw_sprites and any(tile_entry):
-            prefix = sprite_names.get(i,"bob")
+            prefix = sprite_names.get(i,sprite_names.get(i-0x1000,"bob"))
             f.write(f"{prefix}_{i:02x}")
             if relative_root:
                 f.write(f"-{relative_root}")
@@ -249,9 +250,12 @@ dump=False,name_dict=None,cluts=None,tile_number=0,is_bob=False,size_table=None)
                         new_tile.paste(wtile,box=(0,0))
                         new_tile.paste(other_tile,box=(0,16))
                         tileset_1[tile_number+tileset_length] = new_tile  # insert tile in the upper double Y space (tile id + 0x1000)
-                        if tile_size & 1 == 0:
-                            tileset_1[tile_number] = None  # discard
                         wtile = new_tile
+                if tile_size & 1 == 0:
+                    # now remove the tiles that don't have single size from tileset, else they're dumped
+                    # at it eats a lot of memory. We needed them to be loaded to be able to compose double height
+                    # but that's the only reason
+                    tileset_1[tile_number] = None  # discard if single size is not declared
 
         if missing_tile:
             raise Exception("Missing tile(s) cannot continue")
@@ -323,7 +327,7 @@ dump=False,name_dict=None,cluts=None,tile_number=0,is_bob=False,size_table=None)
             if dump_it and wtile:
                 img = ImageOps.scale(wtile,5,resample=Image.Resampling.NEAREST)
                 if sprite_names:
-                    name = sprite_names.get(tile_number,"unknown")
+                    name = sprite_names.get(tile_number,sprite_names.get(tile_number-0x1000,"unknown"))
                 else:
                     name = "unknown"
 
@@ -717,6 +721,8 @@ for context in context_list:
                 sprite_cluts.pop(k,None)
             elif "girl" in v and k not in [0xFDA,0xFDB,0xFDC]:
                 sprite_cluts.pop(k,None)
+
+
 
     for i,tsd in sprite_sheet_dict.items():
         tp,tile_set = load_tileset(tsd,i,16,16,"sprites" / pcontext,dump_dir,dump=dump_it, cluts=sprite_cluts,

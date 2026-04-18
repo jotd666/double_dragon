@@ -11,6 +11,7 @@
 * conditional compilation to select the proper memory banks at compile time
 * (see my burger time 6502 conversion which does that in RELEASE mode)
 
+	.include 	"contexts.inc"
 	.include 	"options.inc"
 	.ifdef	__amiga__
 	* to define BREAKPOINT
@@ -24,6 +25,13 @@
 	.warning	"\arg"     | comment out to disable errors
 	.endm
 
+	.macro	LOAD_CONTEXT	name
+	move.l	d0,-(a7)
+	move.l	#CTX_\name,d0
+	jbsr	osd_load_context
+	move.l	(a7)+,d0
+	.endm
+	
 	.macro	VIDEO_BYTE_DIRTY
 	| called when a byte write was done in a0
 	jbsr	osd_video_byte_dirty

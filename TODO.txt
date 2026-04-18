@@ -1,11 +1,17 @@
+- crash intro context
+- why logging detects player 5 sprite with no size??
+- redo all contexts switches: wait for write in palette, get current level & game X
+  and if it matches a known setup, load the context (like in GnG). If we don't know where we are (level+x), BREAK
+- also save current context in game saves! as now color checksum doesn't help. put context info at offset 3800
+  (we need to save the current value beforehand)
+
 - video of level 1 with all sounds & tunes
 
 - allocate frequent sounds to channel 3, and character death sounds to channel 2
   if a sound is only in one level and that level has 2 channel music, allocate it of course on channel 2
 
 - rip water 8C, rock 85
-- split level 3 sprites even more!
-- compute level 4 contexts with new checksums
+
 
   
 - level 2: elevator door flashes at times

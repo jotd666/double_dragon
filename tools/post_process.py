@@ -398,8 +398,12 @@ def f_handle_main_line(address,lines,i):
         line = change_instruction("jbsr\tosd_read_dsw_2",lines,i)
     elif address == 0xeed3:
         line = "\tjbsr\tosd_palette_updated\n"+line
+    elif address == 0x833A:
+        # load of context highscore
+        line = "\tLOAD_CONTEXT\tINTRO\n"+line
     elif address == 0x8463:
-        line += "\tjbsr\tosd_load_highscore_context\n"
+        # load of context highscore
+        line += "\tLOAD_CONTEXT\tHIGHSCORES\n"
     elif address == 0x835B and fast_attract:
         line = change_instruction("move.w\t#0x50,d1",lines,i)
     elif address in {0xfc3a,0xfc8f,0xfb34,0xFF9C}:  # protect carry from switch_to_saved_bank_xxxx
