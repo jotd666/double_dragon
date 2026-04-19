@@ -46,6 +46,7 @@ def convert():
 
     dummy_sounds = {6,0x7,
     0xA,  # level 3
+    0xD,  # level 4 (start)
     0xF,  # belt loop, if we include this we can't play other sounds so screw it
     0x10, # level 2 external elevator, same, it's a loop
     0xFE,

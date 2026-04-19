@@ -6,8 +6,8 @@ from shared import *
 sprite_context_list = ["intro","level_1","level_2","level_3","level_3_base","level_4"]
 bg_tile_context_list = ["level_1_1","level_1_2","level_2","level_3_1","level_3_2","level_3_base",
 "level_4","outro","level_12_transition","level_23_transition"]
-sprite_context_list = ["level_3"]
-bg_tile_context_list = ["level_3_2","level_3_1"]
+sprite_context_list = ["level_4"]
+bg_tile_context_list = []
 
 sprite_names = get_sprite_names()
 

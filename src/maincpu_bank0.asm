@@ -3865,7 +3865,7 @@ lb0_681b:  ; [global]
 6BB6: BE 0A 7E       LDX    $0A7E
 6BB9: FC 0A 89       LDD    $0A89
 6BBC: B3 0A 7C       SUBD   $0A7C
-6BBF: E1 03          CMPB   $3,X	; [bank_address]
+6BBF: E1 03          CMPB   $3,X	; [select_address]
 6BC1: 10 22 01 9C    LBHI   $6D61
 6BC5: 10 BE 0A 78    LDY    $0A78
 6BC9: 10 AE 26       LDY    $6,Y	; [select_address]

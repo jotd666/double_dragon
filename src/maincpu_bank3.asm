@@ -152,6 +152,7 @@ jump_table_6cdc:
 6D46: A7 21          STA    $1,Y
 6D48: 39             RTS
 
+; highscore entry
 6D59: 34 7E          PSHS   U,Y,X,DP,D
 6D5B: A6 88 14       LDA    $14,X
 6D5E: 81 03          CMPA   #$03
@@ -164,10 +165,11 @@ jump_table_6cdc:
 6D72: 58             ASLB
 6D73: 31 A5          LEAY   B,Y
 6D75: 86 80          LDA    #$80
-6D77: A7 A0          STA    ,Y+
+6D77: A7 A0          STA    ,Y+		; [video_address]
 6D79: A6 88 13       LDA    $13,X
-6D7C: A7 A4          STA    ,Y
+6D7C: A7 A4          STA    ,Y		; [video_address]
 6D7E: 35 FE          PULS   D,DP,X,Y,U,PC
+
 6D80: 34 7E          PSHS   U,Y,X,DP,D
 6D82: A6 88 4C       LDA    $4C,X
 6D85: 8A 10          ORA    #$10

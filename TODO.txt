@@ -1,21 +1,15 @@
 
 - nasty crash after demo/highscores (context issue?)
 - seems that transition context triggers when going hard right (level 1 boss), colors change
-- extra life sound (30000 points) to rip: index 4
-- color issues in level 3, ex green sky after the woods, palette change to rip: 8FC, 9F4, re-dump used for level32
-make a level33, shift 33 to 34
+  maybe we don't need this transition, by copying the level 2 start proper tile sheet in level 1 context
+  if the original level 1 sheet is garbage
+- level 3 end of level door copies tiles over and over detect and remove
+- time over: rip the sprites
+- level 3 bottom of door still remains (and wrong clut). Capture tiles is that wrong code?
+- game over when passing from level 3 to level 4!!
 
 
-
-- when loading, infamous right strip scrolling issue, compare values before/after load (tiles redraw probably fucks up
-  some parameter)
-- maybe load/save should be for dev version only as if we don't reset corkscrew it could fail after a while
-- redo all contexts switches: wait for write in palette, get current level & game X
-  and if it matches a known setup, load the context (like in GnG). If we don't know where we are (level+x), BREAK
-
-
-- allocate frequent sounds to channel 3, and character death sounds to channel 2
-  if a sound is only in one level and that level has 2 channel music, allocate it of course on channel 2
+- if a sound is only in one level and that level has 2 channel music, allocate it of course on channel 2
 
 
 - group laterally like in VBall: use script in a .bat drag & drop note in json + delete dumped files
@@ -30,7 +24,7 @@ make a level33, shift 33 to 34
 - outro: some tiles aren't erased
 - ECS: limit to 1 clut, enable EHB extra plane of zeroes or ones if clut odd or even: saves memory and gives
   diversity. Then EHB can also be used for tiles
-- missing size in beams (level 4)
+
 
  
 - adaptation of ptplayer to 255 instruments

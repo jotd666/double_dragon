@@ -6663,7 +6663,7 @@ C24A: A7 88 1B       STA    $1B,X
 C24D: 84 7F          ANDA   #$7F
 C24F: 48             ASLA
 C250: 10 8E C2 5D    LDY   #jump_table_c25d
-C254: AD B6          JSR    [A,Y]        ; [indirect_jump] [nb_entries=16]
+C254: AD B6          JSR    [A,Y]        ; [indirect_jump] [nb_entries=20]
 C256: 6F 88 19       CLR    $19,X
 C259: 6F 88 18       CLR    $18,X
 C25C: 39             RTS
@@ -6747,6 +6747,7 @@ C323: ED 88 11       STD    $11,X
 C326: 83 02 00       SUBD   #$0200
 C329: ED 88 11       STD    $11,X
 C32C: 39             RTS
+
 C32D: A6 84          LDA    ,X
 C32F: 84 F0          ANDA   #$F0
 C331: 8A 01          ORA    #$01
@@ -6758,7 +6759,7 @@ C33A: A6 88 1B       LDA    $1B,X
 C33D: 84 7F          ANDA   #$7F
 C33F: 48             ASLA
 C340: 10 8E C3 51    LDY   #jump_table_c351
-C344: AD B6          JSR    [A,Y]        ; [indirect_jump] [nb_entries=16]
+C344: AD B6          JSR    [A,Y]        ; [indirect_jump] [nb_entries=20]
 C346: A6 03          LDA    $3,X
 C348: 2A 06          BPL    $C350
 C34A: A6 02          LDA    $2,X
@@ -8040,7 +8041,7 @@ E137: BD E1 57       JSR    $E157
 E13A: BD E2 8E       JSR    $E28E
 E13D: BD E9 46       JSR    add_bit_6_on_nmi_flag_e946
 E140: BD E9 82       JSR    $E982
-E143: BD ED DE       JSR    $EDDE
+E143: BD ED DE       JSR    change_palette_edde
 E146: 39             RTS
 E147: BD E5 BD       JSR    $E5BD
 E14A: FC 0A 46       LDD    $0A46
@@ -9141,6 +9142,7 @@ EDA4: 10 9F 00       STY    $00
 EDA7: BD FE 89       JSR    $FE89
 EDAA: 35 90          PULS   X,PC
 
+change_palette_edde:
 EDDE: 32 7F          LEAS   -$1,S   ; [alloc_locals]
 EDE0: FC 0B 04       LDD    $0B04
 EDE3: 10 83 02 04    CMPD   #$0204
@@ -10355,6 +10357,10 @@ jump_table_c25d:
 	dc.w	$c2f8	; $c277
 	dc.w	$c30d	; $c279
 	dc.w	$c31d	; $c27b
+	dc.w	$0	; $c27d not defined
+	dc.w	$0	; $c27f
+	dc.w	$0	; $c281
+	dc.w	$c32d	; $c283 player kicks a rock
 jump_table_c351:
 	dc.w	$c37a	; $c351
 	dc.w	$c37e	; $c353
@@ -10372,6 +10378,10 @@ jump_table_c351:
 	dc.w	$c44f	; $c36b
 	dc.w	$c478	; $c36d
 	dc.w	$c49f	; $c36f
+	dc.w	$0	; $c371 not defined
+	dc.w	$0	; $c373
+	dc.w	$0	; $c275
+	dc.w	$c3d1	; $c277 player kicks a rock
 jump_table_c4f0:
 	dc.w	$c517	; $c4f0
 	dc.w	$c522	; $c4f2
