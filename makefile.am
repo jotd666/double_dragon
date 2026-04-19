@@ -133,7 +133,7 @@ savegame.o: $(AMIGASRC)/savegame.68k
 
 
 
-$(WHDLOADER_AGA) : $(AMIGASRC)/$(PROGNAME)HD.s
+$(WHDLOADER_AGA) : $(AMIGASRC)/$(PROGNAME)HD.s $(AMIGASRC)/savegame.s
 	wdate.py> datetime
 	$(WHDASM) -o $(WHDLOADER_AGA) $(AMIGASRC)/$(PROGNAME)HD.s
 	
@@ -144,7 +144,7 @@ $(HW_TESTER_AGA) : $(AMIGASRC)/HWTesterHD.s
 	wdate.py> datetime
 	$(WHDASM) -o $(HW_TESTER_AGA) $(AMIGASRC)/HWTesterHD.s
 	
-$(WHDLOADER_AGA_CHIP) : $(AMIGASRC)/$(PROGNAME)HD.s $(AMIGASRC)/savegame_aga.s
+$(WHDLOADER_AGA_CHIP) : $(AMIGASRC)/$(PROGNAME)HD.s $(AMIGASRC)/savegame.s
 	wdate.py> datetime
 	$(WHDASM) -DCHIP_ONLY -o $(WHDLOADER_AGA_CHIP) $(AMIGASRC)/$(PROGNAME)HD.s
 

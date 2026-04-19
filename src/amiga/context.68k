@@ -4,17 +4,19 @@
 
 context_lookup_table:
 	.long	0x1FC,0x3F0,CTX_LEVEL1_2
-	.long	0x3FC,0x480,CTX_LEVEL12_TRANSITION
-	.long   0x4FC,0x500,CTX_LEVEL2
-  
+	.long	0x3FC,0x3FC,CTX_LEVEL12_TRANSITION
+	.long   0x4FC,0x700,CTX_LEVEL2
+ 	.long	0x79C,0x7F0,CTX_LEVEL23_TRANSITION
+	.long   0x800,0x802,CTX_LEVEL3_1 
+	.long   0x8FC,0x900,CTX_LEVEL3_2
+ 
 	
 	
-*	.long   0x284ED7D1,CTX_LEVEL3_1 
 *	.long   0x45CF7F8A,CTX_LEVEL3_2  
-*	.long   0x95904AA2,CTX_LEVEL3_3
+*	.long   0x95904AA2,CTX_LEVEL3_BASE
 *	.long   0xB333B446,CTX_LEVEL4
 *	.long   0xFF07FF91,CTX_OUTRO
-*	.long	0x0EC0999E,CTX_LEVEL23_TRANSITION   
+   
 	.long	-1,-1,-1				| maxed out/end
 
 * the order should respect the order of "contexts.inc". In a nutshell, don't change it!
@@ -56,8 +58,13 @@ context_table:
 	.long	0    | padding
 	* level 3_3
 	.long	game_fg_tiles_path
-	.long	level3_3_tiles_path
-	.long	level3_3_sprites_path
+	.long	0
+	.long	level3_sprites_path
+	.long	0    | padding
+	* level 3_base
+	.long	game_fg_tiles_path
+	.long	level3_base_tiles_path
+	.long	level3_base_sprites_path
 	.long	0    | padding
 	* level 4
 	.long	game_fg_tiles_path
@@ -75,8 +82,8 @@ context_table:
 	.long	level1_sprites_path
 	.long	0    | padding
 	* 2->3 transition
-	.long	0
-	.long	0			   | TODO rip the tiles with proper palette
+	.long	game_fg_tiles_path
+	.long	level_23_transition_tiles_path
 	.long	level2_sprites_path
 	.long	0    | padding
 	* high score screen (manual)
@@ -105,6 +112,8 @@ level3_2_tiles_path:
 	.asciz	"level_3_2_bg_tiles"
 level3_3_tiles_path:
 	.asciz	"level_3_3_bg_tiles"
+level3_base_tiles_path:
+	.asciz	"level_3_base_bg_tiles"
 level4_tiles_path:
 	.asciz	"level_4_bg_tiles"
 level_12_transition_tiles_path:
@@ -125,8 +134,8 @@ level2_sprites_path:
 	.asciz	"level_2_sprites"
 level3_sprites_path:
 	.asciz	"level_3_sprites"
-level3_3_sprites_path:
-	.asciz	"level_3_3_sprites"
+level3_base_sprites_path:
+	.asciz	"level_3_base_sprites"
 level4_sprites_path:
 	.asciz	"level_4_sprites"
 

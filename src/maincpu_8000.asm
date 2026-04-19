@@ -600,6 +600,7 @@ demo_8215:
 8334: 27 04          BEQ    $833A
 8336: 81 03          CMPA   #$03
 8338: 26 03          BNE    $833D
+; first level play intro
 833A: BD 84 F8       JSR    play_intro_animation_84f8
 ; players are now in control
 ; initialize stuff
@@ -884,12 +885,12 @@ play_intro_animation_84f8:
 85CB: 8E 03 A2       LDX    #player_1_struct_03a2
 85CE: F6 03 A2       LDB    player_1_struct_03a2
 85D1: 2A 03          BPL    $85D6
-85D3: BD FA F8       JSR    $FAF8
+85D3: BD FA F8       JSR    add_to_score_faf8
 85D6: 30 88 5E       LEAX   $5E,X
 85D9: F6 04 00       LDB    player_2_struct_0400
 85DC: 2A 05          BPL    $85E3
 85DE: A6 E4          LDA    ,S			; [manual_stack_read]
-85E0: BD FA F8       JSR    $FAF8
+85E0: BD FA F8       JSR    add_to_score_faf8
 85E3: 35 02          PULS   A			; [manual_stack_pull]
 85E5: 96 36          LDA    current_level_0036
 85E7: 81 02          CMPA   #$02
@@ -2860,7 +2861,7 @@ read_player_commands_8b8b:
 9B15: 81 02          CMPA   #$02
 9B17: 24 05          BCC    $9B1E
 9B19: 86 05          LDA    #$05
-9B1B: BD FA F8       JSR    $FAF8
+9B1B: BD FA F8       JSR    add_to_score_faf8
 9B1E: A6 88 18       LDA    $18,X
 9B21: 81 02          CMPA   #$02
 9B23: 25 08          BCS    $9B2D
@@ -2908,7 +2909,7 @@ read_player_commands_8b8b:
 9B94: 81 02          CMPA   #$02
 9B96: 24 05          BCC    $9B9D
 9B98: 86 05          LDA    #$05
-9B9A: BD FA F8       JSR    $FAF8
+9B9A: BD FA F8       JSR    add_to_score_faf8
 9B9D: 86 02          LDA    #$02
 9B9F: BD A5 49       JSR    $A549
 9BA2: A6 01          LDA    $1,X
@@ -9289,7 +9290,7 @@ F942: BD FC 3A       JSR    switch_to_saved_bank_fc3a
 F945: 39             RTS
 l_f946:
 F946: BD FB 24       JSR    save_and_switch_to_bank_0_fb24
-F949: BD 40 1B       JSR    lb0_401B
+F949: BD 40 1B       JSR    lb0_add_to_score_401b
 F94C: BD FB 34       JSR    switch_to_saved_bank_fb34
 F94F: 39             RTS
 
@@ -9463,7 +9464,8 @@ FAF1: BD 40 C3       JSR    lb5_40C3
 FAF4: BD FC 8F       JSR    switch_to_bank_0_fc8f
 FAF7: 39             RTS
 
-FAF8: 7E 40 1B       JMP    $401B ; [banks=0,1,5]
+add_to_score_faf8:
+FAF8: 7E 40 1B       JMP    lb0_add_to_score_401b
 
 FB00: 96 3A          LDA    bank_switch_copy_3a
 FB02: B7 0E 45       STA    previous_bank_register_0e45

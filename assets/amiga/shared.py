@@ -30,9 +30,13 @@ BG_NB_CLUTS = 8
 SPRITE_NB_CLUTS = 8
 
 # sprite tiles that have 2 different sizes
+
+ # force size 2 and 1 even if only size 1 logged
+force_multi_size_list_harder = {0x92C}
+# force size 1 if only size 2 logged
 force_multi_size_list = [0x5EE,0x5F0,0x8A4,0x8A6,0x8A8,0x86E,0x9EC,0x9F0,0x70C,
     0xEEA,0xEE6,0xEF0,0xEF6,0xEE2,0xFEE,0xFF2,0xFF0,0xFEC,
-    0x2ec,0xf4e,0x5eb,0x5FB,0x5F9,0x5FA,0x5FD]
+    0x2ec,0xf4e,0x5eb,0x5FB,0x5F9,0x5FA,0x5FD]+list(force_multi_size_list_harder)
 
 def apply_color_replacement(sprite_set_list,quantized):
     """ change colors for list of tilesets (tiles, sprites)
@@ -279,6 +283,9 @@ def read_used_tiles(used_tiles_name,tile_cluts,nb_tiles,nb_cluts,size_table=None
             cluts = []
             double_y = False
             for i,c in enumerate(d):
+                # this is a fucking nightmare to have tiles with several heights, but avoid to
+                # put useless 16pixel high tiles when only double height is used. But we must not
+                # forget the tiles that can be displayed as double AND as simple
                 if c==3:
                     # fix wrong logging. 3 (single Y & double Y can happen only if forced
                     # from passed size_table parameter)
@@ -286,7 +293,7 @@ def read_used_tiles(used_tiles_name,tile_cluts,nb_tiles,nb_cluts,size_table=None
                 if c:
                     cluts.append(i)
                     if size_table is not None:
-                        if c&2:
+                        if c&2 or index in force_multi_size_list_harder:
                             # if we force double & simple, only take it into account if this
                             # context has size 2 logged
                             size_table[index] = c | size_table.get(index,0)

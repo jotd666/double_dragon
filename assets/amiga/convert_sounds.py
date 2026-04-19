@@ -10,8 +10,18 @@ sound_dir = this_dir / ".." / "sounds"
 
 # default channel = 3, default priority = 40
 # put below some exceptions
+
+important_sounds = [
+0x99, # girl punched
+0x98, # giant
+0x96, # machine gun
+0x88, # death yell
+0x90, # knife bounces
+0x91, # hooker dies
+0x8c, # fall into water
+]
 sound_settings_dict = {
-#0x1 : {"channel":2,"priority":100},   # lose armour
+k : {"channel":2} for k in important_sounds
 }
 
 def convert():
@@ -34,7 +44,7 @@ def convert():
 
     EMPTY_SND = "EMPTY_SND"
 
-    dummy_sounds = {6,0XE,0x7,
+    dummy_sounds = {6,0x7,
     0xA,  # level 3
     0xF,  # belt loop, if we include this we can't play other sounds so screw it
     0x10, # level 2 external elevator, same, it's a loop
@@ -74,6 +84,7 @@ def convert():
     "LEVEL1_TUNE_SND"      :{"index":0x9,"pattern":0,"volume":32,"module_index":1},
     #"LEVEL2_TUNE_SND"      :{"index":0x7,"pattern":0,"volume":32,"module_index":3},
     "BOSS_TUNE_SND"      :{"index":0x3,"pattern":0,"volume":32,"module_index":13},
+    "INTERMISSION_TUNE_SND"      :{"index":0xE,"pattern":0,"volume":32,"module_index":15},
     "LEVEL_END_TUNE_SND"      :{"index":0xc,"pattern":0,"volume":32,"module_index":14},
     #"GAME_END_TUNE_SND"      :{"index":0x6,"pattern":0,"volume":32,"module_index":3},
 
@@ -86,6 +97,7 @@ def convert():
     module_names[1] = "level1.mod"
     module_names[13] = "boss.mod"
     module_names[14] = "level_complete.mod"
+    module_names[15] = "intermission.mod"
 
     with open(os.path.join(src_dir,"..","sounds.inc"),"w") as f:
         for k,v in sorted(sound_dict.items(),key = lambda x:x[1]["index"]):

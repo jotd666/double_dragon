@@ -383,9 +383,10 @@ def f_handle_main_line(address,lines,i):
     elif address == 0x8bbb:
         # free 1 byte on target stack, restore stored value for A so we can use target stack
         line += "\tGET_REG_ADDRESS\t0,d5\n\tmove.b\t(a0),d0 | restore stored value for A (not used in caller!)\n\taddq.w\t#1,d5\n"
-    elif address == 0xB435:
-        # set thug X to right of screen so intro is very fast
-        line += "\ttst.b\tskip_intro_flag\n\tjeq\t0f\n\tmove.w\t#0xF8,d1\n0:\n"
+##    elif address == 0xB435:
+##        # set thug X to right of screen so intro is very fast
+##        line += "\ttst.b\tskip_intro_flag\n\tjeq\t0f\n\tmove.w\t#0xF8,d1\n0:\n"
+
 
     elif address == 0xeeb0:
         line = change_instruction("jbsr\tosd_wait_vblank_interrupt",lines,i)
@@ -410,7 +411,7 @@ def f_handle_main_line(address,lines,i):
     # manual context loads
     elif address == 0x833A:
         # load of intro context, then level 1 part 1
-        line = "\tLOAD_CONTEXT\tINTRO\n"+line+"\tLOAD_CONTEXT\tLEVEL1_1\n"
+        line = "\ttst.b\tskip_intro_flag\n\tjne\t0f\n\tLOAD_CONTEXT\tINTRO\n"+line+"0:\nLOAD_CONTEXT\tLEVEL1_1\n"
 
 
     if "multiply_ab" in line and "MAKE_D" in lines[i+1]:

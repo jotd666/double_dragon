@@ -19,8 +19,8 @@ lb0_4015:   ; [global]
 4015: 7E 46 A3       JMP    $46A3
 lb0_4018:   ; [global]
 4018: 7E 44 CD       JMP    lb0_play_sound_44cd
-lb0_401b:   ; [global]
-401B: 7E 42 D3       JMP    $42D3
+lb0_add_to_score_401b:   ; [global]
+401B: 7E 42 D3       JMP    lb0_add_to_score_42d3
 
 lb0_401e:   ; [global]
 401E: 34 7E          PSHS   U,Y,X,DP,D
@@ -378,6 +378,7 @@ lb0_42b4:   ; [global]
 42CE: F7 38 08       STB    bankswitch_3808
 42D1: 35 87          PULS   CC,D,PC
 
+lb0_add_to_score_42d3:
 42D3: 34 77          PSHS   U,Y,X,D,CC
 42D5: D6 26          LDB    game_in_play_0026
 42D7: 10 27 00 D6    LBEQ   $43B1
@@ -4109,6 +4110,7 @@ lb0_6d64:   ; [global]
 6E09: 27 03          BEQ    $6E0E
 6E0B: BD 44 CD       JSR    lb0_play_sound_44cd
 6E0E: 39             RTS
+
 6E0F: B6 0A 75       LDA    $0A75
 6E12: 81 01          CMPA   #$01
 6E14: 22 0E          BHI    $6E24
@@ -4116,7 +4118,7 @@ lb0_6d64:   ; [global]
 6E19: 84 1F          ANDA   #$1F
 6E1B: 10 8E 6E 25    LDY    #$6E25
 6E1F: A6 A6          LDA    A,Y	; [bank_address]
-6E21: BD 42 D3       JSR    $42D3
+6E21: BD 42 D3       JSR    lb0_add_to_score_42d3
 6E24: 39             RTS
 
 6E6F: 32 7A          LEAS   -$6,S   ; [alloc_locals]
@@ -4483,7 +4485,7 @@ lb0_6d64:   ; [global]
 7C49: A6 A8 1D       LDA    $1D,Y
 7C4C: 2B 0D          BMI    $7C5B
 7C4E: 86 0B          LDA    #$0B
-7C50: BD 42 D3       JSR    $42D3
+7C50: BD 42 D3       JSR    lb0_add_to_score_42d3
 7C53: A6 A8 1D       LDA    $1D,Y
 7C56: 8A 80          ORA    #$80
 7C58: A7 A8 1D       STA    $1D,Y

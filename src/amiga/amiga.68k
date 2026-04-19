@@ -64,7 +64,7 @@ BG_TILE_WIDTH = 16
 
 FG_TILE_FILE_MAX_SIZE = 0x7B00
 BG_TILE_FILE_MAX_SIZE = 250000
-SPRITE_FILE_MAX_SIZE = 0xD0000
+SPRITE_FILE_MAX_SIZE = 0xC0000
 
 	.if		OPT_CD32_VERSION==0
 BIGGEST_MUSIC_SIZE = 281000
@@ -891,13 +891,15 @@ dump_and_quit:
 	.endif
 
 prepare_custom_registers:
+	jbsr	osd_disable_interrupts	| so RAM 3800 is not overwritten by joypad irq write
 	lea	_custom,a5
 	move.w	#0x80,(dmacon,a5)
 	clr.w	(bplcon3,a5)
 	move.w	#0x30A0,(diwstrt,a5)
 	move.w	#0xd0,(ddfstop,a5)	
 	move.w	#0x0,(bplcon2,a5)	
-	move.w	(port_1_3800,a6),saved_3800
+	move.l	(port_1_3800,a6),saved_3800
+	move.l	(port_1_3800+4,a6),saved_3800+4
 	move.l	#0x3802,d0		| plus 2 bytes for context
 	move.l	a6,a0			| RAM
 	lea		savegame_file,a2
@@ -907,9 +909,11 @@ prepare_custom_registers:
 restore_custom_registers:
 	GET_MEMORY_START_IN_A6
 	lea	_custom,a5
-	move.w	saved_3800,(port_1_3800,a6)
+	move.l	saved_3800,(port_1_3800,a6)
+	move.l	saved_3800+4,(port_1_3800+4,a6)
 	jbsr	set_screen_params
 	move.w	#0x8080,(dmacon,a5)
+	jbsr	osd_enable_interrupts
 	rts	
 	
 * called at start of mainloop, A6 contains RAM start
@@ -924,6 +928,7 @@ osd_main_loop_hook:
 	move.l	savegame_function,a1
 	jbsr	prepare_custom_registers
 	move.w	current_context,(port_1_3800,a6)
+	move.l	#0xdeadbeef,(port_1_3800+4,a6)   | not really useful, but after that I can edit savegames
 	jbsr	(a1)
 	jbsr	restore_custom_registers
 	movem.l	(a7)+,d0-d7/a0-a6
@@ -939,8 +944,9 @@ osd_main_loop_hook:
 	move.w	(port_1_3800,a6),d2		| save previous context that we loaded
 	jbsr	restore_custom_registers
 	swap	d0		| returncode seems broken! if escaped MSW is zero
-	tst.l	d0
+	tst.w	d0
 	jeq		9f
+	moveq	#0,d0
 	move.w	d2,d0
 	* now we should load the context
 	jbsr	load_context
@@ -991,7 +997,7 @@ osd_call_main_irq:
 osd_palette_updated:
 	move.l	d3,-(a7)
 	.ifndef	RELEASE
-	move.l	D1,0x200	| store current color checksum in ZP
+	move.w	(0x3C,a6),0x200	| store current X position
 	.endif
 	
 	move.w	(current_level_0036,a6),d1
@@ -1025,10 +1031,24 @@ context_switch_found:
 	.ifndef	RELEASE
 	move.l	D2,0x204	| store current context
 	.endif
+	cmp.w	#CTX_LEVEL3_1,d2
+	jne 	0f
+	BREAKPOINT	"level3!!!"
+0:
+	* kludge to switch to transition contexts only if intermission tune is playing
+	cmp.b	#INTERMISSION_TUNE_SND,currently_playing_module
+	jne		0f
+	cmp.w	#CTX_LEVEL12_TRANSITION,d2
+	jeq		1f
+	cmp.w	#CTX_LEVEL23_TRANSITION,d2
+	jeq		1f
+0:
+
 	movem.l	d0-a6,-(a7)
 	move.l	d2,d0
 	jbsr	load_context
 	movem.l	(a7)+,d0-a6
+1:
 	moveq	#0,d1
 	moveq	#0,d2
 	rts
@@ -1068,6 +1088,13 @@ osd_set_tile_palette:
 	
 * < D0: context name
 load_context:
+	cmp.w	#CTX_COUNT,d0
+	jcs		0f
+	.ifndef	RELEASE
+	BREAKPOINT	"illegal context out of range"
+	.endif
+	rts
+0:
 	cmp.w	current_context,d0
 	jne		0f
 	* same context: don't load
@@ -1426,12 +1453,22 @@ reset_scrolling_parameters:
 	move.w	d1,max_scroll_x
 	rts
 	
+force_fg_tiles_redraw:
+	lea		(fg_tiles_address_1800,a6),a0
+	move.w	#0x3FF,d1	
+0:
+	jbsr	osd_video_byte_dirty
+	addq	#2,a0
+	dbf		d1,0b
+	rts
+	
 * force screen redraw. Also wired on Ghosts'N'Goblins screen layout
 * we'll use a conversion table
 force_all_screen_redraw:
+	GET_MEMORY_START_IN_A6
+	jbsr	force_fg_tiles_redraw
 	lea		_custom,a5
 	REALLY_WAIT_BLIT
-	GET_MEMORY_START_IN_A6
 	
 
 	* force tile draw
@@ -2064,23 +2101,16 @@ osd_wait:
 add_to_score:
 	movem.l	a6/d0-d3,-(a7)
 	GET_MEMORY_START_IN_A6
-*	moveq	#0,d0
-*	abcd 	d0,d0		| clear X
-*	move.b	(player_score_0068+2,a6),d0
-*	move.b	(player_score_0068+1,a6),d1
-*	move.b	(player_score_0068,a6),d2
-*	move.b	#0x90,d3		| 9000 points
-*	abcd	d3,d0
-*	jcc		0f
-*	moveq	#0,d3
-*	abcd	d3,d1
-*	jcc		0f
-*	abcd	d3,d2
-*
-*0:
-*	move.b	d0,(player_score_0068+2,a6)
-*	move.b	d1,(player_score_0068+1,a6)
-*	move.b	d2,(player_score_0068,a6)
+	moveq	#0,d0
+	abcd 	d0,d0		| clear X
+	
+	move.b	(0x3EB,a6),d0
+	move.b	#1,d3		| 9000 points
+	abcd	d3,d0
+	jcs		0f
+	move.b	d0,(0x3EB,a6)
+0:
+
 	movem.l	(a7)+,a6/d0-d3
 	rts
 
@@ -3583,7 +3613,6 @@ osd_load_context:
 	
 * fast way to clear screen
 osd_clear_fg_screen:
-	
 	movem.l	d0/d1/a0/a1,-(a7)
 	
 	lea		hw_sprite_pointers,a1
@@ -3695,6 +3724,7 @@ maybe_fg_tile:
 	lea		(FG_SCREEN_TILE_ADDRESS,a6),a0
 	move.b	(a0,d7.w),d1
 	move.b	(1,a0,d7.w),d0
+
 
 	jbsr	update_fg_tile
 
@@ -5588,7 +5618,7 @@ last_sprite_color:
 	.endif
 
 saved_3800:
-	.word	0
+	.long	0,0
 
 looped_sound_enabled:
 	.long	0
