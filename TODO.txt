@@ -6,8 +6,6 @@
 
 - try: load a new bg tileset: first set palette to all black display tiles & load new palette
 
-- write a tile mix tool (chatgpt): source1, source2, nb tiles per row, copy range, destination, validate with bcomp
-
 - if a sound is only in one level and that level has 2 channel music, allocate it of course on channel 2
 
 

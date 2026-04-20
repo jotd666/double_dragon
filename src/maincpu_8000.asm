@@ -4103,12 +4103,12 @@ A78D: 81 02          CMPA   #$02
 A78F: 25 12          BCS    $A7A3
 A791: A6 88 1F       LDA    $1F,X
 A794: 26 0D          BNE    $A7A3
-; enemy dead.
+; enemy dead, play relevant sound
 A796: 86 88          LDA    #$88
 A798: E6 01          LDB    $1,X	; enemy type?
 A79A: C1 0A          CMPB   #$0A
 A79C: 26 02          BNE    $A7A0
-A79E: 86 91          LDA    #$91
+A79E: 86 91          LDA    #$91	; girl
 A7A0: BD FE B6       JSR    play_sound_feb6
 A7A3: A6 88 31       LDA    $31,X
 A7A6: 84 18          ANDA   #$18
@@ -7217,7 +7217,7 @@ C7D9: A7 88 1B       STA    $1B,X
 C7DC: 84 7F          ANDA   #$7F
 C7DE: 48             ASLA
 C7DF: 10 8E C7 EC    LDY   #jump_table_c7ec
-C7E3: AD B6          JSR    [A,Y]        ; [indirect_jump] [nb_entries=13]
+C7E3: AD B6          JSR    [A,Y]        ; [indirect_jump] [nb_entries=19]
 C7E5: 6F 88 19       CLR    $19,X
 C7E8: 6F 88 18       CLR    $18,X
 C7EB: 39             RTS
@@ -10476,6 +10476,13 @@ jump_table_c7ec:
 	dc.w	$c850	; $c800
 	dc.w	$c856	; $c802
 	dc.w	$c813	; $c804
+	dc.w	0
+	dc.w	0
+	dc.w	0
+	dc.w	$c813	; $c7ec
+	dc.w	$c812	; $c7f8
+	dc.w	$c85c	; $c802
+	
 jump_table_c879:
 	dc.w	$c8a0	; $c879
 	dc.w	$c8ed	; $c87b

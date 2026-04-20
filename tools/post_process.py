@@ -357,6 +357,9 @@ def f_handle_main_line(address,lines,i):
     jne    0b                       | [$b772: bne    wait_vbl_on_b76d]
     rts                                        | [$b774: rts]
 """
+    elif address == 0xB8D3:
+        # remove delay at start
+        line = remove_instruction(lines,i)
     elif address in {0x89b7,0x8A20,0x8A50}:
         # removing safety checks when inserting coins
         line = remove_instruction(lines,i)
