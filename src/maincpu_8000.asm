@@ -7288,7 +7288,7 @@ C862: A6 88 1B       LDA    $1B,X
 C865: 84 7F          ANDA   #$7F
 C867: 48             ASLA
 C868: 10 8E C8 79    LDY   #jump_table_c879
-C86C: AD B6          JSR    [A,Y]        ; [indirect_jump] [nb_entries=13]
+C86C: AD B6          JSR    [A,Y]        ; [indirect_jump] [nb_entries=19]
 C86E: A6 03          LDA    $3,X
 C870: 2A 06          BPL    $C878
 C872: A6 02          LDA    $2,X
@@ -10500,6 +10500,13 @@ jump_table_c879:
 	dc.w	$c9e5	; $c88d
 	dc.w	$c9e5	; $c88f
 	dc.w	$bec0	; $c891
+	dc.w	$0	; $c891
+	dc.w	$0	; $c891
+	dc.w	$0	; $c891
+	dc.w	$c8a0	; $c879
+	dc.w	$c89f	; $c879
+	dc.w	$c9ea	; $c879
+
 jump_table_ca25:
 	dc.w	$ca4c	; $ca25
 	dc.w	$ca57	; $ca27

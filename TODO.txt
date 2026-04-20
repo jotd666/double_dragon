@@ -1,44 +1,42 @@
+first alpha:
+
+- group laterally like in VBall: use script in a .bat drag & drop note in json + delete dumped files
+- sprites disappearing too soon this time on the left! mockup!
 - invincibility affects all characters, compare pointers with p1/p2
 - nasty crash after demo/highscores/end of game (context issue?)
 - start of level 3 bottom of girl door still remains (and wrong clut). Capture tiles is that wrong code?
-
+- continue insert coin credit check stuff in highscore table and in intro cinematics
+- detect not game in play for insert coin
+- cache subcontext (loaded fg/bg/sprite files)
 - try: load a new bg tileset: first set palette to all black display tiles & load new palette
+- music for level 2, level 3, level 4 first part, and end
+
+- set DSW difficulty lives, etc.
+- highscore load/save
 
 - if a sound is only in one level and that level has 2 channel music, allocate it of course on channel 2
 
-- group laterally like in VBall: use script in a .bat drag & drop note in json + delete dumped files
   
 - level 2: elevator door flashes at times
 - transition from 1 to 2: crate has wrong colors
-
-- continue insert coin credit check stuff in highscore table and in intro cinematics
-
-- sprites disappearing too soon this time on the left! mockup!
 - outro: some tiles aren't erased in the scrolling credits
 
 - ECS: limit to 1 clut, enable EHB extra plane of zeroes or ones if clut odd or even: saves memory and gives
   diversity. Then EHB can also be used for tiles
+- title letters fading in not supported
 
 
  
 - adaptation of ptplayer to 255 instruments
 
-- propagate all player moves from level 1 to all levels
 
 - when resetting context, redraw all tiles as palette has changed but do not reset scroll, ever
   only reset x_scroll at level 1: to test
 - weak enemies: doesn't work with hooker and giant bosses
 
-- set DSW difficulty lives, etc.
-- highscore load/save
-- detect not game in play for insert coin
-
-- cache subcontext (loaded fg/bg/sprite files)
 
 - try 16+16 color version (this is going to suck!)
 
-
-- title letters fading in not supported
   
 optimize: remove this sequence: 
     PUSH_SR                                	| [...]
@@ -70,4 +68,4 @@ w 1 rA6+$A85 1 W VFF.B
 w 2 rA6+$A6D 1 W VFF.B
 
 log sounds: wpset 380E,1,W,wpdata!=$FF
-record: bpset 89EC,,{bpclear;A=$85;g}
+record: bpset 89EC,,{bpclear;A=$10;g}
