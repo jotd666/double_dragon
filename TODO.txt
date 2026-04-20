@@ -1,12 +1,10 @@
-
+- lose a life sometimes lose more => game over check life sub carry??
 - nasty crash after demo/highscores (context issue?)
 - seems that transition context triggers when going hard right (level 1 boss), colors change
   maybe we don't need this transition, by copying the level 2 start proper tile sheet in level 1 context
   if the original level 1 sheet is garbage
-- level 3 end of level door copies tiles over and over detect and remove
-- time over: rip the sprites
-- level 3 bottom of door still remains (and wrong clut). Capture tiles is that wrong code?
-- game over when passing from level 3 to level 4!!
+- start of level 3 bottom of girl door still remains (and wrong clut). Capture tiles is that wrong code?
+- game over when passing from level 3 to level 4!! seems to lose all health points hence lose a life!
 
 
 - if a sound is only in one level and that level has 2 channel music, allocate it of course on channel 2
