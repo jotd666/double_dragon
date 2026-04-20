@@ -8,9 +8,8 @@ context_lookup_table:
 	.long   0x800,0x802,CTX_LEVEL3_1 
 	.long   0x8FC,0x900,CTX_LEVEL3_2
 	.long   0x1102,0x1102,CTX_LEVEL3_BASE
-	.long   0x1500,0x1500,CTX_LEVEL4
- 
-*	.long   0xFF07FF91,CTX_OUTRO
+	.long   0x1500,0x1500,CTX_LEVEL4 
+	.long   0x1A00,0x1B00,CTX_OUTRO
    
 	.long	-1,-1,-1				| maxed out/end
 
@@ -66,16 +65,6 @@ context_table:
 	.long	outro_tiles_path
 	.long	0
 	.long	0    | padding
-	* 1->2 transition
-	.long	game_fg_tiles_path
-	.long	level_12_transition_tiles_path
-	.long	level1_sprites_path
-	.long	0    | padding
-	* 2->3 transition
-	.long	game_fg_tiles_path
-	.long	level_23_transition_tiles_path
-	.long	level2_sprites_path
-	.long	0    | padding
 	* high score screen (manual)
 	.long	highscores_fg_tiles_path
 	.long	0
@@ -106,10 +95,7 @@ level3_base_tiles_path:
 	.asciz	"level_3_base_bg_tiles"
 level4_tiles_path:
 	.asciz	"level_4_bg_tiles"
-level_12_transition_tiles_path:
-	.asciz	"level_12_transition_bg_tiles"
-level_23_transition_tiles_path:
-	.asciz	"level_23_transition_bg_tiles"
+
 	
 outro_tiles_path:
 	.asciz	"outro_bg_tiles"

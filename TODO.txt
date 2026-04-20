@@ -1,24 +1,21 @@
-- lose a life sometimes lose more => game over check life sub carry??
-- nasty crash after demo/highscores (context issue?)
-- get rid of transition level 2 => 3
+- invincibility affects all characters, compare pointers with p1/p2
+- nasty crash after demo/highscores/end of game (context issue?)
 - start of level 3 bottom of girl door still remains (and wrong clut). Capture tiles is that wrong code?
-- game over when passing from level 3 to level 4!! seems to lose all health points hence lose a life!
 
 - try: load a new bg tileset: first set palette to all black display tiles & load new palette
 
 - if a sound is only in one level and that level has 2 channel music, allocate it of course on channel 2
 
-
 - group laterally like in VBall: use script in a .bat drag & drop note in json + delete dumped files
   
-- level 2: elevator door flashes at times / no sound in the middle section
-- transition from 1 to 2: guy on the platform & crate should be logged. That would mean using more colors
-  so maybe use a transition sprite file, not the one from level 1
-- game not in play: ignore all sounds > 0x7F OK ignore "beep" too!
+- level 2: elevator door flashes at times
+- transition from 1 to 2: crate has wrong colors
+
 - continue insert coin credit check stuff in highscore table and in intro cinematics
 
 - sprites disappearing too soon this time on the left! mockup!
-- outro: some tiles aren't erased
+- outro: some tiles aren't erased in the scrolling credits
+
 - ECS: limit to 1 clut, enable EHB extra plane of zeroes or ones if clut odd or even: saves memory and gives
   diversity. Then EHB can also be used for tiles
 

@@ -600,7 +600,7 @@ demo_8215:
 8334: 27 04          BEQ    $833A
 8336: 81 03          CMPA   #$03
 8338: 26 03          BNE    $833D
-; first level play intro
+; first level play intro, level 4 make player walk out the door
 833A: BD 84 F8       JSR    play_intro_animation_84f8
 ; players are now in control
 ; initialize stuff
@@ -755,6 +755,7 @@ two_players_849f:
 84A9: 30 88 5E       LEAX   $5E,X
 84AC: BD 84 B0       JSR    $84B0
 84AF: 39             RTS
+
 84B0: A6 84          LDA    ,X
 84B2: 2B 08          BMI    $84BC
 84B4: A6 88 4C       LDA    $4C,X
@@ -768,6 +769,7 @@ two_players_849f:
 84C8: 20 2D          BRA    $84F7
 84CA: BD 8A C6       JSR    $8AC6
 84CD: 20 28          BRA    $84F7
+
 84CF: A6 88 48       LDA    $48,X
 84D2: 10 27 02 43    LBEQ   $8719
 84D6: B6 38 04       LDA    dsw_1_3804
@@ -776,7 +778,7 @@ two_players_849f:
 84DC: 81 C0          CMPA   #$C0
 84DE: 27 09          BEQ    $84E9
 84E0: A6 88 48       LDA    $48,X
-84E3: 8B 99          ADDA   #$99
+84E3: 8B 99          ADDA   #$99	; decrease one life
 84E5: 19             DAA
 84E6: A7 88 48       STA    $48,X
 84E9: BD FC AA       JSR    $FCAA
@@ -1153,7 +1155,7 @@ play_intro_animation_84f8:
 8857: 26 08          BNE    $8861
 8859: B6 03 EA       LDA    player_1_nb_lives_03ea
 885C: BA 04 48       ORA    player_2_nb_lives_0448
-885F: 27 51          BEQ    $88B2
+885F: 27 51          BEQ    $88B2		; all player lives are 0
 8861: 8E 03 A2       LDX    #player_1_struct_03a2
 8864: 0F 2A          CLR    current_player_002a
 8866: B6 03 EA       LDA    player_1_nb_lives_03ea
@@ -3262,7 +3264,7 @@ read_player_commands_8b8b:
 9F2D: 6F 88 30       CLR    $30,X
 9F30: A6 88 1F       LDA    $1F,X
 9F33: 27 03          BEQ    $9F38
-9F35: 6A 88 1F       DEC    $1F,X
+9F35: 6A 88 1F       DEC    $1F,X		; decrease player energy
 9F38: A6 01          LDA    $1,X
 9F3A: 81 02          CMPA   #$02
 9F3C: 24 27          BCC    $9F65
@@ -5190,6 +5192,7 @@ B36E: 25 60          BCS    $B3D0
 ; auto-guided character, go down
 B370: 86 80          LDA    #$80
 B372: 20 0A          BRA    $B37E
+; auto-guided character, go down+right (level 4 arrival)
 B374: 86 90          LDA    #$90
 B376: D6 2A          LDB    current_player_002a
 B378: C1 01          CMPB   #$01

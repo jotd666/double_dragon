@@ -3473,7 +3473,7 @@ lb0_675d:   ; [global]
 67BA: A0 88 20       SUBA   $20,X
 67BD: 24 01          BCC    $67C0
 67BF: 4F             CLRA
-67C0: A7 88 1F       STA    $1F,X
+67C0: A7 88 1F       STA    $1F,X	; decrease player energy
 67C3: 39             RTS
 
 67C4: A6 88 24       LDA    $24,X

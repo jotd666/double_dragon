@@ -373,7 +373,7 @@ subcpu_processing_411e:
 42DF: A6 A0       LDA    ,Y+		; [bank_address]
 42E1: AA 03       ORA    $3,X
 42E3: A7 02       STA    $2,X
-42E5: A6 A4       LDA    ,Y
+42E5: A6 A4       LDA    ,Y		; [bank_address]
 42E7: A7 88 19    STA    $19,X
 42EA: 6A 88 19    DEC    $19,X
 42ED: 26 1E       BNE    $430D
@@ -382,11 +382,11 @@ subcpu_processing_411e:
 42F5: 81 02       CMPA   #$02
 42F7: 24 0F       BCC    $4308
 42F9: 48          ASLA
-42FA: E6 A6       LDB    A,Y
+42FA: E6 A6       LDB    A,Y			; [bank_address]
 42FC: EA 03       ORB    $3,X
 42FE: E7 02       STB    $2,X
 4300: 4C          INCA
-4301: E6 A6       LDB    A,Y
+4301: E6 A6       LDB    A,Y		; [bank_address]
 4303: E7 88 19    STB    $19,X
 4306: 20 05       BRA    $430D
 4308: 86 00       LDA    #$00

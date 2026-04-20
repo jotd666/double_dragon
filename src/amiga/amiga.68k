@@ -1031,24 +1031,12 @@ context_switch_found:
 	.ifndef	RELEASE
 	move.l	D2,0x204	| store current context
 	.endif
-	cmp.w	#CTX_LEVEL3_1,d2
-	jne 	0f
-	BREAKPOINT	"level3!!!"
-0:
-	* kludge to switch to transition contexts only if intermission tune is playing
-	cmp.b	#INTERMISSION_TUNE_SND,currently_playing_module
-	jne		0f
-	cmp.w	#CTX_LEVEL12_TRANSITION,d2
-	jeq		1f
-	cmp.w	#CTX_LEVEL23_TRANSITION,d2
-	jeq		1f
-0:
 
 	movem.l	d0-a6,-(a7)
 	move.l	d2,d0
 	jbsr	load_context
 	movem.l	(a7)+,d0-a6
-1:
+
 	moveq	#0,d1
 	moveq	#0,d2
 	rts
@@ -1100,7 +1088,6 @@ load_context:
 	* same context: don't load
 	rts
 0:
-	move.b	#0,0x110
 	movem.l	d0-a6,-(a7)
 	move.l	d0,d1
 	jbsr	osd_disable_interrupts
@@ -5187,6 +5174,8 @@ osd_sound_start:
 	* game not in play: filter out sounds except for credit
 	cmp.b	#CREDIT_02_SND,d0
 	jeq		1f
+	cmp.b	#GO_12_SND,d0
+	jeq		10f
 	cmp.b	#0x80,d0
 	jcc		10f		| skip fight sounds, we want to leave 4 channel intro music intact
 1:
@@ -5813,6 +5802,7 @@ mirror_y_tile_table:
 	.byte	1       | level 3 town/forest part 2
 	.byte	1       | level 3 base
 	.byte	1       | level 4 base
+	.byte	1       | outro
 	.byte	1       | rolling credits
 
 	.align	2

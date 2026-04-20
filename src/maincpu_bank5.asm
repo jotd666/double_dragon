@@ -2298,10 +2298,10 @@ jump_table_5f4f:
 660B: 39             RTS
 
 660C: 34 10          PSHS   X
-660E: B6 03 EA       LDA    $03EA
+660E: B6 03 EA       LDA    player_1_nb_lives_03ea
 6611: 81 09          CMPA   #$09
 6613: 25 02          BCS    $6617
-6615: 86 09          LDA    #$09
+6615: 86 09          LDA    #$09		; max out player lives
 6617: 8E 66 54       LDX    #$6654
 661A: 48             ASLA
 661B: 30 86          LEAX   A,X
