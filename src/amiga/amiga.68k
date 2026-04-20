@@ -5808,10 +5808,10 @@ mirror_y_tile_table:
 	.byte	0       |
 	.byte	0       | level 1 town
 	.byte	0       | level 1 town part 2
-	.byte	0       | level 2 factory 
+	.byte	1       | level 2 factory 
 	.byte	1       | level 3 town/forest
 	.byte	1       | level 3 town/forest part 2
-	.byte	1       | level 3 town/forest part 2
+	.byte	1       | level 3 base
 	.byte	1       | level 4 base
 	.byte	1       | rolling credits
 
