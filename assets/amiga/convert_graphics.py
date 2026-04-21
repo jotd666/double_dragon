@@ -6,7 +6,7 @@ from shared import *
 sprite_context_list = ["intro","level_1","level_2","level_3","level_3_base","level_4"]
 bg_tile_context_list = ["level_1_1","level_1_2","level_2","level_3_1","level_3_2","level_3_base",
 "level_4","outro"]
-sprite_context_list = ["level_1"]
+sprite_context_list = ["level_3_base","level_4"]
 bg_tile_context_list = []
 
 sprite_names = get_sprite_names()
@@ -47,8 +47,10 @@ for k,v in grouped.items():
         group_sprite_pairs[k+0x1000]=v[0]+0x1000
     elif len(v)==2:
         group_sprite_triplets[k]=v
+        group_sprite_triplets[k+0x1000]=[vv+0x1000 for vv in v]
     elif len(v)==3:
         group_sprite_quadruplets[k]=v
+        group_sprite_quadruplets[k+0x1000]=[vv+0x1000 for vv in v]
 
 
 def ensure_empty(d):
@@ -295,26 +297,26 @@ dump=False,name_dict=None,cluts=None,tile_number=0,is_bob=False,size_table=None)
                     tileset_1[other_tile_index] = None  # discard
                     wtile = new_tile
 
-##                elif False and tile_number in group_sprite_triplets:
-##                    # change wtile, fetch code +1
-##                    central_tile_index = tile_number+1
-##                    central_tile = tileset_1[central_tile_index]
-##                    right_tile_index = central_tile_index+1
-##                    right_tile = tileset_1[right_tile_index]
-##                    if not central_tile:
-##                        raise Exception(f"triplet: central tile index 0x{central_tile_index:02x} not found")
-##                    if not right_tile:
-##                        raise Exception(f"triplet: right tile index 0x{right_tile_index:02x} not found")
-##                    new_tile = Image.new("RGB",(wtile.size[0]*3,wtile.size[1]))
-##
-##                    new_tile.paste(wtile)
-##
-##                    new_tile.paste(central_tile,(wtile.size[0],0))
-##                    new_tile.paste(right_tile,(wtile.size[0]*2,0))
-##                    tileset_1[tile_number] = new_tile
-##                    tileset_1[central_tile_index] = None  # discard
-##                    tileset_1[right_tile_index] = None  # discard
-##                    wtile = new_tile
+                other_tiles = group_sprite_triplets.get(tile_number)
+                if other_tiles is not None:
+                    central_tile_index = other_tiles[0]
+                    central_tile = tileset_1[central_tile_index]
+                    right_tile_index = other_tiles[1]
+                    right_tile = tileset_1[right_tile_index]
+                    if not central_tile:
+                        raise Exception(f"triplet: central tile index 0x{central_tile_index:02x} not found")
+                    if not right_tile:
+                        raise Exception(f"triplet: right tile index 0x{right_tile_index:02x} not found")
+                    new_tile = Image.new("RGB",(wtile.size[0]*3,wtile.size[1]))
+
+                    new_tile.paste(wtile)
+
+                    new_tile.paste(central_tile,(wtile.size[0],0))
+                    new_tile.paste(right_tile,(wtile.size[0]*2,0))
+                    tileset_1[tile_number] = new_tile
+                    tileset_1[central_tile_index] = None  # discard
+                    tileset_1[right_tile_index] = None  # discard
+                    wtile = new_tile
 ##
 ##                elif False and tile_number in group_sprite_quadruplets:
 ##                    # change wtile, fetch code +1
@@ -726,7 +728,7 @@ for context in context_list:
 
     for k,v in sprite_names.items():
         # all player 1 frames for player 2 in all contexts
-        if v.startswith("player"):
+        if v == "player":
             # can't just force 0,1 as green punk uses most of player frames
             existing = set(sprite_cluts.get(k) or [])
             # we have to make sure that player 1 frame exists else double size
