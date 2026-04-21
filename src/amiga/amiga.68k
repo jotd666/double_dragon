@@ -3835,6 +3835,72 @@ compute_x_offset:
 	
 	.endif
 	.endm
+
+	.macro	MIRROR_FLIPPED_TILE16_FETCH
+	lea		mirror_table,a5
+	.ifdef	MC68020
+	moveq	#0,d1
+	.endif
+4:
+	move.l	(a2)+,d0		| next plane
+	jeq		5f
+	move.l	d0,a0
+	.set	offset,8*BG_NB_BYTES_PER_ROW
+	.rept	16
+	.set	offset,offset-BG_NB_BYTES_PER_ROW
+	.ifdef	MC68020
+	move.w	(a0)+,d1
+	move.w	(a5,d1.l*2),d0	| mirror
+	.else
+	moveq	#0,d1	
+	move.w	(a0)+,d1
+	add.l	d1,d1
+	move.w	(a5,d1.l),d0	| mirror
+	.endif	
+	.endm
+	
+	.macro	STANDARD_TILE16_FETCH
+4:
+	move.l	(a2)+,d0		| next plane
+	jeq		5f
+	move.l	d0,a0
+	.set	offset,0
+	.rept	16
+	move.w	(a0)+,d0
+	.endm
+	
+	
+	.macro	MIRROR_TILE16_FETCH
+	lea		mirror_table,a5
+	.ifdef	MC68020
+	moveq	#0,d1
+	.endif
+4:
+	move.l	(a2)+,d0		| next plane
+	jeq		5f
+	move.l	d0,a0
+	.set	offset,0
+	.rept	16
+	.ifdef	MC68020
+	move.w	(a0)+,d1
+	move.w	(a5,d1.l*2),d0	| mirror
+	.else
+	moveq	#0,d1	
+	move.w	(a0)+,d1
+	add.l	d1,d1
+	move.w	(a5,d1.l),d0	| mirror
+	.endif	
+	.endm
+	
+	.macro	FLIPPED_TILE16_FETCH
+	move.l	(a2)+,d0		| next plane
+	jeq		5f
+	move.l	d0,a0
+	.set	offset,8*BG_NB_BYTES_PER_ROW
+	.rept	16
+	.set	offset,offset-BG_NB_BYTES_PER_ROW
+	move.w	(a0)+,d0	
+	.endm
 	
 * < D7: 0-0x800 address
 * < D0: tile code
@@ -3986,7 +4052,7 @@ update_bg_tile_gng:
 	move.l	d0,a2					| pointer on bitplanes
 
 
-	lea		mirror_jump_table,a0
+	lea		mirror_jump_table_double_buffering,a0
 	.ifdef	NO68020
 	add.w	d1,d1
 	add.w	d1,d1
@@ -4015,17 +4081,11 @@ update_bg_tile_gng:
 0:
 	jmp		(a0)
 
-standard_tile16:
+standard_tile16_double_buffering:
 
 	* just copy
 
-4:
-	move.l	(a2)+,d0		| next plane
-	jeq		5f
-	move.l	d0,a0
-	.set	offset,0
-	.rept	16
-	move.w	(a0)+,d0
+	STANDARD_TILE16_FETCH
 	COPY_TILE16_PLANE_ROW
 	.set	offset,offset+BG_NB_BYTES_PER_ROW
 	.endr
@@ -4040,15 +4100,10 @@ standard_tile16:
 	jra		41b
 
 
-flipped_tile16:	
+
+flipped_tile16_double_buffering:	
 4:
-	move.l	(a2)+,d0		| next plane
-	jeq		5f
-	move.l	d0,a0
-	.set	offset,8*BG_NB_BYTES_PER_ROW
-	.rept	16
-	.set	offset,offset-BG_NB_BYTES_PER_ROW
-	move.w	(a0)+,d0
+	FLIPPED_TILE16_FETCH
 	COPY_TILE16_PLANE_ROW
 	.endr
 41:
@@ -4062,27 +4117,9 @@ flipped_tile16:
 	jra		41b
 
 	
-mirror_tile16:
+mirror_tile16_double_buffering:
 	move.l	a5,-(a7)
-	lea		mirror_table,a5
-	.ifdef	MC68020
-	moveq	#0,d1
-	.endif
-4:
-	move.l	(a2)+,d0		| next plane
-	jeq		5f
-	move.l	d0,a0
-	.set	offset,0
-	.rept	16
-	.ifdef	MC68020
-	move.w	(a0)+,d1
-	move.w	(a5,d1.l*2),d0	| mirror
-	.else
-	moveq	#0,d1	
-	move.w	(a0)+,d1
-	add.l	d1,d1
-	move.w	(a5,d1.l),d0	| mirror
-	.endif
+	MIRROR_TILE16_FETCH
 	COPY_TILE16_PLANE_ROW
 
 	.set	offset,offset+BG_NB_BYTES_PER_ROW
@@ -4097,28 +4134,9 @@ mirror_tile16:
 	CLEAR_TILE16_PLANE
 	jra		41b
 	
-mirror_flipped_tile16:
+mirror_flipped_tile16_double_buffering:
 	move.l	a5,-(a7)
-	lea		mirror_table,a5
-	.ifdef	MC68020
-	moveq	#0,d1
-	.endif
-4:
-	move.l	(a2)+,d0		| next plane
-	jeq		5f
-	move.l	d0,a0
-	.set	offset,8*BG_NB_BYTES_PER_ROW
-	.rept	16
-	.set	offset,offset-BG_NB_BYTES_PER_ROW
-	.ifdef	MC68020
-	move.w	(a0)+,d1
-	move.w	(a5,d1.l*2),d0	| mirror
-	.else
-	moveq	#0,d1	
-	move.w	(a0)+,d1
-	add.l	d1,d1
-	move.w	(a5,d1.l),d0	| mirror
-	.endif
+	MIRROR_FLIPPED_TILE16_FETCH
 	COPY_TILE16_PLANE_ROW
 	.endr
 41:
@@ -4143,11 +4161,11 @@ mirror_flipped_tile16:
 2:
 	rts
 
-mirror_jump_table:
-	.long	standard_tile16
-	.long	mirror_tile16
-	.long	flipped_tile16
-	.long	mirror_flipped_tile16
+mirror_jump_table_double_buffering:
+	.long	standard_tile16_double_buffering
+	.long	mirror_tile16_double_buffering
+	.long	flipped_tile16_double_buffering
+	.long	mirror_flipped_tile16_double_buffering
 	
 	
 cache_fg_tiles_address:

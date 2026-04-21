@@ -1,7 +1,7 @@
 first alpha:
 
 - duplicate copperlist so color changes between levels are completely seamless: full screen redraw
-  should be done in level1 interrupt with a counter (refresh drawn part only)
+  should be done in level1 interrupt with a counter (refresh drawn part only), using different draw tile functions
 - nasty flashing on boss level 2 between elevator doors & lift
 - group laterally like in VBall: use script in a .bat drag & drop note in json + delete dumped files
 - sprites disappearing too soon this time on the left! mockup!
@@ -17,7 +17,7 @@ first alpha:
 
 - if a sound is only in one level and that level has 2 channel music, allocate it of course on channel 2
 
-- outro: some tiles aren't erased in the scrolling credits: debug with Y scroll value
+- outro: some tile colors are trashed in the scrolling credits, like if sprites weren't cleared or something?
 
 - ECS: limit to 1 clut, enable EHB extra plane of zeroes or ones if clut odd or even: saves memory and gives
   diversity. Then EHB can also be used for tiles
@@ -59,11 +59,16 @@ or maybe safer: PUSH_SR find POP_SR in the same block: if next instruction is no
 monitor bank switch: wpset 3808:maincpu,1,W,,{printf "bank %d",(wpdata & 0xe0) >> 5;g}
 force bank switch: fill 3808:maincpu,1,bankno<<5
 weak enemies: bpset 631C,b@pc==$E7,{B=1;g}
+log sounds: wpset 380E,1,W,wpdata!=$FF
+record: bpset 89EC,,{bpclear;A=$10;g}
+
+trace cpu with bank: first save bank number at each switch, then trace it
+
+wpset 3808:maincpu,1,W,,{temp0=(wpdata & 0xe0) >> 5;g}
+trace mame.tr,,noloop,{tracelog "bank=%d ",temp0}
 
 winuae: check value written is FF
 w 0 rA6+$A78 1 W VFF.B
 w 1 rA6+$A85 1 W VFF.B
 w 2 rA6+$A6D 1 W VFF.B
 
-log sounds: wpset 380E,1,W,wpdata!=$FF
-record: bpset 89EC,,{bpclear;A=$10;g}
