@@ -36,6 +36,20 @@ if dump_it:
             f.write("*")
 
 
+with (this_dir / "grouped.json").open() as f:
+    grouped = json.load(f)
+
+grouped = {int(k,16):[int(d,16) for d in v] for k,v in grouped.items()}
+
+for k,v in grouped.items():
+    if len(v)==1:
+        group_sprite_pairs[k]=v[0]
+        group_sprite_pairs[k+0x1000]=v[0]+0x1000
+    elif len(v)==2:
+        group_sprite_triplets[k]=v
+    elif len(v)==3:
+        group_sprite_quadruplets[k]=v
+
 
 def ensure_empty(d):
     if d.exists():
@@ -266,9 +280,9 @@ dump=False,name_dict=None,cluts=None,tile_number=0,is_bob=False,size_table=None)
         for tile_number,wtile in enumerate(tileset_1):
             # software grouped tiles, not enabled, and wrong too: it doesn't follow a logic, it needs to be specified by hand
             if wtile:
-                if tile_number in group_sprite_pairs:
-                    # change wtile, fetch code +1
-                    other_tile_index = tile_number+1
+                other_tile_index = group_sprite_pairs.get(tile_number)
+
+                if other_tile_index is not None:
                     other_tile = tileset_1[other_tile_index]
                     if not other_tile:
                         raise Exception(f"pair: 0x{tile_number:02x} ok but other tile index 0x{other_tile_index:02x} not found")
@@ -278,64 +292,66 @@ dump=False,name_dict=None,cluts=None,tile_number=0,is_bob=False,size_table=None)
 
                     new_tile.paste(other_tile,(wtile.size[0],0))
                     tileset_1[tile_number] = new_tile
-                    tileset_1[other_tile_index] = None  # discatd
+                    tileset_1[other_tile_index] = None  # discard
                     wtile = new_tile
 
-                elif tile_number in group_sprite_triplets:
-                    # change wtile, fetch code +1
-                    central_tile_index = tile_number+1
-                    central_tile = tileset_1[central_tile_index]
-                    right_tile_index = central_tile_index+1
-                    right_tile = tileset_1[right_tile_index]
-                    if not central_tile:
-                        raise Exception(f"triplet: central tile index 0x{central_tile_index:02x} not found")
-                    if not right_tile:
-                        raise Exception(f"triplet: right tile index 0x{right_tile_index:02x} not found")
-                    new_tile = Image.new("RGB",(wtile.size[0]*3,wtile.size[1]))
+##                elif False and tile_number in group_sprite_triplets:
+##                    # change wtile, fetch code +1
+##                    central_tile_index = tile_number+1
+##                    central_tile = tileset_1[central_tile_index]
+##                    right_tile_index = central_tile_index+1
+##                    right_tile = tileset_1[right_tile_index]
+##                    if not central_tile:
+##                        raise Exception(f"triplet: central tile index 0x{central_tile_index:02x} not found")
+##                    if not right_tile:
+##                        raise Exception(f"triplet: right tile index 0x{right_tile_index:02x} not found")
+##                    new_tile = Image.new("RGB",(wtile.size[0]*3,wtile.size[1]))
+##
+##                    new_tile.paste(wtile)
+##
+##                    new_tile.paste(central_tile,(wtile.size[0],0))
+##                    new_tile.paste(right_tile,(wtile.size[0]*2,0))
+##                    tileset_1[tile_number] = new_tile
+##                    tileset_1[central_tile_index] = None  # discard
+##                    tileset_1[right_tile_index] = None  # discard
+##                    wtile = new_tile
+##
+##                elif False and tile_number in group_sprite_quadruplets:
+##                    # change wtile, fetch code +1
+##                    central_tile_index = tile_number+1
+##                    central_tile_1 = tileset_1[central_tile_index]
+##                    central_tile_2 = tileset_1[central_tile_index+1]
+##                    right_tile_index = central_tile_index+2
+##                    right_tile = tileset_1[right_tile_index]
+##                    if not central_tile_1:
+##                        raise Exception(f"triplet: central tile index 0x{central_tile_index:02x} not found")
+##                    if not central_tile_2:
+##                        raise Exception(f"triplet: central tile index 0x{central_tile_index+1:02x} not found")
+##                    if not right_tile:
+##                        raise Exception(f"triplet: right tile index 0x{right_tile_index:02x} not found")
+##                    new_tile = Image.new("RGB",(wtile.size[0]*4,wtile.size[1]))
+##
+##                    new_tile.paste(wtile)
+##
+##                    new_tile.paste(central_tile_1,(wtile.size[0],0))
+##                    new_tile.paste(central_tile_2,(wtile.size[0]*2,0))
+##                    new_tile.paste(right_tile,(wtile.size[0]*3,0))
+##                    tileset_1[tile_number] = new_tile
+##                    tileset_1[central_tile_index] = None  # discard
+##                    tileset_1[central_tile_index+1] = None  # discard
+##                    tileset_1[right_tile_index] = None  # discard
+##                    wtile = new_tile
 
-                    new_tile.paste(wtile)
-
-                    new_tile.paste(central_tile,(wtile.size[0],0))
-                    new_tile.paste(right_tile,(wtile.size[0]*2,0))
-                    tileset_1[tile_number] = new_tile
-                    tileset_1[central_tile_index] = None  # discard
-                    tileset_1[right_tile_index] = None  # discard
-                    wtile = new_tile
-
-                elif tile_number in group_sprite_quadruplets:
-                    # change wtile, fetch code +1
-                    central_tile_index = tile_number+1
-                    central_tile_1 = tileset_1[central_tile_index]
-                    central_tile_2 = tileset_1[central_tile_index+1]
-                    right_tile_index = central_tile_index+2
-                    right_tile = tileset_1[right_tile_index]
-                    if not central_tile_1:
-                        raise Exception(f"triplet: central tile index 0x{central_tile_index:02x} not found")
-                    if not central_tile_2:
-                        raise Exception(f"triplet: central tile index 0x{central_tile_index+1:02x} not found")
-                    if not right_tile:
-                        raise Exception(f"triplet: right tile index 0x{right_tile_index:02x} not found")
-                    new_tile = Image.new("RGB",(wtile.size[0]*4,wtile.size[1]))
-
-                    new_tile.paste(wtile)
-
-                    new_tile.paste(central_tile_1,(wtile.size[0],0))
-                    new_tile.paste(central_tile_2,(wtile.size[0]*2,0))
-                    new_tile.paste(right_tile,(wtile.size[0]*3,0))
-                    tileset_1[tile_number] = new_tile
-                    tileset_1[central_tile_index] = None  # discard
-                    tileset_1[central_tile_index+1] = None  # discard
-                    tileset_1[right_tile_index] = None  # discard
-                    wtile = new_tile
-
+        for tile_number,wtile in enumerate(tileset_1):
             if dump_it and wtile:
+                bigprefix = "_xgrouped" if (wtile.size[0]>0x10) else ""
                 img = ImageOps.scale(wtile,5,resample=Image.Resampling.NEAREST)
                 if sprite_names:
                     name = sprite_names.get(tile_number,sprite_names.get(tile_number-0x1000,"unknown"))
                 else:
                     name = "unknown"
 
-                img.save(os.path.join(dump_subdir,f"{name}_{tile_number:02x}_{palette_index:02x}.png"))
+                img.save(os.path.join(dump_subdir,f"{name}_{tile_number:02x}_{palette_index:02x}{bigprefix}.png"))
 
 
 
@@ -789,33 +805,7 @@ if context_list:
 ##    bitplanelib.dump_asm_bytes(gs_array,f,mit_format=True,size=2)
 ##
 ##
-# merge both tables
-##with open(src_dir / "graphics_aga.68k","w") as f:
-##    f.write(generated_message)
-##    f.write("\t.global\tfg_character_table\n")
-##    f.write("\t.global\tshared_bob_table\n")
-##
-##    f.write("fg_character_table:\n")
-##
-##    dump_tile_layer(fg_tile_table,"fg")
-##
-##
-##    for k,v in tile_plane_cache.items():
-##        f.write(f"tile_plane_{v:02d}:")
-##        dump_asm_bytes(k,f)
-##
-##
-##    f.write("shared_bob_table:\n")
-##    dump_bob_layer(sprite_table,f)
 
-
-##for i in range(1,8):
-##    context = f"level{i}"
-##    bank = bg_bank_dir / f"{context}_sprites.68k"
-##    with open(bank,"w") as f:
-##        dump_bob_layer(sprite_table,f,relative_root="bob_table",context=i)
-##
-##    asm2bin(bank)
 
 
 

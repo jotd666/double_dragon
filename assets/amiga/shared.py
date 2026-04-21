@@ -244,16 +244,12 @@ def ensure_exists(d):
     else:
         os.makedirs(d)
 
-sr = lambda a,b : set(range(a,b))
-sr2 = lambda a,b : set(range(a,b,2))
-sr3 = lambda a,b : set(range(a,b,3))
-sr4 = lambda a,b : set(range(a,b,4))
 
 
 
-group_sprite_triplets = set()
-group_sprite_pairs = set()
-group_sprite_quadruplets = set()
+group_sprite_triplets = {}
+group_sprite_pairs = {}
+group_sprite_quadruplets = {}
 
 # tiles that represent lives and weapon: not alphanumeric
 
