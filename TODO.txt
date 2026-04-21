@@ -9,7 +9,7 @@ first alpha:
 - detect not game in play for insert coin
 - cache subcontext (loaded fg/bg/sprite files)
 - try: load a new bg tileset: first set palette to all black display tiles & load new palette
-- music for level 2, level 3, level 4 first part, and end
+- music for level 3, level 4 first part, and end
 
 - set DSW difficulty lives, etc.
 - highscore load/save
