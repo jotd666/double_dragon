@@ -1,15 +1,15 @@
 first alpha:
 
+- duplicate copperlist so color changes between levels are completely seamless: full screen redraw
+  should be done in level1 interrupt with a counter (refresh drawn part only)
 - nasty flashing on boss level 2 between elevator doors & lift
 - group laterally like in VBall: use script in a .bat drag & drop note in json + delete dumped files
 - sprites disappearing too soon this time on the left! mockup!
 - invincibility affects all characters, compare pointers with p1/p2
 - nasty crash after demo/highscores/end of game (context issue?)
-- start of level 3 bottom of girl door still remains (and wrong clut). Capture tiles is that wrong code?
 - continue insert coin credit check stuff in highscore table and in intro cinematics
 - detect not game in play for insert coin
 - cache subcontext (loaded fg/bg/sprite files)
-- try: load a new bg tileset: first set palette to all black display tiles & load new palette
 - music for level 3, level 4 first part, and end
 
 - set DSW difficulty lives, etc.
@@ -17,10 +17,7 @@ first alpha:
 
 - if a sound is only in one level and that level has 2 channel music, allocate it of course on channel 2
 
-  
-- level 2: elevator door flashes at times
-- transition from 1 to 2: crate has wrong colors
-- outro: some tiles aren't erased in the scrolling credits
+- outro: some tiles aren't erased in the scrolling credits: debug with Y scroll value
 
 - ECS: limit to 1 clut, enable EHB extra plane of zeroes or ones if clut odd or even: saves memory and gives
   diversity. Then EHB can also be used for tiles

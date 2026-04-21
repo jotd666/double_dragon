@@ -4,10 +4,10 @@ import os
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
 
-tilesdir = os.path.join(this_dir,os.pardir,"sheets","bg_tiles","level_4")
+tilesdir = os.path.join(this_dir,os.pardir,"sheets","bg_tiles","level_3_1")
 
 #with open(r"screen","rb") as f:
-with open(r"K:\Emulation\MAME\end_arena","rb") as f:
+with open(r"C:\Users\Public\Documents\Amiga Files\WinUAE\level3","rb") as f:
     contents = f.read()
 
 

@@ -3927,9 +3927,11 @@ update_bg_tile_gng:
 	lea		background_restore_buffer,a3
 	add.w	d0,a3
 
-	
-	tst.b	d2
-	jeq		11f				| optim: 0 is blank tile, sometimes used to clear tiles (doors)
+	* we could optimize by writing a blank tile when 0 is encountered, however, this isn't really
+	* worth it as it's not used a lot except when clearing tiles behind doors when they're opening
+	* the double tile write (if low Y, for wrap effect) is handled by the code below, though
+	*tst.b	d2
+	*jeq		11f				| optim: 0 is blank tile, sometimes used to clear tiles (doors)
 	move.l		bg_tile_table,d0
 	jeq		100f			| no context loaded: out
 	move.l	d0,a0
@@ -4130,6 +4132,8 @@ mirror_flipped_tile16:
 	jra		41b
 
 	* clear tile
+	* note: this is not an operational clear, just debug clear
+	* as it doesn't take symmetry into account
 
 11:
 111:
