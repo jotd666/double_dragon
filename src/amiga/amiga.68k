@@ -5167,6 +5167,14 @@ osd_sound_start:
 	jbsr	osd_music_stop
 	jra		10f
 0:
+	cmp.b	#0xFE,d0
+	jne		0f
+	* command to stop looped sound if any
+	tst.b	looped_sound_enabled
+	jeq		10f
+	jbsr	force_sound_stop
+	jra		10f
+0:
 
 	GET_MEMORY_START_IN_A6
 	tst.b	(game_in_play_0026,a6)
@@ -5207,10 +5215,10 @@ osd_sound_start:
 	moveq	#0,d0
 	move.b	(10,a0),d0		| channel
 
-	lea		looped_sound_enabled,a1
+	
 	
 	* sound stop
-	clr.b	(a1,d0.w)
+	clr.b	looped_sound_enabled  | ignore channel here only applies to a few sfx on channel 2
 	movem.l	d0/a0,-(a7)
 	jbsr	_mt_stopfx
 	movem.l	(a7)+,d0/a0
@@ -5218,7 +5226,7 @@ osd_sound_start:
 	jne		10f		| sound stop requested: done
 2:
 	* now that prev loop is stopped, play the next one
-	st.b	(a1,d0.w)
+	st.b	looped_sound_enabled
 	jbsr		_mt_loopfx
 	jra	10f
 3:
