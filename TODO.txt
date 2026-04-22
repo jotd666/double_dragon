@@ -1,14 +1,17 @@
 first alpha:
 
+- insert coin during attract: crash (load context??)
+
 - sprites disappearing too soon this time on the left! mockup!
 - cache subcontext (loaded fg/bg/sprite files)
 - detect not game in play for insert coin
 - duplicate copperlist so color changes between levels are completely seamless: full screen redraw
   should be done in level1 interrupt with a counter (refresh drawn part only), using different draw tile functions
-- nasty flashing on boss level 2 between elevator doors & lift
+- nasty flashing on boss level 2 between elevator doors & lift: check lift redrawing tiles???
 - invincibility affects all characters, compare pointers with p1/p2
 - continue insert coin credit check stuff in highscore table and in intro cinematics
 
+- profile real game/optimize (once code is frozen). first handle push/pop sr in converter
 - music for level 3, level 4 first part, and end
 - set DSW difficulty lives, etc.
 - highscore load/save

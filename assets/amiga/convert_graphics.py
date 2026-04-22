@@ -739,7 +739,12 @@ for context in context_list:
             if 0 in existing:
                 existing.add(1)
                 sprite_cluts[k] = existing
-
+    if context.startswith("level_"):
+        # add 1P/2P marker
+        sprite_cluts[0x800] = [0]
+        sprite_cluts[0x801] = [0]
+        sprite_cluts[0x802] = [1]
+        sprite_cluts[0x803] = [1]
 
 
     for i,tsd in sprite_sheet_dict.items():

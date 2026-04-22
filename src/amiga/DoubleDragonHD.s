@@ -7,10 +7,15 @@
 
 
 CHIPSIZE = $200000
+	IFD	DEV_MODE
 EXPMEM = $800000
-
-BASE_CHIP = $400
+SAVEGAME_SIZE = $0
+	ELSE
+EXPMEM = $200000
 SAVEGAME_SIZE = $2800
+	ENDC
+	
+BASE_CHIP = $400
 SAVEGAME_FILE_SIZE = $3808
 START_CHIP = BASE_CHIP+SAVEGAME_SIZE
 
@@ -47,8 +52,7 @@ _config
 
 
 	dc.b	"C3:L:difficulty level:easy,normal,difficult,very difficult;"
-	;dc.b	"C4:L:lives:3,4,5,7;"
-	;dc.b	"C5:L:start level:graveyard,town,cave,bridge,tower 1,tower 2,boss;"
+
 	dc.b	0
 
 	IFD BARFLY
@@ -70,6 +74,9 @@ _data   dc.b    "data",0
 _name	dc.b	"Double Dragon (arcade)"
 	IFD	CD32_SLAVE
 	dc.b	" (CD32)"
+	ENDC
+	IFD	DEV_MODE
+	dc.b	" (DEV MODE)"
 	ENDC
 	dc.b	0
 _copy	dc.b	'2026 JOTD',0
@@ -101,10 +108,12 @@ start:
 	move.l  progstart(pc),a0
     bsr   _Relocate
 	lea		_resload(pc),a0		; note: address of pointer on resload+_savegame_func+_loadgame_func
+	IFD	DEV_MODE
 	lea	loadgame(pc),a1
 	move.l	a1,(4,a0)
 	lea	savegame(pc),a1
 	move.l	a1,(8,a0)
+	ENDC
 	
     move.l  #'WHDL',d0
     move.b  _keyexit(pc),d1
@@ -137,6 +146,7 @@ _Relocate	movem.l	d0-d1/a0-a2,-(sp)
         movem.l	(sp)+,d0-d1/a0-a2
 		rts
 
+	IFD	DEV_MODE
 ; < A0: game RAM
 loadgame
     movem.l a0/a2,-(a7)
@@ -159,6 +169,7 @@ savegame
 .skip
     movem.l (a7)+,a2
 	rts
+	ENDC
 	
 _exit:
 	pea	TDREASON_OK
@@ -176,6 +187,8 @@ progstart
 exe
 
 	dc.b	"DoubleDragon_aga",0
+	IFD	DEV_MODE
+
 	even
 	include	savegame.s
-
+	ENDC
