@@ -110,7 +110,7 @@ $(PROGNAME)_000.o: $(PROGNAME).68k options.inc double_dragon.inc sounds.inc data
 	$(ASM_000) $(PROGNAME).68k -o $(PROGNAME)_000.o
 hw_tester.o: $(AMIGASRC)/hw_tester.68k options.inc double_dragon.inc data.inc $(AMIGASRC)/ReadJoyPad.i $(AMIGASRC)/palette.68k  $(AMIGASRC)/sound_entries.68k  $(AMIGASRC)/scroll_table_64.68k
 	$(ASM_020) -I$(AMIGASRC) -I$(AMIGASRC)/mit_includes $(AMIGASRC)/hw_tester.68k -o hw_tester.o
-amiga_aga.o: $(AMIGASRC)/amiga.68k $(AMIGASRC)/context.68k options.inc double_dragon.inc data.inc $(AMIGASRC)/ReadJoyPad.i $(AMIGASRC)/sound_entries.68k  $(AMIGASRC)/scroll_table_64.68k
+amiga_aga.o: $(AMIGASRC)/amiga.68k $(AMIGASRC)/sprite_groups.68k $(AMIGASRC)/context.68k options.inc double_dragon.inc data.inc $(AMIGASRC)/ReadJoyPad.i $(AMIGASRC)/sound_entries.68k  $(AMIGASRC)/scroll_table_64.68k
 	$(ASM_020) --defsym OPT_CD32_VERSION=0 -I$(AMIGASRC) -I$(AMIGASRC)/mit_includes $(AMIGASRC)/amiga.68k -o amiga_aga.o
 amiga_cd32.o: $(AMIGASRC)/amiga.68k $(AMIGASRC)/context.68k options.inc double_dragon.inc data.inc $(AMIGASRC)/ReadJoyPad.i $(AMIGASRC)/sound_entries.68k  $(AMIGASRC)/scroll_table_64.68k
 	$(ASM_020) --defsym OPT_CD32_VERSION=1 -I$(AMIGASRC) -I$(AMIGASRC)/mit_includes $(AMIGASRC)/amiga.68k -o amiga_aga.o

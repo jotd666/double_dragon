@@ -6,7 +6,7 @@ from shared import *
 sprite_context_list = ["intro","level_1","level_2","level_3","level_3_base","level_4"]
 bg_tile_context_list = ["level_1_1","level_1_2","level_2","level_3_1","level_3_2","level_3_base",
 "level_4","outro"]
-sprite_context_list = ["level_3_base","level_4"]
+sprite_context_list = ["level_1"]
 bg_tile_context_list = []
 
 sprite_names = get_sprite_names()
@@ -697,6 +697,7 @@ for context in context_list:
 
 context_list = sprite_context_list
 
+sprite_cluts = {}
 
 for context in context_list:
     bob_plane_cache = {}
@@ -775,38 +776,39 @@ if context_list:
 #sprite_table,_ = read_tileset(sprite_set_list,empty_32_cols+sprite_palette,[True,False,False,False],cache=bob_plane_cache, is_bob=True, mask_color=magenta, nb_cluts=SPRITE_NB_CLUTS)
 
 
-##
-##BLOCK_DISPLAY_MASK = 1<<14
-##DO_DISPLAY_MASK = 1
-##
-##def gen_codes(i):
-##    im = (i<<1)
-##    return im | DO_DISPLAY_MASK,(0x800 + im) | DO_DISPLAY_MASK
-##
-##gs_array = [0]*SPRITE_NB_TILES
-##for i in group_sprite_pairs:
-##    gs_array[i],gs_array[i+1] = gen_codes(i)
-##
-##for i in group_sprite_triplets:
-##    gs_array[i],gs_array[i+2] = gen_codes(i)
-##    gs_array[i+1] = BLOCK_DISPLAY_MASK    # never display alone!
-##for i in group_sprite_quadruplets:
-##    gs_array[i],gs_array[i+3] = gen_codes(i)
-##    gs_array[i+1] = BLOCK_DISPLAY_MASK    # never display alone!
-##    gs_array[i+2] = BLOCK_DISPLAY_MASK    # never display alone!
+DRAW_ALWAYS = 0
+DRAW_IF_NORMAL = 1
+DRAW_IF_MIRRORED = 2
+DRAW_NEVER = 3
 
-##used_sprite_codes = set(sprite_cluts) | {i for i,g in enumerate(gs_array) if g}
-##unused_sprite_codes = set(range(0,SPRITE_NB_TILES))-used_sprite_codes
-### it's normal that some sprite codes aren't used at all
-##print("Unused sprite codes: {}".format(",".join(sorted(f"0x{x:03x}" for x in unused_sprite_codes))))
-##
-##with open(src_dir / "sprite_groups.68k","w") as f:
-##    f.write(generated_message)
-##    f.write("* see amiga.68k display_one_bob routine to know how this works\n")
-##
-##    bitplanelib.dump_asm_bytes(gs_array,f,mit_format=True,size=2)
-##
-##
+
+# for X groups (2x or 3x) encode flag and size in a word
+gs_array = [DRAW_ALWAYS]*(SPRITE_NB_TILES*2)
+for i,other in group_sprite_pairs.items():
+    gs_array[i] = DRAW_IF_NORMAL+0x2000
+    gs_array[other] = DRAW_IF_MIRRORED+0x2000
+
+for i,others in group_sprite_triplets.items():
+    gs_array[i] = DRAW_IF_NORMAL+0x3000
+    gs_array[others[1]] = DRAW_IF_MIRRORED+0x3000
+    gs_array[others[0]] = DRAW_NEVER   # middle tile never drawn
+
+# shift it to be first byte of short
+gs_array = [i for i in gs_array]
+if len(sprite_context_list)==6:
+    # all contexts are enabled: print unused
+    used_sprite_codes = set(sprite_cluts) | {i for i,g in enumerate(gs_array) if g}
+    unused_sprite_codes = set(range(0,SPRITE_NB_TILES))-used_sprite_codes
+    # it's normal that some sprite codes aren't used at all
+    print("Unused sprite codes: {}".format(",".join(sorted(f"0x{x:03x}" for x in unused_sprite_codes))))
+
+with open(src_dir / "sprite_groups.68k","w") as f:
+    f.write(generated_message)
+    f.write("* see amiga.68k display_one_bob routine to know how this works\n")
+
+    bitplanelib.dump_asm_bytes(gs_array,f,mit_format=True,size=2)
+
+
 
 
 

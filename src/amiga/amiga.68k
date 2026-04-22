@@ -816,8 +816,9 @@ demo_game:
 	move.l	(a7)+,(a0)+
 	.endif
 	
-
-
+	* by default, double buffering mode for tile update (2 layers at once)
+	move.l	#mirror_jump_table_double_buffering,mirror_jump_table
+	
 	* enable interrupts. Game doesn't use them
 	* but relies on vbl sync flags
 	
@@ -2267,13 +2268,6 @@ really_update_sprites:
 	rts
 	
 
-
-
-	
-
-	
-	
-	
 update_one_bob:
 
 	move.l	A0,-(a7)
@@ -2371,30 +2365,32 @@ update_one_bob:
 *	move.b	d4,(TARGET_SPRITE_ATTRIBUTES,a0)
 *	.endif
 	
-*	lea		sprite_group_table(pc),a3
+	lea		sprite_group_table(pc),a3
 
-	add.w	d2,d2				| code times 2
 	
-*	move.w	(a3,d2.w),d4
-*	jeq		10f			| nothing to do, normal tile
-*	* double/triple/quadruple, whatever
-*	btst	#14,d4
-*	jne		2f		| bit 14 set: center tile, never draw
-*	bclr	#0,d4	| remove bit 0 now
-*	asr.w	#1,d4	| divide by 2, signed
-*	btst	#MIRROR_BIT,d3
-*	jeq		101f
-*	* mirror: "negate" the code by flipping bit 10
-*	bchg	#10,d4
-*101:
-*	btst	#10,d4
-*	jne		2f		| no need to draw this part, the other part will do it
-*	move.w	d4,d2	| get the real sprite code to draw
-*	add.w	d2,d2	| code times 2
+	add.w	d2,d2
+	move.w	(a3,d2.w),d4
+	jeq		10f			| nothing to do, normal tile, draw
+	cmp.b	#3,d4
+	jeq		2f			| central tile, don't draw
+	
+	btst	#MIRROR_BIT,d3
+	jeq		101f
+	cmp.b	#2,d4
+	jeq		2f			| draw only if mirrored
+	lsr.w	#8,d4	| get size
+	sub.w	d4,d0	| make up by subtracting sprite offset size (0x20 for double, 0x30 for triple)
+	jra		10f
+101:
+	cmp.b	#1,d4
+	jne		2f		| no need to draw this part, the other part will do it
 10:
-	add.w	d2,d2				| code times 4 now
-
-	move.l	(a4,d2.w),d4		| get pointer from shared bob table
+	.ifdef	MC68020
+	move.l	(a4,d2.w*2),d4		| get pointer from shared bob table
+	.else
+	add.w	d2,d2				| code times 4
+	move.l	(a4,d2.w),d4
+	.endif
 	jne		200f
 	.ifndef	RELEASE
 	* in dev mode, break if we try to display a non-existing bob
@@ -2417,10 +2413,12 @@ update_one_bob:
 	move.l	(a0,d3.w),d4
 	.endif
 	jeq		2f		| invalid clut: can happen in transition phases
-	cmp.l	#0xCCCCCCCC,d4
+	.ifndef	RELEASE
+	cmp.l	#0xCCCCCCCC,d4	| opportunitic way to detect whdload unitialized shit
 	jne		0f
 	BREAKPOINT	"uninit!!"
 0:
+	.endif
 	move.l	d4,a0
 
 	move.w	(a0)+,d4		| height
@@ -4052,7 +4050,7 @@ update_bg_tile_gng:
 	move.l	d0,a2					| pointer on bitplanes
 
 
-	lea		mirror_jump_table_double_buffering,a0
+	move.l		mirror_jump_table,a0
 	.ifdef	NO68020
 	add.w	d1,d1
 	add.w	d1,d1
@@ -4080,6 +4078,10 @@ update_bg_tile_gng:
 	move.w	#NB_BG_PLANES-1,d4
 0:
 	jmp		(a0)
+
+********************
+* double buffering *
+********************
 
 standard_tile16_double_buffering:
 
@@ -4160,12 +4162,102 @@ mirror_flipped_tile16_double_buffering:
 	dbf		d4,111b
 2:
 	rts
+	
+********************
+* simple buffering *
+********************
+	
+standard_tile16_simple_buffering:
+
+	* just copy
+
+	STANDARD_TILE16_FETCH
+	COPY_TILE16_PLANE_ROW
+	.set	offset,offset+BG_NB_BYTES_PER_ROW
+	.endr
+41:
+	TILE16_NEXT_PLANE
+	dbf		d4,4b
+	
+100:
+	rts
+5:
+	CLEAR_TILE16_PLANE
+	jra		41b
+
+
+
+flipped_tile16_simple_buffering:	
+4:
+	FLIPPED_TILE16_FETCH
+	COPY_TILE16_PLANE_ROW
+	.endr
+41:
+	TILE16_NEXT_PLANE
+	dbf		d4,4b
+	
+0:
+	rts
+5:
+	CLEAR_TILE16_PLANE
+	jra		41b
+
+	
+mirror_tile16_simple_buffering:
+	move.l	a5,-(a7)
+	MIRROR_TILE16_FETCH
+	COPY_TILE16_PLANE_ROW
+
+	.set	offset,offset+BG_NB_BYTES_PER_ROW
+	.endr
+41:
+	TILE16_NEXT_PLANE
+	dbf		d4,4b
+	move.l	(a7)+,a5
+	rts
+
+5:
+	CLEAR_TILE16_PLANE
+	jra		41b
+	
+mirror_flipped_tile16_simple_buffering:
+	move.l	a5,-(a7)
+	MIRROR_FLIPPED_TILE16_FETCH
+	COPY_TILE16_PLANE_ROW
+	.endr
+41:
+	TILE16_NEXT_PLANE
+	dbf		d4,4b
+	move.l	(a7)+,a5
+	rts
+
+5:
+	CLEAR_TILE16_PLANE
+	jra		41b
+
+	* clear tile
+	* note: this is not an operational clear, just debug clear
+	* as it doesn't take symmetry into account
+
+11:
+111:
+	CLEAR_TILE16_PLANE
+	TILE16_NEXT_PLANE
+	dbf		d4,111b
+2:
+	rts
 
 mirror_jump_table_double_buffering:
 	.long	standard_tile16_double_buffering
 	.long	mirror_tile16_double_buffering
 	.long	flipped_tile16_double_buffering
 	.long	mirror_flipped_tile16_double_buffering
+	
+mirror_jump_table_simple_buffering:
+	.long	standard_tile16_simple_buffering
+	.long	mirror_tile16_simple_buffering
+	.long	flipped_tile16_simple_buffering
+	.long	mirror_flipped_tile16_simple_buffering
 	
 	
 cache_fg_tiles_address:
@@ -5642,8 +5734,10 @@ saved_3800:
 looped_sound_enabled:
 	.long	0
 
-return_address:
+mirror_jump_table:
 	.long	0
+	
+
 	
 current_music_name:
 	.long	0
