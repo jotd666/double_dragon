@@ -1,5 +1,6 @@
 from PIL import Image,ImageOps
 import os,sys,bitplanelib,math
+from datetime import datetime
 
 from shared import *
 
@@ -810,7 +811,6 @@ with open(src_dir / "sprite_groups.68k","w") as f:
     bitplanelib.dump_asm_bytes(gs_array,f,mit_format=True,size=2)
 
 
-
-
+print("Ended at {}".format(datetime.today().strftime('%Y-%m-%d %H:%M:%S')))
 
 
