@@ -44,8 +44,7 @@ def convert():
 
     EMPTY_SND = "EMPTY_SND"
 
-    dummy_sounds = {6,
-    0xD,  # level 4 (start)
+    dummy_sounds = {
     0xF,  # belt loop, if we include this we can't play other sounds so screw it
     0xFE, # loop/music stop
     0xFF  # ???
@@ -81,14 +80,15 @@ def convert():
     sound_dict["lift_10_SND"]["loops"]=True
 
     music_dict = {
-    "TITLE_TUNE_SND"      :{"index":0x1,"pattern":0,"volume":32,"module_index":0},
+    "TITLE_TUNE_SND"       :{"index":0x1,"pattern":0,"volume":32,"module_index":0},
     "LEVEL1_TUNE_SND"      :{"index":0x9,"pattern":0,"volume":32,"module_index":1},
     "LEVEL2_TUNE_SND"      :{"index":0x7,"pattern":0,"volume":32,"module_index":2},
     "LEVEL3_TUNE_SND"      :{"index":0xA,"pattern":0,"volume":32,"module_index":1},  # temp music
-    "BOSS_TUNE_SND"      :{"index":0x3,"pattern":0,"volume":32,"module_index":13},
-    "INTERMISSION_TUNE_SND"      :{"index":0xE,"pattern":0,"volume":32,"module_index":15},
-    "LEVEL_END_TUNE_SND"      :{"index":0xc,"pattern":0,"volume":32,"module_index":14},
-    #"GAME_END_TUNE_SND"      :{"index":0x6,"pattern":0,"volume":32,"module_index":3},
+    "LEVEL4_TUNE_SND"      :{"index":0xD,"pattern":0,"volume":32,"module_index":1},  # temp music
+    "BOSS_TUNE_SND"        :{"index":0x3,"pattern":0,"volume":32,"module_index":13},
+    "INTERMISSION_TUNE_SND":{"index":0xE,"pattern":0,"volume":32,"module_index":15},
+    "LEVEL_END_TUNE_SND"   :{"index":0xc,"pattern":0,"volume":32,"module_index":14},
+    "GAME_END_TUNE_SND"    :{"index":0x6,"pattern":0,"volume":32,"module_index":1},  # temp music
 
     }
 

@@ -1,9 +1,9 @@
 first alpha:
 
+- giant punches: problem with grouping? pause+snapshot
 - duplicate copperlist so color changes between levels are completely seamless: full screen redraw
   should be done in level1 interrupt with a counter (refresh drawn part only), using different draw tile functions
 - nasty flashing on boss level 2 between elevator doors & lift
-- group laterally like in VBall: use script in a .bat drag & drop note in json + delete dumped files
 - sprites disappearing too soon this time on the left! mockup!
 - invincibility affects all characters, compare pointers with p1/p2
 - nasty crash after demo/highscores/end of game (context issue?)

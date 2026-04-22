@@ -6,7 +6,7 @@ from shared import *
 sprite_context_list = ["intro","level_1","level_2","level_3","level_3_base","level_4"]
 bg_tile_context_list = ["level_1_1","level_1_2","level_2","level_3_1","level_3_2","level_3_base",
 "level_4","outro"]
-sprite_context_list = ["level_1"]
+#sprite_context_list = ["level_1"]
 bg_tile_context_list = []
 
 sprite_names = get_sprite_names()
@@ -784,23 +784,19 @@ DRAW_NEVER = 3
 
 # for X groups (2x or 3x) encode flag and size in a word
 gs_array = [DRAW_ALWAYS]*(SPRITE_NB_TILES*2)
+offset = 0x1000
 for i,other in group_sprite_pairs.items():
-    gs_array[i] = DRAW_IF_NORMAL+0x2000
-    gs_array[other] = DRAW_IF_MIRRORED+0x2000
+    gs_array[i] = DRAW_IF_NORMAL+offset
+    gs_array[other] = DRAW_IF_MIRRORED+offset
 
+offset = 0x2000
 for i,others in group_sprite_triplets.items():
-    gs_array[i] = DRAW_IF_NORMAL+0x3000
-    gs_array[others[1]] = DRAW_IF_MIRRORED+0x3000
+    gs_array[i] = DRAW_IF_NORMAL+offset
+    gs_array[others[1]] = DRAW_IF_MIRRORED+offset
     gs_array[others[0]] = DRAW_NEVER   # middle tile never drawn
 
 # shift it to be first byte of short
 gs_array = [i for i in gs_array]
-if len(sprite_context_list)==6:
-    # all contexts are enabled: print unused
-    used_sprite_codes = set(sprite_cluts) | {i for i,g in enumerate(gs_array) if g}
-    unused_sprite_codes = set(range(0,SPRITE_NB_TILES))-used_sprite_codes
-    # it's normal that some sprite codes aren't used at all
-    print("Unused sprite codes: {}".format(",".join(sorted(f"0x{x:03x}" for x in unused_sprite_codes))))
 
 with open(src_dir / "sprite_groups.68k","w") as f:
     f.write(generated_message)
