@@ -2,7 +2,7 @@ import subprocess,os,glob,shutil,pathlib
 
 progdir = pathlib.Path(os.path.abspath(os.path.join(os.path.dirname(__file__),os.pardir)))
 
-gamename = "baddudes"
+gamename = "double_dragon"
 # JOTD path for cranker, adapt to whatever your path is :)
 os.environ["PATH"] += os.pathsep+r"K:\progs\cli"
 
@@ -20,23 +20,19 @@ if os.path.exists(outdir):
 
 outdir.mkdir(exist_ok=True)
 
-for file in ["readme.md",f"{gamename}.slave"]:
+for file in ["readme.md",f"DoubleDragon_AGA.slave"]:
     shutil.copy(progdir / file,outdir)
 
 datadir = progdir / "data"
-shutil.copy(progdir / "assets" / "amiga" / "BadDudesAGA.info",outdir)
+shutil.copy(progdir / "assets" / "amiga" / "DoubleDragonArcade.info",outdir)
 
 
 
 # cleanup of log files in data dir that whdload creates
-for x in datadir.glob("game_level_?"):
+for x in datadir.glob("used_sprites"):
     os.remove(x)
-for x in datadir.glob("level_?_24*"):
-    os.remove(x)
-for x in datadir.glob("sprite_ram*"):
-    os.remove(x)
-for x in datadir.glob("game_ending"):
-    os.remove(x)
+
+
 
 dataout = outdir / "data"
 dataout.mkdir(exist_ok=True)
@@ -48,7 +44,7 @@ for sourcefile in datadir.glob("*"):
     # -= RNC ProPackED v1.8 [by Lab 313] (01/26/2021) =-
     with open(sourcefile,"rb") as f:
         header = f.read(3).decode(errors="ignore")
-    if header=="RNC" or not pack_data or sourcefile.name == "baddudes":
+    if header=="RNC" or not pack_data:
         # already packed/do not pack
         print(f"Copying {destfile}...")
         shutil.copy(sourcefile,destfile)
@@ -62,7 +58,7 @@ for sourcefile in datadir.glob("*"):
 
 
 
-exename = gamename
+exename = "DoubleDragon_aga"
 #subprocess.run(["cranker_windows.exe","-f",str(datadir / exename),"-o",str(dataout / exename)],check=True,stdout=subprocess.DEVNULL)
 # we can't really use cranker now, seems to crash at startup. Never mind!!
 shutil.copy(datadir / exename,dataout / exename)

@@ -295,7 +295,7 @@ def f_handle_main_line(address,lines,i):
     cmp.w    #0x14,d0
     jcc        l_bbca
 """
-    # HACK TO BE ABLE TO START GAME MUST BE IMPROVED ELSE DEMO WON'T SHOW
+    # HACK TO BE ABLE TO START GAME
     elif address in {0x8124,0x8437}:
         # Problem with the current game architecture is that
         # credits are inserted from fast irq, but fast irq doesn't return, so it causes us trouble
@@ -304,6 +304,7 @@ def f_handle_main_line(address,lines,i):
         # now if at this point there are credits, jump to title screen
         line = """\tOP_R_ON_DP_ADDRESS    move,nb_credits_0021,d1
 \tjeq\t0f
+\tLOAD_CONTEXT\tTITLE
 \tOP_W_ON_DP_ADDRESS    move,game_in_play_0026,d1
 \tjra        coin_inserted_8158
 0:
@@ -316,6 +317,7 @@ def f_handle_main_line(address,lines,i):
 \tOP_R_ON_DP_ADDRESS    move,nb_credits_0021,d1
 \tjeq\t0f
 \tOP_W_ON_DP_ADDRESS    move,game_in_play_0026,d1
+\tLOAD_CONTEXT\tTITLE
 \taddq  #4,a7       | pop caller address
 \tjra        coin_inserted_8158
 0:
