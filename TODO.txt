@@ -1,23 +1,20 @@
 first alpha:
 
-- giant punches: problem with grouping? pause+snapshot
+- sprites disappearing too soon this time on the left! mockup!
+- cache subcontext (loaded fg/bg/sprite files)
+- detect not game in play for insert coin
 - duplicate copperlist so color changes between levels are completely seamless: full screen redraw
   should be done in level1 interrupt with a counter (refresh drawn part only), using different draw tile functions
 - nasty flashing on boss level 2 between elevator doors & lift
-- sprites disappearing too soon this time on the left! mockup!
 - invincibility affects all characters, compare pointers with p1/p2
-- nasty crash after demo/highscores/end of game (context issue?)
 - continue insert coin credit check stuff in highscore table and in intro cinematics
-- detect not game in play for insert coin
-- cache subcontext (loaded fg/bg/sprite files)
-- music for level 3, level 4 first part, and end
 
+- music for level 3, level 4 first part, and end
 - set DSW difficulty lives, etc.
 - highscore load/save
 
 - if a sound is only in one level and that level has 2 channel music, allocate it of course on channel 2
 
-- outro: some tile colors are trashed in the scrolling credits, like if sprites weren't cleared or something?
 
 - ECS: limit to 1 clut, enable EHB extra plane of zeroes or ones if clut odd or even: saves memory and gives
   diversity. Then EHB can also be used for tiles
@@ -27,9 +24,9 @@ first alpha:
  
 - adaptation of ptplayer to 255 instruments
 
-
+- outro: some tile colors are trashed in the scrolling credits, like if sprites weren't cleared or something?
 - when resetting context, redraw all tiles as palette has changed but do not reset scroll, ever
-  only reset x_scroll at level 1: to test
+  only reset x_scroll at level 1: to test, maybe only affects when loading/saving, in that case, it doesn't matter
 - weak enemies: doesn't work with hooker and giant bosses
 
 

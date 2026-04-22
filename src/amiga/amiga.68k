@@ -918,8 +918,10 @@ restore_custom_registers:
 	rts	
 	
 * called at start of mainloop, A6 contains RAM start
+* load/save is only enabled for debug purposes.
 
 osd_main_loop_hook:
+	.ifndef	RELEASE
 	tst.l	_resload
 	jeq		10f
 	tst.b	save_state_requested
@@ -955,6 +957,7 @@ osd_main_loop_hook:
 	movem.l	(a7)+,d0-d7/a0-a6
 	
 10:
+	.endif
 	rts
 	
 *osd_black_colors:
@@ -5132,7 +5135,7 @@ handle_keyboard:
 	bne.b	0f
 	st.b	coin2_requested
 0:
-
+	.ifndef	RELEASE
 	cmp.b	#33,d0	| "S"
 	jne		0f
 	st.b	save_state_requested
@@ -5141,6 +5144,8 @@ handle_keyboard:
 	jne		0f
 	st.b	load_state_requested
 0:
+	.endif
+	
     cmp.b   #0x19,d0	| "P" key
     bne.b   0f
 

@@ -3,7 +3,7 @@ from shared import *
 # post-conversion automatic patches, allowing not to change the asm file by hand
 
 fast_play = False
-fast_attract = True
+fast_attract = False
 
 process_main = 1
 process_banks = 1
@@ -67,9 +67,9 @@ def f_handle_bank0_line(address,lines,i):
     elif address in {0x46dd,0x5301}:
         # protect carry from target stack restore
         line = f"\tPUSH_SR  | save carry\n{line}\tPOP_SR  | restore carry\n"
-    elif address == 0x67C0:
-        # trainer infinite energy
-        line = f"\ttst.b\tinvincible_flag\n\tjne\tlb0_67c3\n{line}"
+##    elif address == 0x67C0:
+##        # trainer infinite energy
+##        line = f"\ttst.b\tinvincible_flag\n\tjne\tlb0_67c3\n{line}"
     # handling of palette update
     elif address == 0x4568:
         line += "\tclr.b\tneed_palette_update_flag\n"
@@ -374,15 +374,17 @@ def f_handle_main_line(address,lines,i):
     elif address in {0x837e,0x85FC,0x8506}:
         line = change_instruction("or.b\t#0x80,(nmi_active_flag_0e71,a6)",lines,i) # atomic clear of interrupt flag
 
-    elif address == 0x9F35:
-        # trainer infinite energy
-        line = f"\ttst.b\tinvincible_flag\n\tjne\tl_9f38\n{line}"
+##    elif address == 0x9F35:
+##        # trainer infinite energy
+##        line = f"\ttst.b\tinvincible_flag\n\tjne\tl_9f38\n{line}"
     elif address == 0x84E6:
         # trainer infinite lives
         line = f"\ttst.b\tinfinite_lives_flag\n\tjne\tl_84e9\n{line}"
     elif address in {0x8592,0x8690}:
         line = change_instruction("and.b\t#0x7f,(nmi_active_flag_0e71,a6)",lines,i) # atomic clear of interrupt flag
-
+    elif address == 0x80C2:
+        # remove active loop before title and load title context (again), so when highscore loops it loads proper context
+        line = change_instruction("LOAD_CONTEXT\tTITLE",lines,i)
     elif address == 0xE946:
         line = change_instruction("or.b\t#0x40,(nmi_active_flag_0e71,a6)",lines,i)+"\trts\n" # atomic set of interrupt flag
     elif address == 0x83e2:

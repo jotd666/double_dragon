@@ -37,9 +37,9 @@ _expmem
     dc.w    _config-_base
 ;---
 _config
-	dc.b	"C1:X:invincible:0;"
+	;dc.b	"C1:X:invincible:0;"
 	dc.b	"C1:X:infinite lives:1;"
-	dc.b	"C1:X:infinite time:2;"
+	;dc.b	"C1:X:infinite time:2;"
 	dc.b	"C1:X:weak enemies:3;"
 	dc.b	"C1:X:cheat keys:4;"
 	dc.b	"C2:X:50 Hz update:0;"
