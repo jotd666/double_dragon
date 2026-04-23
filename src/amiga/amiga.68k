@@ -322,6 +322,7 @@ osd_enter_\@:
 	.global	osd_log_cpu
 	.global	osd_cpu_logging_control
 	
+	.global	osd_title_palette_updated
 	.global	osd_set_flash_color
 	.global	osd_palette_updated
 	.global osd_main_loop_hook
@@ -918,6 +919,55 @@ restore_custom_registers:
 	jbsr	osd_enable_interrupts
 	rts	
 	
+* < D0: 0->5
+osd_title_palette_updated:
+	lea		fg_table_buffer,a0		| original palette
+	movem.l	d0-a6,-(a7)
+	move.w	#NB_FG_COLORS-1,d1
+	lea		title_palette,a1
+0:
+	* for each palette entry
+	tst.b	d0
+	jne		1f
+	* palette 0: all black
+	clr.w	(a1)+
+	jra		10f
+1:
+	cmp.b	#5,d0
+	jne		2f
+	* palette 5: full
+	move.w	(a0)+,(a1)+
+	jra		10f
+2:
+	* palette 1-4: we have to work on it
+	and.w	#0xff,d0
+	moveq	#0,d3
+	move.w	(a0)+,d2
+	moveq	#2,d4
+	ror.w	#8,d2
+3:
+	move.w	d2,d5
+	and.w	#0xF,d5
+	mulu.w	d0,d5
+	divu.w	#5,d5
+	or.b	d5,d3
+	lsl.w	#4,d3
+	rol.w	#4,d2
+	dbf		d4,3b
+	move.w	d3,(a1)+
+10:
+	dbf		d1,0b
+	lea		title_palette,a0
+	lea		color_copper_pointers_1+(128*4),a1	| entries 128-142, valid for 64 and 128 color versions FUCK FUCK select proper palette
+	move.w	#NB_FG_COLORS,d0
+	jbsr	load_palette
+	
+	movem.l	(a7)+,d0-a6
+	rts
+	
+title_palette:
+	.skip 	NB_FG_COLORS*2
+	
 * called at start of mainloop, A6 contains RAM start
 * load/save is only enabled for debug purposes.
 
@@ -959,6 +1009,16 @@ osd_main_loop_hook:
 	
 10:
 	.endif
+	tst.b	invincible_flag
+	jeq		0f
+	* resplenish energy
+	move.b	#0x35,(0x3C1,a6)
+	move.b	#0x35,(0x41F,a6)
+0:
+	tst.b	infinite_time_flag
+	jeq		0f
+	move.b	#0x99,(time_0e5e,a6)
+0:
 	rts
 	
 *osd_black_colors:
@@ -1155,6 +1215,19 @@ load_context:
 
 	* set fg palette (attached sprites)
 	lea		fg_table_buffer,a0
+	cmp.w	#CTX_TITLE,current_context
+	jne		2f
+	* title: all black palette at start
+	* it kills rom checksum messages but it doesn't matter now
+	lea		title_palette,a1
+	move.w	#NB_FG_COLORS-1,d0
+3:
+	clr.w	(a1)+
+	addq	#2,a0
+	dbf		d0,3b
+
+	lea		title_palette,a0
+2:
 	lea		color_copper_pointers_1+(128*4),a1	| entries 128-142, valid for 64 and 128 color versions FUCK FUCK select proper palette
 	move.w	#NB_FG_COLORS,d0
 	jbsr	load_palette
@@ -1871,11 +1944,11 @@ level1_interrupt:
 	* is the source of the interrupt
 	btst	#4,d0
 	beq.b	2f
-	* mid-screen copper interrupt, must occur once every 5 times
-	* to simulate ~60 Hz on 50 Hz display
+	* mid-screen copper interrupt, must occur once every 7 times
+	* to simulate ~57 Hz on 50 Hz display
 	move.b	mid_screen_interrupt_count,d0
 	addq.b	#1,d0
-	cmp.b	#5,d0
+	cmp.b	#4,d0
 	bne.b	1f
 	jbsr	call_nmi
 	bclr	#3,(extra_3802,a6)		| ack vblank once more else delay timers are too slow (60Hz)

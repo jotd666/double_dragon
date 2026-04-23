@@ -276,6 +276,12 @@ def f_handle_main_line(address,lines,i):
     elif address == 0xe660:
         line = "\tPOP_SR\n"+line
         lines[i+1] = remove_error(lines[i+1])
+    elif address == 0xFFBE:
+        line = """
+\tGET_ADDRESS\ttitle_state_counter_0af8
+\tmove.b\t(a0),d0
+\tjbsr\tosd_title_palette_updated
+"""+line
     elif address in {0xB8AC,0xB89C}:
         # remove subcpu sync shit / optims
         line = remove_instruction(lines,i)

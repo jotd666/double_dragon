@@ -1,11 +1,19 @@
 second alpha:
 
 
-- PUSH/POP optim in another special pass
+
+- reverse elevator door state? would be nice not to erase elevator door tiles when elevator door is closed (avoids flashes, saves time)
+- PUSH/POP optim in another special pass: special pass in the script right now
   
-- continue (after highscore entry) game crashes
+- continue (after highscore entry) game crashes: context not loaded??
+  context not loaded after end of game: and crashes too
+
+*** the big issue below
 - enemy base: jumping clipped crashes (access fault when fetching sprites)
 - upper sprite clipping is too harsh, plus red flashes on 2,6,C3C,C42,C46,968 but no logging (level3)
+  missing frames when climbing ladder
+***
+
 - ECS: limit to 1 clut, enable EHB extra plane of zeroes or ones if clut odd or even: saves memory and gives
   diversity. Then EHB can also be used for tiles. For red and blue, maybe palette can be ordered properly (powers of 2). Not sure with colors 16-31
 
@@ -14,10 +22,10 @@ second alpha:
   should be done in level1 interrupt with a counter (refresh drawn part only), using different draw tile functions
   => copperlist duplicated, now handle this
   
+- demo music restarts when characters get out of the garage
 - nasty flashing on boss level 2 between elevator doors & lift: try double X for lift
 - continue insert coin credit check stuff in highscore table and in intro cinematics
-- title letters fading in not supported
-- detect not game in play for insert coin with fire
+
 - profile real game/optimize (once code is frozen).
 - music for level 3, level 4 first part, and end
 - set DSW difficulty lives, etc.
