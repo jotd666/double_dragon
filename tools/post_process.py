@@ -414,6 +414,7 @@ def f_handle_main_line(address,lines,i):
     elif "dsw2_1600" in line and "lda" in line:
         line = change_instruction("jbsr\tosd_read_dsw_2",lines,i)
     elif address == 0xeed3:
+        # very frequent, maybe too frequent!
         line = "\tjbsr\tosd_palette_updated\n"+line
     elif address == 0xEE0A:
         line += "\tjbsr\tosd_palette_updated\n"

@@ -170,6 +170,7 @@ fg_tiles_palette_1000 = $1000
 subcpu_shared_2000 = $2000
 sprite_memory_2800 = $2800
 nmi_active_flag_0e71 = $0e71
+title_state_counter_0af8 = $af8
 
 bg_tiles_address_3000 = $3000
 fg_tiles_address_1800 = $1800
@@ -10016,7 +10017,7 @@ FFAB: BD FF 80       JSR    switch_to_bank_4_ff80
 FFAE: BD 78 09       JSR    lb4_7809
 FFB1: BD FC 8F       JSR    switch_to_bank_0_fc8f
 FFB4: 39             RTS
-l_ffb5:
+set_title_palette_ffb5:    ; [global]
 FFB5: BD FF 80       JSR    switch_to_bank_4_ff80
 FFB8: BD 78 03       JSR    lb4_7803
 FFBB: BD FC 8F       JSR    switch_to_bank_0_fc8f

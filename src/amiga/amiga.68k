@@ -64,7 +64,7 @@ BG_TILE_WIDTH = 16
 
 FG_TILE_FILE_MAX_SIZE = 0x7B00
 BG_TILE_FILE_MAX_SIZE = 250000
-SPRITE_FILE_MAX_SIZE = 0xC0000
+SPRITE_FILE_MAX_SIZE = 0xC2000
 
 	.if		OPT_CD32_VERSION==0
 BIGGEST_MUSIC_SIZE = 281000
@@ -98,6 +98,7 @@ SPRITE_X_CORRECTION = 0
 SPRITE_Y_CORRECTION = -8
 
 
+LOADING_TEXT_ADDRESS = fg_tiles_address_1800+0x3D6
 
 * start displaying earlier in ntsc mode, allowing
 * full display
@@ -1048,7 +1049,11 @@ context_switch_found:
 	
 * <D0=red,green,D1=blue
 osd_set_flash_color:
-	move.l	color_copper_pointers,a0
+	move.l	color_copper_pointers_1,a0
+	jbsr	10f
+
+	move.l	color_copper_pointers_2,a0
+10:
 	addq	#2,a0
 	tst.b	d0
 	jeq		0f
@@ -1069,7 +1074,7 @@ osd_set_tile_palette:
 	OSD_ENTER
 	movem.l	d0-a6,-(a7)
 
-	lea		color_copper_pointers,a1	| entries 0-...
+	lea		color_copper_pointers_1,a1	| entries 0-... FUCK FUCK select proper copperlist
 	move.w	#TOTAL_NB_COLORS/2,d0
 	jbsr	load_palette
 
@@ -1102,6 +1107,23 @@ load_context:
 	jbsr	purge_tile_log_data
 	.endif
 	
+	* display "loading"
+	tst.l	fg_table_buffer_ptr
+	jeq		1f
+	lea		loading_message(pc),a1
+	GET_MEMORY_START_IN_A6
+	lea	(LOADING_TEXT_ADDRESS,a6),a0
+	moveq	#0,d1
+0:
+	move.b	(a1)+,d1
+	jeq		1f
+	sub.b	#0x20,d1
+	move.w	d1,(a0)
+	jbsr	osd_video_word_dirty
+	addq	#2,a0
+	jra		0b
+1:
+	
 	* clear mirror buffer (reset it just after the shared bob mirror data)
 	move.l	mirror_buffer_context_ptr,mirror_buffer_ptr
 
@@ -1133,7 +1155,7 @@ load_context:
 
 	* set fg palette (attached sprites)
 	lea		fg_table_buffer,a0
-	lea		color_copper_pointers+(128*4),a1	| entries 128-142, valid for 64 and 128 color versions
+	lea		color_copper_pointers_1+(128*4),a1	| entries 128-142, valid for 64 and 128 color versions FUCK FUCK select proper palette
 	move.w	#NB_FG_COLORS,d0
 	jbsr	load_palette
 	jra		1f
@@ -1168,7 +1190,7 @@ load_context:
 	
 	* set bg palette
 	lea		bg_table_buffer,a0
-	lea		color_copper_pointers,a1	| entries 0-32
+	lea		color_copper_pointers_1,a1	| entries 0-32 fuck fuck select proper palette
 	move.w	#NB_BG_COLORS,d0
 	jbsr	load_palette
 	jra		32f
@@ -1190,7 +1212,7 @@ load_context:
 	
 	* load the sprites palette
 	lea		sprite_table_buffer,a0
-	lea		color_copper_pointers+TOTAL_NB_COLORS*2,a1
+	lea		color_copper_pointers_1+TOTAL_NB_COLORS*2,a1  | fuck fuck select proper palette
 	move.w	#NB_SPRITE_COLORS,d0
 	jbsr	load_palette
 	jra		1f
@@ -1219,7 +1241,22 @@ load_context:
 	move.w	game_scroll_x,previous_scroll_x
 	jbsr	reset_scrolling_parameters
 6:
+	* clear "LOADING..." message in memory
+	tst.l	fg_table_buffer_ptr
+	jeq		1f
+	lea		loading_message(pc),a1
+	GET_MEMORY_START_IN_A6
+	lea	(LOADING_TEXT_ADDRESS,a6),a0
+0:
+	tst.b	(a1)+
+	jeq		1f
+	clr.w	(a0)+
+	jra		0b
+1:
+
 	jbsr force_all_screen_redraw
+
+
 
 	jbsr	osd_enable_interrupts
 
@@ -1234,13 +1271,18 @@ load_title_picture:
 	jbsr	load_file
 	* just set the palette for now
 	lea		sprite_table_buffer,a0
-	lea		color_copper_pointers,a1	| entries 0-xx
 	move.w	(a0)+,d1				| nb bitplanes
 	moveq	#1,d0
 	lsl.w	d1,d0
 	move.w	d0,d3
 	* < A0 contains the palette
+	lea		color_copper_pointers_1,a1	| entries 0-xx
+	movem.l	d0/a0,-(a7)
 	jbsr	load_palette
+	movem.l	(a7)+,d0/a0
+	lea		color_copper_pointers_2,a1	| entries 0-xx
+	jbsr	load_palette
+	
 	* also we need to relocate the bitmaps
 	lea		sprite_table_buffer,a0
 	move.w	(a0)+,d0		| nb bitplanes
@@ -1757,6 +1799,7 @@ level3_interrupt:
 	moveq	#1,d0
 	move.l	joypad_1_state(pc),d1
 	move.l	d1,d2
+	move.l	d1,previous_joypad_1_state
 	jbsr	_read_joystick
 	move.l	d0,joypad_1_state
 	moveq	#0,d0
@@ -2111,12 +2154,14 @@ lose_all_lives:
 	rts
 
 	
-* Z: set if playing
+* Z: set if not playing
 is_game_playing:
 	movem.l	d0/a6,-(a7)
+	cmp.w	#CTX_TITLE,current_context
+	jeq		1f				| title: game not playing
 	GET_MEMORY_START_IN_A6
+	tst.b	(game_in_play_0026,a6)
 
-	moveq	#1,d0
 1:
 	movem.l	(a7)+,d0/a6
 	rts
@@ -3367,9 +3412,12 @@ platform_init:
 	bne		0f
 	st.b	ntsc_flag
 	* disable extra mid-screen interrupt, as it would be too fast (NTSC)
-	move.w	#COPPER_NOP,pal_intreq_block_game
+	move.w	#COPPER_NOP,pal_intreq_block_game_1
+	move.w	#COPPER_NOP,pal_intreq_block_game_2
 	* also change screen start position, make it higher
-	move.w	#0x01+(0xC<<8),screen_start
+	move.w	#0x01+(0xC<<8),d0
+	move.w	d0,screen_start_1
+	move.w	d0,screen_start_2
 
 	
 	*move.w	#0x0401,pal_wait			| else intreq never happens
@@ -3396,8 +3444,13 @@ platform_init:
 	.endif
 	
 	* install jump for palette switch
-	move.l	#after_osd_lower_palette,d0
-	lea		osd_lower_palette_switch_address,a0
+	move.l	#after_osd_lower_palette_1,d0
+	lea		osd_lower_palette_switch_address_1,a0
+	move.w	d0,(6,a0)
+	swap	d0
+	move.w	d0,(2,a0)
+	move.l	#after_osd_lower_palette_2,d0
+	lea		osd_lower_palette_switch_address_2,a0
 	move.w	d0,(6,a0)
 	swap	d0
 	move.w	d0,(2,a0)
@@ -3428,27 +3481,19 @@ platform_init:
 	.endif
 		
 	* init color table handling the bank switch issue
-	lea		copperlist_colors,a0
-	lea		color_copper_pointers,a1
-	move.w	#NB_USED_COLOR_BANKS-1,d0		| nb banks for all colors + sprite color bank
-0:
-	.ifne	OPT_AGA_MODE
-	addq.w	#4,a0		| skip set bank
-	.endif
-	move.w	#31,d1		| 32 colors per bank
-1:
-	move.l	a0,(a1)+
-	addq.w	#4,a0
-	dbf		d1,1b
-	dbf		d0,0b
+	lea		copperlist_colors_1,a0
+	lea		color_copper_pointers_1,a1
+	jbsr	install_copper_pointers
+	lea		copperlist_colors_2,a0
+	lea		color_copper_pointers_2,a1
+	jbsr	install_copper_pointers
 	
-	lea	color_copper_pointers,a1
-	
+	lea	color_copper_pointers_1,a1
 	
 	
 	* put static sprite entries, we'll write into
 	* that sprite area
-	lea		game_sprites,a2
+	lea		game_sprites_1,a2
 	lea		hw_sprite_pointers,a1
 1:
 	move.l	(a1)+,d0
@@ -3457,7 +3502,18 @@ platform_init:
 	move.w	d0,(2,a2)
 	*swap	d0
 	addq	#8,a2
-	cmp.l	#game_sprites_end,a2
+	cmp.l	#game_sprites_end_1,a2
+	bcs		1b
+	lea		game_sprites_2,a2
+	lea		hw_sprite_pointers,a1
+1:
+	move.l	(a1)+,d0
+	move.w	d0,(6,a2)
+	swap	d0
+	move.w	d0,(2,a2)
+	*swap	d0
+	addq	#8,a2
+	cmp.l	#game_sprites_end_2,a2
 	bcs		1b
 2:
 	* compute control words for each sprite pair
@@ -3501,7 +3557,7 @@ platform_init:
 	
 	
 	lea		_custom,a5
-	lea		game_copperlist,a0
+	lea		game_copperlist_1,a0
 	move.l	a0,cop1lc(a5)
 
 	
@@ -3546,6 +3602,22 @@ platform_init:
 	
 	
     rts
+	
+
+install_copper_pointers:
+	move.w	#NB_USED_COLOR_BANKS-1,d0		| nb banks for all colors + sprite color bank
+0:
+	.ifne	OPT_AGA_MODE
+	addq.w	#4,a0		| skip set bank
+	.endif
+	move.w	#31,d1		| 32 colors per bank
+1:
+	move.l	a0,(a1)+
+	addq.w	#4,a0
+	dbf		d1,1b
+	dbf		d0,0b
+	rts
+	
 	
 * < A0: palette
 * < A1: copperlist
@@ -3991,7 +4063,7 @@ compute_x_offset:
 	.endif
 	.endm
 
-	.macro	MIRROR_FLIPPED_TILE16_FETCH
+	.macro	MIRROR_FLIPPED_TILE16_FETCH		func
 	lea		mirror_table,a5
 	.ifdef	MC68020
 	moveq	#0,d1
@@ -4011,7 +4083,9 @@ compute_x_offset:
 	move.w	(a0)+,d1
 	add.l	d1,d1
 	move.w	(a5,d1.l),d0	| mirror
-	.endif	
+	.endif
+	\func	
+	.endr
 	.endm
 	
 	.macro	STANDARD_TILE16_FETCH
@@ -4025,7 +4099,7 @@ compute_x_offset:
 	.endm
 	
 	
-	.macro	MIRROR_TILE16_FETCH
+	.macro	MIRROR_TILE16_FETCH		func
 	lea		mirror_table,a5
 	.ifdef	MC68020
 	moveq	#0,d1
@@ -4044,17 +4118,22 @@ compute_x_offset:
 	move.w	(a0)+,d1
 	add.l	d1,d1
 	move.w	(a5,d1.l),d0	| mirror
-	.endif	
+	.endif
+	\func
+	.set	offset,offset+BG_NB_BYTES_PER_ROW
+	.endr
 	.endm
 	
-	.macro	FLIPPED_TILE16_FETCH
+	.macro	FLIPPED_TILE16_FETCH	func
 	move.l	(a2)+,d0		| next plane
 	jeq		5f
 	move.l	d0,a0
 	.set	offset,8*BG_NB_BYTES_PER_ROW
 	.rept	16
 	.set	offset,offset-BG_NB_BYTES_PER_ROW
-	move.w	(a0)+,d0	
+	move.w	(a0)+,d0
+	\func
+	.endr
 	.endm
 	
 * < D7: 0-0x800 address
@@ -4262,9 +4341,7 @@ standard_tile16_double_buffering:
 
 flipped_tile16_double_buffering:	
 4:
-	FLIPPED_TILE16_FETCH
-	COPY_TILE16_PLANE_ROW_DOUBLE_BUFFERING
-	.endr
+	FLIPPED_TILE16_FETCH	COPY_TILE16_PLANE_ROW_DOUBLE_BUFFERING
 41:
 	TILE16_NEXT_PLANE_DOUBLE_BUFFERING
 	dbf		d4,4b
@@ -4278,11 +4355,7 @@ flipped_tile16_double_buffering:
 	
 mirror_tile16_double_buffering:
 	move.l	a5,-(a7)
-	MIRROR_TILE16_FETCH
-	COPY_TILE16_PLANE_ROW_DOUBLE_BUFFERING
-
-	.set	offset,offset+BG_NB_BYTES_PER_ROW
-	.endr
+	MIRROR_TILE16_FETCH			COPY_TILE16_PLANE_ROW_DOUBLE_BUFFERING
 41:
 	TILE16_NEXT_PLANE_DOUBLE_BUFFERING
 	dbf		d4,4b
@@ -4295,9 +4368,7 @@ mirror_tile16_double_buffering:
 	
 mirror_flipped_tile16_double_buffering:
 	move.l	a5,-(a7)
-	MIRROR_FLIPPED_TILE16_FETCH
-	COPY_TILE16_PLANE_ROW_DOUBLE_BUFFERING
-	.endr
+	MIRROR_FLIPPED_TILE16_FETCH		COPY_TILE16_PLANE_ROW_DOUBLE_BUFFERING
 41:
 	TILE16_NEXT_PLANE_DOUBLE_BUFFERING
 	dbf		d4,4b
@@ -4346,9 +4417,7 @@ standard_tile16_simple_buffering:
 
 flipped_tile16_simple_buffering:	
 4:
-	FLIPPED_TILE16_FETCH
-	COPY_TILE16_PLANE_ROW_SINGLE_BUFFERING
-	.endr
+	FLIPPED_TILE16_FETCH	COPY_TILE16_PLANE_ROW_SINGLE_BUFFERING
 41:
 	TILE16_NEXT_PLANE_SINGLE_BUFFERING
 	dbf		d4,4b
@@ -4362,11 +4431,7 @@ flipped_tile16_simple_buffering:
 	
 mirror_tile16_simple_buffering:
 	move.l	a5,-(a7)
-	MIRROR_TILE16_FETCH
-	COPY_TILE16_PLANE_ROW_SINGLE_BUFFERING
-
-	.set	offset,offset+BG_NB_BYTES_PER_ROW
-	.endr
+	MIRROR_TILE16_FETCH		COPY_TILE16_PLANE_ROW_SINGLE_BUFFERING
 41:
 	TILE16_NEXT_PLANE_SINGLE_BUFFERING
 	dbf		d4,4b
@@ -4379,9 +4444,7 @@ mirror_tile16_simple_buffering:
 	
 mirror_flipped_tile16_simple_buffering:
 	move.l	a5,-(a7)
-	MIRROR_FLIPPED_TILE16_FETCH
-	COPY_TILE16_PLANE_ROW_SINGLE_BUFFERING
-	.endr
+	MIRROR_FLIPPED_TILE16_FETCH		COPY_TILE16_PLANE_ROW_SINGLE_BUFFERING
 41:
 	TILE16_NEXT_PLANE_SINGLE_BUFFERING
 	dbf		d4,4b
@@ -4725,7 +4788,7 @@ set_bobs_bitplanes:
 	add.w	d2,a2
 	.endif
 	
-	move.w	(a2)+,fine_x_scroll_value
+	move.w	(a2)+,fine_x_scroll_value_1
 	move.w	host_scroll_x,d2
 	lsr.w	#6,d2
 	lsl.w	#3,d2
@@ -4745,7 +4808,7 @@ set_bobs_bitplanes:
 	
 	add.l	d0,a0		| X/Y scroll offset (long!)
 	move.l	a0,d0		| first bitplane screen pointer
- 	lea	bobs_bitplanes+2,a0
+ 	lea	bobs_bitplanes_1+2,a0
 1:
     swap d0
     move.w d0,(a0)
@@ -4824,11 +4887,11 @@ update_players_controls:
 	beq.b	0f
 	bclr	#BIT_RIGHT,d0
 0:
-	tst.b	(0x63,a0)		| "ctrl" key
+	tst.b	(34,a0)		| "Q" key on US
 	beq.b	0f
 	bclr	#BIT_KICK,d0
 0:
-	tst.b	(0x64,a0)		| left "alt" key
+	tst.b	(17,a0)		| "W" key on US (Z on fr)
 	beq.b	0f
 	bclr	#BIT_JUMP,d0
 0:
@@ -4845,17 +4908,41 @@ update_players_controls:
 
 
 	* directions + fire
-	move.l	joypad_1_state(pc),d1
+	move.l	joypad_1_state(pc),d1	
 	jbsr	decode_joypad_controls
+
+	jbsr		is_game_playing
+	jne		10f
+	btst	#JPB_BTN_UP,d1
+	beq.b	0f
+	st.b	detect_controllers
+	bclr	#BIT_START_1P,d0
+0:
+	btst	#JPB_BTN_DOWN,d1
+	beq.b	0f
+	st.b	detect_controllers
+	bclr	#BIT_START_2P,d0
+0:
+	btst	#JPB_BTN_RED,d1
+	jeq		10f
+	move.l d1,-(a7)
+	move.l	previous_joypad_1_state,d1
+	btst	#JPB_BTN_RED,d1
+	movem.l	(a7)+,d1
+	jne		10f
+	jbsr	insert_coin
+	jra		20f
+10:
+
 	move.b	d0,(port_1_3800,a6)
 	
 	move.b	#0x0F,d0
-	tst.b	(0x40,a0)		| space
+	tst.b	(32,a0)		| "D" key
 	beq.b	0f
 	bclr	#BIT_PUNCH_1P,d0
 0:	
 
-	btst	#JPB_BTN_GRN,d1
+	btst	#JPB_BTN_RED,d1
 	jeq		0f
 	bclr	#BIT_PUNCH_1P,d0
 0:
@@ -4865,11 +4952,10 @@ update_players_controls:
 	move.l	joypad_2_state(pc),d1
 	jbsr	decode_joypad_controls
 	move.b	d0,(port_2_3801,a6)
-	btst	#JPB_BTN_GRN,d1
-	jeq		0f
+	btst	#JPB_BTN_RED,d1
+	jeq		20f
 	bclr	#BIT_PUNCH_2P,(extra_3802,a6)
-0:
-	
+20:
 	rts
 	
 decode_joypad_controls:
@@ -4889,11 +4975,11 @@ decode_joypad_controls:
 	beq.b	0f
 	bclr	#BIT_RIGHT,d0
 0:
-	btst	#JPB_BTN_RED,d1
+	btst	#JPB_BTN_BLU,d1
 	beq.b	0f
 	bclr	#BIT_KICK,d0
 0:
-	btst	#JPB_BTN_BLU,d1
+	btst	#JPB_BTN_GRN,d1
 	beq.b	0f
 	bclr	#BIT_JUMP,d0
 0:
@@ -5129,10 +5215,10 @@ handle_keyboard:
 	bne.b	0f
 	jbsr	insert_coin
 0:
-	cmp.b	#6,d0	| "5" key like in MAME
-	bne.b	0f
-	st.b	coin2_requested
-0:
+*	cmp.b	#6,d0	| "6" key like in MAME
+*	bne.b	0f
+*	st.b	coin2_requested
+*0:
 	.ifndef	RELEASE
 	cmp.b	#33,d0	| "S"
 	jne		0f
@@ -5244,7 +5330,7 @@ handle_keyboard:
 toggle_pause:
 	* pause only within game
 	jbsr		is_game_playing
-	*beq.b	0f
+	beq.b	0f
 	eor.b   #1,pause_flag
 0:
 	rts
@@ -5955,6 +6041,8 @@ normal_hiscorename:
 	.asciz	"double_dragon.high"
 savegame_file:
 	.asciz	"savegame"
+loading_message:
+	.asciz	"LOADING..."
 
 lives_table:
 	.byte	4
@@ -6058,7 +6146,9 @@ x_offset:
 
 
 
-color_copper_pointers:
+color_copper_pointers_1:
+	.skip	256*4
+color_copper_pointers_2:
 	.skip	256*4
 osd_entry_count:
 	.byte	0
@@ -6119,7 +6209,7 @@ joypad_1_state:
 	.long	0
 joypad_2_state:
 	.long	0
-_previous_joypad_1_state:
+previous_joypad_1_state:
 	.long	0
 _previous_joypad_2_state:
 	.long	0
@@ -6333,9 +6423,9 @@ debug_color:
 	
 
 
-	
+	.macro	DEF_COPPERLIST	suffix
 	* main copperlist
-game_copperlist:
+game_copperlist\()\suffix:
 	* all sprites have the same palette no need to specify odd or even
 	
 	* black color background plane
@@ -6345,11 +6435,11 @@ game_copperlist:
 		
 
 	
-game_sprites:
+game_sprites\()\suffix:
 	DECL_SPRITES
-game_sprites_end:
+game_sprites_end\()\suffix:
 
-copperlist_colors:
+copperlist_colors\()\suffix:
 	.ifeq	OPT_AGA_MODE
 	DECL_32_COLORS
 	.else
@@ -6361,42 +6451,42 @@ copperlist_colors:
 	.endr
 	.endif
 
-screen_start:
+screen_start\()\suffix:
 	.word	0x01+(0x20<<8),0xFFFE
-bobs_bitplanes:
+bobs_bitplanes\()\suffix:
 	DECL_BITPLANES	0,NB_PLAYFIELD_PLANES
 
 	.word	bplcon1
-fine_x_scroll_value:
+fine_x_scroll_value\()\suffix:
 	.word	0
 	* here was first_rows (before I disabled it)
 	* mid-line wait & extra interrupt
 	.word	0x8001,0xFFFE
-pal_intreq_block_game:
+pal_intreq_block_game\()\suffix:
 	.word	 intreq,0x8014  | call level 1 interrupt in the middle of a frame, also flag so copper interrupt knows that we're going to call copper int
 	* here was second_rows (before I disabled it)
 	
 	* wait just before weapon displays (unless disabled in which case palette change happens in the middle
 	* which is perfect so the shield of the infamous "this weapon has no effect" message has the proper color
 	* (the "try again" text doesn't have the proper color, but who cares?)
-weapon_palette_wait:
+weapon_palette_wait\()\suffix:
 	.word	0xF001,0xFFFE
-osd_lower_palette_switch_address:
+osd_lower_palette_switch_address\()\suffix:
 	* dynamic palette for weapons & lives on OSD
 	.word	cop2lc,0
 	.word	cop2lc+2,0
 * write COPPER_NOP here to apply lower palette, copjmp2 to skip it
-osd_lower_palette_switch:
+osd_lower_palette_switch\()\suffix:
 	.word	copjmp2,0
 	.word	bplcon3,(2<<13)+(BORDERBLANK<<5)	| bank 2: color 64
-osd_lower_palette:
+osd_lower_palette\()\suffix:
 	* first, weapon, then rest of palette
 	.set	offset,2
 	.rept	15
 	.word	color+offset,0
 	.set	offset,offset+2
 	.endr
-after_osd_lower_palette:
+after_osd_lower_palette\()\suffix:
 	* here was third_rows (before I disabled it)
 
 	
@@ -6410,9 +6500,8 @@ after_osd_lower_palette:
 	* here was fourth_rows (before I disabled it)
 
 
-
 	
-pal_wait:
+pal_wait\()\suffix:
 	*.word	xxxx
 	.word	 intreq,0x8004
 
@@ -6426,7 +6515,11 @@ pal_wait:
 	* aligning on 8 bytes so .align will work
 	* in the next datachip sections
 	.align	8
+	.endm
 	
+	DEF_COPPERLIST	_1
+	DEF_COPPERLIST	_2
+
 		.section .bsschip
 		
 mirror_buffer:

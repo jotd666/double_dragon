@@ -5,11 +5,12 @@ Requires a 3-button joystick, CD32 pad, or the keyboard
 
 Features:
 
-- 25 FPS for OCS,ECS and AGA amigas
+- 25 FPS for AGA amigas, 128 colors
 
 Note:
 
-AGA version runs on A1200 with sme fastmem: full sfx & music, arcade approaching colors
+AGA version runs on A1200 with 4MB fastmem: full sfx & music, arcade approaching colors. It still needs some optimizations
+so expect it to run faster in newer releases. Also expect an ECS version
 
 Credits:
 
@@ -22,7 +23,9 @@ Instructions:
 
 5: insert coin
 1/2: start game
-arrows/joystick: move
-red/ctrl: kick
-blue/alt: jump
-green/space: punch
+joystick/arrows: move
+red/A: punch
+blue/D: kick
+green/W: jump
+
+(ADW becomes QDZ on french keyboards)

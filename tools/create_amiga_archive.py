@@ -13,7 +13,7 @@ subprocess.check_call(cmd_prefix+["clean"],cwd=progdir / "src")
 subprocess.check_call(cmd_prefix+["RELEASE_BUILD=1"],cwd=progdir / "src")
 # create archive
 
-outdir = progdir / f"{gamename}_HD"
+outdir = progdir / "DoubleDragon"
 
 if os.path.exists(outdir):
     shutil.rmtree(outdir)

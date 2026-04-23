@@ -1157,12 +1157,13 @@ lb0_49a0:   ; [global]
 49C7: AD 95          JSR    [B,X]        ; [indirect_jump] [nb_entries=2]
 49C9: 39             RTS
 
+handle_appearing_title_49ce:
 49CE: B6 0A F5       LDA    $0AF5
 49D1: 2B 14          BMI    $49E7
 49D3: 7F 0A F7       CLR    $0AF7
-49D6: 7F 0A F8       CLR    $0AF8
+49D6: 7F 0A F8       CLR    title_state_counter_0af8
 49D9: BD 4B 2E       JSR    $4B2E
-49DC: BD FF B5       JSR    $FFB5
+49DC: BD FF B5       JSR    set_title_palette_ffb5
 49DF: B6 0A F5       LDA    $0AF5
 49E2: 8A 80          ORA    #$80
 49E4: B7 0A F5       STA    $0AF5
@@ -1171,18 +1172,19 @@ lb0_49a0:   ; [global]
 49ED: 81 0C          CMPA   #$0C
 49EF: 26 16          BNE    $4A07
 49F1: 7F 0A F7       CLR    $0AF7
-49F4: 7C 0A F8       INC    $0AF8
-49F7: BD FF B5       JSR    $FFB5
-49FA: B6 0A F8       LDA    $0AF8
+49F4: 7C 0A F8       INC    title_state_counter_0af8
+49F7: BD FF B5       JSR    set_title_palette_ffb5
+49FA: B6 0A F8       LDA    title_state_counter_0af8
 49FD: 81 05          CMPA   #$05
 49FF: 26 06          BNE    $4A07
 4A01: 7C 0A F6       INC    $0AF6
 4A04: 7F 0A F5       CLR    $0AF5
 4A07: 39             RTS
+
 4A08: B6 0A F5       LDA    $0AF5
 4A0B: 2B 0E          BMI    $4A1B
 4A0D: 7F 0A F7       CLR    $0AF7
-4A10: 7F 0A F8       CLR    $0AF8
+4A10: 7F 0A F8       CLR    title_state_counter_0af8
 4A13: B6 0A F5       LDA    $0AF5
 4A16: 8A 80          ORA    #$80
 4A18: B7 0A F5       STA    $0AF5
@@ -1191,9 +1193,9 @@ lb0_49a0:   ; [global]
 4A21: 81 04          CMPA   #$04
 4A23: 26 16          BNE    $4A3B
 4A25: 7F 0A F7       CLR    $0AF7
-4A28: 7C 0A F8       INC    $0AF8
+4A28: 7C 0A F8       INC    title_state_counter_0af8
 4A2B: BD 4A 3C       JSR    yellow_black_flash_4a3c
-4A2E: B6 0A F8       LDA    $0AF8
+4A2E: B6 0A F8       LDA    title_state_counter_0af8
 4A31: 81 0A          CMPA   #$0A
 4A33: 26 D2          BNE    $4A07
 4A35: 7C 0A F6       INC    $0AF6
@@ -1203,7 +1205,7 @@ lb0_49a0:   ; [global]
 ; alternately flash black/yellow in title
 yellow_black_flash_4a3c:
 4A3C: 8E 4A 54       LDX    #$4A54
-4A3F: F6 0A F8       LDB    $0AF8
+4A3F: F6 0A F8       LDB    title_state_counter_0af8
 4A42: C4 01          ANDB   #$01
 4A44: 58             ASLB
 4A45: EC 85          LDD    B,X				; [bank_address]
@@ -4726,7 +4728,7 @@ table_4030:
 	dc.w	$40b2	; $4036
 	dc.w	$411a	; $4038
 table_49ca:
-	dc.w	$49ce	; $49ca
+	dc.w	handle_appearing_title_49ce	; $49ca
 	dc.w	$4a08	; $49cc
 table_4def:
 	dc.w	$4df7	; $4def
