@@ -54,7 +54,7 @@ START_HOST_SCROLL_X = (CORKSCREW_NB_SCREENS/2)*0x100
 
 MIRROR_BUFFER_SIZE = 0x1000
 
-PREVIOUS_SPRITE_SIZE = 8
+PREVIOUS_SPRITE_SIZE = 10
 
 COLUMN_SIZE = 0x20
 ROW_SIZE = 0x10
@@ -2360,6 +2360,8 @@ really_update_sprites:
 	move.l	#-1,(a4)+			| ack deletion by setting -1 in X & Y
 	move.w	(a4)+,d4			| height
 	move.w	(a4)+,d2		| width
+	addq #2,a4
+	*move.w	(a4)+,d3		    | sprite type
 				
 	bsr		blit_background
 	dbf		d7,1b	
@@ -2739,7 +2741,7 @@ update_one_bob:
 	clr.w	(a6)+			    | store current sprite attributes to previous ones
 	move.w	d4,(a6)+			| store height
 	move.w	d2,(a6)+			| store width in bytes
-
+	move.w	last_sprite_code,(a6)+
 	jra		9f
 
 8:
@@ -2756,6 +2758,7 @@ update_one_bob:
 	move.w	d1,(a6)+			| store current sprite attributes to previous ones
 	move.w	d4,(a6)+			| store height
 	move.w	d5,(a6)+			| store width in bytes
+	addq #2,a6 |move.w	last_sprite_code,(a6)+
 
 	move.w	d5,d2			| width in bytes, 4 for 16 pixels+shift
 	moveq	#0,d5			| Y-offset

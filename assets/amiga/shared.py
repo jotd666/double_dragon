@@ -329,6 +329,7 @@ def get_sprite_names():
     rval |= {k:"girl" for k in range(0x348,0x360)}
     rval |= {k:"girl" for k in range(0xFCA,0xFE1)}
     rval |= {k:"girl" for k in range(0xC18,0xC1D)}
+    rval |= {k:"hooker" for k in range(0xC00,0xC24)}
     rval |= {k:"hooker" for k in range(0xCD8,0xD62)}
     rval |= {k:"hooker" for k in range(0xD96,0xDA2)}
     rval |= {k:"door" for k in range(0x2E4,0x2FF)}
