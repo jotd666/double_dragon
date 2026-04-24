@@ -115,7 +115,7 @@ def doit(binname):
 
     layer.save(f"{binname}.png")
 
-doit(r"K:\Emulation\MAME\sprites")
+doit(r"K:\Emulation\MAME\mame_sprites")
 
 
 

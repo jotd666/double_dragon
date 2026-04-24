@@ -1,10 +1,11 @@
 second alpha:
 
 
+- demo music restarts when characters get out of the garage
 
-- reverse elevator door state? would be nice not to erase elevator door tiles when elevator door is closed (avoids flashes, saves time)
+- nasty flashing on boss level 2 between elevator doors & lift: reverse elevator door state? would be nice not to erase elevator door tiles when elevator door is closed (avoids flashes, saves time)
 - PUSH/POP optim in another special pass: special pass in the script right now
-  
+- enable blitter chaining to speed things up  
 - continue (after highscore entry) game crashes: context not loaded??
   context not loaded after end of game: and crashes too
 
@@ -22,12 +23,11 @@ second alpha:
   should be done in level1 interrupt with a counter (refresh drawn part only), using different draw tile functions
   => copperlist duplicated, now handle this
   
-- demo music restarts when characters get out of the garage
-- nasty flashing on boss level 2 between elevator doors & lift: try double X for lift
+- 
 - continue insert coin credit check stuff in highscore table and in intro cinematics
 
 - profile real game/optimize (once code is frozen).
-- music for level 3, level 4 first part, and end
+- music for level 4 first part, and end
 - set DSW difficulty lives, etc.
 - highscore load/save
 - level 2 conveyor belt color changes is color cycling. Maybe simulate it during mainloop hook if 3C is within some values
@@ -40,7 +40,7 @@ second alpha:
  
 - adaptation of ptplayer to 255 instruments
 
-- outro: some tile colors are trashed in the scrolling credits, like if sprites weren't cleared or something?
+
 - when resetting context, redraw all tiles as palette has changed but do not reset scroll, ever
   only reset x_scroll at level 1: to test, maybe only affects when loading/saving, in that case, it doesn't matter
 - weak enemies: doesn't work with hooker and giant bosses

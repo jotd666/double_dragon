@@ -5,7 +5,7 @@
 *
 OPT_BLIT_CHAIN_MODE = 0		| enable blitter chaining
 OPT_VBLIT_MIRROR_MODE = 1		| we need to mirror sprites on the fly, just before blitting them if needed
-OPT_VBLIT_SCROLL_MODE = 1		| we need to store scrolling values else BOBs can shake
+OPT_VBLIT_SCROLL_MODE = 0		| we need to store scrolling values else BOBs can shake
 
 
 
@@ -2029,7 +2029,13 @@ level1_interrupt:
 	* it has a separate layer for sprites, we just have crap dual playfield we cannot use here)
 
 	*WRITE_BLITTER_SCROLL_VALUES		scroll_x_hi,scroll_y FUCK
-	*jbsr		really_update_sprites
+	.if		OPT_BLIT_CHAIN_MODE==1
+	tst.l	sprite_table_buffer_ptr
+	jeq		0f
+	jbsr		really_update_sprites
+0:
+	.endif
+	
 	* terminate the blitter command list
 	COMMIT_BLITLIST
 
@@ -2330,11 +2336,9 @@ blit_background:
 
 
 really_update_sprites:
-	
 	***********************
 	* erase previous BOBs *
 	***********************
-	
 	move.l	bob_previous_drawed_sprites(pc),a4
 	lea		_custom,a5
 
@@ -3844,6 +3848,7 @@ osd_set_bank:
 
 * really clear bitplane data after a logical tile clear in-game
 * (faster than calling update tile each byte)
+* plus it also clears the extra sprite bitplane, which is helpful in credits!
 osd_clear_bg_screen:
 	movem.l	d0/a0/a1/a5,-(a7)
 
@@ -3851,7 +3856,7 @@ osd_clear_bg_screen:
 	
 	move.l	playfield_drawed_screen_ptr,a0
 	move.l	playfield_displayed_screen_ptr,a1
-	move.w	#(BG_SCREEN_PLANE_SIZE*NB_BG_PLANES)/16-1,d0
+	move.w	#(BG_SCREEN_PLANE_SIZE*NB_PLAYFIELD_PLANES)/16-1,d0
 	* avoid conflict with sprite background restore that may be still running
 	
 	* make sure blitter has restored the backgrounds
