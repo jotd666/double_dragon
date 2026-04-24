@@ -13,7 +13,14 @@ second alpha:
 - enemy base: jumping clipped crashes (access fault when fetching sprites)
 - upper sprite clipping is too harsh, plus red flashes on 2,6,C3C,C42,C46,968 but no logging (level3)
   missing frames when climbing ladder
+  do that with sprite logging (before it crashes!)
 ***
+
+- pre-mirror sprites per level
+  - level 2: hooker
+  - level 3: curly hair guy
+  - level 4: giants, punks
+- possible to pre-mirror most character mask bitplanes?
 
 - ECS: limit to 1 clut, enable EHB extra plane of zeroes or ones if clut odd or even: saves memory and gives
   diversity. Then EHB can also be used for tiles. For red and blue, maybe palette can be ordered properly (powers of 2). Not sure with colors 16-31

@@ -209,6 +209,7 @@ nb_palettes_to_update_0bc0 = $bc0
 ;    A: hooker
 ;    14: curtain
 ;    19: elevator door
+;    1C: elevator door (green door at level 2)
 ;    1F: girl
 ; 2: animation frame id
 ; 3: direction bit

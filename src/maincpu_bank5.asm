@@ -1903,7 +1903,7 @@ doors_open_5e78:
 5F2C: 10 8E 5F 3D    LDY    #$5F3D
 5F30: A6 88 18       LDA    $18,X
 5F33: E6 A6          LDB    A,Y		; [bank_address]
-5F35: E7 02          STB    $2,X
+5F35: E7 02          STB    $2,X	; change elevator door state
 5F37: C6 04          LDB    #$04
 5F39: E7 88 19       STB    $19,X
 5F3C: 39             RTS
