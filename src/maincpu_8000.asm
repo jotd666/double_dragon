@@ -207,7 +207,7 @@ nb_palettes_to_update_0bc0 = $bc0
 ;    8: tshirt thug with curly hair
 ;    9: barechested thug
 ;    A: hooker
-;    14: curtain
+;    14: curtain / platform (level 2)
 ;    19: elevator door
 ;    1C: elevator door (green door at level 2)
 ;    1F: girl

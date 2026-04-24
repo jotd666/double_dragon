@@ -53,10 +53,8 @@ for k,v in grouped.items():
     elif len(v)==2:
         group_sprite_triplets[k]=v
         group_sprite_triplets[k+0x1000]=[vv+0x1000 for vv in v]
-    elif len(v)==3:
-        group_sprite_quadruplets[k]=v
-        group_sprite_quadruplets[k+0x1000]=[vv+0x1000 for vv in v]
-
+    else:
+        raise Exception(f"Unsupported X group size {len(v)}")
 
 def ensure_empty(d):
     if d.exists():

@@ -392,6 +392,31 @@ def process_file(input_radix,output_radix,f_handle_line,global_symbols=[],out_he
             if line.lstrip().startswith("ERROR"):
                 print(i,line,end="")
 
+##    label_re = re.compile("^\w+:")
+##    push_sr = None
+##    # optimize PUSH_SR+POP_SR if the following instruction isn't a branch or rts
+##    still issues, removes too many push/pop
+##    for i,line in enumerate(lines):
+##        toks = line.split()
+##        if label_re.match(line):
+##            push_sr = None
+##        if toks:
+##            if toks[0] in ["rts","jra"]:
+##                push_sr = None
+##            elif toks[0] == "PUSH_SR":
+##                push_sr = i
+##            elif toks[0] == "POP_SR":
+##                # check next line
+##                next_line = lines[i+1]
+##
+##                if push_sr is not None and not label_re.match(next_line):
+##                    toks = next_line.split()
+##                    if toks and (not toks[0].startswith(("b","j","rox","rts","PUSH_SR")) or toks[0]=="jbsr"):
+##                        # normal instruction: we should get rid of the push/pop couple
+##                        lines[push_sr] = ""
+##                        lines[i] = ""
+##                        push_sr = None
+
     with open(source_dir / f"{output_radix}.68k","w") as fw:
         fw.write('\t.include\t"data.inc"\n')
         fw.write(out_header)

@@ -2336,6 +2336,17 @@ blit_background:
 
 
 really_update_sprites:
+	* kludge, see special cases
+	clr.b	green_closed_elevator_door
+	GET_MEMORY_START_IN_A6
+	cmp.b	#0x1C,(0x7BF,a6)
+	jne		0f
+	* green elevator door. Is it closed?
+	tst.b	(0x7C0,a6)
+	jne		0f
+	* it is closed: no need to erase+redraw, it won't move
+	st.b	green_closed_elevator_door
+0:
 	***********************
 	* erase previous BOBs *
 	***********************
@@ -2346,6 +2357,7 @@ really_update_sprites:
 	* clear previous positions
 	lea	background_restore_buffer,a0
 	move.l	playfield_drawed_screen_ptr(pc),a1
+	lea		elevator_tile_table,a2
 	move.w	#NB_TARGET_SPRITES-1,d7
 	WAIT_BLIT
 	WRITE_BLITTER_REG_WORD	#-1,bltalwm		| needed for blit_background
@@ -2362,7 +2374,16 @@ really_update_sprites:
 	move.w	(a4)+,d2		| width
 	move.w	(a4)+,d3		    | sprite type
 				
+	* if elevator door is closed, don't erase it
+	* (avoids a lot of flickering)
+	tst.b 	green_closed_elevator_door
+	jeq		0f
+	move.b	#0,0x110
+	tst.b	(a2,d3.w)
+	jne		5f		| elevator sprite: skip erase as it's static
+0:	
 	jbsr		blit_background
+5:
 	dbf		d7,1b	
 	bra.b	12f
 11:
@@ -2377,7 +2398,6 @@ really_update_sprites:
 	
 
 	move.l	sprite_tile_table,a4
-	GET_MEMORY_START_IN_A6
 	lea		(SPRITE_ADDRESS,a6),a0
     lea _custom,A5
 	move.l	bob_previous_drawed_sprites(pc),a6

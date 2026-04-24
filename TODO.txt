@@ -1,19 +1,27 @@
 second alpha:
 
+- declare static objects, elevator = 1, lift platform = 2, others = 3 (bridge fence, M16)
+  lift platform should not be erased on top and at bottom (when not moving)
+  77C: 14 785: C0: up, 00: down (level 3)
+  others should never be erased
+  
+- giant throwing in the air: feet grouping issue
+- convert graphics: size 2 = size 3, but reference tile planes with an offset
 
 - demo music restarts when characters get out of the garage
 
-- nasty flashing on boss level 2 between elevator doors & lift: reverse elevator door state? would be nice not to erase elevator door tiles when elevator door is closed (avoids flashes, saves time)
 - PUSH/POP optim in another special pass: special pass in the script right now
+  limited to push+make_a/d/tfr/pop/no branch/rts inst => remove
+  
 - enable blitter chaining to speed things up  
 - continue (after highscore entry) game crashes: context not loaded??
   context not loaded after end of game: and crashes too
 
 *** the big issue below
 - enemy base: jumping clipped crashes (access fault when fetching sprites)
-- upper sprite clipping is too harsh, plus red flashes on 2,6,C3C,C42,C46,968 but no logging (level3)
-  missing frames when climbing ladder
+- missing frames when climbing ladder level 2
   do that with sprite logging (before it crashes!)
+  problem: game stops grouping Y when Y clips!
 ***
 
 - pre-mirror sprites per level
@@ -56,13 +64,7 @@ second alpha:
 - try 16+16 color version (this is going to suck!)
 
   
-optimize: remove this sequence: 
-    PUSH_SR                                	| [...]
-	MAKE_A                                 	| [...]
-	POP_SR                                 	| [...]
-	MAKE_D
-
-or maybe safer: PUSH_SR find POP_SR in the same block: if next instruction is not bxx/roxl/roxr then remove 
+or maybe safer: PUSH_SR find POP_SR in the same block: if next instruction is not bxx/rts/roxl/roxr then remove 
   
   optim for 6809 generator:
  	xxx_W_TO_REG	a0,d2                         	| [$5bd5: pulu   x,y]
