@@ -7,7 +7,7 @@ from shared import *
 sprite_context_list = ["intro","level_1","level_2","level_3","level_3_base","level_4"]
 bg_tile_context_list = ["level_1_1","level_1_2","level_2","level_3_1","level_3_2","level_3_base",
 "level_4","outro"]
-#sprite_context_list = ["level_2"]
+sprite_context_list = ["level_2"]
 bg_tile_context_list = []
 
 sprite_names = get_sprite_names()
@@ -27,7 +27,7 @@ possible_hw_sprites = set()
 
 magenta = (254,0,254)
 
-green_elevator_door_tiles = [0]*0x1000
+green_elevator_door_tiles = [0]*SPRITE_NB_TILES
 for i,v in sprite_names.items():
     if v=="elevator_door":
         green_elevator_door_tiles[i] = 1
@@ -49,12 +49,12 @@ grouped = {int(k,16):[int(d,16) for d in v] for k,v in grouped.items()}
 for k,v in grouped.items():
     if len(v)==1:
         group_sprite_pairs[k]=v[0]
-        group_sprite_pairs[k+0x1000]=v[0]+0x1000
+        group_sprite_pairs[k+SPRITE_NB_TILES]=v[0]+SPRITE_NB_TILES
     elif len(v)==2:
         group_sprite_triplets[k]=v
-        group_sprite_triplets[k+0x1000]=[vv+0x1000 for vv in v]
+        group_sprite_triplets[k+SPRITE_NB_TILES]=[vv+SPRITE_NB_TILES for vv in v]
     else:
-        raise Exception(f"Unsupported X group size {len(v)}")
+        raise Exception(f"Unsupported X group size {len(v)} for {k:x}")
 
 def ensure_empty(d):
     if d.exists():
@@ -386,7 +386,7 @@ def read_tileset(img_set_list,palette,plane_orientation_flags,cache,is_bob,nb_cl
     nb_planes = int(math.log2(len(palette)))
 
     tile_table = []
-    for n,img_set in enumerate(img_set_list):
+    for clut_index,img_set in enumerate(img_set_list):
         tile_entry = []
         for i,tile in enumerate(img_set):
             entry = dict()
@@ -437,12 +437,16 @@ def read_tileset(img_set_list,palette,plane_orientation_flags,cache,is_bob,nb_cl
 
                             cache_id = cache.get(bitplane)
                             if cache_id is not None:
+                                # this bitplane data has been already used: reuse it
                                 bitplane_plane_ids.append(cache_id)
                             else:
                                 if any(bitplane):
+                                    # put bitplane in cache (bitplane as key, id as value so if a bitplane is generated
+                                    # with the same value, we reuse it
                                     cache[bitplane] = next_cache_id
                                     bitplane_plane_ids.append(next_cache_id)
                                     next_cache_id += 1
+
                                 else:
                                     bitplane_plane_ids.append(0)  # blank
                         entry[plane_name] = {"width":width,"height":height,"y_start":y_start,"bitplanes":bitplane_plane_ids}
@@ -777,12 +781,6 @@ if context_list:
     print(f"Used sprite colors: {len(sprite_palette)}")
 
 
-
-# sprite_set_list is now a 16x512 matrix of sprite tiles
-
-
-#fg_tile_lower_table,_ = read_tileset(fg_tile_lower_set_list,fg_tile_lower_palette,[True,False,False,False],cache=tile_plane_cache, is_bob=False, nb_cluts=FG_NB_CLUTS, mask_color=magenta, next_cache_id = next_id)
-#sprite_table,_ = read_tileset(sprite_set_list,empty_32_cols+sprite_palette,[True,False,False,False],cache=bob_plane_cache, is_bob=True, mask_color=magenta, nb_cluts=SPRITE_NB_CLUTS)
 
 
 DRAW_ALWAYS = 0

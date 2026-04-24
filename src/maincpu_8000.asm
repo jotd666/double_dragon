@@ -7962,7 +7962,6 @@ CED1: 32 6F          LEAS   $F,S   ; [free_locals]
 CED3: 35 FE          PULS   D,DP,X,Y,U,PC
 
 
-E06B: 04 6C          LSR    $6C
 E06D: 7D 09 F2       TST    $09F2
 E070: 10 2B C1 83    LBMI   $A1F7
 E074: 10 AE 88 2D    LDY    $2D,X

@@ -4,25 +4,16 @@ second alpha:
   lift platform should not be erased on top and at bottom (when not moving)
   77C: 14 785: C0: up, 00: down (level 3)
   others should never be erased
-  
+- skip intro: seems to get 0 lives!!
+- rip level 2 climbing with whip
 - giant throwing in the air: feet grouping issue
-- convert graphics: size 2 = size 3, but reference tile planes with an offset
 
 - demo music restarts when characters get out of the garage
-
-- PUSH/POP optim in another special pass: special pass in the script right now
-  limited to push+make_a/d/tfr/pop/no branch/rts inst => remove
   
 - enable blitter chaining to speed things up  
 - continue (after highscore entry) game crashes: context not loaded??
   context not loaded after end of game: and crashes too
 
-*** the big issue below
-- enemy base: jumping clipped crashes (access fault when fetching sprites)
-- missing frames when climbing ladder level 2
-  do that with sprite logging (before it crashes!)
-  problem: game stops grouping Y when Y clips!
-***
 
 - pre-mirror sprites per level
   - level 2: hooker
