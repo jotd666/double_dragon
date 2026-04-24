@@ -2360,10 +2360,9 @@ really_update_sprites:
 	move.l	#-1,(a4)+			| ack deletion by setting -1 in X & Y
 	move.w	(a4)+,d4			| height
 	move.w	(a4)+,d2		| width
-	addq #2,a4
-	*move.w	(a4)+,d3		    | sprite type
+	move.w	(a4)+,d3		    | sprite type
 				
-	bsr		blit_background
+	jbsr		blit_background
 	dbf		d7,1b	
 	bra.b	12f
 11:
@@ -2572,6 +2571,7 @@ update_one_bob:
 0:
 	* color = src[i + 2] >> 4
 	moveq	#0,d2
+	moveq	#0,d3
 	move.b	(TARGET_SPRITE_COLOR,a0),d2
 	move.b	d2,d3
 	lsr.b	#4,d3		| d3: color
@@ -2758,7 +2758,7 @@ update_one_bob:
 	move.w	d1,(a6)+			| store current sprite attributes to previous ones
 	move.w	d4,(a6)+			| store height
 	move.w	d5,(a6)+			| store width in bytes
-	addq #2,a6 |move.w	last_sprite_code,(a6)+
+	move.w	last_sprite_code,(a6)+
 
 	move.w	d5,d2			| width in bytes, 4 for 16 pixels+shift
 	moveq	#0,d5			| Y-offset
