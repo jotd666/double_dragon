@@ -12,7 +12,8 @@ second alpha:
 
 - enable blitter chaining to speed things up: crash at start illegal blitlist debug this
 - continue (after highscore entry) game crashes like at end of game
-  if nb credits != 0 (end: 86b3)
+  if nb credits != 0 (end: 86b3). maybe clear credits to fix issue & get rolling
+  demo after game over
 
 - pre-mirror sprites per level
   - level 2: hooker, black guy with bat
@@ -24,7 +25,8 @@ second alpha:
   diversity. Then EHB can also be used for tiles. For red and blue, maybe palette can be ordered properly (powers of 2). Not sure with colors 16-31
 
 - save option trashes the sprites!!!
-- in the end: perform fade out
+- dump mem same key as kick
+- in the end: perform fade out on tiles
 - check values of max_scroll_x, min_scroll_x when loading level 2 and when reaching level 2 from start, check differences
 - duplicate copperlist so color changes between levels are completely seamless: full screen redraw
   should be done in level1 interrupt with a counter (refresh drawn part only), using different draw tile functions
