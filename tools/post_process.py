@@ -7,7 +7,7 @@ fast_attract = False
 
 process_main = 1
 process_banks = 1
-process_sub = 1
+process_sub = 0
 
 def f_handle_bank0_line(address,lines,i):
     line = lines[i]

@@ -9,6 +9,10 @@
 
 *	map(0xc000, 0xffff).rom();
 
+irq_already_called_0066 = 0x66
+shared_memory_8000 = 0x8000
+copy_of_port6_0065 = 0x65
+port6_0017 = 0x17
 
 * aux. cpu to help main cpu
 sub_c000:
