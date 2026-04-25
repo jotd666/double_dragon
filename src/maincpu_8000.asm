@@ -982,11 +982,13 @@ play_intro_animation_84f8:
 86AD: 96 36          LDA    current_level_0036
 86AF: 81 04          CMPA   #$04
 86B1: 26 0F          BNE    $86C2
+; end of game: return to title
 86B3: 7F 09 F2       CLR    $09F2
 86B6: 7F 0E 71       CLR    nmi_active_flag_0e71
 86B9: 0D 21          TST    nb_credits_0021
 86BB: 10 26 FA 99    LBNE   coin_inserted_8158
 86BF: 7E 80 BA       JMP    title_80ba
+
 86C2: 81 03          CMPA   #$03
 86C4: 10 26 FC 31    LBNE   $82F9
 86C8: 0D 38          TST    $38

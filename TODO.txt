@@ -1,20 +1,21 @@
 second alpha:
 
+- level4 music has some hiccups: make a vid
 - don't erase static objects: it works but double buffering makes it flash: set a flag
   first time the event occurs: set a countdown like 2 if 2 decrease then if 0 set flag??
-  test lift again!
- 
-- giant throwing in the air: feet grouping issue
+  test lift again! never erased!!!
+
+
+- try to enable sfx in demo again
+- "CONTINUE" within game counts as "game not in play" 
 - throwing curly thug in the air: check video, frames seem not ok
-- girl legs in the end frames issue
 
 - enable blitter chaining to speed things up: crash at start illegal blitlist debug this
-- continue (after highscore entry) game crashes: context not loaded??
-  context not loaded after end of game: and crashes too: put a breakpoint???
-
+- continue (after highscore entry) game crashes like at end of game
+  if nb credits != 0 (end: 86b3)
 
 - pre-mirror sprites per level
-  - level 2: hooker
+  - level 2: hooker, black guy with bat
   - level 3: curly hair guy
   - level 4: giants, punks
 - possible to pre-mirror most character mask bitplanes?
@@ -22,6 +23,8 @@ second alpha:
 - ECS: limit to 1 clut, enable EHB extra plane of zeroes or ones if clut odd or even: saves memory and gives
   diversity. Then EHB can also be used for tiles. For red and blue, maybe palette can be ordered properly (powers of 2). Not sure with colors 16-31
 
+- save option trashes the sprites!!!
+- in the end: perform fade out
 - check values of max_scroll_x, min_scroll_x when loading level 2 and when reaching level 2 from start, check differences
 - duplicate copperlist so color changes between levels are completely seamless: full screen redraw
   should be done in level1 interrupt with a counter (refresh drawn part only), using different draw tile functions
