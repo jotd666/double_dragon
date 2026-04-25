@@ -48,8 +48,9 @@ _config
 	dc.b	"C1:X:weak enemies:3;"
 	dc.b	"C1:X:cheat keys:4;"
 	dc.b	"C2:X:50 Hz update:0;"
+	IFD		DEV_MODE
 	dc.b	"C2:X:skip introduction:1;"
-
+	ENDC
 
 	dc.b	"C3:L:difficulty level:easy,normal,difficult,very difficult;"
 

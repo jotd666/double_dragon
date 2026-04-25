@@ -2527,11 +2527,10 @@ update_one_bob:
 	cmp.w	#-48,d0
 	jcs 	2f
 0:
-	tst.w	d1
-	jmi		0f			| negative (slightly) accept it with clipping
-	cmp.w	#240,d1		| too low: scrap it
-	jcc		2f
-0:
+	| negative (slightly) accept it with clipping, but too low: scrap it
+	cmp.w	#240,d1
+	jpl		2f
+
 	.ifdef	MC68020
 	move.l	(a4,d2.w*2),d4		| get pointer from shared bob table
 	.else

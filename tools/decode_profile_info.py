@@ -33,11 +33,12 @@ minval = 2896   # RTI instruction is the min
 maxval = 10000
 
 filtered = {str(k):v for k,v in pcs.items() if maxval > v > minval}
-filtered_inv = sorted({v:k for k,v in filtered.items()}.items())[-10:]
+filtered_inv = sorted({v:k for k,v in filtered.items()}.items(),reverse=True)[:10]
 
 
 print(json.dumps(filtered,indent=2))
 print("*** top 10 ***")
-print(json.dumps(filtered_inv,indent=2))
+for d in filtered_inv:
+    print(d)
 
 print

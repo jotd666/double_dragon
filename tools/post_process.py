@@ -440,6 +440,8 @@ def f_handle_main_line(address,lines,i):
 \ttst.b\td0
 \tjne\t2f   | level 4: original call only
 * level 1: skip intro if needed else load context
+* anyway this is a development flag as player loses 1 life
+* when intro is skipped as player is in non-playable zone at start
 \ttst.b\tskip_intro_flag
 \tjne\t0f
 1:\tLOAD_CONTEXT\tINTRO

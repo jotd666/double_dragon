@@ -492,6 +492,7 @@ demo_8215:
 821D: 86 02          LDA    #$02
 821F: 97 00          STA    $00
 8221: 8D 4C          BSR    $826F
+; set initial number of lives
 8223: DC 00          LDD    $00
 8225: B7 03 EA       STA    player_1_nb_lives_03ea
 8228: F7 04 48       STB    player_2_nb_lives_0448
