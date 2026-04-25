@@ -623,8 +623,9 @@ demo_8215:
 ; initialize timer so attract mode doesn't last too long
 835B: CC 04 58       LDD    #$0458
 835E: FD 0E 50       STD    attract_mode_timer_0e50
-8361: 86 01          LDA    #$01
+8361: 86 01          LDA    #$01		; play intro music during demo (not needed, already playing!)
 8363: 20 08          BRA    $836D
+; game in play: play the music for the current level
 8365: 10 8E 83 72    LDY    #$8372
 8369: 96 36          LDA    current_level_0036
 836B: A6 A6          LDA    A,Y

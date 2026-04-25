@@ -4,11 +4,9 @@ second alpha:
 - giant throwing in the air: feet grouping issue
 - throwing curly thug in the air: check video, frames seem not ok
 
-- demo: music restarts when characters get out of the garage
-  
 - enable blitter chaining to speed things up  
 - continue (after highscore entry) game crashes: context not loaded??
-  context not loaded after end of game: and crashes too
+  context not loaded after end of game: and crashes too: put a breakpoint???
 
 
 - pre-mirror sprites per level

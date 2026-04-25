@@ -5605,7 +5605,6 @@ osd_sound_start:
 	
 	* music
 4:
-
 	moveq	#0,d1
 	move.b	(7,a0,d0.w),d1	| module index
 	cmp.b	currently_playing_module,d1

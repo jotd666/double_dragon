@@ -288,6 +288,11 @@ def f_handle_main_line(address,lines,i):
     elif address in {0Xb39c,0Xb3a0}:
         # remove subcpu sync shit / optims
         line = remove_instruction(lines,i,continuing_lines=False)
+    elif address == 0x8363:
+        # avoid that intro music is replayed. First it's useless as it's already playing
+        # second the amiga middleware seems to need to replay it, and it sounds ugly
+        # so let's be pragmatic and skip it
+        line = change_instruction("jra\tactivate_nmi_flag_837e",lines,i)
     elif address == 0x8389:
         line = "\tjbsr\tosd_main_loop_hook  | useful to save/restore the state\n"+line
     elif address == 0x8571:
