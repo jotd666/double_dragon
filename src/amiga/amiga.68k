@@ -346,6 +346,8 @@ _user:
 	move.l	a2,_resload
 	move.l	(a0)+,loadgame_function
 	move.l	(a0)+,savegame_function
+	* third button: green for jump
+	move.l	#JPF_BTN_GRN,_third_button_maps_to
 	
 	lea	(_tag,pc),a0
 	jsr	(resload_Control,a2)

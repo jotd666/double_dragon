@@ -24,5 +24,6 @@
 	.global	_detect_controller_types_nowait
 	.global	_detect_controller_types
 	.global	_read_joystick
+	.global	_third_button_maps_to
 	.global	controller_joypad_0
 	.global	controller_joypad_1
