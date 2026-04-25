@@ -2033,13 +2033,13 @@ level1_interrupt:
 	*WRITE_BLITTER_SCROLL_VALUES		scroll_x_hi,scroll_y FUCK
 	.if		OPT_BLIT_CHAIN_MODE==1
 	tst.l	sprite_table_buffer_ptr
-	jeq		0f
+	jeq		10f
 	jbsr		really_update_sprites
-0:
-	.endif
-	
 	* terminate the blitter command list
 	COMMIT_BLITLIST
+10:
+	.endif
+	
 
 	.if		OPT_BLIT_CHAIN_MODE==0
 	jbsr	set_scroll_values
@@ -2338,32 +2338,7 @@ blit_background:
 
 
 really_update_sprites:
-	* kludges, see special cases, mostly for level 2 boss
-	* where there are a lot of static sprites
-	clr.b	green_closed_elevator_door
-	GET_MEMORY_START_IN_A6
-	cmp.b	#0x1C,(0x7BF,a6)
-	jne		0f
-	* green elevator door. Is it closed?
-	tst.b	(0x7C0,a6)
-	jne		0f
-	* it is closed: no need to erase+redraw, it won't move
-	st.b	green_closed_elevator_door
-0:
-	clr.b	lift_not_moving
-	cmp.b	#0x14,(0x77D,a6)
-	jne		0f
-	move.b	(0x785,a6),d0
-	jne		1f
-	* 0: down
-	st.b	lift_not_moving
-	jra		0f
-1:
-	cmp.b	#0xC0,d0
-	jne		0f
-	* lift up
-	st.b	lift_not_moving
-0:
+
 	***********************
 	* erase previous BOBs *
 	***********************
@@ -2405,6 +2380,12 @@ really_update_sprites:
 	jeq		5f		| static object: never erase
 	tst.b 	lift_not_moving
 	jeq		55f
+	cmp.b	#1,lift_not_moving
+	jeq		6f
+	* before reaching 1, keep erasing (double buffering!)
+	subq.b	#1,lift_not_moving
+	jra		55f
+6:
 	cmp.b	#LIFT_TILE,d6
 	jeq		5f		| static object: never erase
 55:	
@@ -2416,8 +2397,42 @@ really_update_sprites:
 	lea	(PREVIOUS_SPRITE_SIZE,a4),a4
 	dbf		d7,1b
 12:	
+	*******************************
+	* kludges, see special cases, *
+	* mostly for level 2 boss     *
+	* where there are a lot of    *
+	* static sprites              *
+	*******************************
+	
+	GET_MEMORY_START_IN_A6
+	cmp.b	#0x1C,(0x7BF,a6)
+	jne		0f
+	* green elevator door. Is it closed?
+	tst.b	(0x7C0,a6)
+	jne		0f
+	* it is closed: no need to erase+redraw, it won't move
+	st.b	green_closed_elevator_door
+	jra		1f
+0:
+	* condition not met: clear flag
+	clr.b	green_closed_elevator_door
+1:
 
-
+	cmp.b	#0x14,(0x77D,a6)
+	jne		0f
+	tst.b	lift_not_moving
+	jne		1f			| don't set flag if already set
+	move.b	(0x785,a6),d0
+	jeq		2f
+	cmp.b	#0xC0,d0
+	jne		0f
+	* lift up
+2:
+	move.b	#3,lift_not_moving
+	jra		1f
+0:
+	clr.b	lift_not_moving
+1:
 	*********************
 	* draw current BOBs *
 	*********************

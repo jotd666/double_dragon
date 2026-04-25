@@ -1,10 +1,14 @@
 second alpha:
 
-- don't erase static objects: it works but double buffering makes it flash
+- don't erase static objects: it works but double buffering makes it flash: set a flag
+  first time the event occurs: set a countdown like 2 if 2 decrease then if 0 set flag??
+  test lift again!
+ 
 - giant throwing in the air: feet grouping issue
 - throwing curly thug in the air: check video, frames seem not ok
+- girl legs in the end frames issue
 
-- enable blitter chaining to speed things up  
+- enable blitter chaining to speed things up: crash at start illegal blitlist debug this
 - continue (after highscore entry) game crashes: context not loaded??
   context not loaded after end of game: and crashes too: put a breakpoint???
 
