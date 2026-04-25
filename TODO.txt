@@ -1,14 +1,10 @@
 second alpha:
 
-- declare static objects, elevator = 1, lift platform = 2, others = 3 (bridge fence, M16)
-  lift platform should not be erased on top and at bottom (when not moving)
-  77C: 14 785: C0: up, 00: down (level 3)
-  others should never be erased
-- skip intro: seems to get 0 lives!!
-- rip level 2 climbing with whip
+- don't erase static objects: it works but double buffering makes it flash
 - giant throwing in the air: feet grouping issue
+- throwing curly thug in the air: check video, frames seem not ok
 
-- demo music restarts when characters get out of the garage
+- demo: music restarts when characters get out of the garage
   
 - enable blitter chaining to speed things up  
 - continue (after highscore entry) game crashes: context not loaded??
@@ -33,6 +29,20 @@ second alpha:
 - continue insert coin credit check stuff in highscore table and in intro cinematics
 
 - profile real game/optimize (once code is frozen).
+(8272, "('4', '4538', 'BNE    $450E')")
+(6204, "('4', '412F', 'RTS')")
+(5687, "('4', '451E', 'BEQ    $4528')")
+(5652, "(main, '9063', 'BNE    $905E')")
+(5190, "('0', '7B0C', 'RTS')")
+(4671, "('0', '7A72', 'BNE    $7A69')")
+(4653, "('4', '4524', 'BNE    $451C')")
+(4299, "(main, 'FC9A', 'PULS   A,PC')")
+(4271, "(main, 'FC97', 'STA    $3808')")
+(4136, "('4', '4562', 'BCS    $454A')")
+(3207, "('4', '4250', 'RTS')")
+(3144, "('0', '6E9C', 'RTS')")
+(3102, "('4', '451A', 'LDB    #$FF')")
+
 - music for level 4 first part, and end
 - set DSW difficulty lives, etc.
 - highscore load/save
