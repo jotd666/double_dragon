@@ -438,6 +438,14 @@ def f_handle_main_line(address,lines,i):
         line = "\tPUSH_SR  | save carry\n"+line
     elif address in {0xfc4e,0xfc9a,0xFB42,0xFFA9}:  # protect carry from switch_to_bank_0_xxx
         line += "\tPOP_SR | restore carry\n"
+    elif address == 0x86b3:
+        # temp fix (or permanent): remove all credits on game over
+        # I noticed that where there are still credits the game crashes, probably related to how
+        # I workarounded the "insert coin in interrupt issue" anyway it's better that way: complete the game
+        # or get game over then back to the intro again with music and all
+        line = """\tGET_ADDRESS\tnb_credits_0021
+\tclr.b\t(a0)    | clear credits to avoid crash, I don't want to investigate further ATM
+"""+line
     # manual context loads
     elif address == 0x833A:
         # load of intro context, then level 1 part 1

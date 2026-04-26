@@ -1,25 +1,21 @@
 second alpha:
 
-- level4 music has some hiccups: make a vid
-- don't erase static objects: it works but double buffering makes it flash: set a flag
-  first time the event occurs: set a countdown like 2 if 2 decrease then if 0 set flag??
-  test lift again! never erased!!!
+- level 1 black giant punched: missing frame
+- level 2 boss punched: wrong grouping
+- level 2: missing recolored tiles on top of grillage
 
-
-- try to enable sfx in demo again
-- "CONTINUE" within game counts as "game not in play" 
-- throwing curly thug in the air: check video, frames seem not ok
+- continue (after highscore entry) game crashes like at end of game, but 
+  clear credits to fix issue & get rolling demo after completing works
+- level4 music has some hiccups: make a vid: send it!
 
 - enable blitter chaining to speed things up: crash at start illegal blitlist debug this
-- continue (after highscore entry) game crashes like at end of game
-  if nb credits != 0 (end: 86b3). maybe clear credits to fix issue & get rolling
-  demo after game over
-
 - pre-mirror sprites per level
   - level 2: hooker, black guy with bat
   - level 3: curly hair guy
   - level 4: giants, punks
 - possible to pre-mirror most character mask bitplanes?
+- "CONTINUE" within game counts as "game not in play": detect and change
+  would need some more RE as p1 could have "continue" while p2 is still playing
 
 - ECS: limit to 1 clut, enable EHB extra plane of zeroes or ones if clut odd or even: saves memory and gives
   diversity. Then EHB can also be used for tiles. For red and blue, maybe palette can be ordered properly (powers of 2). Not sure with colors 16-31

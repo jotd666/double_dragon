@@ -1219,7 +1219,9 @@ load_context:
 	lea		fg_table_buffer,a0
 	cmp.w	#CTX_TITLE,current_context
 	jne		2f
-	* title: all black palette at start
+	* title: all black palette at start if no credits inserted
+	tst.b	(nb_credits_0021,a6)
+	jne		2f
 	* it kills rom checksum messages but it doesn't matter now
 	lea		title_palette,a1
 	move.w	#NB_FG_COLORS-1,d0
@@ -2417,11 +2419,8 @@ really_update_sprites:
 	* condition not met: clear flag
 	clr.b	green_closed_elevator_door
 1:
-
 	cmp.b	#0x14,(0x77D,a6)
 	jne		0f
-	tst.b	lift_not_moving
-	jne		1f			| don't set flag if already set
 	move.b	(0x785,a6),d0
 	jeq		2f
 	cmp.b	#0xC0,d0
@@ -5547,17 +5546,17 @@ osd_sound_start:
 	jra		10f
 0:
 
-	GET_MEMORY_START_IN_A6
-	tst.b	(game_in_play_0026,a6)
-	jne		1f
-	* game not in play: filter out sounds except for credit
-	cmp.b	#CREDIT_02_SND,d0
-	jeq		1f
-	cmp.b	#GO_12_SND,d0
-	jeq		10f
-	cmp.b	#0x80,d0
-	jcc		10f		| skip fight sounds, we want to leave 4 channel intro music intact
-1:
+*	GET_MEMORY_START_IN_A6
+*	tst.b	(game_in_play_0026,a6)
+*	jne		1f
+*	* game not in play: filter out sounds except for credit
+*	cmp.b	#CREDIT_02_SND,d0
+*	jeq		1f
+*	cmp.b	#GO_12_SND,d0
+*	jeq		10f
+*	cmp.b	#0x80,d0
+*	jcc		10f		| skip fight sounds, we want to leave 4 channel intro music intact
+*1:
 	lea		_custom,a6
 	
 
