@@ -1,11 +1,17 @@
-second alpha:
+beta/final:
 
+- music for end
+- set DSW difficulty lives, etc.
+- level 2 conveyor belt color changes is color cycling. Maybe simulate it during mainloop hook if 3C is within some values
+  palette entry changes are 117F 117E 117D
 
 - continue (after highscore entry) game crashes like at end of game, but 
   clear credits to fix issue & get rolling demo after completing works
 - level4 music has some hiccups: make a vid: send it!
 
 - check throwing curly thug, first frame seems corrupt due to grouping
+- when throwing curly thug, it seems that second player sprite is quickly visible
+  (which is maybe not a bug)
 - enable blitter chaining to speed things up: crash at start illegal blitlist debug this
 - pre-mirror sprites per level
   - level 2: hooker, black guy with bat
@@ -30,25 +36,13 @@ second alpha:
 - continue insert coin credit check stuff in highscore table and in intro cinematics
 
 - profile real game/optimize (once code is frozen).
-(8272, "('4', '4538', 'BNE    $450E')")
 (6204, "('4', '412F', 'RTS')")
-(5687, "('4', '451E', 'BEQ    $4528')")
-(5652, "(main, '9063', 'BNE    $905E')")
-(5190, "('0', '7B0C', 'RTS')")
-(4671, "('0', '7A72', 'BNE    $7A69')")
-(4653, "('4', '4524', 'BNE    $451C')")
 (4299, "(main, 'FC9A', 'PULS   A,PC')")
 (4271, "(main, 'FC97', 'STA    $3808')")
 (4136, "('4', '4562', 'BCS    $454A')")
-(3207, "('4', '4250', 'RTS')")
-(3144, "('0', '6E9C', 'RTS')")
-(3102, "('4', '451A', 'LDB    #$FF')")
 
-- music for level 4 first part, and end
-- set DSW difficulty lives, etc.
+
 - highscore load/save
-- level 2 conveyor belt color changes is color cycling. Maybe simulate it during mainloop hook if 3C is within some values
-  palette entry changes are 117F 117E 117D
 
 - if a sound is only in one level and that level has 2 channel music, allocate it of course on channel 2
 
@@ -65,14 +59,14 @@ second alpha:
 
 - try 16+16 color version (this is going to suck!)
   
-  optim for 6809 generator:
- 	xxx_W_TO_REG	a0,d2                         	| [$5bd5: pulu   x,y]
-	addq	#2,a0
-
-=> xxx_W_TO_REG_POSTINC
-	subq	#2,a0
- 	xxx_W_TO_REG	a0,d2                         	| [$5bd5: pulu   x,y]
-=>  xxx_W_TO_REG_PREDEC
+  optim for 6809 generator: find same GET_DP_ADDRESS
+	GET_DP_ADDRESS	0x56                    	| [$452e: ldx    $56]
+	MOVE_W_TO_REG	a0,d2                         	| [...]
+	add.w	#0x21,d2                         	| [$4530: leax   $21,x]
+	GET_DP_ADDRESS	0x56                    	| [$4533: stx    $56]
+	MOVE_W_FROM_REG	d2,a0                         	| [...]
+ 
+ 
 - converter: maybe find a leas +/- stack size pattern, then scan the lines in-between to find
   stack references above the reserved limit (parameters)
 - converter: add push/pull around add manual stack D5

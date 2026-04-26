@@ -165,16 +165,32 @@ def f_handle_bank4_line(address,lines,i):
 \tjeq\tlb4_4363
 \tjra\tlb4_442f
 """
+    elif address == 0x451a:
+        line = """    st\td1                            | [$451a: ldb    #$ff]
+    GET_REG_BANK_ADDRESS    0,d2                       |
+lb4_451c:
+    cmp.b    (a0),d0                              | [$451c: cmpa   ,x] [bank_address]
+    jeq    lb4_4528                               | [$451e: beq    $4528]
+    addq.w    #0x5,a0                             | [$4520: leax   $5,x]
+    cmp.b    (a0),d1                              | [...]
+"""
+        lines[i+1]=""
+        for j in range(i+2,len(lines)):
+            if "lb4_451c" in lines[j]:
+                break
+            lines[j]=""
     elif address == 0x452B:
-        line = """\tGET_REG_BANK_ADDRESS\t1,d2
+        line = """\tsubq.w\t#2,a0
 \tMOVE_W_TO_REG\ta0,d2
 \tlea\tlb4_4546,a0
 \tcmp.w\t#0x4546,d2
 \tjeq\t10f
 \tlea\tlb4_45ac,a0
+\t.ifndef\tRELEASE
 \tcmp.w\t#0x45AC,d2
 \tjeq\t10f
 \tBREAKPOINT  "illegal jump at 452B bank 0"
+\t.endif
 10:
 \tjsr\t(a0)   | [$452b: jsr    [$01,X]]
 """
@@ -425,14 +441,21 @@ def f_handle_main_line(address,lines,i):
     move.w    #0x9067,d3                          | [$9053: ldy    #$9067]
     GET_INDIRECT_ADDRESS_REGS    d1,d3,d3         | [$9057: leay   [d,y]]
     move.w    #0x0b3e,d4                          | [$9059: ldu    #$0b3e]
-    moveq    #0x0c-1,d1                            | [$905c: ldb    #$0c]
     GET_REG_ADDRESS    0,d3                       | [$905e: lda    ,y+]
     move.l    a0,a3
     lea        (a6,0xB3E),a2                       | [$9060: sta    ,u+]
+    .ifdef   NO68020
+    moveq    #0x0c-1,d1                            | [$905c: ldb    #$0c]
 l_905e:
     move.b    (a3)+,(a2)+
                                    | [$9062: decb]
     dbf        d1,l_905e                                 | [$9063: bne    $905e]
+    .else
+    * we can handle some odd-long read
+    move.l    (a3)+,(a2)+
+    move.l    (a3)+,(a2)+
+    move.l    (a3),(a2)
+    .endif
     movem.l    (sp)+,D0/D1/d2/d3/d4               | [$9065: puls   d,dp,x,y,u,pc]
     rts                                        | [...]
 """
