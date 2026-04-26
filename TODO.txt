@@ -5,6 +5,7 @@ second alpha:
   clear credits to fix issue & get rolling demo after completing works
 - level4 music has some hiccups: make a vid: send it!
 
+- check throwing curly thug, first frame seems corrupt due to grouping
 - enable blitter chaining to speed things up: crash at start illegal blitlist debug this
 - pre-mirror sprites per level
   - level 2: hooker, black guy with bat
@@ -63,9 +64,6 @@ second alpha:
 
 
 - try 16+16 color version (this is going to suck!)
-
-  
-or maybe safer: PUSH_SR find POP_SR in the same block: if next instruction is not bxx/rts/roxl/roxr then remove 
   
   optim for 6809 generator:
  	xxx_W_TO_REG	a0,d2                         	| [$5bd5: pulu   x,y]

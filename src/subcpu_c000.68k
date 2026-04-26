@@ -111,13 +111,14 @@ sub_c076:
 	jcc	sub_c0a4                           	| [$c07b: bcc  $c0a4]
 	GET_REG_ADDRESS	0x00,d2                	| [$c07d: ldd  $00,x]
 	move.l	a0,a2
-	move.w	(a2),(0x40,a6)                  | [$c07d: ldd  $00,x]
+	lea		(0x40,a6),a3
+	move.l	(a2)+,(a3)+                  | [$c07d: ldd  $00,x]
 											| [$c07f: std  $40]
-	move.l	(0x02,a2),(0x42,a6)             | [$c081: ldd  $02,x]
+	                                        | [$c081: ldd  $02,x]
 											| [$c083: std  $42]
 											| [$c085: ldd  $04,x]
 											| [$c087: std  $44]
-	move.w	(0x06,a2),(0x46,a6)            	| [$c089: ldd  $06,x]
+	move.l	(a2),(a3)            	| [$c089: ldd  $06,x]
 	                                	| [$c089: ldd  $06,x]
 										| [$c08b: std  $46]
 	move.w	d2,-(sp)                        	| [$c08d: pshx]

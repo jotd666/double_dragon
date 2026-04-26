@@ -414,6 +414,32 @@ def f_handle_main_line(address,lines,i):
 ##        # set thug X to right of screen so intro is very fast
 ##        line += "\ttst.b\tskip_intro_flag\n\tjeq\t0f\n\tmove.w\t#0xF8,d1\n0:\n"
 
+    elif address == 0x904b and "d4" in line:
+        # completely replace highly called copy loop by more optimized one
+        line = """    movem.l    D0/D1/d2/d3/d4,-(sp)               | [$904b: pshs   u,y,x,dp,d]
+    GET_REG_ADDRESS    0x2,d2                     | [$904d: ldb    $2,x]
+    moveq    #0,d1                                | [$9052: clra]
+    move.b    (a0),d1                             | [...]
+    and.b    #0x7f,d1                             | [$904f: andb   #$7f]
+    add.b    d1,d1                                | [$9051: aslb]
+    move.w    #0x9067,d3                          | [$9053: ldy    #$9067]
+    GET_INDIRECT_ADDRESS_REGS    d1,d3,d3         | [$9057: leay   [d,y]]
+    move.w    #0x0b3e,d4                          | [$9059: ldu    #$0b3e]
+    moveq    #0x0c-1,d1                            | [$905c: ldb    #$0c]
+    GET_REG_ADDRESS    0,d3                       | [$905e: lda    ,y+]
+    move.l    a0,a3
+    lea        (a6,0xB3E),a2                       | [$9060: sta    ,u+]
+l_905e:
+    move.b    (a3)+,(a2)+
+                                   | [$9062: decb]
+    dbf        d1,l_905e                                 | [$9063: bne    $905e]
+    movem.l    (sp)+,D0/D1/d2/d3/d4               | [$9065: puls   d,dp,x,y,u,pc]
+    rts                                        | [...]
+"""
+        for j in range(i,len(lines)):
+            if "l_91af" in lines[j]:
+                break
+            lines[j] = ""
 
     elif address == 0xeeb0:
         line = change_instruction("jbsr\tosd_wait_vblank_interrupt",lines,i)
