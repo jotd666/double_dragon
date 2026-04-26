@@ -1,8 +1,5 @@
 second alpha:
 
-- level 1 black giant punched: missing frame
-- level 2 boss punched: wrong grouping
-- level 2: missing recolored tiles on top of grillage
 
 - continue (after highscore entry) game crashes like at end of game, but 
   clear credits to fix issue & get rolling demo after completing works
