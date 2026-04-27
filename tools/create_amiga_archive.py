@@ -40,21 +40,22 @@ dataout.mkdir(exist_ok=True)
 pack_data = True  # set to false to create unpacked distros (much faster)
 
 for sourcefile in datadir.glob("*"):
-    destfile = dataout / sourcefile.name
-    # -= RNC ProPackED v1.8 [by Lab 313] (01/26/2021) =-
-    with open(sourcefile,"rb") as f:
-        header = f.read(3).decode(errors="ignore")
-    if header=="RNC" or not pack_data:
-        # already packed/do not pack
-        print(f"Copying {destfile}...")
-        shutil.copy(sourcefile,destfile)
-    else:
-        cmd = ["propack","p",str(sourcefile),str(destfile)]
-        print(f"Packing {destfile}...")
-        p = subprocess.run(cmd,check=False,stdout=subprocess.DEVNULL)
-        if p.returncode:
-            print(f"failed packing {destfile}")
+    if sourcefile.is_file():
+        destfile = dataout / sourcefile.name
+        # -= RNC ProPackED v1.8 [by Lab 313] (01/26/2021) =-
+        with open(sourcefile,"rb") as f:
+            header = f.read(3).decode(errors="ignore")
+        if header=="RNC" or not pack_data:
+            # already packed/do not pack
+            print(f"Copying {destfile}...")
             shutil.copy(sourcefile,destfile)
+        else:
+            cmd = ["propack","p",str(sourcefile),str(destfile)]
+            print(f"Packing {destfile}...")
+            p = subprocess.run(cmd,check=False,stdout=subprocess.DEVNULL)
+            if p.returncode:
+                print(f"failed packing {destfile}")
+                shutil.copy(sourcefile,destfile)
 
 
 
