@@ -1,6 +1,10 @@
 beta/final:
 
-- music for end
+- music for end: same glitches as lev4, try on real machine!
+- test fight between 2 players at the end: works check projection frames
+- switch case overflow when killing big boss when on hard right, reproduce
+- black palette before loading level 4 context (if context 4 kill palette)
+- startup: restore palette, display fun things like PAULA OK, CIAB...
 - set DSW difficulty lives, etc.
 - level 2 conveyor belt color changes is color cycling. Maybe simulate it during mainloop hook if 3C is within some values
   palette entry changes are 117F 117E 117D

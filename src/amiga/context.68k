@@ -8,7 +8,7 @@ context_lookup_table:
 	.long   0x800,0x802,CTX_LEVEL3_1 
 	.long   0x8FC,0x900,CTX_LEVEL3_2
 	.long   0x1102,0x1102,CTX_LEVEL3_BASE
-	.long   0x1500,0x1500,CTX_LEVEL4 
+	*.long   0x1500,0x1500,CTX_LEVEL4 
 	.long   0x1A00,0x1B00,CTX_OUTRO
    
 	.long	-1,-1,-1				| maxed out/end

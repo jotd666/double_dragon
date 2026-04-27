@@ -298,6 +298,9 @@ def f_handle_main_line(address,lines,i):
 \tmove.b\t(a0),d0
 \tjbsr\tosd_title_palette_updated
 """+line
+    elif address == 0xB04B:
+        # force level 4 context load
+        line += "\tLOAD_CONTEXT\tLEVEL4   | force context load\n"
     elif address in {0xB8AC,0xB89C}:
         # remove subcpu sync shit / optims
         line = remove_instruction(lines,i)

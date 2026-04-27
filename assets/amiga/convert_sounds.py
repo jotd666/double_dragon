@@ -88,7 +88,7 @@ def convert():
     "BOSS_TUNE_SND"        :{"index":0x3,"pattern":0,"volume":music_volume,"module_index":13},
     "INTERMISSION_TUNE_SND":{"index":0xE,"pattern":0,"volume":music_volume,"module_index":15},
     "LEVEL_END_TUNE_SND"   :{"index":0xc,"pattern":0,"volume":music_volume,"module_index":14},
-    "GAME_END_TUNE_SND"    :{"index":0x6,"pattern":0,"volume":music_volume,"module_index":1},  # temp music
+    "GAME_END_TUNE_SND"    :{"index":0x6,"pattern":0,"volume":music_volume,"module_index":12},
 
     }
 
@@ -100,6 +100,7 @@ def convert():
     module_names[2] = "level2.mod"
     module_names[3] = "level3.mod"
     module_names[4] = "level4.mod"
+    module_names[12] = "ending.mod"
     module_names[13] = "boss.mod"
     module_names[14] = "level_complete.mod"
     module_names[15] = "intermission.mod"

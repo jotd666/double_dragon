@@ -4926,7 +4926,7 @@ B03E: 7F 04 4C       CLR    $044C
 B041: 86 FF          LDA    #$FF
 B043: B7 0E 2D       STA    $0E2D
 B046: 7F 0E 2E       CLR    $0E2E
-B049: 0C 36          INC    current_level_0036
+B049: 0C 36          INC    current_level_0036	; 3 -> 4
 B04B: 0F 37          CLR    $37
 B04D: 39             RTS
 
