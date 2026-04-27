@@ -1577,6 +1577,12 @@ force_all_screen_redraw:
 	lea		_custom,a5
 	REALLY_WAIT_BLIT
 	
+	* wait more
+	move.w	#100,d0
+	bsr	beamdelay
+	move.w	#100,d0
+	bsr	beamdelay
+	
 
 	* force tile draw
 	* retrieve tile values
@@ -1645,8 +1651,11 @@ draw_column_tiles:
 	move.w	d0,x_offset
 	move.w	(a7)+,d0	
 
-
+	
 	GET_MEMORY_START_AND_DP
+
+	lea		_custom,a5
+	REALLY_WAIT_BLIT
 
 	lea		(bg_tiles_address_3000,a6),a5
 	

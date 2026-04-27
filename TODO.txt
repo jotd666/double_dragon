@@ -1,15 +1,12 @@
 beta/final:
 
-- full screen bg tile refresh: use a wait blit/wait frame just in case
-- music for end: same glitches as lev4 bleeps 
-- punk frames missing level 2
-- punk frames missing level 4, projection frames of player missing??
-- context loading broken at end on real machine: do it manually
-- thug frames missing ? level 3 after forest
-- tiles not refreshed at fence level level 3
-- base: whole strip of tiles not drawn
+- sometimes " d0 exceeds 28*2" when boss is killed (bad7) if player is on the right
+  probably just skip jump if it's the case
+ (switch case overflow when killing big boss when on hard right)
+- music for end: same glitches as lev4 bleeps: no9 informed
+- tiles not refreshed at fence level level 3: check again?
+- base: whole column of tiles not drawn (real hardware): check again?
 - test fight between 2 players at the end: works check projection frames
-- switch case overflow when killing big boss when on hard right, reproduce
 - black palette before loading level 4 context (if context 4 kill palette)
 - startup: restore palette, display fun things like PAULA OK, CIAB...
 - set DSW difficulty lives, etc.
@@ -20,7 +17,6 @@ beta/final:
   clear credits to fix issue & get rolling demo after completing works
 - level4 music has some hiccups: make a vid: send it!
 
-- check throwing curly thug, first frame seems corrupt due to grouping
 - when throwing curly thug, it seems that second player sprite is quickly visible
   (which is maybe not a bug)
 - enable blitter chaining to speed things up: crash at start illegal blitlist debug this

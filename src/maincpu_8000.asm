@@ -1238,6 +1238,7 @@ play_intro_animation_84f8:
 8915: 83 00 01       SUBD   #$0001
 8918: FD 0E 4D       STD    $0E4D
 891B: 26 CF          BNE    $88EC
+* player chose not to continue: return to title
 891D: BD FE 9B       JSR    clear_bg_screen_fe9b
 8920: BD FE 98       JSR    clear_fg_screen_fe98
 8923: BD FE 9E       JSR    clear_sprite_memory_fe9e

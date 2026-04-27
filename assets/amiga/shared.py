@@ -364,6 +364,7 @@ def get_sprite_names():
     rval[0x484] = rval[0x48a] = "thug_falling"
     rval[0xebe] = "barrel"
     rval[0x2e2] = "fence"
+    rval[0xeda] = rval[0xedc] = "wall"
     rval[0xa3a] = rval[0xa39] = "machine_gun"
     for x in giant_frames:
         rval[x] = "giant"
