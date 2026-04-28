@@ -324,7 +324,7 @@ n_enable = 75
 	.else
 n_reserved2 = 76
 	.endif
-n_sizeof = 79
+n_sizeof = 80
 
 
 	.macro  DISABLE
@@ -366,7 +366,7 @@ _mt_install:
 	* open audio.device and allocate all four audio channels
 	move.l	4.w,a6
 	moveq	#-1,d0
-	jsr	_LVOAllocSignal(a6)
+	jbsr	_LVOAllocSignal(a6)
 	lea	mt_ioport+20(pc),a0
 	move.b	d0,-5(a0)		| MP_SIGBIT
 	jmi	.fail
@@ -379,14 +379,14 @@ _mt_install:
 	lea	mt_ioaudio(pc),a1
 	moveq	#0,d0
 	moveq	#0,d1
-	jsr	_LVOOpenDevice(a6)
+	jbsr	_LVOOpenDevice(a6)
 	tst.b	d0
 	jne	.no_device
 
 	.ifeq	NO_TIMERS
 	* attempt to allocate CIA-B timers A and B
 	lea	mt_ciab_name(pc),a1
-	jsr	_LVOOpenResource(a6)
+	jbsr	_LVOOpenResource(a6)
 	tst.l	d0
 	jeq	.no_rsrc
 
@@ -399,14 +399,14 @@ _mt_install:
 	.ifeq	VBLANK_MUSIC
 	moveq	#CIAICRB_TA,d0
 	lea	mt_extern_timer_a_is(pc),a1
-	jsr	_LVOAddICRVector(a6)
+	jbsr	_LVOAddICRVector(a6)
 	tst.l	d0
 	jne	.no_timer_a
 	.endif	| !VBLANK_MUSIC
 
 	moveq	#CIAICRB_TB,d0
 	lea	mt_extern_timer_b_is(pc),a1
-	jsr	_LVOAddICRVector(a6)
+	jbsr	_LVOAddICRVector(a6)
 	tst.l	d0
 	jne	.no_timer_b
 
@@ -416,7 +416,7 @@ _mt_install:
 	.else
 	moveq	#0x3,d0
 	.endif
-	jsr	_LVOAbleICR(a6)
+	jbsr	_LVOAbleICR(a6)
 
 	lea	CIAB,a0
 
@@ -455,7 +455,7 @@ _mt_install:
 	.else
 	move.w	#0x83,d0
 	.endif
-	jsr	_LVOAbleICR(a6)
+	jbsr	_LVOAbleICR(a6)
 
 	.endif	| !NO_TIMERS
 
@@ -472,7 +472,7 @@ _mt_install:
 	.ifeq	VBLANK_MUSIC
 	moveq	#CIAICRB_TA,d0
 	lea	mt_extern_timer_a_is(pc),a1
-	jsr	_LVORemICRVector(a6)
+	jbsr	_LVORemICRVector(a6)
 4:
 	.endif	| !VBLANK_MUSIC
 	.endif	| !NO_TIMERS
@@ -480,11 +480,11 @@ _mt_install:
 	move.l	4.w,a6
 5:
 	lea	mt_ioaudio(pc),a1
-	jsr	_LVOCloseDevice(a6)
+	jbsr	_LVOCloseDevice(a6)
 6:
 	moveq	#0,d0
 	move.b	mt_ioport+15(pc),d0
-	jsr	_LVOFreeSignal(a6)
+	jbsr	_LVOFreeSignal(a6)
 7:
 	moveq	#0,d0			| Indicate failure
 	jra	.out
@@ -565,7 +565,7 @@ _mt_remove:
 	.ifeq	NO_TIMERS
 	move.l	4.w,a6
 	lea	mt_ciab_name(pc),a1
-	jsr	_LVOOpenResource(a6)
+	jbsr	_LVOOpenResource(a6)
 	tst.l	d0
 	jeq	.nociares
 
@@ -577,16 +577,16 @@ _mt_remove:
 	.else
 	moveq	#0x03,d0
 	.endif
-	jsr	_LVOAbleICR(a6)
+	jbsr	_LVOAbleICR(a6)
 
 	moveq	#CIAICRB_TB,d0
 	lea	mt_extern_timer_b_is(pc),a1
-	jsr	_LVORemICRVector(a6)
+	jbsr	_LVORemICRVector(a6)
 
 	.ifeq	VBLANK_MUSIC
 	moveq	#CIAICRB_TA,d0
 	lea	mt_extern_timer_a_is(pc),a1
-	jsr	_LVORemICRVector(a6)
+	jbsr	_LVORemICRVector(a6)
 	.endif	| !VBLANK_MUSIC
 1:
 	.endif	| !NO_TIMERS
@@ -594,10 +594,10 @@ _mt_remove:
 	* close audio.device, free channels
 	move.l	4.w,a6
 	lea	mt_ioaudio(pc),a1
-	jsr	_LVOCloseDevice(a6)
+	jbsr	_LVOCloseDevice(a6)
 	moveq	#0,d0
 	move.b	mt_ioport+15(pc),d0
-	jsr	_LVOFreeSignal(a6)
+	jbsr	_LVOFreeSignal(a6)
 
 	move.l	(sp)+,a6
 	rts
@@ -626,12 +626,12 @@ mt_cia_timer_a_code:
 	jeq	1f
 	.endif
 
-	jsr	mt_music		| music with sfx inserted
+	jbsr	mt_music		| music with sfx inserted
 1:	movem.l (sp)+,d2-d7/a2-a6
 	rts
 
 	.ifeq	MINIMAL
-2:	jsr	mt_sfxonly		| no music, only sfx
+2:	jbsr	mt_sfxonly		| no music, only sfx
 	movem.l	(sp)+,d2-d7/a2-a6
 	rts
 	.endif
@@ -882,13 +882,13 @@ mt_TimerAInt:
 	jeq	1f
 	.endif
 
-	jsr	mt_music		| music with sfx inserted
+	jbsr	mt_music		| music with sfx inserted
 1:	movem.l	(sp)+,d0-d7/a0-a6
 	nop
 	rte
 
 	.ifeq	MINIMAL
-2:	jsr	mt_sfxonly		| no music, only sfx
+2:	jbsr	mt_sfxonly		| no music, only sfx
 	movem.l	(sp)+,d0-d7/a0-a6
 	nop
 	rte
@@ -1182,24 +1182,24 @@ _mt_end:
 	.ifdef	SDATA
 	clr.b	mt_Enable(a4)
 	lea	mt_chan1(a4),a0
-	jsr	resetch
+	jbsr	resetch
 	lea	mt_chan2(a4),a0
-	jsr	resetch
+	jbsr	resetch
 	lea	mt_chan3(a4),a0
-	jsr	resetch
+	jbsr	resetch
 	lea	mt_chan4(a4),a0
-	jsr	resetch
+	jbsr	resetch
 	.else
 	lea	mt_data(pc),a1
 	clr.b	mt_Enable(a1)
 	lea	mt_chan1(a1),a0
-	jsr	resetch
+	jbsr	resetch
 	lea	mt_chan2(a1),a0
-	jsr	resetch
+	jbsr	resetch
 	lea	mt_chan3(a1),a0
-	jsr	resetch
+	jbsr	resetch
 	lea	mt_chan4(a1),a0
-	jsr	resetch
+	jbsr	resetch
 	.endif
 	moveq	#0,d0
 	move.w	d0,AUD0VOL(a6)
@@ -1260,7 +1260,7 @@ _mt_soundfx:
 	movem.w	d0-d2,sfx_len(sp)
 	move.w	#0xff01,sfx_cha(sp)	| any channel, priority=1
 	move.l	sp,a0
-	jsr	_mt_playfx
+	jbsr	_mt_playfx
 	lea	sfx_sizeof(sp),sp
 	rts
 
@@ -1560,13 +1560,13 @@ channel_offsets:
 _mt_loopfx:
 * Request playing of a looped sound effect on a fixed channel, which
 * will be blocked for music until the effect is stopped (_mt_stopfx).
-* It uses the same sfx-structure as _mt_playfx, jut the priority is
+* It uses the same sfx-structure as _mt_playfx, but the priority is
 * ignored. A looped sound effect has always highest priority and will
 * replace a previous effect on the same channel. No automatic channel
 * selection possible!
 * Also make sure the sample starts with a zero-word, which is used
 * for idling when the effect is stopped. This word is included in the
-* total length calculation, jut excluded when actually playing the loop.
+* total length calculation, but excluded when actually playing the loop.
 * a6 = _custom
 * a0 = sfx-structure pointer with the following layout:
 *      0: ptr, 4: len.w, 6: period.w, 8: vol.w, 10: channel.b
@@ -3854,7 +3854,7 @@ MasterVolTab64:
 
 	.ifdef	SDATA
 
-	section	__MERGED,jss
+	section	__MERGED,bss
 
 mt_chan1:
 	ds.b	n_sizeof
