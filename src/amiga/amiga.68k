@@ -968,7 +968,7 @@ osd_title_palette_updated:
 	rts
 	
 title_palette:
-	.skip 	NB_BG_COLORS*2
+	.skip 	NB_FG_COLORS*2
 	
 * called at start of mainloop, A6 contains RAM start
 * load/save is only enabled for debug purposes.
@@ -1265,7 +1265,15 @@ load_context:
 	move.w	#BG_TILE_COUNT,d7
 	jbsr	relocate_tiles_file
 
-
+	* set bg palette
+	lea		bg_table_buffer,a0
+	lea		color_copper_pointers_1,a1	| entries 0-32 fuck fuck select proper palette
+	move.w	#NB_BG_COLORS,d0
+	jbsr	load_palette
+	jra		32f
+31:
+	clr.l	bg_table_buffer_ptr		| not bg tiles in this context
+32:
 	move.l	(a2)+,d1
 	jeq		0f
 	move.l	#SPRITE_FILE_MAX_SIZE,d0
@@ -1323,34 +1331,12 @@ load_context:
 	jra		0b
 1:
 
-*	cmp.w	#CTX_LEVEL4,current_context
-*	jne		2f
-	* level 4: all black palette at start 
-	lea		title_palette,a1
-	move.w	#NB_BG_COLORS-1,d0
-3:
-	clr.w	(a1)+
-	addq	#2,a0
-	dbf		d0,3b
 
-	lea		title_palette,a0
-	lea		color_copper_pointers_1,a1	| entries 0-32 fuck fuck select proper palette
-	move.w	#NB_BG_COLORS,d0
-	jbsr	load_palette
 
 
 	jbsr force_all_screen_redraw
 
 
-	* now set bg palette
-	lea		bg_table_buffer,a0
-	lea		color_copper_pointers_1,a1	| entries 0-32 fuck fuck select proper palette
-	move.w	#NB_BG_COLORS,d0
-	jbsr	load_palette
-	jra		32f
-31:
-	clr.l	bg_table_buffer_ptr		| not bg tiles in this context
-32:
 
 	jbsr	osd_enable_interrupts
 
@@ -4865,6 +4851,8 @@ scroll_table:
 	.include	"scroll_table_16.68k"
 	.endif
 
+	.include	"rnc_decrunch.68k"
+	
 osd_debug_hook:
 	rts
 	
