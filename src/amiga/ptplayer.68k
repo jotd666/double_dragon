@@ -2643,15 +2643,15 @@ mt_vibrato:
 
 	moveq	#0x0f,d2
 	and.b	d4,d2
-	beq	1f
+	jeq	1f
 	move.b	d2,n_vibratoamp(a2)
-	bra	2f
+	jra	2f
 1:	move.b	n_vibratoamp(a2),d2
 
 2:	lsr.b	#4,d4
-	beq	3f
+	jeq	3f
 	move.b	d4,n_vibratospd(a2)
-	bra	mt_vibrato_nc
+	jra	mt_vibrato_nc
 3:	move.b	n_vibratospd(a2),d4
 
 mt_vibrato_nc:
@@ -2665,9 +2665,9 @@ mt_vibrato_nc:
 	* select vibrato waveform
 	moveq	#3,d1
 	and.b	n_vibratoctrl(a2),d1
-	beq	2f
+	jeq	2f
 	subq.b	#1,d1
-	beq	1f
+	jeq	1f
 
 	* ctrl 2 & 3 select a rectangle vibrato
 	lea	mt_VibratoRectTable(pc),a0
@@ -2675,7 +2675,7 @@ mt_vibrato_nc:
 
 	* ctrl 1 selects a sawtooth vibrato
 1:	lea	mt_VibratoSawTable(pc),a0
-	bra	3f
+	jra	3f
 	.endif	| ENABLE_SAWRECT
 
 	* ctrl 0 selects a sine vibrato

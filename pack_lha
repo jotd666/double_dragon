@@ -1,4 +1,5 @@
 .key nope
+failat 50
 set game DoubleDragon
 set arc ${game}_WHD.lha
 if exists ${arc}
