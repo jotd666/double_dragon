@@ -579,7 +579,7 @@ def doit(aga,dump_it):
         # some tiles are hard to display... We know they are there, we force them
         # instead of trying to trigger them by playing to death :)
 
-        alphanum_tile_codes = [x-0x20 for x in list(range(ord('0'),ord('9')+1)) + list(range(ord('A'),ord('Z')+1))]
+        alphanum_tile_codes = [x-0x20 for x in list(range(ord('0'),ord('9')+1)) + list(range(ord('A'),ord('Z')+1))] + list(range(0,0x10))
         used_cluts = set()
         for atc in alphanum_tile_codes:
             cluts = fg_tile_cluts.get(atc)

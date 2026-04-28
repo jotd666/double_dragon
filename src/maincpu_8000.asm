@@ -185,6 +185,7 @@ player_2_struct_0400 = $400
 some_state_0afc = $afc
 nb_palettes_to_update_0de1 = $de1
 nb_palettes_to_update_0bc0 = $bc0
+difficulty_0055 = $55
 
 ; contains the array on pointers on logical object structures, located just after the array, at $3A2
 ; a logical object is a combination of sprites
@@ -502,9 +503,9 @@ demo_8215:
 8232: B6 38 04       LDA    dsw_1_3804
 8235: 43             COMA
 8236: 84 03          ANDA   #$03
-8238: 8E 82 6B       LDX    #$826B
+8238: 8E 82 6B       LDX    #$826B		; lives table
 823B: A6 86          LDA    A,X
-823D: 97 55          STA    $55
+823D: 97 55          STA    difficulty_0055
 823F: 86 40          LDA    #$40
 8241: B7 03 C1       STA    player_1_energy_03c1
 8244: B7 04 1F       STA    player_2_energy_041f

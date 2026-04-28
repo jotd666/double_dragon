@@ -521,23 +521,22 @@ _user:
 0:
 
 	st.b	d0
-	move.b	d0,dip_switches_1
+	move.b	d0,dip_switches_1		| nothing interesting here
 
-*	lea		lives_table,a0
-*	move.b	start_lives+3,d1
-*	and.w	#3,d1
-*	move.b	(a0,d1.w),d0
+	moveq	#0,d1
+	lea		lives_table,a0
+	move.b	start_lives+3,d1
+	and.w	#3,d1
+	move.b	(a0,d1.w),d0
+	lsl.b	#6,d0
 
-
-*	lea		difficulty_table,a0
-*	move.b	difficulty_level+3,d1
-*	and.w	#3,d1
-*	move.b	(a0,d1.w),d1
-*	lsl.b	#4,d1
-*	or.b	d1,d0
-*	not.b	d0
+	lea		difficulty_table,a0
+	move.b	difficulty_level+3,d1
+	and.w	#3,d1
+	move.b	(a0,d1.w),d1
+	or.b	d1,d0
+	not.b	d0
 	
-	st.b	d0
 	move.b	d0,dip_switches_2
 	
 	jsr	 _detect_controller_types
@@ -810,7 +809,8 @@ demo_game:
 	
 	* set dip switches
 	* base settings, medium diff, 2 lives, demo sounds on
-	st.b	(dsw_1_3804,a6)
+	move.b	dip_switches_1,(dsw_0_3803,a6)
+	move.b	dip_switches_2,(dsw_1_3804,a6)
 	
 	.ifndef	RELEASE
 	* install dump and quit handler
@@ -5011,15 +5011,15 @@ decode_joypad_controls:
 	rts
 	
 
-osd_read_dsw1:
-	* actual dipswitches
-	move.b	dip_switches_1,d0	| what MAME returns by default: demo sounds on
-	rts
-
-osd_read_dsw2:
-	* actual dipswitches
-	move.b	dip_switches_2,d0	| what MAME returns by default
-	rts
+*osd_read_dsw1:
+*	* actual dipswitches
+*	move.b	dip_switches_1,d0	| what MAME returns by default: demo sounds on
+*	rts
+*
+*osd_read_dsw2:
+*	* actual dipswitches
+*	move.b	dip_switches_2,d0	| what MAME returns by default
+*	rts
 	
 
 
@@ -6072,16 +6072,17 @@ loading_message:
 	.asciz	"LOADING..."
 
 lives_table:
-	.byte	4
-	.byte	5
-	.byte	6
-	.byte	7
+	.byte	0   | 2
+	.byte	1   | 3
+	.byte	2   | 4
+	.byte	3	| infinite (9)
 	
+* table at 826B is 01 02 00 03
 difficulty_table:
 	.byte	2	| easy
-	.byte	0	| normal
-	.byte	4	| difficult
-	.byte	6	| very difficult
+	.byte	0	| medium
+	.byte	1	| difficult
+	.byte	3	| very difficult
 	
 
 

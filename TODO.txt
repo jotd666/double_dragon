@@ -3,15 +3,11 @@ beta/final:
 - in the end: perform fade out on tiles
 
 - try simple HD loader
-- sometimes " d0 exceeds 28*2" when boss is killed (bad7) if player is on the right
-  probably just skip jump if it's the case: X is a character struct
- (switch case overflow when killing big boss when on hard right)
 - tiles not refreshed at fence level level 3: check again?
 - base: whole column of tiles not drawn (real hardware): check again?
 - test fight between 2 players at the end: works check projection frames
 - black palette before loading level 4 context (if context 4 kill palette)
 - startup: restore palette, display fun things like PAULA OK, CIAB...
-- set DSW difficulty lives, etc.
 - level 2 conveyor belt color changes is color cycling. Maybe simulate it during mainloop hook if 3C is within some values
   palette entry changes are 117F 117E 117D
 
@@ -46,13 +42,6 @@ beta/final:
 
 
 - highscore load/save
-
-- if a sound is only in one level and that level has 2 channel music, allocate it of course on channel 2
-
-
-
- 
-- adaptation of ptplayer to 255 instruments
 
 
 - when resetting context, redraw all tiles as palette has changed but do not reset scroll, ever

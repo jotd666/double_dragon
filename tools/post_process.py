@@ -493,6 +493,19 @@ l_905e:
         line = "\tPUSH_SR  | save carry\n"+line
     elif address in {0xfc4e,0xfc9a,0xFB42,0xFFA9}:  # protect carry from switch_to_bank_0_xxx
         line += "\tPOP_SR | restore carry\n"
+    elif address == 0xBAD2:
+        # it can happen (also in real game?) at the end of the last level, boss is dead, punks are retiring
+        # and an invalid jump table index is located in a character structure. Put it to 0 and it fixes the issue
+        # in the real game I don't know what it does but it doesn't seem to crash. Only happens here. Fuck it
+        line = """\tcmp.b\t#28,d0
+\tjcs\t0f
+* value too high for jump table below, happens in the end
+* when punks retire after boss has been killed
+\tmoveq\t#0,d0
+\tmove.b\td0,(a0)   | correct in struct
+0:
+"""+line
+
     elif address == 0x8923:
         # I noticed that where there are still credits the game crashes, probably related to how
         # I workarounded the "insert coin in interrupt issue" anyway it's better that way: complete the game

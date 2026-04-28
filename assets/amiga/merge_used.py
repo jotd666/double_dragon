@@ -47,4 +47,4 @@ def merge(used_name,context,nb_items,nb_cluts,sprites=False,overwrite=False):
 
 #merge("fg_used_tiles","game",0x400,8,overwrite=False)
 #merge("bg_used_tiles","outro",0x800,8,overwrite=False)
-merge("used_sprites","level_3",0x1000,8,sprites=True,overwrite=False)
+merge("used_sprites","level_4",0x1000,8,sprites=True,overwrite=False)
