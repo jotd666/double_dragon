@@ -1,8 +1,8 @@
 beta/final:
 
 - in the end: perform fade out on tiles
-
-- try simple HD loader
+- ntsc support
+- scrolling cuts 16 pixels on top: adjust
 - tiles not refreshed at fence level level 3: check again?
 - base: whole column of tiles not drawn (real hardware): check again?
 - test fight between 2 players at the end: works check projection frames
@@ -11,20 +11,21 @@ beta/final:
 - level 2 conveyor belt color changes is color cycling. Maybe simulate it during mainloop hook if 3C is within some values
   palette entry changes are 117F 117E 117D
 
-- when throwing curly thug, it seems that second player sprite is quickly visible
-  (which is maybe not a bug)
 - enable blitter chaining to speed things up: crash at start illegal blitlist debug this
 - pre-mirror sprites per level
   - level 2: hooker, black guy with bat
   - level 3: curly hair guy
   - level 4: giants, punks
 - possible to pre-mirror most character mask bitplanes?
+- when throwing curly thug, it seems that second player sprite is quickly visible
+  (which is maybe not a bug)
 - "CONTINUE" within game counts as "game not in play": detect and change
   would need some more RE as p1 could have "continue" while p2 is still playing
 
 - ECS: limit to 1 clut, enable EHB extra plane of zeroes or ones if clut odd or even: saves memory and gives
   diversity. Then EHB can also be used for tiles. For red and blue, maybe palette can be ordered properly (powers of 2). Not sure with colors 16-31
 
+- try simple HD loader, with a shell to select version & unpack exe+loadseg
 - save option trashes the sprites!!!
 - check values of max_scroll_x, min_scroll_x when loading level 2 and when reaching level 2 from start, check differences
 - duplicate copperlist so color changes between levels are completely seamless: full screen redraw

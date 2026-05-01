@@ -95,7 +95,7 @@ FG_TILE_LOG_LENGTH = FG_TILE_NB_CLUTS*FG_TILE_COUNT
 BG_TILE_LOG_LENGTH = BG_TILE_NB_CLUTS*BG_TILE_COUNT
 
 SPRITE_X_CORRECTION = 0
-SPRITE_Y_CORRECTION = -8
+SPRITE_Y_CORRECTION = 0
 
 
 LOADING_TEXT_ADDRESS = fg_tiles_address_1800+0x3D6
@@ -1994,6 +1994,8 @@ level1_interrupt:
 	jeq		0f
 	bset	#8,d0
 0:
+	subq.w	#8,d0		| subtracting 8 gives perfect placement of playfield vs MAME
+	and.w	#0x1FF,d0
 	move.w	D0,game_scroll_y
 	
 	* ok now D5 can be used freely
@@ -4716,8 +4718,11 @@ blit_title_pic:
 	* now A0 points to the list of planes
 	move.w	sprite_table_buffer,d3	| nb bitplanes
 	move.w	#32,d0
-	move.w	#24,d1
+	* scrolling correction makes the frame display in the wrap area
+	* add 0x200 artificially as we're not using the background tile system
+	move.w	#24+0x200,d1
 	moveq	#0,d5
+
 	jbsr	blit_planes_any_internal_no_cookie_cut
 	rts
 
