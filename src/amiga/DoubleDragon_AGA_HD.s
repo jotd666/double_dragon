@@ -21,7 +21,7 @@ START_CHIP = BASE_CHIP+SAVEGAME_SIZE
 
 _base	SLAVE_HEADER					; ws_security + ws_id
 	dc.w	17					; ws_version (was 10)
-	dc.w	WHDLF_NoError
+	dc.w	WHDLF_NoError|WHDLF_ReqAGA|WHDLF_Req68020
 	dc.l	CHIPSIZE
 	dc.l	0					; ws_execinstall
 	dc.w	start-_base		; ws_gameloader
@@ -73,7 +73,7 @@ DECL_VERSION:MACRO
 	ENDC
 	ENDM
 _data   dc.b    "data",0
-_name	dc.b	"Double Dragon (arcade)"
+_name	dc.b	"Double Dragon AGA (arcade)"
 	IFD	CD32_SLAVE
 	dc.b	" (CD32)"
 	ENDC
@@ -188,7 +188,7 @@ progstart
     dc.l    0
 exe
 
-	dc.b	"DoubleDragon_ecs",0
+	dc.b	"DoubleDragon_aga",0
 	IFD	DEV_MODE
 
 	even

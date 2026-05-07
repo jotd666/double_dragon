@@ -377,6 +377,7 @@ def asm2bin(bank,output_dir):
     cmd = ["m68k-amigaos-ld","-o",banke,banko]
     subprocess.run(cmd,check=True)
     bankbin = output_dir / f"{bank.stem}"
+    print(bankbin)
     cmd = ["m68k-amigaos-objcopy","-O","binary",banke,bankbin]
     subprocess.run(cmd,check=True)
 
@@ -638,7 +639,7 @@ def doit(aga,dump_it):
             dump_plane_cache(f,"tile_plane",fg_tile_plane_cache)
 
 
-        asm2bin(bank,bank_xxx_dir)
+        asm2bin(bank,data_xxx_dir)
 
     # title is special: there are no tiles or sprites. Actually there are but it's much faster & efficient
     # to store a big pic made of tiles & sprites for the repository and also to display in-game with single blit
@@ -664,7 +665,7 @@ def doit(aga,dump_it):
             f.write(f"\t.long\tbitplane_{bid:02d}-title_pic\n")
         dump_plane_cache(f,"bitplane",title_plane_cache)
 
-    asm2bin(bank,bank_xxx_dir)
+    asm2bin(bank,data_xxx_dir)
 
     # background tiles & sprite contexts
     context_list = bg_tile_context_list
@@ -711,7 +712,7 @@ def doit(aga,dump_it):
             dump_plane_cache(f,"tile_plane",bg_tile_plane_cache)
 
 
-        asm2bin(bank,bank_xxx_dir)
+        asm2bin(bank,data_xxx_dir)
 
 
     ###############
@@ -791,13 +792,14 @@ def doit(aga,dump_it):
             f.write("sprite_palette:\n")
             bitplanelib.palette_dump(sprite_palette,f,bitplanelib.PALETTE_FORMAT_ASMGNU)
             dump_bob_layer(sprite_table,bob_plane_cache,f,relative_root="bob_table")
-        asm2bin(bank,bank_xxx_dir)
+        asm2bin(bank,data_xxx_dir)
 
     if context_list:
         print(f"Used sprite colors: {len(sprite_palette)}")
 
 
 doit(aga=True,dump_it=dump_it)
+#doit(aga=False,dump_it=dump_it)
 
 DRAW_ALWAYS = 0
 DRAW_IF_NORMAL = 1

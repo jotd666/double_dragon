@@ -1,5 +1,7 @@
 beta/final:
 
+- enable blitter chaining to speed things up: intro showing (double buffering inversion
+  apparently) then lock up when game starts WTF??
 - level 3/base: tiles not found/missing 1x 2x ??: E20, 6A6, 6AA
 - in the end: perform fade out on tiles
 - ntsc support: shift lower part of sprites status screen up
@@ -8,7 +10,6 @@ beta/final:
 - startup: restore palette, display fun things like PAULA OK, CIAB...
 - level 2 conveyor belt color changes is color cycling. Maybe simulate it during mainloop hook if 3C is within some values
   palette entry changes are 117F 117E 117D
-- enable blitter chaining to speed things up: crash at start illegal blitlist debug this
 - pre-mirror sprites per level
   - level 2: hooker, black guy with bat
   - level 3: curly hair guy

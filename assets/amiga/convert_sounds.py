@@ -277,8 +277,11 @@ def convert():
                 fst.write(f'\t.asciz\t"{n}"\n')
     music_list = {v["index"] for v in music_dict.values()}
 
-    for f in sound_dir.glob("*.mod"):
-        shutil.copy(f,data_dir)
+    for x in ["ecs","aga"]:
+        subdir = data_dir / x
+        subdir.mkdir(exist_ok=True)
+        for f in sound_dir.glob("*.mod"):
+                shutil.copy(f,subdir)
 
 ##    unused_indexes = set(range(0,0x3E))-sfx_list-dummy_sounds-music_list
 ##    print("Unmapped sound indexes: ")

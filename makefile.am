@@ -1,7 +1,7 @@
 PROGNAME = DoubleDragon
-MAIN_AGA = ..\data\$(PROGNAME)_aga
+MAIN_AGA = ..\data\aga\$(PROGNAME)_aga
 MAIN_CD32 = ..\data\$(PROGNAME)_cd32
-MAIN_OCS = ..\data\$(PROGNAME)_ocs
+MAIN_ECS = ..\data\ecs\$(PROGNAME)_ecs
 AMIGA_SHELL = ..\$(PROGNAME)
 
 ifdef RELEASE_BUILD
@@ -12,7 +12,7 @@ OPT_RELEASE_LINK = -uvbl_delay_fe23
 # Bebbo's package usually installs itself there
 GCC_BIN = C:\amiga-gcc\bin
 ASM_BASE = $(GCC_BIN)/m68k-amigaos-as -c --defsym __amiga__=1
-ASM_000 = $(ASM_BASE) -m68000 --defsym OCS_VERSION=1 $(OPT_RELEASE) 
+ASM_000 = $(ASM_BASE) -m68000 --defsym NONAGA_VERSION=2 $(OPT_RELEASE) 
 ASM_020 = $(ASM_BASE) -m68020 --defsym MC68020=1 $(OPT_RELEASE) 
 ASM = $(ASM_000)
 
@@ -21,8 +21,8 @@ CDLOADER = ..\$(PROGNAME).cdslave
 WHDLOADER_AGA = ..\$(PROGNAME)_AGA.slave
 WHDLOADER_AGA_DEV = ..\$(PROGNAME)_AGA_dev.slave
 WHDLOADER_CD32 = ..\$(PROGNAME)_CD32.slave
-WHDLOADER_OCS = ..\$(PROGNAME)_OCS.slave
-WHDLOADER_OCS_CHIP = ..\$(PROGNAME)_OCS_chip.slave
+WHDLOADER_ECS = ..\$(PROGNAME)_ECS.slave
+WHDLOADER_ECS_DEV = ..\$(PROGNAME)_ECS_dev.slave
 ASSETS = ..\assets\amiga
 AMIGASRC = amiga
 
@@ -40,9 +40,10 @@ WHDASM = vasmm68k_mot -DDATETIME -I$(HDBASE)/amiga39_JFF_OS/include -I$(WHDBASE)
 MEM_OBJS = maincpu_rom.o subcpu_rom.o ram.o maincpu_bank0_rom.o maincpu_bank1_rom.o maincpu_bank2_rom.o maincpu_bank3_rom.o maincpu_bank4_rom.o maincpu_bank5_rom.o
 HWT_OBJS = hw_tester.o sounds.o ram.o  vbr.o ReadJoyPad.o ptplayer.o 
 AGA_OBJS = amiga_aga.o sounds.o maincpu_8000_020.o subcpu_c000_020.o maincpu_bank0_code_4000_020.o  maincpu_bank1_code_4000_020.o  maincpu_bank3_code_4000_020.o  maincpu_bank4_code_4000_020.o maincpu_bank5_code_4000_020.o $(MEM_OBJS) vbr.o ReadJoyPad.o ptplayer.o
+ECS_OBJS = amiga_ecs.o sounds.o maincpu_8000_000.o subcpu_c000_000.o maincpu_bank0_code_4000_000.o  maincpu_bank1_code_4000_020.o  maincpu_bank3_code_4000_020.o  maincpu_bank4_code_4000_000.o maincpu_bank5_code_4000_000.o $(MEM_OBJS) vbr.o ReadJoyPad.o ptplayer.o
 
 
-all:  $(MAIN_AGA)  $(WHDLOADER_AGA) $(WHDLOADER_AGA_DEV)  $(AMIGASRC)/sounds.68k
+all:  $(MAIN_AGA) $(MAIN_ECS) $(WHDLOADER_ECS) $(WHDLOADER_ECS_DEV) $(WHDLOADER_AGA) $(WHDLOADER_AGA_DEV)  $(AMIGASRC)/sounds.68k
 
 
 $(AMIGA_SHELL): shell.o
@@ -61,14 +62,16 @@ $(AMIGASRC)/sounds.68k: $(ASSETS)/convert_sounds.py
 $(MAIN_AGA): $(AGA_OBJS)
 	$(GCC_BIN)/m68k-amigaos-ld $(OPT_RELEASE_LINK) -o $(MAIN_AGA) $(AGA_OBJS)
 	
+
+$(MAIN_ECS): $(ECS_OBJS)
+	$(GCC_BIN)/m68k-amigaos-ld $(OPT_RELEASE_LINK) -o $(MAIN_ECS) $(ECS_OBJS)
+	
 $(MAIN_CD32): $(CD32_OBJS)
 	$(GCC_BIN)/m68k-amigaos-ld $(OPT_RELEASE_LINK) -o $(MAIN_CD32) $(AGA_OBJS)
 	
 ../data/hw_tester: $(HWT_OBJS)
 	$(GCC_BIN)/m68k-amigaos-ld $(OPT_RELEASE_LINK) -o ../data/hw_tester  $(HWT_OBJS)
 	
-#$(MAIN_OCS): $(OCS_OBJS)
-#	$(GCC_BIN)/m68k-amigaos-ld $(OPT_RELEASE_LINK) -o $(MAIN_OCS) $(OCS_OBJS)
 
 ram.o: ram.68k options.inc
 	$(ASM) ram.68k -o ram.o
@@ -91,10 +94,8 @@ maincpu_bank5_rom.o: maincpu_bank5_rom.68k
 	
 maincpu_8000_020.o: maincpu_8000.68k options.inc double_dragon.inc data.inc
 	$(ASM_020) maincpu_8000.68k -o maincpu_8000_020.o
-
 subcpu_c000_020.o: subcpu_c000.68k options.inc double_dragon_sub.inc data.inc
-	$(ASM_020) subcpu_c000.68k -o subcpu_c000_020.o
-	
+	$(ASM_020) subcpu_c000.68k -o subcpu_c000_020.o	
 maincpu_bank0_code_4000_020.o: maincpu_bank0_code_4000.68k options.inc double_dragon.inc 
 	$(ASM_020) maincpu_bank0_code_4000.68k -o maincpu_bank0_code_4000_020.o
 maincpu_bank1_code_4000_020.o: maincpu_bank1_code_4000.68k options.inc double_dragon.inc 
@@ -106,6 +107,21 @@ maincpu_bank4_code_4000_020.o: maincpu_bank4_code_4000.68k options.inc double_dr
 maincpu_bank5_code_4000_020.o: maincpu_bank5_code_4000.68k options.inc double_dragon.inc 
 	$(ASM_020) maincpu_bank5_code_4000.68k -o maincpu_bank5_code_4000_020.o
 	
+maincpu_8000_000.o: maincpu_8000.68k options.inc double_dragon.inc data.inc
+	$(ASM_000) maincpu_8000.68k -o maincpu_8000_000.o
+subcpu_c000_000.o: subcpu_c000.68k options.inc double_dragon_sub.inc data.inc
+	$(ASM_000) subcpu_c000.68k -o subcpu_c000_000.o	
+maincpu_bank0_code_4000_000.o: maincpu_bank0_code_4000.68k options.inc double_dragon.inc 
+	$(ASM_000) maincpu_bank0_code_4000.68k -o maincpu_bank0_code_4000_000.o
+maincpu_bank1_code_4000_000.o: maincpu_bank1_code_4000.68k options.inc double_dragon.inc 
+	$(ASM_000) maincpu_bank1_code_4000.68k -o maincpu_bank1_code_4000_000.o
+maincpu_bank3_code_4000_000.o: maincpu_bank3_code_4000.68k options.inc double_dragon.inc 
+	$(ASM_000) maincpu_bank3_code_4000.68k -o maincpu_bank3_code_4000_000.o
+maincpu_bank4_code_4000_000.o: maincpu_bank4_code_4000.68k options.inc double_dragon.inc 
+	$(ASM_000) maincpu_bank4_code_4000.68k -o maincpu_bank4_code_4000_000.o
+maincpu_bank5_code_4000_000.o: maincpu_bank5_code_4000.68k options.inc double_dragon.inc 
+	$(ASM_000) maincpu_bank5_code_4000.68k -o maincpu_bank5_code_4000_000.o
+	
 $(PROGNAME)_000.o: $(PROGNAME).68k options.inc double_dragon.inc sounds.inc data.inc
 	$(ASM_000) $(PROGNAME).68k -o $(PROGNAME)_000.o
 hw_tester.o: $(AMIGASRC)/hw_tester.68k options.inc double_dragon.inc data.inc $(AMIGASRC)/ReadJoyPad.i $(AMIGASRC)/palette.68k  $(AMIGASRC)/sound_entries.68k  $(AMIGASRC)/scroll_table_64.68k
@@ -114,8 +130,8 @@ amiga_aga.o: $(AMIGASRC)/amiga.68k $(AMIGASRC)/sprite_groups.68k $(AMIGASRC)/con
 	$(ASM_020) --defsym OPT_CD32_VERSION=0 -I$(AMIGASRC) -I$(AMIGASRC)/mit_includes $(AMIGASRC)/amiga.68k -o amiga_aga.o
 amiga_cd32.o: $(AMIGASRC)/amiga.68k $(AMIGASRC)/context.68k options.inc double_dragon.inc data.inc $(AMIGASRC)/ReadJoyPad.i $(AMIGASRC)/sound_entries.68k  $(AMIGASRC)/scroll_table_64.68k
 	$(ASM_020) --defsym OPT_CD32_VERSION=1 -I$(AMIGASRC) -I$(AMIGASRC)/mit_includes $(AMIGASRC)/amiga.68k -o amiga_aga.o
-amiga_ocs.o: $(AMIGASRC)/amiga.68k options.inc double_dragon.inc data.inc $(AMIGASRC)/ReadJoyPad.i $(AMIGASRC)/ocs/palette.68k $(AMIGASRC)/sound_entries.68k $(AMIGASRC)/scroll_table_16.68k
-	$(ASM_000) -I$(AMIGASRC)/ocs -I$(AMIGASRC) -I$(AMIGASRC)/mit_includes $(AMIGASRC)/amiga.68k -o amiga_ocs.o
+amiga_ecs.o: $(AMIGASRC)/amiga.68k options.inc double_dragon.inc data.inc $(AMIGASRC)/ReadJoyPad.i $(AMIGASRC)/sound_entries.68k $(AMIGASRC)/scroll_table_16.68k
+	$(ASM_000) -I$(AMIGASRC)/ecs -I$(AMIGASRC) -I$(AMIGASRC)/mit_includes $(AMIGASRC)/amiga.68k -o amiga_ecs.o
 amiga_shared.o: $(AMIGASRC)/amiga_shared.68k options.inc  data.inc $(AMIGASRC)/sound_entries.68k $(AMIGASRC)/ReadJoyPad.i
 	$(ASM) -I$(AMIGASRC) -I$(AMIGASRC)/mit_includes $(AMIGASRC)/amiga_shared.68k -o amiga_shared.o
 vbr.o: $(AMIGASRC)/vbr.68k
@@ -141,22 +157,19 @@ $(HW_TESTER_AGA) : $(AMIGASRC)/HWTesterHD.s
 	wdate.py> datetime
 	$(WHDASM) -o $(HW_TESTER_AGA) $(AMIGASRC)/HWTesterHD.s
 	
-$(WHDLOADER_AGA_DEV) : $(AMIGASRC)/$(PROGNAME)HD.s $(AMIGASRC)/savegame.s
+$(WHDLOADER_AGA_DEV) : $(AMIGASRC)/$(PROGNAME)_AGA_HD.s $(AMIGASRC)/savegame.s
 	wdate.py> datetime
-	$(WHDASM) -DDEV_MODE -o $(WHDLOADER_AGA_DEV) $(AMIGASRC)/$(PROGNAME)HD.s
+	$(WHDASM) -DDEV_MODE -o $(WHDLOADER_AGA_DEV) $(AMIGASRC)/$(PROGNAME)_AGA_HD.s
 
-$(WHDLOADER_AGA) : $(AMIGASRC)/$(PROGNAME)HD.s
+$(WHDLOADER_AGA) : $(AMIGASRC)/$(PROGNAME)_AGA_HD.s
 	wdate.py> datetime
-	$(WHDASM) -o $(WHDLOADER_AGA) $(AMIGASRC)/$(PROGNAME)HD.s
+	$(WHDASM) -o $(WHDLOADER_AGA) $(AMIGASRC)/$(PROGNAME)_AGA_HD.s
 
-$(WHDLOADER_CD32) : $(AMIGASRC)/$(PROGNAME)HD.s
-	wdate.py> datetime
-	$(WHDASM) -DCD32_SLAVE -o $(WHDLOADER_CD32) $(AMIGASRC)/$(PROGNAME)HD.s
 
-$(WHDLOADER_OCS) : $(AMIGASRC)/ocs/$(PROGNAME)HD.s
+$(WHDLOADER_ECS) : $(AMIGASRC)/$(PROGNAME)HD.s
 	wdate.py> datetime
-	$(WHDASM) -o $(WHDLOADER_OCS) $(AMIGASRC)/ocs/$(PROGNAME)HD.s
+	$(WHDASM) -o $(WHDLOADER_ECS) $(AMIGASRC)/$(PROGNAME)HD.s
 	
-$(WHDLOADER_OCS_CHIP) : $(AMIGASRC)/ocs/$(PROGNAME)HD.s
+$(WHDLOADER_ECS_DEV) : $(AMIGASRC)/$(PROGNAME)HD.s
 	wdate.py> datetime
-	$(WHDASM) -DCHIP_ONLY -o $(WHDLOADER_OCS_CHIP) $(AMIGASRC)/ocs/$(PROGNAME)HD.s
+	$(WHDASM) -DCHIP_ONLY -o $(WHDLOADER_ECS_DEV) $(AMIGASRC)/$(PROGNAME)HD.s

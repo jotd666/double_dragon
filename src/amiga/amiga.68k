@@ -32,13 +32,14 @@ AttnFlags = 0x128
 AFB_68010 = 0
 AFB_68020 = 1
 
-*NO68020 = 1
-
-
-NB_PLAYFIELD_PLANES = 7  | this is externally defined!!
-	.ifndef	NB_PLAYFIELD_PLANES
-	.error	"NB_PLAYFIELD_PLANES must be defined via --defsym"
+	.ifdef	NONAGA_VERSION
+NO68020 = 1
+NB_PLAYFIELD_PLANES = 5
+	.else
+NB_PLAYFIELD_PLANES = 7
 	.endif
+
+OPT_CD32_VERSION = 0
 
 NB_USED_COLOR_BANKS = 5  | 4+1 for sprites at color 128
 
@@ -62,7 +63,7 @@ GAME_MAX_SCROLL_X = 0x200
 GAME_MAX_SCROLL_Y = 0x200
 BG_TILE_WIDTH = 16
 
-FG_TILE_FILE_MAX_SIZE = 0x7B00
+FG_TILE_FILE_MAX_SIZE = 0x8000
 BG_TILE_FILE_MAX_SIZE = 250000
 SPRITE_FILE_MAX_SIZE = 0xC2000
 
@@ -128,7 +129,6 @@ MIRROR_BIT = 3
 FLIP_BIT = 2
 
 
-MAP_CONTEXT = 7
 
 	.ifdef	RELEASE
 
@@ -1622,7 +1622,14 @@ force_all_screen_redraw:
 	* force tile draw
 
 	movem.l	d1-d2/d5-d6,-(a7)
+
+	.ifdef MC68020
 	move.w	(a6,d7.w*2),d6
+	.else
+	move.w	d7,d6
+	add.w	d7,d6
+	move.w	(a6,d6.w),d6
+	.endif
 	lea		(a5,d6.w),a0		| now DD address
 	move.b	(a0)+,d1			| read tile code
 	move.b	(a0),d0				| read tile color/attribute
@@ -1676,8 +1683,14 @@ draw_column_tiles:
 	* force tile draw
 	* retrieve tile values
 	* this requires to convert the GnG address to DD address
-	
+
+	.ifdef MC68020
 	move.w	(a6,d7.w*2),d6
+	.else
+	move.w	d7,d6
+	add.w	d7,d6
+	move.w	(a6,d6.w),d6
+	.endif
 	lea		(a5,d6.w),a0		| now DD address
 	move.b	(a0)+,d1			| read tile code
 	move.b	(a0),d0				| read tile color/attribute
@@ -2070,54 +2083,7 @@ level1_interrupt:
 	jbsr	set_bobs_bitplanes
 	.endif
 	
-	.ifndef	RELEASE
-	tst.b	osd_debug_active
-	jeq		0f
-	.set	row,2
-	GET_MEMORY_START_IN_A6
-	WRITE_TEXT	scrollx_text,2
-	WRITE_TEXT	scrolly_text,2
-	WRITE_TEXT	hscrollx_text,2
-	WRITE_TEXT	last_x_offset_text,2
-	WRITE_TEXT	debug_1_text,4
-	WRITE_TEXT	debug_2_text,4
-	WRITE_TEXT	debug_3_text,4
 
-	.set		row,2
-	WRITE_HEX	game_scroll_x,3
-	WRITE_HEX	game_scroll_y,3
-	WRITE_HEX	host_scroll_x,3
-	WRITE_HEX	x_offset,3
-	lea		display_slots,a2
-	tst.b	(a2)
-	jeq		10f
-	move.w	(2,a2),d0
-	move.w	(a6,d0.w),d0
-	WRITE_HEX	d0,3
-	.set	row,row-1	
-10:
-	.set	row,row+1	
-	addq	#4,a2
-	tst.b	(a2)
-	jeq		10f
-	move.w	(2,a2),d0
-	move.w	(a6,d0.w),d0
-	WRITE_HEX	d0,3
-	.set	row,row-1		
-10:
-	.set	row,row+1	
-	addq	#4,a2
-	tst.b	(a2)
-	jeq		10f
-	move.w	(2,a2),d0
-	move.w	(a6,d0.w),d0
-	WRITE_HEX	d0,3
-	.set	row,row-1		
-10:
-	
-	
-0:
-	.endif
 	
 	
 	lea	_custom,a5
@@ -2613,12 +2579,7 @@ update_one_bob:
 	move.l	(a0,d3.w),d4
 	.endif
 	jeq		2f		| invalid clut: can happen in transition phases
-	.ifndef	RELEASE
-	cmp.l	#0xCCCCCCCC,d4	| opportunitic way to detect whdload unitialized shit
-	jne		0f
-	BREAKPOINT	"uninit!!"
-0:
-	.endif
+
 	move.l	d4,a0
 
 	move.w	(a0)+,d4		| height
@@ -2640,7 +2601,6 @@ update_one_bob:
 	jra		103f
 101:
 	btst	#MIRROR_BIT,d6
-	jeq		102f
 102:
 	sne		d3		| convert attribute to boolean 0/ff for mirror_sprite_planes
 	jbsr	mirror_sprite_planes
@@ -4724,6 +4684,10 @@ blit_title_pic:
 	moveq	#0,d5
 
 	jbsr	blit_planes_any_internal_no_cookie_cut
+	
+	* blitter chain: end of blits for now
+	COMMIT_BLITLIST
+	
 	rts
 
 	
