@@ -23,7 +23,7 @@ outdir.mkdir(exist_ok=True)
 for file in ["readme.md",f"DoubleDragon_AGA.slave"]:
     shutil.copy(progdir / file,outdir)
 
-datadir = progdir / "data"
+datadir = progdir / "data" / "aga"
 shutil.copy(progdir / "assets" / "amiga" / "DoubleDragonArcade.info",outdir)
 
 

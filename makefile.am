@@ -51,7 +51,7 @@ $(AMIGA_SHELL): shell.o
 
 # don't clean shell program, update_floppy will need it
 clean:
-	del $(AGA_OBJS) $(CD32_OBJS) $(OCS_OBJS) "$(MAIN_AGA)" "$(MAIN_OCS)"
+	del $(AGA_OBJS) $(CD32_OBJS) $(ECS_OBJS) "$(MAIN_AGA)" "$(MAIN_ECS)"
 	
 shell.o: $(AMIGASRC)/shell.68k
 	$(ASM_000) -I$(AMIGASRC) -I$(AMIGASRC)/mit_includes $(AMIGASRC)/shell.68k -o shell.o
