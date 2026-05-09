@@ -2249,9 +2249,14 @@ blit_background:
 	* adjust offset X: X//8
 	lsr.w	#3,d0
 	lea		mulBG_NB_BYTES_PER_ROW_table(pc),a4
+	.ifndef	MC68020
 	add.w	d1,d1
 	* add Y offset: Y*NB_BYTES_PER_ROW
 	add.w	(a4,d1.w),d0
+	add.w	(a4,d1.w),d0
+	.else
+	add.w	(a4,d1.w*2),d0
+	.endif
 	* same offset for source and destination
 	add.w	d0,a1
 	add.w	d0,a0
@@ -3830,12 +3835,13 @@ osd_set_bank:
 * (faster than calling update tile each byte)
 * plus it also clears the extra sprite bitplane, which is helpful in credits!
 osd_clear_bg_screen:
-	movem.l	d0/a0/a1/a5,-(a7)
+	movem.l	d0/a0/a1/a2/a5,-(a7)
 
 
 	
 	move.l	playfield_drawed_screen_ptr,a0
 	move.l	playfield_displayed_screen_ptr,a1
+	lea		background_restore_buffer,a2
 	move.w	#(BG_SCREEN_PLANE_SIZE*NB_PLAYFIELD_PLANES)/16-1,d0
 	* avoid conflict with sprite background restore that may be still running
 	
@@ -3846,9 +3852,10 @@ osd_clear_bg_screen:
 	.rept	4
 	clr.l	(a0)+
 	clr.l	(a1)+
+	clr.l	(a2)+
 	.endr
 	dbf		d0,0b
-	movem.l	(a7)+,d0/a0/a1/a5
+	movem.l	(a7)+,d0/a0/a1/a2/a5
 	rts
 	
 * load the context manually. Trying to track down
