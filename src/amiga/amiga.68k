@@ -33,7 +33,6 @@ AFB_68010 = 0
 AFB_68020 = 1
 
 	.ifdef	NONAGA_VERSION
-NO68020 = 1
 NB_PLAYFIELD_PLANES = 5
 	.else
 NB_PLAYFIELD_PLANES = 7
@@ -2253,7 +2252,6 @@ blit_background:
 	add.w	d1,d1
 	* add Y offset: Y*NB_BYTES_PER_ROW
 	add.w	(a4,d1.w),d0
-	add.w	(a4,d1.w),d0
 	.else
 	add.w	(a4,d1.w*2),d0
 	.endif
@@ -2272,7 +2270,6 @@ blit_background:
 
 	lea		copy_function_table,a4
 	add.w	(a4,d2.w),a4	| pick proper erase func (4,6,8 width are the only cases here)
-	move.b	#0,0x110
     lsr.w   #1,d2		| blit width
     add.w   d2,d4       | blit height
 	
@@ -2456,6 +2453,7 @@ really_update_sprites:
 	cmp.b	#LIFT_TILE,d6
 	jeq		5f		| static object: never erase
 55:	
+	move.b	#0,0x110
 	jbsr		blit_background
 5:
 	dbf		d7,1b	
@@ -3049,7 +3047,7 @@ blit_planes_any_internal_no_cookie_cut:
 	tst	d1
     beq.b   2f    | optim
     lea		mulBG_NB_BYTES_PER_ROW_table,a4
-	.ifdef	NO68020
+	.ifndef	MC68020
 	add.w	d1,d1
     move.w  (a4,d1.w),d1	| y times 40
 	.else
@@ -3824,7 +3822,7 @@ osd_set_bank:
 	jcc		1f			| banks 6 & 7 are empty: do nothing
 	.endif
 	lea		bank_table,a0
-	.ifdef	NO68020
+	.ifndef	MC68020
 	add.w	d1,d1
 	add.w	d1,d1
 	move.l	(a0,d1.w),a1
@@ -4280,7 +4278,7 @@ update_bg_tile_gng:
 	
 	move.w	#NB_BG_PLANES-1,d4   | needed even if no tile
 	lea		mulBG_NB_BYTES_PER_ROW_table,A2
-	.ifdef	NO68020
+	.ifndef	MC68020
 	add.w	d1,d1
 	move.w	(a2,d1.w),d1
 	.else
@@ -4306,7 +4304,7 @@ update_bg_tile_gng:
 	move.l		bg_tile_table,d0
 	jeq		100f			| no context loaded: out
 	move.l	d0,a0
-	.ifdef	NO68020
+	.ifndef	MC68020
 	add.w	d2,d2
 	add.w	d2,d2	
 	move.l	(a0,d2.w),d0		| tile pointer
@@ -4319,7 +4317,7 @@ update_bg_tile_gng:
 	jne		12f
 	move.w	d7,-(a7)
 	add.w	#BG_SCREEN_TILE_ADDRESS,d7
-	.ifdef	NO68020
+	.ifndef	MC68020
 	lsr.w	#2,d2
 	.endif
 	*COLOR0_FLASH	0xF0F
@@ -4334,7 +4332,7 @@ update_bg_tile_gng:
 	
 	lsr.w	#3,d3		| tile_color = (attr >> 3) & 0x7
 	and.w	#0x7,d3
-	.ifdef	NO68020
+	.ifndef	MC68020
 	add.w	d3,d3
 	add.w	d3,d3
 	move.l	(a2,d3.w),d0			| pointer on tile bitplanes for that CLUT
@@ -4358,7 +4356,7 @@ update_bg_tile_gng:
 
 
 	move.l		mirror_jump_table,a0
-	.ifdef	NO68020
+	.ifndef	MC68020
 	add.w	d1,d1
 	add.w	d1,d1
 	move.l	(a0,d1.w),a0

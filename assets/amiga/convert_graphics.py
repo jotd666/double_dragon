@@ -8,7 +8,7 @@ sprite_context_list = ["intro","level_1","level_2","level_3","level_3_base","lev
 bg_tile_context_list = ["level_1_1","level_1_2","level_2","level_3_1","level_3_2","level_3_base",
 "level_4","outro"]
 #sprite_context_list = ["level_1"]
-#bg_tile_context_list = []
+bg_tile_context_list = []
 
 sprite_names = get_sprite_names()
 
@@ -349,7 +349,7 @@ dump=False,name_dict=None,cluts=None,tile_number=0,is_bob=False,size_table=None)
 ##                    wtile = new_tile
 
         for tile_number,wtile in enumerate(tileset_1):
-            if dump_it and wtile:
+            if dump and wtile:
                 bigprefix = "_xgrouped" if (wtile.size[0]>0x10) else ""
                 img = ImageOps.scale(wtile,5,resample=Image.Resampling.NEAREST)
                 if sprite_names:
@@ -547,6 +547,8 @@ def doit(aga,dump_it):
     data_xxx_dir = data_dir / subdir
     data_xxx_dir.mkdir(exist_ok=True)
 
+    # if 7 planes, we'll use 64 colors for each layer
+    # if 5 planes, we'll use 16 colors for each layer
     max_nb_sprite_colors = 1<<(nb_planes-1)
     max_nb_bg_tile_colors = max_nb_sprite_colors
 
@@ -564,7 +566,6 @@ def doit(aga,dump_it):
         fg_tile_set_list = []
 
         fg_tile_cluts = {}
-
 
         read_used_tiles(context/"fg_used_tiles",fg_tile_cluts,FG_NB_TILES,FG_NB_CLUTS)
 
@@ -744,6 +745,13 @@ def doit(aga,dump_it):
 
         read_used_tiles(pcontext/"used_sprites",sprite_cluts,SPRITE_NB_TILES,SPRITE_NB_CLUTS,size_table)
 
+        multi_clut = {k:v for k,v in sprite_cluts.items() if len(v)>1}
+
+        if aga:
+            lone_sprite_cluts = dict()
+        else:
+            # remove cluts to save memory & colors
+            lone_sprite_cluts = {k:[2] for k,v in sprite_cluts.items() if v==[2,3]}
 
         if dump_it:
             sdump_dir = dump_dir / "sprites"
@@ -781,6 +789,10 @@ def doit(aga,dump_it):
             size_table=size_table)
             sprite_set_list.append(tile_set)
 
+        if not aga:
+            # copy clut 3 in clut 2
+            sprite_set_list[3]=sprite_set_list[2]
+
         # compute palette & apply quantization if needed
         sprite_palette = quantize_image_sets(sprite_set_list,max_used_nb_sprite_colors,image_type="sprite",remove_color=magenta)
 
@@ -800,7 +812,8 @@ def doit(aga,dump_it):
         print(f"Used sprite colors: {len(sprite_palette)}")
 
 
-doit(aga=True,dump_it=dump_it)
+#doit(aga=True,dump_it=dump_it)
+doit(aga=False,dump_it=False)
 #doit(aga=False,dump_it=dump_it)
 
 DRAW_ALWAYS = 0

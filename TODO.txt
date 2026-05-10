@@ -1,5 +1,7 @@
 beta/final:
 
+- ECS version: merge used cluts 2 and 3 (not done) then overwrite 3 and 2 (done)
+- ECS version: scrolling not OK
 - in the end: perform fade out on tiles
 - ntsc support: shift lower part of sprites status screen up
 - base: whole column of tiles not drawn when switching 3 => 3 base (at times, emu & on real hw)
