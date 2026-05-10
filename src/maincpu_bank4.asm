@@ -193,7 +193,7 @@ pop_2_levels_41a1:
 41B3: 84 C0          ANDA   #$C0
 41B5: 81 40          CMPA   #$40
 41B7: 24 0E          BCC    $41C7
-41B9: EC A4          LDD    ,Y	; [bank_address]
+41B9: EC A4          LDD    ,Y	; [select_address] bank but 0 possibly because of level 4 end bug
 41BB: 93 64          SUBD   $64
 41BD: DD 62          STD    $62
 41BF: DC 5A          LDD    $5A
@@ -201,14 +201,14 @@ pop_2_levels_41a1:
 41C3: DD 5C          STD    $5C
 41C5: 20 18          BRA    $41DF
 41C7: 26 0E          BNE    $41D7
-41C9: EC A4          LDD    ,Y	; [bank_address]
+41C9: EC A4          LDD    ,Y	; [select_address]
 41CB: D3 64          ADDD   $64
 41CD: DD 62          STD    $62
 41CF: DC 5A          LDD    $5A
 41D1: D3 5E          ADDD   $5E
 41D3: DD 5C          STD    $5C
 41D5: 20 08          BRA    $41DF
-41D7: EC A4          LDD    ,Y	; [bank_address]
+41D7: EC A4          LDD    ,Y	; [select_address]
 41D9: DD 62          STD    $62
 41DB: DC 5A          LDD    $5A
 41DD: DD 5C          STD    $5C

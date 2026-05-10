@@ -3,16 +3,16 @@ beta/final:
 - in the end: perform fade out on tiles
 - ntsc support: shift lower part of sprites status screen up
 - base: whole column of tiles not drawn when switching 3 => 3 base (at times, emu & on real hw)
-- tiles not refreshed at fence level level 3, see if removing static sprite status for fence fixes it
 - profile / optimize
 - spike status: tag as non erase/girl hung too (and grouping issue here): test level 4
 - boss2: platform flashes at start
 - music cut when platform loop sound stops (level 2->3)
-
+- end: if punks escape and player is on the right of the arena, a bug occurs: possible lockup
+  after trying to mask it
 
 - enable blitter chaining to speed things up: intro showing (double buffering inversion
   apparently) then lock up when game starts WTF??
-- level 3/base: tiles not found/missing 1x 2x ??: E20, 6A6, 6AA
+
 - startup: restore palette, display fun things like PAULA OK, CIAB...
 - level 2 conveyor belt color changes is color cycling. Maybe simulate it during mainloop hook if 3C is within some values
   palette entry changes are 117F 117E 117D

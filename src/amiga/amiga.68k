@@ -2405,6 +2405,9 @@ really_update_sprites:
 	* erase previous BOBs *
 	***********************
 	move.l	bob_previous_drawed_sprites(pc),a4
+	move.l	(a4)+,d6		| value of scroll X/Y at the time of the draw
+	cmp.l	game_scroll_x,d6
+	seq		d6				| flag set: scrolling hasn't been updated since last draw
 	lea		_custom,a5
 
 
@@ -2427,6 +2430,8 @@ really_update_sprites:
 	move.w	(a4)+,d4			| height
 	move.w	(a4)+,d2		| width
 	move.w	(a4)+,d3		    | sprite type
+	tst.b	d6
+	jeq		55f				| scrolling active, don't try anything stupid
 				
 	* if elevator door is closed, don't erase it
 	* (avoids a lot of flickering)
@@ -2501,6 +2506,7 @@ really_update_sprites:
 	lea		(SPRITE_ADDRESS,a6),a0
     lea _custom,A5
 	move.l	bob_previous_drawed_sprites(pc),a6
+	move.l	game_scroll_x,(a6)+	| note down scrolling values at the current time
 	
 	moveq	#NB_TARGET_SPRITES-1,d7
 1:
@@ -3285,7 +3291,7 @@ bank_table:
 	.long	maincpu_bank5-0x4000
 	
 bob_previous_positions_1:
-	.fill NB_TARGET_SPRITES*PREVIOUS_SPRITE_SIZE , 1 , -1
+	.fill NB_TARGET_SPRITES*PREVIOUS_SPRITE_SIZE+4 , 1 , -1
 	
 bob_previous_drawed_sprites:
 	.long	bob_previous_positions_1
@@ -3295,7 +3301,7 @@ bob_previous_displayed_sprites:
 	.else
 	.long	bob_previous_positions_2	
 bob_previous_positions_2:
-	.fill NB_TARGET_SPRITES*PREVIOUS_SPRITE_SIZE , 1 , -1
+	.fill NB_TARGET_SPRITES*PREVIOUS_SPRITE_SIZE+4 , 1 , -1
 
 	.endif
 
