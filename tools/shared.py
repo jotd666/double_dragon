@@ -142,6 +142,13 @@ def load_mame_log(in_log,out_log,pcs,avoid_regs = ""):
     with open(out_log,"w") as fw:
         fw.writelines(lst)
 
+def get_original_instruction(line):
+    toks = line.split("| [")
+    if len(toks)==1:
+        return ""
+    inst = toks[1][6:].split("]")[0]
+    return inst
+
 def remove_code_range(lines,i,address,start,end):
     line = lines[i]
     if address is not None:
