@@ -347,8 +347,10 @@ _user:
 	move.b	d1,_keyexit
     move.l (a0)+,a2
 	move.l	a2,_resload
+	.ifndef	RELEASE
 	move.l	(a0)+,loadgame_function
 	move.l	(a0)+,savegame_function
+	.endif
 	* third button: green for jump
 	move.l	#JPF_BTN_GRN,_third_button_maps_to
 	
@@ -6011,10 +6013,12 @@ vbl_sync:
 	.word	0
 _resload:
 	.long	0
+	.ifndef	RELEASE
 loadgame_function:
 	.long	0
 savegame_function:
 	.long	0
+	.endif
 joypad_1_state:
 	.long	0
 joypad_2_state:

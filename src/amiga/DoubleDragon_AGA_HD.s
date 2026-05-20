@@ -12,7 +12,7 @@ EXPMEM = $800000
 SAVEGAME_SIZE = $0
 	ELSE
 EXPMEM = $200000
-SAVEGAME_SIZE = $2800
+SAVEGAME_SIZE = $2800    ; size needed for savegame code, not save game data itself
 	ENDC
 	
 BASE_CHIP = $400
