@@ -2227,7 +2227,6 @@ really_update_sprites:
 	cmp.b	#LIFT_TILE,d6
 	jeq		5f		| static object: never erase
 55:	
-	move.b	#0,0x110
 	jbsr		blit_background
 5:
 	dbf		d7,1b	
@@ -4797,10 +4796,9 @@ update_players_controls:
 	
 	move.b	#0x0F,d0
 	tst.b	(32,a0)		| "D" key
-	beq.b	0f
+	jeq		0f
 	bclr	#BIT_PUNCH_1P,d0
 0:	
-
 	btst	#JPB_BTN_RED,d1
 	jeq		0f
 	bclr	#BIT_PUNCH_1P,d0
@@ -4825,7 +4823,7 @@ update_players_controls:
 0:
 	move.b	d0,(port_2_3801,a6)
 	
-	move.b	#0x0F,d0
+	move.b	(extra_3802,a6),d0
 	tst.b	(45,a0)		| "4" key on keypad
 	beq.b	0f
 	bclr	#BIT_PUNCH_2P,d0
