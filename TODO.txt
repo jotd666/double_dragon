@@ -1,7 +1,4 @@
 beta/final:
- Please add keyboard control also for 2nd player which is missing.The combination of keyboard with joystick like competition Pro works well (keys and joystick) but only first player has this possibility
-
-- optimize: implement removal useless MAKE_A
 
 DD copy amiga merge context for 32 color full per-level
 
@@ -9,17 +6,14 @@ DD copy amiga merge context for 32 color full per-level
 - ECS version: scrolling not OK
 - in the end: perform fade out on tiles
 - ntsc support: shift lower part of sprites status screen up
-- base: whole column of tiles not drawn when switching 3 => 3 base (at times, emu & on real hw)
-- profile / optimize
-- spike status: tag as non erase/girl hung too
 - level 4: girl hanging: drawing issue here on original game right part of hair is shifted down
 - boss2: platform flashes at start
 - music cut when platform loop sound stops (level 2->3)
 - end: if punks escape and player is on the right of the arena, a bug occurs: possible lockup
   after trying to mask it
 
-- enable blitter chaining to speed things up: intro showing (double buffering inversion
-  apparently) then lock up when game starts WTF??
+- base: whole column of tiles not drawn when switching 3 => 3 base (at times, emu & on real hw): seems fixed
+- optimize: implement removal useless MAKE_A
 
 - startup: restore palette, display fun things like PAULA OK, CIAB...
 - level 2 conveyor belt color changes is color cycling. Maybe simulate it during mainloop hook if 3C is within some values
@@ -36,6 +30,8 @@ DD copy amiga merge context for 32 color full per-level
   diversity. Then EHB can also be used for tiles.
 - try simple HD loader, with a shell to select version & unpack exe+loadseg
 
+- enable blitter chaining to speed things up: intro showing (double buffering inversion
+  apparently) then lock up when game starts WTF??
 
 
 - save option trashes the sprites!!!

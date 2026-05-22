@@ -285,7 +285,7 @@ sub_c17c:
 	move.w	d1,(0X4c,a6)                    	| [$c187: std  $4c]
 * loop
 loop_c189:
-	OP_R_ON_DP_ADDRESS	move,0x4e,d0         | [$c189: lda  $4e]
+	OP_1_ON_DP_ADDRESS	tst,0x4e         | [$c189: lda  $4e]
 	jpl	sub_c191                           	| [$c18b: bpl  $c191]
 	OP_R_ON_DP_ADDRESS	move,0x50,d0         | [$c18d: lda  $50]
 	jra	sub_c194                           	| [$c18f: bra  $c194]
@@ -318,7 +318,7 @@ sub_c194:
 	and.b	#0xf0,d0                         	| [$c1af: anda #$f0]
 	cmp.b	#0x20,d0                         	| [$c1b1: cmpa #$20]
 	jcc	sub_c1bf                           	| [$c1b3: bcc  $c1bf]
-	OP_R_ON_DP_ADDRESS	move,0x5e,d0         | [$c1b5: lda  $5e]
+	OP_1_ON_DP_ADDRESS	tst,0x5e         | [$c1b5: lda  $5e]
 	jpl	sub_c1bf                           	| [$c1b7: bpl  $c1bf]
 	OP_R_ON_DP_ADDRESS	move,0x62,d0         | [$c1b9: lda  $62]
 	eor.b	#0x10,d0                         	| [$c1bb: eora #$10]

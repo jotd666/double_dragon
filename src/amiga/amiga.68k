@@ -496,13 +496,9 @@ _user:
 	btst	#1,d1
 	sne		skip_intro_flag
 	btst	#2,d1
-	sne		no_level_music_flag
-	btst	#3,d1
-	sne		service_mode_flag
-	.ifne	OPT_CD32_VERSION
-	* force the flag
-	st		no_level_music_flag
-	.endif
+	sne		arrows_for_player_2_flag
+
+
 
 
 	move.l	cheat_flags,d0
@@ -1352,6 +1348,7 @@ force_all_screen_redraw:
 	jbsr	force_fg_tiles_redraw
 	lea		_custom,a5
 	REALLY_WAIT_BLIT
+	jbsr	osd_disable_interrupts
 	
 	* wait more
 	move.w	#100,d0
@@ -1415,6 +1412,9 @@ force_all_screen_redraw:
 	add.w	#BG_TILE_WIDTH,d5	| keep track of current "scroll"
 	dbf		d2,0b
 	clr.w	x_offset
+	
+	jbsr	osd_enable_interrupts
+	
 	rts
 	
 	
@@ -4718,13 +4718,7 @@ purge_sprite_log_data:
 	rts
 	.endif
 
-	
-* < D1: previous state
-update_players_controls:
-	moveq	#-1,d0
-
-	lea		keyboard_table(pc),a0
-
+check_arrows:
 	tst.b	(0x4C,a0)		| "up" key
 	beq.b	0f
 	bclr	#BIT_UP,d0
@@ -4740,6 +4734,17 @@ update_players_controls:
 	tst.b	(0x4E,a0)		| "->" key
 	beq.b	0f
 	bclr	#BIT_RIGHT,d0
+0:
+	rts
+	
+* < D1: previous state
+update_players_controls:
+	moveq	#-1,d0
+
+	lea		keyboard_table(pc),a0
+	tst.b	arrows_for_player_2_flag
+	jne		0f
+	jbsr	check_arrows
 0:
 	tst.b	(34,a0)		| "Q" key on US
 	beq.b	0f
@@ -4805,11 +4810,32 @@ update_players_controls:
 	moveq	#-1,d0
 	move.l	joypad_2_state(pc),d1
 	jbsr	decode_joypad_controls
+	
+	tst.b	(47,a0)		| "6" key on keypad
+	beq.b	0f
+	bclr	#BIT_KICK,d0
+0:
+	tst.b	(62,a0)		| "8" key on keypad
+	beq.b	0f
+	bclr	#BIT_JUMP,d0
+0:
+	tst.b	arrows_for_player_2_flag
+	jeq		0f
+	jbsr	check_arrows
+0:
 	move.b	d0,(port_2_3801,a6)
+	
+	move.b	#0x0F,d0
+	tst.b	(45,a0)		| "4" key on keypad
+	beq.b	0f
+	bclr	#BIT_PUNCH_2P,d0
+0:	
+
 	btst	#JPB_BTN_RED,d1
 	jeq		20f
-	bclr	#BIT_PUNCH_2P,(extra_3802,a6)
+	bclr	#BIT_PUNCH_2P,d0
 20:
+	move.b	d0,(extra_3802,a6)
 	rts
 	
 decode_joypad_controls:
@@ -5921,10 +5947,9 @@ dip_switches_2:
 	.byte	0
 ntsc_flag:
 	.byte 	0
-service_mode_flag:
+arrows_for_player_2_flag:
 	.byte	0
-no_level_music_flag:
-	.byte	0
+
 mid_screen_interrupt_count:
 	.byte	0
 	.align	2

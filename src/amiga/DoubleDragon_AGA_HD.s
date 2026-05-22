@@ -51,6 +51,7 @@ _config
 	IFD		DEV_MODE
 	dc.b	"C2:X:skip introduction:1;"
 	ENDC
+	dc.b	"C2:X:use keyboard arrows for player 2:2;"
 
 	dc.b	"C3:L:difficulty level:easy,normal,hard,hardest;"
 	dc.b	"C4:L:start lives:2,3,4,9 (cheat);"
@@ -62,7 +63,7 @@ _config
 	ENDC
 
 DECL_VERSION:MACRO
-	dc.b	"1.1"
+	dc.b	"1.2"
 	IFD BARFLY
 		dc.b	" "
 		INCBIN	"T:date"

@@ -33,6 +33,10 @@ def doit(width):
             bitplanelib.dump_asm_bytes(bytes(items),f,True)
     return items
 
-if __name__ == "__main__":
-    doit(width = 32)   # FMODE=1
+def main():
+    doit(width = 16)   # FMODE=0
     doit(width = 64)   # FMODE=3
+
+if __name__ == "__main__":
+    main()
+

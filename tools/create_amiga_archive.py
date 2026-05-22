@@ -1,8 +1,12 @@
 import subprocess,os,glob,shutil,pathlib
+import gen_scroll_table
 
 progdir = pathlib.Path(os.path.abspath(os.path.join(os.path.dirname(__file__),os.pardir)))
 
 gamename = "double_dragon"
+
+gen_scroll_table.main()
+
 # JOTD path for cranker, adapt to whatever your path is :)
 os.environ["PATH"] += os.pathsep+r"K:\progs\cli"
 
@@ -13,12 +17,12 @@ subprocess.check_call(cmd_prefix+["clean"],cwd=progdir / "src")
 subprocess.check_call(cmd_prefix+["RELEASE_BUILD=1"],cwd=progdir / "src")
 # create archive
 
-outdir = progdir / "DoubleDragon"
+outdir = progdir / "dist" / "DoubleDragon"
 
 if os.path.exists(outdir):
     shutil.rmtree(outdir)
 
-outdir.mkdir(exist_ok=True)
+outdir.mkdir(exist_ok=True,parents=True)
 
 for file in ["readme.md",f"DoubleDragon_AGA.slave"]:
     shutil.copy(progdir / file,outdir)
@@ -35,7 +39,8 @@ for x in datadir.glob("used_sprites"):
 
 
 dataout = outdir / "data"
-dataout.mkdir(exist_ok=True)
+
+dataout.mkdir(exist_ok=True,parents=True)
 
 pack_data = True  # set to false to create unpacked distros (much faster)
 
@@ -64,3 +69,9 @@ exename = "DoubleDragon_aga"
 # we can't really use cranker now, seems to crash at startup. Never mind!!
 shutil.copy(datadir / exename,dataout / exename)
 subprocess.run(cmd_prefix+["clean"],cwd=os.path.join(progdir,"src"))
+
+arcname = progdir / f"DoubleDragon_HD.lha"
+arcname.unlink(missing_ok=True)
+cmd = ["lha","-r","a",arcname,"*"]
+
+subprocess.run(cmd,cwd=outdir.parent,check=True)
