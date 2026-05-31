@@ -13,7 +13,7 @@ def merge(used_name,context,nb_items,nb_cluts,sprites=False,overwrite=False):
 
 
     # merge sprites with existing file + moves from level 1
-    used_dump = data_dir / os.path.basename(used_name)
+    used_dump = data_dir / "aga" / os.path.basename(used_name)
     if used_dump.exists():
         with open(used_dump,"rb") as f:
             new_contents = f.read()

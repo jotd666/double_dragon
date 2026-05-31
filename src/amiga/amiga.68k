@@ -1698,8 +1698,9 @@ level3_interrupt:
 
 	lea		_custom,A5
 	* ack vbl twice (040/pistorm bug)
+	.rept	2
 	move.w	#0x20,(intreq,a5)
-	move.w	#0x20,(intreq,a5)	
+	.endr		
 	jra	3f
 1:
 	.ifndef	RELEASE
@@ -1710,8 +1711,9 @@ level3_interrupt:
 	.endif
 	* has to be blitter operation completed: handle next blit
 	* ack blitter int twice (040/pistorm bug)
-	move.w	#0x40,(intreq,a5)
+	.rept	2
 	move.w	#0x40,(intreq,a5)	
+	.endr
 
 	
 	PROCESS_ONE_BLIT
@@ -2042,10 +2044,12 @@ blit_background:
 	subq	#1,d6       | for cpu restore mode
     lsl.w   #6,d4
 
+	.ifeq	OPT_BLIT_CHAIN_MODE
 	lea		copy_function_table,a4
 	add.w	(a4,d2.w),a4	| pick proper erase func (4,6,8 width are the only cases here)
     lsr.w   #1,d2		| blit width
     add.w   d2,d4       | blit height
+	.endif
 	
 	* pre-load
     * always the same settings

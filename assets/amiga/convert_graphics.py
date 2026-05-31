@@ -7,7 +7,7 @@ from shared import *
 sprite_context_list = ["intro","level_1","level_2","level_3","level_3_base","level_4"]
 bg_tile_context_list = ["level_1_1","level_1_2","level_2","level_3_1","level_3_2","level_3_base",
 "level_4","outro"]
-#sprite_context_list = ["level_1"]
+sprite_context_list = ["level_1"]
 bg_tile_context_list = []
 
 sprite_names = get_sprite_names()
@@ -812,8 +812,8 @@ def doit(aga,dump_it):
         print(f"Used sprite colors: {len(sprite_palette)}")
 
 
-#doit(aga=True,dump_it=dump_it)
-doit(aga=False,dump_it=False)
+doit(aga=True,dump_it=dump_it)
+#doit(aga=False,dump_it=False)
 #doit(aga=False,dump_it=dump_it)
 
 DRAW_ALWAYS = 0
