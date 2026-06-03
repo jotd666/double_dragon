@@ -43,6 +43,14 @@
 *   only the screen switch order and location changes (in double buffered mode, if
 *   you race the beam, there's nothing to do)
 *
+*
+* the 4 variables to configure, here or in your main code
+* values 0/1
+*
+*OPT_BLIT_CHAIN_MODE = 0
+*OPT_VBLIT_SCROLL_MODE = 0
+*OPT_VBLIT_MIRROR_MODE = 0
+*OPT_BLIT_WAIT_DEBUG = 0
 ******************
 * blitter macros *
 ******************
@@ -65,12 +73,16 @@ s0\@:
 ********************
 
 	.if		OPT_BLIT_CHAIN_MODE==0
+	
+	.macro	HW_BLITTER_ACTIVE_TEST	label
+	BTST	#6,(dmaconr,a5)
+	BNE.S	\label
+	.endm
 	.macro	REALLY_WAIT_BLIT
 	CHECK_A5_IS_CUSTOM
 	move.w	#0x8400,(dmacon,a5)		| blitter high priority
 wait\@:
-	BTST	#6,(dmaconr,a5)
-	BNE.S	wait\@
+	HW_BLITTER_ACTIVE_TEST	wait\@
 	move.w	#0x0400,(dmacon,a5)		| blitter normal priority
 	.endm
 	
@@ -124,6 +136,10 @@ wait\@:
 	* no blitlists, empty
 	.macro	DECL_BLITLISTS	size
 	.endm
+	.macro	SW_BLITTER_ACTIVE_TEST	label
+	.endm
+	.macro	SW_BLITTER_INACTIVE_SET
+	.endm
 	
 	.endif
 	
@@ -135,9 +151,16 @@ wait\@:
 	.macro	WAIT_BLIT
 	* do nothing!
 	.endm
+	.macro	SW_BLITTER_ACTIVE_TEST	label
+	tst.b	blitter_chain_running
+	jne		\label
+	.endm
+	.macro	SW_BLITTER_INACTIVE_SET
+	clr.b	blitter_chain_running
+	.endm
 	
 	.macro	REALLY_WAIT_BLIT
-	.ifdef	DEBUG_BLIT_WAIT
+	.if	OPT_BLIT_WAIT_DEBUG
 sw\@:
 	* if blitter isn't finished, then we wait
 	* this is called from level 1 interrupt so
@@ -152,11 +175,9 @@ sw\@:
 	* if blitter isn't finished, then we wait
 	* this is called from level 1 interrupt so
 	* blitter interrupts can interrupt
-	tst.b	blitter_chain_running
-	jne		sw\@
+	SW_BLITTER_ACTIVE_TEST	sw\@
 	.endif
 	.endm
-
 	
 	.macro	NEW_BLITLIST
 	lea		blitter_list_1,a0
@@ -166,12 +187,12 @@ sw\@:
 	* blitter chain has completed: we can switch lists
 	eor.b	#1,blitter_list_toggle
 	jne		s0\@
-	move.l	a0,drawn_blitter_list_ptr
-	move.l	a1,filled_blitter_list_ptr
-	jra		s1\@
-s0\@:
 	move.l	a1,drawn_blitter_list_ptr
 	move.l	a0,filled_blitter_list_ptr
+	jra		s1\@
+s0\@:
+	move.l	a0,drawn_blitter_list_ptr
+	move.l	a1,filled_blitter_list_ptr
 s1\@:
 	.endm
 	
@@ -207,15 +228,17 @@ okay\@:
 s\@:
 	.endm
 
-	* we know that size_command_issued is set
 	.macro	FORCE_PROCESS_BLITS
 	* signal that the blitter chain is now running
 	st.b	blitter_chain_running
 	* start first blit from outside the blitter interrupt to
 	* start the chain reaction reading from drawn_blitter_list_ptr
-    move.w	#0x0040,(intena,a5)
+	* turn off blitter interrupts to make sure that the first
+	* blit is atomic and not interrupted by the blitter interrupt!
+	move.w	#0x0040,(intena,a5)
 	PROCESS_ONE_BLIT
-    move.w	#0x8040,(intena,a5)
+	* turn on blitter interrupts again
+	move.w	#0x8040,(intena,a5)
 	* clear size command issued for next blitlist creation
 	clr.b	size_command_issued
 	.endm
@@ -250,6 +273,14 @@ blitter_list_toggle:
 	.align	2
 	.endm
 	
+	.macro	CHECK_BLITTER_IDLE
+	.ifndef RELEASE
+	BTST	#6,(dmaconr,a5)
+	jeq		idle\@
+	BREAKPOINT	"PROCESS_ONE_BLIT called while blitter is busy!"
+idle\@:
+	.endif
+	.endm
 	.macro	COMMIT_BLITLIST
 	* complete filled list
 	move.l	filled_blitter_list_ptr,a0
@@ -262,7 +293,7 @@ blitter_list_toggle:
 	CHECK_A5_IS_CUSTOM
 	move.l	drawn_blitter_list_ptr,a0
 
-	move.w	#-1,d2
+	moveq	#-1,d2
 b0\@:
 	move.w	(a0)+,d0		| blitter register
 	jmi		b1\@			| end of command or end of list
@@ -319,8 +350,7 @@ f1\@:
 	
 	* bit not set: word command
 	move.w	(a0)+,d1		| word value
-	
-	
+	CHECK_BLITTER_IDLE
 	move.w	d1,(a5,d0.w)	| word blitter command
 	jra		b0\@		| not size: continue parsing list
 	* long write command
@@ -340,7 +370,7 @@ g1\@:
 	* bit 14 set: long command
 	move.l	(a0)+,d1		| long value
 
-	
+	CHECK_BLITTER_IDLE
 	move.l	d1,(a5,d0.w)	| long blitter command
 	jra		b0\@		| not size: continue parsing list
 b1\@:
@@ -349,8 +379,10 @@ b1\@:
 	jeq		b3\@		| -1: end of command
 	* -2: end of list: nothing to do, we're done for that frame
 	clr.b	blitter_chain_running
+	jra		b4\@		| no need to update pointer, the list is done
 b3\@:
 	move.l	a0,drawn_blitter_list_ptr
+b4\@:
 	.endm
 	
 	.macro	LOAD_FILLED_LIST
@@ -403,38 +435,32 @@ c1\@:
 	move.w	#\offset,d6
 	bset	#14,d6		| bit set to tell it's a long command
 	move.w 	d6,(a5)+
+	move.w	(a7)+,d6
 	move.l	\value,(a5)+
 	STORE_FILLED_LIST
-	move.w	(a7)+,d6
 	move.l	(a7)+,a5
 	.endm
 	
 	.macro	WRITE_BLITTER_REG_WORD	value,offset
 	move.l	a5,-(a7)
-	move.w	d6,-(a7)
 	LOAD_FILLED_LIST
 	.if	\offset==bltsize
 	.error  "WRITE_BLITTER_REG_WORD doesn't accept bltsize arg, use WRITE_BLITTER_REG_SIZE"
 	.endif
-	move.w	#\offset,d6
-	move.w 	d6,(a5)+
+	move.w	#\offset,(a5)+
 	move.w	\value,(a5)+
 	STORE_FILLED_LIST
-	move.w	(a7)+,d6
 	move.l	(a7)+,a5
 	.endm
 	
 	.macro	WRITE_BLITTER_REG_SIZE	value
 	move.l	a5,-(a7)
-	move.w	d6,-(a7)
 	LOAD_FILLED_LIST
-	move.w	#bltsize,d6
-	move.w 	d6,(a5)+
+	move.w	#bltsize,(a5)+
 	move.w	\value,(a5)+
 	st.b	size_command_issued
 	move.w	#-1,(a5)+		| end of command
 	STORE_FILLED_LIST
-	move.w	(a7)+,d6
 	move.l	(a7)+,a5
 	.endm
 	.endif

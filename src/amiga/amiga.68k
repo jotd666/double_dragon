@@ -6,7 +6,7 @@
 OPT_BLIT_CHAIN_MODE = 0		| enable blitter chaining
 OPT_VBLIT_MIRROR_MODE = 1		| we need to mirror sprites on the fly, just before blitting them if needed
 OPT_VBLIT_SCROLL_MODE = 0		| we need to store scrolling values else BOBs can shake
-
+OPT_BLIT_WAIT_DEBUG = 0
 
 
 start:
@@ -1717,6 +1717,14 @@ level3_interrupt:
 
 	
 	PROCESS_ONE_BLIT
+	SW_BLITTER_ACTIVE_TEST	0f
+	jbsr	set_scroll_values
+	jbsr	set_bobs_bitplanes
+	.ifne	OPT_ENABLE_DOUBLE_BUFFERING
+	jbsr		switch_screen_buffers
+	.endif
+
+0:
 
 3:
     movem.l (a7)+,d0-d7/a0-a6
@@ -1809,13 +1817,6 @@ level1_interrupt:
 
 	
 	.if		OPT_BLIT_CHAIN_MODE==1
-	jbsr	set_scroll_values
-	jbsr	set_bobs_bitplanes
-	.ifne	OPT_ENABLE_DOUBLE_BUFFERING
-	jbsr		switch_screen_buffers
-	.endif
-
-	lea		_custom,a5
 	* start the chain reaction
 	tst.b	size_command_issued
 	jne		0f
@@ -1826,6 +1827,7 @@ level1_interrupt:
 	jra		1f
 0:
 	.endif
+	lea		_custom,a5
 	FORCE_PROCESS_BLITS
 1:
 	* fill the blitter command list while blitter interrupt 
@@ -2047,9 +2049,9 @@ blit_background:
 	.ifeq	OPT_BLIT_CHAIN_MODE
 	lea		copy_function_table,a4
 	add.w	(a4,d2.w),a4	| pick proper erase func (4,6,8 width are the only cases here)
+	.endif
     lsr.w   #1,d2		| blit width
     add.w   d2,d4       | blit height
-	.endif
 	
 	* pre-load
     * always the same settings
@@ -3562,12 +3564,8 @@ osd_enable_interrupts:
 	.endif
 	rts
 osd_disable_interrupts:
-	.if		OPT_BLIT_CHAIN_MODE==1
 	* leave keyboard
-	move.w	#0x0064,_custom+intena
-	.else
 	move.w	#0x0024,_custom+intena
-	.endif
 	rts
 	
 
