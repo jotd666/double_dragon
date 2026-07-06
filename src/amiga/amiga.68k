@@ -4399,8 +4399,7 @@ update_fg_tile:
 	move.w	(a1,d7.w),d0
 	moveq	#0,d1
 	move.b	d0,d1
-	rol.w	#8,d0
-	and.w	#0xFF,d0
+	lsr.w	#8,d0
 
 	
 	* select which destination sprites (0-3)
