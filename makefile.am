@@ -38,7 +38,6 @@ WHDASM = vasmm68k_mot -DDATETIME -I$(HDBASE)/amiga39_JFF_OS/include -I$(WHDBASE)
 
 # leave MAIN_OBJ first
 MEM_OBJS = maincpu_rom.o subcpu_rom.o ram.o maincpu_bank0_rom.o maincpu_bank1_rom.o maincpu_bank2_rom.o maincpu_bank3_rom.o maincpu_bank4_rom.o maincpu_bank5_rom.o
-HWT_OBJS = hw_tester.o sounds.o ram.o  vbr.o ReadJoyPad.o ptplayer.o 
 AGA_OBJS = amiga_aga.o sounds.o maincpu_8000_020.o subcpu_c000_020.o maincpu_bank0_code_4000_020.o  maincpu_bank1_code_4000_020.o  maincpu_bank3_code_4000_020.o  maincpu_bank4_code_4000_020.o maincpu_bank5_code_4000_020.o $(MEM_OBJS) vbr.o ReadJoyPad.o ptplayer.o
 ECS_OBJS = amiga_ecs.o sounds.o maincpu_8000_000.o subcpu_c000_000.o maincpu_bank0_code_4000_000.o  maincpu_bank1_code_4000_020.o  maincpu_bank3_code_4000_020.o  maincpu_bank4_code_4000_000.o maincpu_bank5_code_4000_000.o $(MEM_OBJS) vbr.o ReadJoyPad.o ptplayer.o
 
@@ -51,7 +50,7 @@ $(AMIGA_SHELL): shell.o
 
 # don't clean shell program, update_floppy will need it
 clean:
-	del $(AGA_OBJS) $(CD32_OBJS) $(ECS_OBJS) "$(MAIN_AGA)" "$(MAIN_ECS)"
+	del $(AGA_OBJS) $(CD32_OBJS) $(ECS_OBJS) $(MAIN_AGA)
 	
 shell.o: $(AMIGASRC)/shell.68k
 	$(ASM_000) -I$(AMIGASRC) -I$(AMIGASRC)/mit_includes $(AMIGASRC)/shell.68k -o shell.o

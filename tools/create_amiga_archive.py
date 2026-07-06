@@ -1,11 +1,15 @@
 import subprocess,os,glob,shutil,pathlib
-import gen_scroll_table
+import gen_scroll_table,gen_bg_layout
 
 progdir = pathlib.Path(os.path.abspath(os.path.join(os.path.dirname(__file__),os.pardir)))
 
 gamename = "double_dragon"
 
+for s in ["convert_sounds.py","convert_graphics.py"]:
+    subprocess.check_call(["cmd","/c",s],cwd=os.path.join(progdir,"assets","amiga"))
+
 gen_scroll_table.main()
+gen_bg_layout.main()
 
 # JOTD path for cranker, adapt to whatever your path is :)
 os.environ["PATH"] += os.pathsep+r"K:\progs\cli"

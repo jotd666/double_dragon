@@ -279,7 +279,7 @@ def convert():
 
     for x in ["ecs","aga"]:
         subdir = data_dir / x
-        subdir.mkdir(exist_ok=True)
+        subdir.mkdir(exist_ok=True,parents=True)
         for f in sound_dir.glob("*.mod"):
                 shutil.copy(f,subdir)
 
