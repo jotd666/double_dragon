@@ -329,6 +329,7 @@ def get_sprite_names():
     rval |= {k:"player" for k in range(0x25C,0x2C5)}
     rval |= {k:"player" for k in range(0x300,0x348)}
     rval |= {k:"player" for k in range(0x850,0x861)}
+    rval |= {k:"player" for k in range(0xBEE,0xBF7)}
     rval |= {k:"player" for k in range(0x84A,0x84F)}
     rval |= {k:"player" for k in range(0xFEC,0xFF8)}
     rval |= {k:"player" for k in range(0xB00,0xB37)}
@@ -372,7 +373,7 @@ def get_sprite_names():
         rval[x] = "giant"
     for x in boss_frames:
         rval[x] = "boss"
-
+    rval |= {k:"player" for k in range(0xFF8,0xFFF)}  # bad, different clut
     return rval
 
 def get_mirror_sprites():
