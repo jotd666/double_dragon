@@ -2,6 +2,9 @@ beta/final:
 
 DD copy amiga merge context for 32 color full per-level
 
+- profile WHILE PLAYING, then identify max occs and create 3 profile classes
+  low freq medium freq high freq, then dispatch those freqs in commented source
+
 - ECS version: merge used cluts 2 and 3 (not done) then overwrite 3 and 2 (done)
 - ECS version: scrolling not OK
 - in the end: perform fade out on tiles
@@ -12,7 +15,6 @@ DD copy amiga merge context for 32 color full per-level
 - end: if punks escape and player is on the right of the arena, a bug occurs: possible lockup
   after trying to mask it
 
-- base: whole column of tiles not drawn when switching 3 => 3 base (at times, emu & on real hw): seems fixed
 - optimize: implement removal useless MAKE_A
 
 - startup: restore palette, display fun things like PAULA OK, CIAB...
