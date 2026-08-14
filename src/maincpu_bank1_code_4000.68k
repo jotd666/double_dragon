@@ -4041,22 +4041,22 @@ lb1_572c:
 lb1_572d:
 	move.w	#player_1_struct_03a2,d3        	| [$572d: ldy    #player_1_struct_03a2] [freq=low, count=11%]
 	jbsr	lb1_5755                          	| [$5731: jsr    $5755] [freq=low, count=11%]
-	jbsr	l_f900                          	| [$5734: jsr    $f900] [freq=low, count=11%]
-	rts                                    	| [$5737: rts] [freq=low, count=11%]
+	jra	l_f900                          	| [$5734: jsr    $f900] [freq=low, count=11%]
+	                                    	| [$5737: rts] [freq=low, count=11%]
 
 lb1_5738:
 	move.w	#player_2_struct_0400,d3        	| [$5738: ldy    #player_2_struct_0400]
 	jbsr	lb1_5755                          	| [$573c: jsr    $5755]
-	jbsr	l_f90a                          	| [$573f: jsr    $f90a]
-	rts                                    	| [$5742: rts]
+	jra	l_f90a                          	| [$573f: jsr    $f90a]
+	                                    	| [$5742: rts]
 
 lb1_5743:
 	move.w	#player_1_struct_03a2,d3        	| [$5743: ldy    #player_1_struct_03a2]
 	jbsr	lb1_5755                          	| [$5747: jsr    $5755]
 	move.w	#player_2_struct_0400,d3        	| [$574a: ldy    #player_2_struct_0400]
 	jbsr	lb1_5755                          	| [$574e: jsr    $5755]
-	jbsr	l_f914                          	| [$5751: jsr    $f914]
-	rts                                    	| [$5754: rts]
+	jra	l_f914                          	| [$5751: jsr    $f914]
+	                                    	| [$5754: rts]
 
 lb1_5755:
 	sub.w	#0xf,d5                          	| [$5755: leas   -$f,s] [alloc_locals] [freq=low, count=11%]
@@ -4301,7 +4301,6 @@ lb1_589b:
 	move.w	#0x00a7,d3                      	| [$58a9: ldy    #$00a7]
 	OP_1_ON_DP_ADDRESS	tst,0x04             | [$58ad: tst    $04]
 	jeq	lb1_58bd                           	| [$58af: beq    $58bd]
-	PUSH_SR
 	move.w	d2,d1                           	| [$58b1: tfr    x,d]
 	ror.w	#8,d2                            	| [...]
 	move.b	d2,d0                           	| [...] set MSB
@@ -4309,7 +4308,6 @@ lb1_589b:
 	move.w	d3,d2                           	| [$58b3: tfr    y,x]
 	MAKE_D                                 	| [...]
 	move.w	d1,d3                           	| [$58b5: tfr    d,y]
-	POP_SR
 	GET_DP_ADDRESS	0x00                    	| [$58b7: ldd    $00]
 	LOAD_D                                 	| [$58b7: ldd    $00]
 	OP_W_ON_DP_ADDRESS	move,0x01,d0         | [$58b9: sta    $01]
@@ -4778,19 +4776,6 @@ lb1_5b90:
 	movem.l	(sp)+,D0/D1/d2/d3/d4           	| [$5ba2: puls   d,x,y,u,pc] [freq=low, count=2%]
 	rts                                    	| [...]
 
-	sub.b	#0x00,d0                         	| [$5ba4: suba   #$00]
-	GET_ADDRESS	0x0e4a                     	| [$5ba6: lda    $0e4a]
-	move.b	(a0),d0                         	| [...]
-	and.b	#0x01,d0                         	| [$5ba9: anda   #$01]
-	move.w	#0x5bb4,d3                      	| [$5bab: ldy    #$5bb4]
-	moveq	#0,d6                            	| [...]
-	move.b	d0,d6                           	| [...] as byte
-	DO_EXTB	d6                             	| [...] with sign extension
-	GET_REG_BANK_ADDRESS_FROM_REG	d6,d3         	| [$5baf: ldb    a,y] [bank_address]
-	move.b	(a0),d1                         	| [...]
-	GET_REG_ADDRESS	0xd,d2                 	| [$5bb1: cmpb   $d,x]
-	cmp.b	(a0),d1                          	| [...]
-	rts                                    	| [$5bb3: rts]
 
 lb1_5bb6:
 	movem.l	D0/D1/d2/d3,-(sp)              	| [$5bb6: pshs   y,x,d]
@@ -4835,10 +4820,7 @@ lb1_5be7:
 	rts                                    	| [...]
 	rts                                    	| [$5beb: rts]
 
-	CLR_XC_FLAGS                           	| [$5bec: andcc  #$fe]
-	movem.l	(sp)+,D0/D1/d2/d3              	| [$5bee: puls   d,x,y,pc]
-	rts                                    	| [...]
-	rts                                    	| [$5bf0: rts]
+
 lb1_5bf1:
 	movem.l	D0/D1/d2/d3,-(sp)              	| [$5bf1: pshs   y,x,d]
 	move.b	#0x01,d0                        	| [$5bf3: lda    #$01]

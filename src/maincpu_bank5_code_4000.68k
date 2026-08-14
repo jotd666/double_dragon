@@ -4038,8 +4038,8 @@ lb5_66a4:
 	VIDEO_WORD_DIRTY | [...]
 	GET_REG_ADDRESS	0x1,d5                 	| [$66a6: dec    $1,s] [local] [freq=high, count=100%]
 	subq.b	#1,(a0)                         	| [...]
-	GET_REG_ADDRESS	0,d5                   	| [$66a8: dec    ,s] [local] [freq=high, count=100%]
-	subq.b	#1,(a0)                         	| [...]
+	                   	| [$66a8: dec    ,s] [local] [freq=high, count=100%]
+	subq.b	#1,-(a0)                         	| [...]
 	jne	lb5_66a4                           	| [$66aa: bne    $66a4] [freq=high, count=100%]
 	GET_REG_ADDRESS	0x1,d5                 	| [$66ac: tst    $1,s] [local] [freq=low, count=20%]
 	tst.b	(a0)                             	| [...]
@@ -4098,7 +4098,6 @@ lb5_66e1:
 	addq.w	#1,d5
 	move.b	(a0),d0
 	rts
-	rts                                    	| [...]
 
 play_game_sound_66e6:
 	OP_R_ON_DP_ADDRESS	move,game_in_play_0026,d1| [$66e6: ldb    game_in_play_0026]
@@ -4439,14 +4438,12 @@ lb5_68d4:
 	GET_REG_ADDRESS	0x8,d2                 	| [$68e5: addd   $8,x] [freq=low, count=20%]
 	ADD_W_TO_REG	a0,d1                          	| [...]
 	MAKE_A                                 	| [...]
-	MAKE_D                                 	| [...]
 	GET_REG_ADDRESS	0,d5                   	| [$68e7: std    ,s] [local] [freq=low, count=20%]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	GET_DP_ADDRESS	0x3f                    	| [$68e9: ldd    $3f] [freq=low, count=20%]
 	LOAD_D                                 	| [$68e9: ldd    $3f] [freq=low, count=20%]
 	add.w	#0x0180,d1                       	| [$68eb: addd   #$0180] [freq=low, count=20%]
 	MAKE_A                                 	| [...]
-	MAKE_D
 	GET_REG_ADDRESS	0,d5                   	| [$68ee: cmpd   ,s] [local] [freq=low, count=20%]
 	CMP_W_TO_REG	a0,d1                          	| [...]
 	jcs	lb5_6909                           	| [$68f1: bcs    $6909] [freq=low, count=20%]
@@ -4456,7 +4453,6 @@ lb5_68d4:
 	MAKE_A                                 	| [...]
 	cmp.b	#0xff,d0                         	| [$68f8: cmpa   #$ff] [freq=low, count=20%]
 	jeq	lb5_6912                           	| [$68fa: beq    $6912] [freq=low, count=20%]
-	MAKE_D
 	GET_DP_ADDRESS	0x3f                    	| [$68fc: cmpd   $3f] [freq=low, count=20%]
 	CMP_W_TO_REG	a0,d1                          	| [...]
 	jcs	lb5_6912                           	| [$68ff: bcs    $6912] [freq=low, count=20%]
@@ -4521,7 +4517,7 @@ lb5_6949:
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x01,d0                         	| [$6953: cmpa   #$01]
 	jcc	lb5_69c3                           	| [$6955: bcc    $69c3]
-	jcs	lb5_6964                           	| [$6957: bcs    $6964]
+	jra	lb5_6964                           	| [$6957: bcs    $6964]
 lb5_6959:
 	cmp.b	#0x04,d0                         	| [$6959: cmpa   #$04] [freq=low, count=10%]
 	jne	lb5_69c3                           	| [$695b: bne    $69c3] [freq=low, count=10%]
@@ -4533,7 +4529,7 @@ lb5_6964:
 	GET_REG_ADDRESS	0x1b,d2                	| [$6964: lda    $1b,x]
 	move.b	(a0),d0                         	| [...]
 	and.b	#0x3f,d0                         	| [$6967: anda   #$3f]
-	tst.b	d0                               	| [$6969: cmpa   #$00]
+	                               	| [$6969: cmpa   #$00]
 	jeq	lb5_697c                           	| [$696b: beq    $697c]
 	cmp.b	#0x10,d0                         	| [$696d: cmpa   #$10]
 	jne	lb5_69c3                           	| [$696f: bne    $69c3]

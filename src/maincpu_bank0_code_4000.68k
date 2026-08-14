@@ -603,13 +603,20 @@ lb0_4228:
 lb0_update_sprite_memory_4231:          	| [global]
 	move.w	#sprite_memory_2081,d2          	| [$4231: ldx    #sprite_memory_2081] source: subcpu exchange memory [freq=low, count=0%]
 	move.w	#sprite_memory_2800,d3          	| [$4234: ldy    #sprite_memory_2800] destination: sprite memory [freq=low, count=0%]
-lb0_4238:
-	GET_REG_ADDRESS	0,d2                   	| [$4238: ldd    ,x++] [freq=high, count=100%]
-	addq.w	#2,d2                           	| [...]
-	LOAD_D                                 	| [$4238: ldd    ,x++] [freq=high, count=100%]
+	* optimized manually because often called
 	GET_REG_ADDRESS	0,d3                   	| [$423a: std    ,y++] [freq=high, count=100%]
-	addq.w	#2,d3                           	| [...]
-	MOVE_W_FROM_REG	d1,a0                         	| [...]
+	move.l	a0,a2
+	GET_REG_ADDRESS	0,d2                   	| [$4238: ldd    ,x++] [freq=high, count=100%]
+lb0_4238:
+	addq.w	#2,d2                           	| [...]
+	.ifdef	MC68020
+	move.w	(a0)+,d1	| odd addresses are slow to read but still faster than byte per byte
+	.else
+	* odd addresses aren't supported
+	LOAD_D                                 	| [$4238: ldd    ,x++] [freq=high, count=100%]
+	addq.w	#2,a0
+	.endif
+	move.w	d1,(a2)+   	| [$423a: std    ,y++] [freq=high, count=100%]
 	cmp.w	#0x21fd,d2                       	| [$423c: cmpx   #$21fd] [freq=high, count=100%]
 	jcs	lb0_4238                           	| [$423f: bcs    $4238] [freq=high, count=100%]
 	rts                                    	| [$4241: rts] [freq=low, count=0%]
@@ -629,11 +636,8 @@ lb0_424b:
 	jbsr	multiply_ab                       	| [$424f: mul] [freq=low, count=2%]
 	MAKE_D                                 	| [...]
 	add.w	#0x0060,d1                       	| [$4250: addd   #$0060] [freq=low, count=2%]
-	PUSH_SR                                	| [...]
 	MAKE_A                                 	| [...]
-	MAKE_D                                 	| [...]
 	move.w	d1,d4                           	| [$4253: tfr    d,u] [freq=low, count=2%]
-	POP_SR
 	GET_REG_ADDRESS	0,d4                   	| [$4255: lda    ,u] [freq=low, count=2%]
 	move.b	(a0),d0                         	| [...]
 	jeq	lb0_4277                           	| [$4257: beq    $4277] [freq=low, count=2%]
@@ -645,10 +649,8 @@ lb0_425f:
 	GET_REG_ADDRESS	0x2,d4                 	| [$425f: ldb    $2,u]
 	move.b	(a0),d1                         	| [...]
 	moveq	#0,d0                            	| [$4261: clra]
-	PUSH_SR
 	MAKE_D                                 	| [...]
 	move.w	d1,d2                           	| [$4262: tfr    d,x]
-	POP_SR
 	GET_REG_ADDRESS	0x3,d4                 	| [$4264: ldb    $3,u]
 	move.b	(a0),d1                         	| [...]
 	PUSH_SR
@@ -679,45 +681,6 @@ lb0_4277:
 	movem.l	(sp)+,d4                       	| [$4283: puls   dp,u,pc] [freq=low, count=0%]
 	rts                                    	| [...]
 
-	PUSH_SR                                	| [$4285: pshs   y,x,d,cc]
-	movem.l	D0/D1/d2/d3,-(sp)              	| [$4285: pshs   y,x,d,cc]
-	OP_R_ON_DP_ADDRESS	move,game_in_play_0026,d1| [$4287: ldb    game_in_play_0026]
-	jne	lb0_4294                           	| [$4289: bne    $4294]
-	GET_ADDRESS	0x3804                     	| [$428b: ldb    $3804]
-	move.b	(a0),d1                         	| [...]
-	and.b	#0x04,d1                         	| [$428e: andb   #$04]
-	jne	lb0_4294                           	| [$4290: bne    $4294]
-	OP_1_ON_DP_ADDRESS	clr,0x56             | [$4292: clr    $56]
-lb0_4294:
-	OP_R_ON_DP_ADDRESS	move,0x56,d0         | [$4294: lda    $56]
-	jeq	lb0_42b2                           	| [$4296: beq    $42b2]
-lb0_4298:
-	OP_R_ON_DP_ADDRESS	move,0x58,d0         | [$4298: lda    $58]
-	GET_ADDRESS	0x3a08                     	| [$429a: sta    $3a08]
-	move.b	d0,(a0)                         	| [...]
-	moveq	#0,d1                            	| [$429d: clrb]
-	move.w	#0x0059,d2                      	| [$429e: ldx    #$0059]
-	move.w	#0x0058,d3                      	| [$42a1: ldy    #$0058]
-lb0_42a5:
-	moveq	#0,d6                            	| [...]
-	move.b	d1,d6                           	| [...] as byte
-	DO_EXTB	d6                             	| [...] with sign extension
-	GET_REG_ADDRESS_FROM_REG	d6,d2         	| [$42a5: lda    b,x]
-	move.b	(a0),d0                         	| [...]
-	moveq	#0,d6                            	| [...]
-	move.b	d1,d6                           	| [...] as byte
-	DO_EXTB	d6                             	| [...] with sign extension
-	GET_REG_ADDRESS_FROM_REG	d6,d3         	| [$42a7: sta    b,y]
-	move.b	d0,(a0)                         	| [...]
-	addq.b	#1,d1                           	| [$42a9: incb]
-	cmp.b	#0x03,d1                         	| [$42aa: cmpb   #$03]
-	jcs	lb0_42a5                           	| [$42ac: bcs    $42a5]
-	OP_W_ON_DP_ADDRESS	subq,0x56,#1         | [$42ae: dec    $56]
-	jne	lb0_4298                           	| [$42b0: bne    $4298]
-lb0_42b2:
-	movem.l	(sp)+,D0/D1/d2/d3              	| [$42b2: puls   cc,d,x,y,pc]
-	POP_SR                                 	| [$42b2: puls   cc,d,x,y,pc]
-	rts                                    	| [...]
 
 lb0_42b4:                               	| [global]
 	PUSH_SR                                	| [$42b4: pshs   d,cc]
@@ -868,7 +831,6 @@ lb0_436b:
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	GET_REG_ADDRESS	0x49,d2                	| [$436f: ldd    $49,x] [freq=low, count=0%]
 	LOAD_D                                 	| [$436f: ldd    $49,x] [freq=low, count=0%]
-	MAKE_D
 	GET_REG_ADDRESS	0,d5                   	| [$4372: cmpd   ,s] [local] [freq=low, count=0%]
 	addq.w	#0x2,d5                         	| [$4375: leas   $2,s] [free_locals] [freq=low, count=0%]
 	CMP_W_TO_REG	a0,d1                          	| [...]
