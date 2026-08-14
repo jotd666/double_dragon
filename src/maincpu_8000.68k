@@ -14184,7 +14184,6 @@ l_e5f0:
 	add.w	#0x000f,d1                       	| [$e600: addd   #$000f]
 	MAKE_A                                 	| [...]
 	and.b	#0xf0,d1                         	| [$e603: andb   #$f0]
-	MAKE_D                                 	| [...]
 	GET_REG_ADDRESS	0x2,d5                 	| [$e605: std    $2,s] [local]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 l_e607:
@@ -14242,12 +14241,9 @@ l_e62f:
 	LOAD_D                                 	| [$e640: ldd    $a,s] [local]
 	add.w	#0x0010,d1                       	| [$e642: addd   #$0010]
 	MAKE_A                                 	| [...]
-	MAKE_D                                 	| [...]
 	| [$e645: std    $a,s] [local]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
-	| [$e647: ldd    $a,s] [local]
-	LOAD_D                                 	| [$e647: ldd    $a,s] [local]
-	MAKE_D
+	                                 	| [$e647: ldd    $a,s] [local] loading the same value: skip
 	GET_REG_ADDRESS	0x6,d5                 	| [$e649: cmpd   $6,s] [local]
 	CMP_W_TO_REG	a0,d1                          	| [...]
 	jeq	l_e66d                             	| [$e64c: beq    $e66d]
@@ -14259,7 +14255,6 @@ l_e62f:
 	LOAD_D                                 	| [$e653: ldd    $e,s] [local]
 	sub.w	#0x0020,d1                       	| [$e655: subd   #$0020]
 	MAKE_A                                 	| [...]
-	MAKE_D                                 	| [...]
 	| [$e658: std    $e,s] [local]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	GET_REG_ADDRESS	0xd,d5                 	| [$e65a: ldb    $d,s] [local]
@@ -14283,10 +14278,8 @@ l_e66d:
 	LOAD_D                                 	| [$e66d: ldd    $8,s] [local]
 	add.w	#0x0010,d1                       	| [$e66f: addd   #$0010]
 	MAKE_A                                 	| [...]
-	MAKE_D                                 	| [...]
 	| [$e672: std    $8,s] [local]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
-	MAKE_D
 	GET_REG_ADDRESS	0x2,d5                 	| [$e674: cmpd   $2,s] [local]
 	CMP_W_TO_REG	a0,d1                          	| [...]
 	jeq	l_e67b                             	| [$e677: beq    $e67b]
@@ -14448,7 +14441,6 @@ l_e71c:
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	| [$e734: ldd    $8,s] [local]
 	LOAD_D                                 	| [$e734: ldd    $8,s] [local]
-	MAKE_D
 	GET_REG_ADDRESS	0x2,d5                 	| [$e736: cmpd   $2,s] [local]
 	CMP_W_TO_REG	a0,d1                          	| [...]
 	jeq	l_e75d                             	| [$e739: beq    $e75d]
@@ -14614,12 +14606,10 @@ l_e7c7:
 	POP_SR
 	OP_R_ON_DP_ADDRESS	move,bank_switch_copy_3a,d0| [$e7f5: lda    bank_switch_copy_3a]
 	move.l	d0,-(sp)                        	| [$e7f7: pshs   a]
-	PUSH_SR
 	move.w	d2,d1                           	| [$e7f9: tfr    x,d]
 	ror.w	#8,d2                            	| [...]
 	move.b	d2,d0                           	| [...] set MSB
 	ror.w	#8,d2                            	| [...]
-	POP_SR
 	subq.w	#0x3,d5                         	| [$e7fb: leas   -$3,s] [alloc_locals]
 	GET_REG_ADDRESS	0,d5                   	| [$e7fd: sta    ,s] [local]
 	move.b	d0,(a0)                         	| [...]
@@ -14633,11 +14623,8 @@ l_e7c7:
 	moveq	#0,d1                            	| [$e80a: clrb]
 	MAKE_D                                 	| [...]
 	add.w	#0x3000,d1                       	| [$e80b: addd   #$3000]
-	PUSH_SR                                	| [...]
 	MAKE_A                                 	| [...]
-	MAKE_D                                 	| [...]
 	move.w	d1,d2                           	| [$e80e: tfr    d,x]
-	POP_SR
 	GET_REG_ADDRESS	0x2,d5                 	| [$e810: clr    $2,s] [local]
 	clr.b	(a0)                         	| [...]
 l_e812:
@@ -14802,25 +14789,13 @@ l_e8a4:
 	moveq	#0,d1                            	| [$e8b3: clrb]
 	MAKE_D                                 	| [...]
 	add.w	#bank_address_4000,d1            	| [$e8b4: addd   #bank_address_4000]
-	PUSH_SR                                	| [...]
 	MAKE_A                                 	| [...]
-	MAKE_D                                 	| [...]
 	move.w	d1,d3                           	| [$e8b7: tfr    d,y]
-	POP_SR
 	movem.l	(sp)+,d0                       	| [$e8b9: puls   a]
 	MAKE_D                                 	| [...]
 	movem.l	(sp)+,d2                       	| [$e8bb: puls   x,pc]
 	rts                                    	| [...]
-	movem.l	d2/d3,-(sp)                    	| [$e8bd: pshs   y,x]
-	jbsr	l_e8c8                            	| [$e8bf: jsr    $e8c8]
-	PUSH_SR
-	MAKE_D                                 	| [...]
-	move.w	d1,d2                           	| [$e8c2: tfr    d,x]
-	POP_SR
-	GET_REG_ADDRESS	0,d2                   	| [$e8c4: ldd    ,x]
-	LOAD_D                                 	| [$e8c4: ldd    ,x]
-	movem.l	(sp)+,d2/d3                    	| [$e8c6: puls   x,y,pc]
-	rts                                    	| [...]
+	
 
 l_e8c8:
 	movem.l	d2/d3,-(sp)                    	| [$e8c8: pshs   y,x]
@@ -14939,27 +14914,9 @@ negate_d_e94f:
 	COM	d1                                 	| [$e950: comb]
 	MAKE_D                                 	| [...]
 	add.w	#0x0001,d1                       	| [$e951: addd   #$0001]
-	PUSH_SR                                	| [...]
 	MAKE_A                                 	| [...]
-	POP_SR                                 	| [...]
 	rts                                    	| [$e954: rts]
 
-	move.l	d0,-(sp)                        	| [$e955: pshs   a]
-	MAKE_D                                 	| [...]
-	GET_REG_ADDRESS	0x1,d3                 	| [$e957: addd   $1,y]
-	ADD_W_TO_REG	a0,d1                          	| [...]
-	MAKE_A                                 	| [...]
-	| [$e959: std    $1,y]
-	MOVE_W_FROM_REG	d1,a0                         	| [...]
-	movem.l	(sp)+,d1                       	| [$e95b: puls   b]
-	SEX                                    	| [$e95d: sex]
-	move.b	#0x00,d6 | [...]
-	addx.b	d6,d0                        	| [$e95e: adca   #$00]
-	GET_REG_ADDRESS	0,d3                   	| [$e960: adda   ,y]
-	add.b	(a0),d0                          	| [...]
-	| [$e962: sta    ,y]
-	move.b	d0,(a0)                         	| [...]
-	rts                                    	| [$e964: rts]
 
 l_e965:
 	movem.l	D0/D1/d2/d3/d4,-(sp)           	| [$e965: pshs   u,y,x,d]
@@ -15634,26 +15591,26 @@ l_fab8:
 l_fad0:
 	jbsr	save_and_switch_to_bank_1_fda0    	| [$fad0: jsr    save_and_switch_to_bank_1_fda0]
 	jbsr	lb1_4042                          	| [$fad3: jsr    lb1_4042]
-	jbsr	restore_previous_bank_fdb2        	| [$fad6: jsr    restore_previous_bank_fdb2]
-	rts                                    	| [$fad9: rts]
+	jra	restore_previous_bank_fdb2        	| [$fad6: jsr    restore_previous_bank_fdb2]
+	                                    	| [$fad9: rts]
 
 l_fada:
 	jbsr	switch_to_bank_5_fc82             	| [$fada: jsr    switch_to_bank_5_fc82]
 	jbsr	lb5_4093                          	| [$fadd: jsr    lb5_4093]
-	jbsr	switch_to_bank_0_fc8f             	| [$fae0: jsr    switch_to_bank_0_fc8f]
-	rts                                    	| [$fae3: rts]
+	jra	switch_to_bank_0_fc8f             	| [$fae0: jsr    switch_to_bank_0_fc8f]
+	                                    	| [$fae3: rts]
 
 l_fae4:
 	jbsr	switch_to_bank_5_fc82             	| [$fae4: jsr    switch_to_bank_5_fc82]
 	jbsr	lb5_405a                          	| [$fae7: jsr    lb5_405a]
-	jbsr	switch_to_bank_0_fc8f             	| [$faea: jsr    switch_to_bank_0_fc8f]
-	rts                                    	| [$faed: rts]
+	jra	switch_to_bank_0_fc8f             	| [$faea: jsr    switch_to_bank_0_fc8f]
+	                                    	| [$faed: rts]
 
 l_faee:
 	jbsr	switch_to_bank_5_fc82             	| [$faee: jsr    switch_to_bank_5_fc82] [freq=low, count=0%]
 	jbsr	lb5_40c3                          	| [$faf1: jsr    lb5_40c3] [freq=low, count=0%]
-	jbsr	switch_to_bank_0_fc8f             	| [$faf4: jsr    switch_to_bank_0_fc8f] [freq=low, count=0%]
-	rts                                    	| [$faf7: rts] [freq=low, count=0%]
+	jra	switch_to_bank_0_fc8f             	| [$faf4: jsr    switch_to_bank_0_fc8f] [freq=low, count=0%]
+	                                    	| [$faf7: rts] [freq=low, count=0%]
 
 add_to_score_faf8:
 	jra	lb0_add_to_score_401b              	| [$faf8: jmp    lb0_add_to_score_401b]
@@ -15704,130 +15661,124 @@ switch_to_saved_bank_fb34:
 	OP_W_ON_DP_ADDRESS	move,bank_switch_copy_3a,d0| [$fb3d: sta    bank_switch_copy_3a] [freq=low, count=3%]
 	jbsr	osd_set_bank |  [$fb3f: sta    bankswitch_3808] [freq=low, count=3%]
 	movem.l	(sp)+,d0                       	| [$fb42: puls   a,pc] [freq=low, count=3%]
-	POP_SR | restore carry
-	PUSH_SR                                	| [...]
 	MAKE_D                                 	| [...]
-	POP_SR                                 	| [...]
+	POP_SR | restore carry
 	rts                                    	| [...]
 
 l_fb44:
 	jbsr	save_and_switch_to_bank_0_fb24    	| [$fb44: jsr    save_and_switch_to_bank_0_fb24]
 	jbsr	lb0_4003                          	| [$fb47: jsr    lb0_4003]
-	jbsr	switch_to_saved_bank_fb34         	| [$fb4a: jsr    switch_to_saved_bank_fb34]
-	rts                                    	| [$fb4d: rts]
+	jra	switch_to_saved_bank_fb34         	| [$fb4a: jsr    switch_to_saved_bank_fb34]
+	                                    	| [$fb4d: rts]
 l_fb4e:
 	jbsr	save_and_switch_to_bank_0_fb24    	| [$fb4e: jsr    save_and_switch_to_bank_0_fb24] [freq=low, count=2%]
 	jbsr	lb0_4006                          	| [$fb51: jsr    lb0_4006] [freq=low, count=2%]
-	jbsr	switch_to_saved_bank_fb34         	| [$fb54: jsr    switch_to_saved_bank_fb34] [freq=low, count=2%]
-	rts                                    	| [$fb57: rts] [freq=low, count=2%]
+	jra	switch_to_saved_bank_fb34         	| [$fb54: jsr    switch_to_saved_bank_fb34] [freq=low, count=2%]
+	                                    	| [$fb57: rts] [freq=low, count=2%]
 l_fb58:
 	jbsr	save_and_switch_to_bank_0_fb24    	| [$fb58: jsr    save_and_switch_to_bank_0_fb24] [freq=low, count=1%]
 	jbsr	lb0_4009                          	| [$fb5b: jsr    lb0_4009] [freq=low, count=1%]
-	jbsr	switch_to_saved_bank_fb34         	| [$fb5e: jsr    switch_to_saved_bank_fb34] [freq=low, count=1%]
-	rts                                    	| [$fb61: rts] [freq=low, count=1%]
+	jra	switch_to_saved_bank_fb34         	| [$fb5e: jsr    switch_to_saved_bank_fb34] [freq=low, count=1%]
+	                                    	| [$fb61: rts] [freq=low, count=1%]
 l_fb62:
 	jbsr	save_and_switch_to_bank_0_fb24    	| [$fb62: jsr    save_and_switch_to_bank_0_fb24]
 	jbsr	lb0_400c                          	| [$fb65: jsr    lb0_400c]
-	jbsr	switch_to_saved_bank_fb34         	| [$fb68: jsr    switch_to_saved_bank_fb34]
-	rts                                    	| [$fb6b: rts]
+	jra	switch_to_saved_bank_fb34         	| [$fb68: jsr    switch_to_saved_bank_fb34]
+	                                    	| [$fb6b: rts]
 l_fb6c:
 	jbsr	save_and_switch_to_bank_0_fb24    	| [$fb6c: jsr    save_and_switch_to_bank_0_fb24]
 	jbsr	lb0_400f                          	| [$fb6f: jsr    lb0_400f]
-	jbsr	switch_to_saved_bank_fb34         	| [$fb72: jsr    switch_to_saved_bank_fb34]
-	rts                                    	| [$fb75: rts]
+	jra	switch_to_saved_bank_fb34         	| [$fb72: jsr    switch_to_saved_bank_fb34]
+	                                    	| [$fb75: rts]
 l_fb76:
 	jbsr	save_and_switch_to_bank_0_fb24    	| [$fb76: jsr    save_and_switch_to_bank_0_fb24]
 	jbsr	lb0_4012                          	| [$fb79: jsr    lb0_4012]
-	jbsr	switch_to_saved_bank_fb34         	| [$fb7c: jsr    switch_to_saved_bank_fb34]
-	rts                                    	| [$fb7f: rts]
+	jra	switch_to_saved_bank_fb34         	| [$fb7c: jsr    switch_to_saved_bank_fb34]
+	                                    	| [$fb7f: rts]
 
-	jbsr	save_and_switch_to_bank_0_fb24    	| [$fb80: jsr    save_and_switch_to_bank_0_fb24]
-	jbsr	lb0_4015                          	| [$fb83: jsr    lb0_4015]
-	jbsr	switch_to_saved_bank_fb34         	| [$fb86: jsr    switch_to_saved_bank_fb34]
-	rts                                    	| [$fb89: rts]
 l_fb8a:
 	jbsr	save_and_switch_to_bank_5_fc28    	| [$fb8a: jsr    save_and_switch_to_bank_5_fc28] [freq=low, count=0%]
 	jbsr	lb5_4006                          	| [$fb8d: jsr    lb5_4006] [freq=low, count=0%]
-	jbsr	switch_to_saved_bank_fc3a         	| [$fb90: jsr    switch_to_saved_bank_fc3a] [freq=low, count=0%]
-	rts                                    	| [$fb93: rts] [freq=low, count=0%]
+	jra	switch_to_saved_bank_fc3a         	| [$fb90: jsr    switch_to_saved_bank_fc3a] [freq=low, count=0%]
+	                                    	| [$fb93: rts] [freq=low, count=0%]
 l_fb94:
 	jbsr	save_and_switch_to_bank_5_fc28    	| [$fb94: jsr    save_and_switch_to_bank_5_fc28] [freq=low, count=0%]
 	jbsr	lb5_4009                          	| [$fb97: jsr    lb5_4009] [freq=low, count=0%]
-	jbsr	switch_to_saved_bank_fc3a         	| [$fb9a: jsr    switch_to_saved_bank_fc3a] [freq=low, count=0%]
-	rts                                    	| [$fb9d: rts] [freq=low, count=0%]
+	jra	switch_to_saved_bank_fc3a         	| [$fb9a: jsr    switch_to_saved_bank_fc3a] [freq=low, count=0%]
+	                                    	| [$fb9d: rts] [freq=low, count=0%]
 l_fb9e:
 	jbsr	save_and_switch_to_bank_5_fc28    	| [$fb9e: jsr    save_and_switch_to_bank_5_fc28] [freq=low, count=0%]
 	jbsr	lb5_406c                          	| [$fba1: jsr    lb5_406c] [freq=low, count=0%]
-	jbsr	switch_to_saved_bank_fc3a         	| [$fba4: jsr    switch_to_saved_bank_fc3a] [freq=low, count=0%]
-	rts                                    	| [$fba7: rts] [freq=low, count=0%]
+	jra	switch_to_saved_bank_fc3a         	| [$fba4: jsr    switch_to_saved_bank_fc3a] [freq=low, count=0%]
+	                                    	| [$fba7: rts] [freq=low, count=0%]
 l_fba8:
 	jbsr	save_and_switch_to_bank_5_fc28    	| [$fba8: jsr    save_and_switch_to_bank_5_fc28] [freq=low, count=0%]
 	jbsr	lb5_40a2                          	| [$fbab: jsr    lb5_40a2] [freq=low, count=0%]
-	jbsr	switch_to_saved_bank_fc3a         	| [$fbae: jsr    switch_to_saved_bank_fc3a] [freq=low, count=0%]
-	rts                                    	| [$fbb1: rts] [freq=low, count=0%]
+	jra	switch_to_saved_bank_fc3a         	| [$fbae: jsr    switch_to_saved_bank_fc3a] [freq=low, count=0%]
+	                                    	| [$fbb1: rts] [freq=low, count=0%]
 
 
 l_fbc0:
 	jbsr	switch_to_bank_1_bb40             	| [$fbc0: jsr    switch_to_bank_1_bb40] [freq=low, count=2%]
 	jbsr	lb1_4006                          	| [$fbc3: jsr    lb1_4006] [freq=low, count=2%]
-	jbsr	switch_to_bank_0_cc_safe_bb4d     	| [$fbc6: jsr    switch_to_bank_0_cc_safe_bb4d] [freq=low, count=2%]
-	rts                                    	| [$fbc9: rts] [freq=low, count=2%]
+	jra	switch_to_bank_0_cc_safe_bb4d     	| [$fbc6: jsr    switch_to_bank_0_cc_safe_bb4d] [freq=low, count=2%]
+	                                    	| [$fbc9: rts] [freq=low, count=2%]
 
 l_fbca:
 	jbsr	switch_to_bank_1_bb40             	| [$fbca: jsr    switch_to_bank_1_bb40] [freq=low, count=2%]
 	jbsr	lb1_4009                          	| [$fbcd: jsr    lb1_4009] [freq=low, count=2%]
-	jbsr	switch_to_bank_0_cc_safe_bb4d     	| [$fbd0: jsr    switch_to_bank_0_cc_safe_bb4d] [freq=low, count=2%]
-	rts                                    	| [$fbd3: rts] [freq=low, count=2%]
+	jra	switch_to_bank_0_cc_safe_bb4d     	| [$fbd0: jsr    switch_to_bank_0_cc_safe_bb4d] [freq=low, count=2%]
+	                                    	| [$fbd3: rts] [freq=low, count=2%]
 
 l_fbd4:
 	jbsr	switch_to_bank_1_bb40             	| [$fbd4: jsr    switch_to_bank_1_bb40] [freq=low, count=2%]
 	jbsr	lb1_400c                          	| [$fbd7: jsr    lb1_400c] [freq=low, count=2%]
-	jbsr	switch_to_bank_0_cc_safe_bb4d     	| [$fbda: jsr    switch_to_bank_0_cc_safe_bb4d] [freq=low, count=2%]
-	rts                                    	| [$fbdd: rts] [freq=low, count=2%]
+	jra	switch_to_bank_0_cc_safe_bb4d     	| [$fbda: jsr    switch_to_bank_0_cc_safe_bb4d] [freq=low, count=2%]
+	                                    	| [$fbdd: rts] [freq=low, count=2%]
 
 l_fbde:
 	jbsr	switch_to_bank_1_bb40             	| [$fbde: jsr    switch_to_bank_1_bb40] [freq=low, count=2%]
 	jbsr	lb1_400f                          	| [$fbe1: jsr    lb1_400f] [freq=low, count=2%]
-	jbsr	switch_to_bank_0_cc_safe_bb4d     	| [$fbe4: jsr    switch_to_bank_0_cc_safe_bb4d] [freq=low, count=2%]
-	rts                                    	| [$fbe7: rts] [freq=low, count=2%]
+	jra	switch_to_bank_0_cc_safe_bb4d     	| [$fbe4: jsr    switch_to_bank_0_cc_safe_bb4d] [freq=low, count=2%]
+	                                    	| [$fbe7: rts] [freq=low, count=2%]
 
 l_fbe8:
 	jbsr	switch_to_bank_1_bb40             	| [$fbe8: jsr    switch_to_bank_1_bb40]
 	jbsr	lb1_406f                          	| [$fbeb: jsr    lb1_406f]
-	jbsr	switch_to_bank_0_cc_safe_bb4d     	| [$fbee: jsr    switch_to_bank_0_cc_safe_bb4d]
-	rts                                    	| [$fbf1: rts]
+	jra	switch_to_bank_0_cc_safe_bb4d     	| [$fbee: jsr    switch_to_bank_0_cc_safe_bb4d]
+	                                    	| [$fbf1: rts]
 
 l_fbf2:
 	jbsr	switch_to_bank_5_fc82             	| [$fbf2: jsr    switch_to_bank_5_fc82]
 	jbsr	lb5_40c0                          	| [$fbf5: jsr    lb5_40c0]
-	jbsr	switch_to_bank_0_fc8f             	| [$fbf8: jsr    switch_to_bank_0_fc8f]
-	rts                                    	| [$fbfb: rts]
+	jra	switch_to_bank_0_fc8f             	| [$fbf8: jsr    switch_to_bank_0_fc8f]
+	                                    	| [$fbfb: rts]
 
 l_fc00:
 l_fc00:
 	jbsr	save_and_switch_to_bank_1_fda0    	| [$fc00: jsr    save_and_switch_to_bank_1_fda0] [freq=low, count=0%]
 	jbsr	lb1_4039                          	| [$fc03: jsr    lb1_4039] [freq=low, count=0%]
-	jbsr	restore_previous_bank_fdb2        	| [$fc06: jsr    restore_previous_bank_fdb2] [freq=low, count=0%]
-	rts                                    	| [$fc09: rts] [freq=low, count=0%]
+	jra	restore_previous_bank_fdb2        	| [$fc06: jsr    restore_previous_bank_fdb2] [freq=low, count=0%]
+	                                    	| [$fc09: rts] [freq=low, count=0%]
 
 l_fc0a:
 	jbsr	save_and_switch_to_bank_5_fc28    	| [$fc0a: jsr    save_and_switch_to_bank_5_fc28] [freq=low, count=0%]
 	jbsr	lb5_400c                          	| [$fc0d: jsr    lb5_400c] [freq=low, count=0%]
-	jbsr	switch_to_saved_bank_fc3a         	| [$fc10: jsr    switch_to_saved_bank_fc3a] [freq=low, count=0%]
-	rts                                    	| [$fc13: rts] [freq=low, count=0%]
+	jra	switch_to_saved_bank_fc3a         	| [$fc10: jsr    switch_to_saved_bank_fc3a] [freq=low, count=0%]
+	                                    	| [$fc13: rts] [freq=low, count=0%]
 
 l_fc14:
 	jbsr	save_and_switch_to_bank_5_fc28    	| [$fc14: jsr    save_and_switch_to_bank_5_fc28] [freq=low, count=0%]
 	jbsr	lb5_4090                          	| [$fc17: jsr    lb5_4090] [freq=low, count=0%]
-	jbsr	switch_to_saved_bank_fc3a         	| [$fc1a: jsr    switch_to_saved_bank_fc3a] [freq=low, count=0%]
-	rts                                    	| [$fc1d: rts] [freq=low, count=0%]
+	jra	switch_to_saved_bank_fc3a         	| [$fc1a: jsr    switch_to_saved_bank_fc3a] [freq=low, count=0%]
+	                                    	| [$fc1d: rts] [freq=low, count=0%]
 
 l_fc1e:
 l_fc1e:
 	jbsr	save_and_switch_to_bank_5_fc28    	| [$fc1e: jsr    save_and_switch_to_bank_5_fc28] [freq=low, count=0%]
 	jbsr	lb5_400f                          	| [$fc21: jsr    lb5_400f] [freq=low, count=0%]
-	jbsr	switch_to_saved_bank_fc3a         	| [$fc24: jsr    switch_to_saved_bank_fc3a] [freq=low, count=0%]
-	rts                                    	| [$fc27: rts] [freq=low, count=0%]
+	jra	switch_to_saved_bank_fc3a         	| [$fc24: jsr    switch_to_saved_bank_fc3a] [freq=low, count=0%]
+	                                    	| [$fc27: rts] [freq=low, count=0%]
 
 save_and_switch_to_bank_5_fc28:
 	move.l	d0,-(sp)                        	| [$fc28: pshs   a] [freq=low, count=6%]
@@ -15838,10 +15789,8 @@ save_and_switch_to_bank_5_fc28:
 	or.b	#0xa0,d0                          	| [$fc31: ora    #$a0] bank=5 [freq=low, count=6%]
 	OP_W_ON_DP_ADDRESS	move,bank_switch_copy_3a,d0| [$fc33: sta    bank_switch_copy_3a] [freq=low, count=6%]
 	jbsr	osd_set_bank |  [$fc35: sta    bankswitch_3808] [freq=low, count=6%]
-	movem.l	(sp)+,d0                       	| [$fc38: puls   a,pc] [freq=low, count=6%]
-	PUSH_SR                                	| [...]
+	move.l	(sp)+,d0                       	| [$fc38: puls   a,pc] [freq=low, count=6%]
 	MAKE_D                                 	| [...]
-	POP_SR                                 	| [...]
 	rts                                    	| [...]
 
 switch_to_saved_bank_fc3a:
@@ -15858,40 +15807,29 @@ switch_to_saved_bank_fc3a:
 	OP_W_ON_DP_ADDRESS	move,bank_switch_copy_3a,d0| [$fc49: sta    bank_switch_copy_3a] [freq=low, count=6%]
 	jbsr	osd_set_bank |  [$fc4b: sta    bankswitch_3808] [freq=low, count=6%]
 	movem.l	(sp)+,d0                       	| [$fc4e: puls   a,pc] [freq=low, count=6%]
-	POP_SR | restore carry
-	PUSH_SR                                	| [...]
 	MAKE_D                                 	| [...]
-	POP_SR                                 	| [...]
+	POP_SR | restore carry
 	rts                                    	| [...]
 
 display_credit_fc50:                    	| [global]
 	jbsr	switch_to_bank_5_fc82             	| [$fc50: jsr    switch_to_bank_5_fc82] [freq=low, count=0%]
 	jbsr	lb5_4045                          	| [$fc53: jsr    lb5_4045] [freq=low, count=0%]
-	jbsr	switch_to_bank_0_fc8f             	| [$fc56: jsr    switch_to_bank_0_fc8f] [freq=low, count=0%]
-	rts                                    	| [$fc59: rts] [freq=low, count=0%]
+	jra	switch_to_bank_0_fc8f             	| [$fc56: jsr    switch_to_bank_0_fc8f] [freq=low, count=0%]
+	                                    	| [$fc59: rts] [freq=low, count=0%]
 
 l_fc5a:
 	jbsr	switch_to_bank_5_fc82             	| [$fc5a: jsr    switch_to_bank_5_fc82]
 	jbsr	lb5_4048                          	| [$fc5d: jsr    lb5_4048]
-	jbsr	switch_to_bank_0_fc8f             	| [$fc60: jsr    switch_to_bank_0_fc8f]
-	rts                                    	| [$fc63: rts]
+	jra	switch_to_bank_0_fc8f             	| [$fc60: jsr    switch_to_bank_0_fc8f]
+	                                    	| [$fc63: rts]
 
-	jbsr	switch_to_bank_5_fc82             	| [$fc64: jsr    switch_to_bank_5_fc82]
-	jbsr	lb5_404b                          	| [$fc67: jsr    lb5_404b]
-	jbsr	switch_to_bank_0_fc8f             	| [$fc6a: jsr    switch_to_bank_0_fc8f]
-	rts                                    	| [$fc6d: rts]
-
-	jbsr	switch_to_bank_5_fc82             	| [$fc6e: jsr    switch_to_bank_5_fc82]
-	jbsr	lb5_404e                          	| [$fc71: jsr    lb5_404e]
-	jbsr	switch_to_bank_0_fc8f             	| [$fc74: jsr    switch_to_bank_0_fc8f]
-	rts                                    	| [$fc77: rts]
-l_fc78:
 
 l_fc78:
+
 	jbsr	switch_to_bank_5_fc82             	| [$fc78: jsr    switch_to_bank_5_fc82] [freq=low, count=4%]
 	jbsr	lb5_4057                          	| [$fc7b: jsr    lb5_4057] [freq=low, count=4%]
-	jbsr	switch_to_bank_0_fc8f             	| [$fc7e: jsr    switch_to_bank_0_fc8f] [freq=low, count=4%]
-	rts                                    	| [$fc81: rts] [freq=low, count=4%]
+	jra	switch_to_bank_0_fc8f             	| [$fc7e: jsr    switch_to_bank_0_fc8f] [freq=low, count=4%]
+	                                    	| [$fc81: rts] [freq=low, count=4%]
 
 switch_to_bank_5_fc82:
 	move.l	d0,-(sp)                        	| [$fc82: pshs   a] [freq=medium, count=52%]
@@ -15900,9 +15838,7 @@ switch_to_bank_5_fc82:
 	OP_W_ON_DP_ADDRESS	move,bank_switch_copy_3a,d0| [$fc88: sta    bank_switch_copy_3a] [freq=medium, count=52%]
 	jbsr	osd_set_bank |  [$fc8a: sta    bankswitch_3808] [freq=medium, count=52%]
 	movem.l	(sp)+,d0                       	| [$fc8d: puls   a,pc] [freq=medium, count=52%]
-	PUSH_SR                                	| [...]
 	MAKE_D                                 	| [...]
-	POP_SR                                 	| [...]
 	rts                                    	| [...]
 
 switch_to_bank_0_fc8f:
@@ -15913,39 +15849,37 @@ switch_to_bank_0_fc8f:
 	OP_W_ON_DP_ADDRESS	move,bank_switch_copy_3a,d0| [$fc95: sta    bank_switch_copy_3a] [freq=medium, count=53%]
 	jbsr	osd_set_bank |  [$fc97: sta    bankswitch_3808] [freq=medium, count=53%]
 	movem.l	(sp)+,d0                       	| [$fc9a: puls   a,pc] [freq=medium, count=53%]
-	POP_SR | restore carry
-	PUSH_SR                                	| [...]
 	MAKE_D                                 	| [...]
-	POP_SR                                 	| [...]
+	POP_SR | restore carry
 	rts                                    	| [...]
 
 switch_to_bank_0_fca6:
-	jbsr	switch_to_bank_0_fc8f             	| [$fca6: jsr    switch_to_bank_0_fc8f]
-	rts                                    	| [$fca9: rts]
+	jra	switch_to_bank_0_fc8f             	| [$fca6: jsr    switch_to_bank_0_fc8f]
+	                                    	| [$fca9: rts]
 
 l_fcaa:
 	jbsr	switch_to_bank_5_fc82             	| [$fcaa: jsr    switch_to_bank_5_fc82]
 	jbsr	lb5_4018                          	| [$fcad: jsr    lb5_4018]
-	jbsr	switch_to_bank_0_fc8f             	| [$fcb0: jsr    switch_to_bank_0_fc8f]
-	rts                                    	| [$fcb3: rts]
+	jra	switch_to_bank_0_fc8f             	| [$fcb0: jsr    switch_to_bank_0_fc8f]
+	                                    	| [$fcb3: rts]
 
 l_fcb4:
 	jbsr	switch_to_bank_5_fc82             	| [$fcb4: jsr    switch_to_bank_5_fc82] [freq=low, count=2%]
 	jbsr	lb5_4015                          	| [$fcb7: jsr    lb5_4015] [freq=low, count=2%]
-	jbsr	switch_to_bank_0_fc8f             	| [$fcba: jsr    switch_to_bank_0_fc8f] [freq=low, count=2%]
-	rts                                    	| [$fcbd: rts] [freq=low, count=2%]
+	jra	switch_to_bank_0_fc8f             	| [$fcba: jsr    switch_to_bank_0_fc8f] [freq=low, count=2%]
+	                                    	| [$fcbd: rts] [freq=low, count=2%]
 
 l_fcbe:
 	jbsr	switch_to_bank_5_fc82             	| [$fcbe: jsr    switch_to_bank_5_fc82]
 	jbsr	lb5_4051                          	| [$fcc1: jsr    lb5_4051]
-	jbsr	switch_to_bank_0_fc8f             	| [$fcc4: jsr    switch_to_bank_0_fc8f]
-	rts                                    	| [$fcc7: rts]
+	jra	switch_to_bank_0_fc8f             	| [$fcc4: jsr    switch_to_bank_0_fc8f]
+	                                    	| [$fcc7: rts]
 
 l_fcc8:
 	jbsr	switch_to_bank_5_fc82             	| [$fcc8: jsr    switch_to_bank_5_fc82] [freq=low, count=4%]
 	jbsr	lb5_4054                          	| [$fccb: jsr    lb5_4054] [freq=low, count=4%]
-	jbsr	switch_to_bank_0_fc8f             	| [$fcce: jsr    switch_to_bank_0_fc8f] [freq=low, count=4%]
-	rts                                    	| [$fcd1: rts] [freq=low, count=4%]
+	jra	switch_to_bank_0_fc8f             	| [$fcce: jsr    switch_to_bank_0_fc8f] [freq=low, count=4%]
+	                                    	| [$fcd1: rts] [freq=low, count=4%]
 
 l_fcd2:
 	jbsr	l_e1a1                            	| [$fcd2: jsr    $e1a1] [freq=low, count=4%]
@@ -15996,7 +15930,7 @@ l_fd18:
 	jne	l_fd27                             	| [$fd1c: bne    $fd27] [freq=low, count=2%]
 	jbsr	switch_to_bank_5_fc82             	| [$fd1e: jsr    switch_to_bank_5_fc82]
 	jbsr	lb5_40ab                          	| [$fd21: jsr    lb5_40ab]
-	jbsr	switch_to_bank_0_fc8f             	| [$fd24: jsr    switch_to_bank_0_fc8f]
+	jra	switch_to_bank_0_fc8f             	| [$fd24: jsr    switch_to_bank_0_fc8f]
 l_fd27:
 	rts                                    	| [$fd27: rts] [freq=low, count=2%]
 
@@ -16005,44 +15939,44 @@ l_fd27:
 l_fd3a:
 	jbsr	switch_to_bank_5_fc82             	| [$fd3a: jsr    switch_to_bank_5_fc82]
 	jbsr	lb5_40b7                          	| [$fd3d: jsr    lb5_40b7]
-	jbsr	switch_to_bank_0_fc8f             	| [$fd40: jsr    switch_to_bank_0_fc8f]
-	rts                                    	| [$fd43: rts]
+	jra	switch_to_bank_0_fc8f             	| [$fd40: jsr    switch_to_bank_0_fc8f]
+	                                    	| [$fd43: rts]
 
 l_fd44:
 	jbsr	switch_to_bank_5_fc82             	| [$fd44: jsr    switch_to_bank_5_fc82]
 	jbsr	lb5_40bd                          	| [$fd47: jsr    lb5_40bd]
-	jbsr	switch_to_bank_0_fc8f             	| [$fd4a: jsr    switch_to_bank_0_fc8f]
-	rts                                    	| [$fd4d: rts]
+	jra	switch_to_bank_0_fc8f             	| [$fd4a: jsr    switch_to_bank_0_fc8f]
+	                                    	| [$fd4d: rts]
 
 l_fd4e:
 	jbsr	switch_to_bank_1_bb40             	| [$fd4e: jsr    switch_to_bank_1_bb40]
 	jbsr	lb1_4063                          	| [$fd51: jsr    lb1_4063]
-	jbsr	switch_to_bank_0_cc_safe_bb4d     	| [$fd54: jsr    switch_to_bank_0_cc_safe_bb4d]
-	rts                                    	| [$fd57: rts]
+	jra	switch_to_bank_0_cc_safe_bb4d     	| [$fd54: jsr    switch_to_bank_0_cc_safe_bb4d]
+	                                    	| [$fd57: rts]
 
 l_fd58:
 	jbsr	switch_to_bank_1_bb40             	| [$fd58: jsr    switch_to_bank_1_bb40]
 	jbsr	lb1_4066                          	| [$fd5b: jsr    lb1_4066]
-	jbsr	switch_to_bank_0_cc_safe_bb4d     	| [$fd5e: jsr    switch_to_bank_0_cc_safe_bb4d]
-	rts                                    	| [$fd61: rts]
+	jra	switch_to_bank_0_cc_safe_bb4d     	| [$fd5e: jsr    switch_to_bank_0_cc_safe_bb4d]
+	                                    	| [$fd61: rts]
 
 l_fd62:
 	jbsr	switch_to_bank_1_bb40             	| [$fd62: jsr    switch_to_bank_1_bb40]
 	jbsr	lb1_4069                          	| [$fd65: jsr    lb1_4069]
-	jbsr	switch_to_bank_0_cc_safe_bb4d     	| [$fd68: jsr    switch_to_bank_0_cc_safe_bb4d]
-	rts                                    	| [$fd6b: rts]
+	jra	switch_to_bank_0_cc_safe_bb4d     	| [$fd68: jsr    switch_to_bank_0_cc_safe_bb4d]
+	                                    	| [$fd6b: rts]
 
 l_fd70:
 	jbsr	switch_to_bank_5_fc82             	| [$fd70: jsr    switch_to_bank_5_fc82]
 	jbsr	lb5_4039                          	| [$fd73: jsr    lb5_4039]
-	jbsr	switch_to_bank_0_fc8f             	| [$fd76: jsr    switch_to_bank_0_fc8f]
-	rts                                    	| [$fd79: rts]
+	jra	switch_to_bank_0_fc8f             	| [$fd76: jsr    switch_to_bank_0_fc8f]
+	                                    	| [$fd79: rts]
 
 l_fd7a:
 	jbsr	switch_to_bank_5_fc82             	| [$fd7a: jsr    switch_to_bank_5_fc82] [freq=low, count=1%]
 	jbsr	lb5_403c                          	| [$fd7d: jsr    lb5_403c] [freq=low, count=1%]
-	jbsr	switch_to_bank_0_fc8f             	| [$fd80: jsr    switch_to_bank_0_fc8f] [freq=low, count=1%]
-	rts                                    	| [$fd83: rts] [freq=low, count=1%]
+	jra	switch_to_bank_0_fc8f             	| [$fd80: jsr    switch_to_bank_0_fc8f] [freq=low, count=1%]
+	                                    	| [$fd83: rts] [freq=low, count=1%]
 
 call_bank_4_4000_fd84:
 	OP_R_ON_DP_ADDRESS	move,bank_switch_copy_3a,d0| [$fd84: lda    bank_switch_copy_3a] [freq=low, count=1%]
@@ -16050,8 +15984,8 @@ call_bank_4_4000_fd84:
 	OP_W_ON_DP_ADDRESS	move,bank_switch_copy_3a,d0| [$fd88: sta    bank_switch_copy_3a] [freq=low, count=1%]
 	jbsr	osd_set_bank |  [$fd8a: sta    bankswitch_3808] [freq=low, count=1%]
 	jbsr	lb4_4000                          	| [$fd8d: jsr    lb4_4000] [freq=low, count=1%]
-	jbsr	switch_to_bank_0_fc8f             	| [$fd90: jsr    switch_to_bank_0_fc8f] [freq=low, count=1%]
-	rts                                    	| [$fd93: rts] [freq=low, count=1%]
+	jra	switch_to_bank_0_fc8f             	| [$fd90: jsr    switch_to_bank_0_fc8f] [freq=low, count=1%]
+	                                    	| [$fd93: rts] [freq=low, count=1%]
 
 save_and_switch_to_bank_1_fda0:
 	move.l	d0,-(sp)                        	| [$fda0: pshs   a] [freq=low, count=17%]
@@ -16063,9 +15997,7 @@ save_and_switch_to_bank_1_fda0:
 	OP_W_ON_DP_ADDRESS	move,bank_switch_copy_3a,d0| [$fdab: sta    bank_switch_copy_3a] [freq=low, count=17%]
 	jbsr	osd_set_bank |  [$fdad: sta    bankswitch_3808] [freq=low, count=17%]
 	movem.l	(sp)+,d0                       	| [$fdb0: puls   a,pc] [freq=low, count=17%]
-	PUSH_SR                                	| [...]
 	MAKE_D                                 	| [...]
-	POP_SR                                 	| [...]
 	rts                                    	| [...]
 
 restore_previous_bank_fdb2:
@@ -16244,14 +16176,14 @@ l_ff01:
 push_one_sprite_entry_ff10:             	| [global]
 	jbsr	save_and_switch_to_bank_1_fda0    	| [$ff10: jsr    save_and_switch_to_bank_1_fda0] [freq=low, count=8%]
 	jbsr	lb1_push_one_sprite_entry_4000    	| [$ff13: jsr    lb1_push_one_sprite_entry_4000] [freq=low, count=8%]
-	jbsr	restore_previous_bank_fdb2        	| [$ff16: jsr    restore_previous_bank_fdb2] [freq=low, count=8%]
-	rts                                    	| [$ff19: rts] [freq=low, count=8%]
+	jra	restore_previous_bank_fdb2        	| [$ff16: jsr    restore_previous_bank_fdb2] [freq=low, count=8%]
+	                                    	| [$ff19: rts] [freq=low, count=8%]
 
 subcpu_processing_ff1a:
 	jbsr	save_and_switch_to_bank_1_fda0    	| [$ff1a: jsr    save_and_switch_to_bank_1_fda0] [freq=low, count=4%]
 	jbsr	lb1_subcpu_processing_4003        	| [$ff1d: jsr    lb1_subcpu_processing_4003] [freq=low, count=4%]
-	jbsr	restore_previous_bank_fdb2        	| [$ff20: jsr    restore_previous_bank_fdb2] [freq=low, count=4%]
-	rts                                    	| [$ff23: rts] [freq=low, count=4%]
+	jra	restore_previous_bank_fdb2        	| [$ff20: jsr    restore_previous_bank_fdb2] [freq=low, count=4%]
+	                                    	| [$ff23: rts] [freq=low, count=4%]
 
 save_and_switch_to_bank_0_ff24:
 	move.l	d0,-(sp)                        	| [$ff24: pshs   a] [freq=low, count=4%]
@@ -16262,9 +16194,7 @@ save_and_switch_to_bank_0_ff24:
 	OP_W_ON_DP_ADDRESS	move,bank_switch_copy_3a,d0| [$ff2d: sta    bank_switch_copy_3a] [freq=low, count=4%]
 	jbsr	osd_set_bank |  [$ff2f: sta    bankswitch_3808] [freq=low, count=4%]
 	movem.l	(sp)+,d0                       	| [$ff32: puls   a,pc] [freq=low, count=4%]
-	PUSH_SR                                	| [...]
 	MAKE_D                                 	| [...]
-	POP_SR                                 	| [...]
 	rts                                    	| [...]
 
 restore_previous_bank_ff34:
@@ -16280,9 +16210,7 @@ restore_previous_bank_ff34:
 	OP_W_ON_DP_ADDRESS	move,bank_switch_copy_3a,d0| [$ff43: sta    bank_switch_copy_3a] [freq=low, count=4%]
 	jbsr	osd_set_bank |  [$ff45: sta    bankswitch_3808] [freq=low, count=4%]
 	movem.l	(sp)+,d0                       	| [$ff48: puls   a,pc] [freq=low, count=4%]
-	PUSH_SR                                	| [...]
 	MAKE_D                                 	| [...]
-	POP_SR                                 	| [...]
 	rts                                    	| [...]
 
 switch_to_bank_3_ff4a:
@@ -16321,10 +16249,8 @@ switch_to_bank_4_ff80:
 	or.b	#0x80,d0                          	| [$ff84: ora    #$80] bank=4
 	OP_W_ON_DP_ADDRESS	move,bank_switch_copy_3a,d0| [$ff86: sta    bank_switch_copy_3a]
 	jbsr	osd_set_bank |  [$ff88: sta    bankswitch_3808]
-	movem.l	(sp)+,d0                       	| [$ff8b: puls   a,pc]
-	PUSH_SR                                	| [...]
+	move.l	(sp)+,d0                       	| [$ff8b: puls   a,pc]
 	MAKE_D                                 	| [...]
-	POP_SR                                 	| [...]
 	rts                                    	| [...]
 
 switch_to_bank_5_ff8d:
@@ -16334,10 +16260,8 @@ switch_to_bank_5_ff8d:
 	or.b	#0xa0,d0                          	| [$ff93: ora    #$a0] bank=5
 	OP_W_ON_DP_ADDRESS	move,bank_switch_copy_3a,d0| [$ff95: sta    bank_switch_copy_3a]
 	jbsr	osd_set_bank |  [$ff97: sta    bankswitch_3808]
-	movem.l	(sp)+,d0                       	| [$ff9a: puls   a,pc]
-	PUSH_SR                                	| [...]
+	move.l	(sp)+,d0                       	| [$ff9a: puls   a,pc]
 	MAKE_D                                 	| [...]
-	POP_SR                                 	| [...]
 	rts                                    	| [...]
 
 switch_to_bank_3_ff9c:
@@ -16348,11 +16272,9 @@ switch_to_bank_3_ff9c:
 	or.b	#0x60,d0                          	| [$ffa2: ora    #$60] bank=3
 	OP_W_ON_DP_ADDRESS	move,bank_switch_copy_3a,d0| [$ffa4: sta    bank_switch_copy_3a]
 	jbsr	osd_set_bank |  [$ffa6: sta    bankswitch_3808]
-	movem.l	(sp)+,d0                       	| [$ffa9: puls   a,pc]
-	POP_SR | restore carry
-	PUSH_SR                                	| [...]
+	move.l	(sp)+,d0                       	| [$ffa9: puls   a,pc]
 	MAKE_D                                 	| [...]
-	POP_SR                                 	| [...]
+	POP_SR | restore carry
 	rts                                    	| [...]
 
 l_ffab:
@@ -16367,25 +16289,20 @@ set_title_palette_ffb5:                 	| [global]
 
 	GET_ADDRESS	title_state_counter_0af8
 	move.b	(a0),d0
-	jbsr	osd_title_palette_updated
-	rts                                    	| [$ffbe: rts]
+	jra	osd_title_palette_updated
+	                                    	| [$ffbe: rts]
 
-	jbsr	switch_to_bank_4_ff80             	| [$ffbf: jsr    switch_to_bank_4_ff80]
-	jbsr	lb4_7806                          	| [$ffc2: jsr    lb4_7806]
-	jbsr	switch_to_bank_0_fc8f             	| [$ffc5: jsr    switch_to_bank_0_fc8f]
-	rts                                    	| [$ffc8: rts]
-l_ffc9:
 l_ffc9:
 	jbsr	switch_to_bank_5_ff8d             	| [$ffc9: jsr    switch_to_bank_5_ff8d]
 	jbsr	lb5_4045                          	| [$ffcc: jsr    lb5_4045]
-	jbsr	switch_to_bank_3_ff9c             	| [$ffcf: jsr    switch_to_bank_3_ff9c]
-	rts                                    	| [$ffd2: rts]
+	jra	switch_to_bank_3_ff9c             	| [$ffcf: jsr    switch_to_bank_3_ff9c]
+	                                    	| [$ffd2: rts]
 l_ffd3:
 	jbsr	switch_to_bank_0_fc8f             	| [$ffd3: jsr    switch_to_bank_0_fc8f]
 	jbsr	lb0_4000                          	| [$ffd6: jsr    lb0_4000]
-	jbsr	switch_to_bank_3_ff9c             	| [$ffd9: jsr    switch_to_bank_3_ff9c]
-	rts                                    	| [$ffdc: rts]
-	rts                                    	| [$ffdd: rts]
+	jra	switch_to_bank_3_ff9c             	| [$ffd9: jsr    switch_to_bank_3_ff9c]
+	                                    	| [$ffdc: rts]
+	                                    	| [$ffdd: rts]
 
 
 jump_table_8c21:
