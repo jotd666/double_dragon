@@ -13477,7 +13477,6 @@ l_e25d:
 	LOAD_D                                 	| [$e26b: ldd    $03a8]
 	GET_ADDRESS	0x03aa                     	| [$e26e: addd   $03aa]
 	ADD_W_TO_REG	a0,d1                          	| [...]
-	MAKE_A                                 	| [...]
 	GET_DP_ADDRESS	0x3f                    	| [$e271: subd   $3f]
 	SUB_W_TO_REG	a0,d1                          	| [...]
 	MAKE_A                                 	| [...]
@@ -13775,7 +13774,6 @@ l_e3f0:
 	jpl	l_e419                             	| [$e40d: bpl    $e419] [freq=low, count=0%]
 	move.b	#0x00,d0                        	| [$e40f: ldd    #$0000]
 	move.w	#0x0000,d1                      	| [$e40f: ldd    #$0000]
-	MAKE_D                                 	| [...]
 	| [$e412: std    ,s] [local]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	GET_REG_ADDRESS	0x2,d5                 	| [$e414: stb    $2,s] [local]
@@ -13858,7 +13856,6 @@ l_e419:
 	jne	l_e46b                             	| [$e460: bne    $e46b] [freq=low, count=0%]
 	GET_REG_ADDRESS	0x9,d5                 	| [$e462: ldd    $9,s] [local] [freq=low, count=0%]
 	LOAD_D                                 	| [$e462: ldd    $9,s] [local] [freq=low, count=0%]
-	MAKE_D
 	GET_REG_ADDRESS	0,d5                   	| [$e464: cmpd   ,s] [local] [freq=low, count=0%]
 	CMP_W_TO_REG	a0,d1                          	| [...]
 	jcs	l_e4ca                             	| [$e467: bcs    $e4ca] [freq=low, count=0%]
@@ -13866,17 +13863,14 @@ l_e419:
 l_e46b:
 	GET_REG_ADDRESS	0,d5                   	| [$e46b: ldd    ,s] [local]
 	LOAD_D                                 	| [$e46b: ldd    ,s] [local]
-	MAKE_D
 	GET_REG_ADDRESS	0xf,d5                 	| [$e46d: cmpd   $f,s] [local]
 	CMP_W_TO_REG	a0,d1                          	| [...]
 	jhi	l_e481                             	| [$e470: bhi    $e481]
 	GET_ADDRESS	0x0a62                     	| [$e472: ldd    $0a62]
 	LOAD_D                                 	| [$e472: ldd    $0a62]
-	MAKE_D
 	GET_REG_ADDRESS	0xb,d5                 	| [$e475: cmpd   $b,s] [local]
 	CMP_W_TO_REG	a0,d1                          	| [...]
 	jhi	l_e481                             	| [$e478: bhi    $e481]
-	MAKE_D
 	GET_REG_ADDRESS	0xd,d5                 	| [$e47a: cmpd   $d,s] [local]
 	CMP_W_TO_REG	a0,d1                          	| [...]
 	jcs	l_e481                             	| [$e47d: bcs    $e481]
@@ -13893,7 +13887,6 @@ l_e485:
 	jne	l_e495                             	| [$e48a: bne    $e495]
 	GET_REG_ADDRESS	0x7,d5                 	| [$e48c: ldd    $7,s] [local]
 	LOAD_D                                 	| [$e48c: ldd    $7,s] [local]
-	MAKE_D
 	GET_REG_ADDRESS	0,d5                   	| [$e48e: cmpd   ,s] [local]
 	CMP_W_TO_REG	a0,d1                          	| [...]
 	jhi	l_e4ca                             	| [$e491: bhi    $e4ca]
@@ -13901,13 +13894,11 @@ l_e485:
 l_e495:
 	GET_REG_ADDRESS	0,d5                   	| [$e495: ldd    ,s] [local]
 	LOAD_D                                 	| [$e495: ldd    ,s] [local]
-	MAKE_D
 	GET_REG_ADDRESS	0x11,d5                	| [$e497: cmpd   $11,s] [local]
 	CMP_W_TO_REG	a0,d1                          	| [...]
 	jhi	l_e4ac                             	| [$e49b: bhi    $e4ac]
 	GET_ADDRESS	0x0a62                     	| [$e49d: ldd    $0a62]
 	LOAD_D                                 	| [$e49d: ldd    $0a62]
-	MAKE_D
 	GET_REG_ADDRESS	0xb,d5                 	| [$e4a0: cmpd   $b,s] [local]
 	CMP_W_TO_REG	a0,d1                          	| [...]
 	jhi	l_e4ac                             	| [$e4a3: bhi    $e4ac]
@@ -13960,7 +13951,6 @@ l_e4d6:
 	GET_ADDRESS	0x0a63                     	| [$e4e3: addd   $0a63] [freq=low, count=2%]
 	ADD_W_TO_REG	a0,d1                          	| [...]
 	MAKE_A                                 	| [...]
-	MAKE_D                                 	| [...]
 	GET_REG_ADDRESS	0x1,d5                 	| [$e4e6: std    $1,s] [local] [freq=low, count=2%]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	GET_ADDRESS	0x0a44                     	| [$e4e8: ldb    $0a44] [freq=low, count=2%]
@@ -13975,7 +13965,6 @@ l_e4d6:
 	jpl	l_e4ff                             	| [$e4f3: bpl    $e4ff] [freq=low, count=2%]
 	move.b	#0x00,d0                        	| [$e4f5: ldd    #$0000]
 	move.w	#0x0000,d1                      	| [$e4f5: ldd    #$0000]
-	MAKE_D                                 	| [...]
 	| [$e4f8: std    ,s] [local]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	GET_REG_ADDRESS	0x2,d5                 	| [$e4fa: stb    $2,s] [local]
@@ -14058,7 +14047,6 @@ l_e4ff:
 	jne	l_e551                             	| [$e546: bne    $e551]
 	GET_REG_ADDRESS	0x3,d5                 	| [$e548: ldd    $3,s] [local]
 	LOAD_D                                 	| [$e548: ldd    $3,s] [local]
-	MAKE_D
 	GET_REG_ADDRESS	0,d5                   	| [$e54a: cmpd   ,s] [local]
 	CMP_W_TO_REG	a0,d1                          	| [...]
 	jcs	l_e5b1                             	| [$e54d: bcs    $e5b1]
@@ -14066,13 +14054,11 @@ l_e4ff:
 l_e551:
 	GET_REG_ADDRESS	0,d5                   	| [$e551: ldd    ,s] [local]
 	LOAD_D                                 	| [$e551: ldd    ,s] [local]
-	MAKE_D
 	GET_REG_ADDRESS	0xd,d5                 	| [$e553: cmpd   $d,s] [local]
 	CMP_W_TO_REG	a0,d1                          	| [...]
 	jhi	l_e568                             	| [$e556: bhi    $e568]
 	GET_ADDRESS	current_level_x_position_0a5f	| [$e558: ldd    current_level_x_position_0a5f]
 	LOAD_D                                 	| [$e558: ldd    current_level_x_position_0a5f]
-	MAKE_D
 	GET_REG_ADDRESS	0x11,d5                	| [$e55b: cmpd   $11,s] [local]
 	CMP_W_TO_REG	a0,d1                          	| [...]
 	jhi	l_e568                             	| [$e55f: bhi    $e568]
@@ -14093,7 +14079,6 @@ l_e56c:
 	jne	l_e57c                             	| [$e571: bne    $e57c] [freq=low, count=2%]
 	GET_REG_ADDRESS	0x5,d5                 	| [$e573: ldd    $5,s] [local]
 	LOAD_D                                 	| [$e573: ldd    $5,s] [local]
-	MAKE_D
 	GET_REG_ADDRESS	0,d5                   	| [$e575: cmpd   ,s] [local]
 	CMP_W_TO_REG	a0,d1                          	| [...]
 	jhi	l_e5b1                             	| [$e578: bhi    $e5b1]
@@ -14101,13 +14086,11 @@ l_e56c:
 l_e57c:
 	GET_REG_ADDRESS	0,d5                   	| [$e57c: ldd    ,s] [local] [freq=low, count=2%]
 	LOAD_D                                 	| [$e57c: ldd    ,s] [local] [freq=low, count=2%]
-	MAKE_D
 	GET_REG_ADDRESS	0xb,d5                 	| [$e57e: cmpd   $b,s] [local] [freq=low, count=2%]
 	CMP_W_TO_REG	a0,d1                          	| [...]
 	jhi	l_e593                             	| [$e581: bhi    $e593] [freq=low, count=2%]
 	GET_ADDRESS	current_level_x_position_0a5f	| [$e583: ldd    current_level_x_position_0a5f]
 	LOAD_D                                 	| [$e583: ldd    current_level_x_position_0a5f]
-	MAKE_D
 	GET_REG_ADDRESS	0x11,d5                	| [$e586: cmpd   $11,s] [local]
 	CMP_W_TO_REG	a0,d1                          	| [...]
 	jhi	l_e593                             	| [$e58a: bhi    $e593]
@@ -14164,7 +14147,6 @@ l_e5bd:
 	GET_ADDRESS	current_level_x_position_0a5f	| [$e5cb: ldd    current_level_x_position_0a5f] [freq=low, count=4%]
 	LOAD_D                                 	| [$e5cb: ldd    current_level_x_position_0a5f] [freq=low, count=4%]
 	and.b	#0xf0,d1                         	| [$e5ce: andb   #$f0] [freq=low, count=4%]
-	MAKE_D
 	GET_REG_ADDRESS	0,d5                   	| [$e5d0: cmpd   ,s++] [freq=low, count=4%]
 	addq.w	#2,d5                           	| [...]
 	CMP_W_TO_REG	a0,d1                          	| [...]
@@ -14177,13 +14159,11 @@ l_e5bd:
 	GET_ADDRESS	0x0a46                     	| [$e5e0: ldd    $0a46]
 	LOAD_D                                 	| [$e5e0: ldd    $0a46]
 	and.b	#0xf0,d1                         	| [$e5e3: andb   #$f0]
-	MAKE_D                                 	| [...]
 	GET_REG_ADDRESS	0,d5                   	| [$e5e5: std    ,s] [local]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	GET_ADDRESS	current_level_x_position_0a5f	| [$e5e7: ldd    current_level_x_position_0a5f]
 	LOAD_D                                 	| [$e5e7: ldd    current_level_x_position_0a5f]
 	and.b	#0xf0,d1                         	| [$e5ea: andb   #$f0]
-	MAKE_D                                 	| [...]
 	GET_REG_ADDRESS	0x2,d5                 	| [$e5ec: std    $2,s] [local]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	jra	l_e607                             	| [$e5ee: bra    $e607]
@@ -14191,7 +14171,6 @@ l_e5f0:
 	GET_ADDRESS	0x0a65                     	| [$e5f0: ldd    $0a65]
 	LOAD_D                                 	| [$e5f0: ldd    $0a65]
 	and.b	#0xf0,d1                         	| [$e5f3: andb   #$f0]
-	MAKE_D                                 	| [...]
 	GET_REG_ADDRESS	0,d5                   	| [$e5f5: std    ,s] [local]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	GET_ADDRESS	0x0a65                     	| [$e5f7: ldd    $0a65]
@@ -15625,9 +15604,7 @@ switch_to_bank_4_fa8a:
 	OP_W_ON_DP_ADDRESS	move,bank_switch_copy_3a,d0| [$fa92: sta    bank_switch_copy_3a]
 	jbsr	osd_set_bank |  [$fa94: sta    bankswitch_3808]
 	movem.l	(sp)+,d0                       	| [$fa97: puls   a,pc]
-	PUSH_SR                                	| [...]
 	MAKE_D                                 	| [...]
-	POP_SR                                 	| [...]
 	rts                                    	| [...]
 
 l_faa0:                                 	| [global]
