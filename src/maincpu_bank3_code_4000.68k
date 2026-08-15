@@ -1703,20 +1703,24 @@ lb3_74f4:
 	move.b	d0,(a0)                         	| [...]
 lb3_752a:
 	rts                                    	| [$752a: rts]
+	* scan slots
 lb3_752b:
+	move.w	#0x21,d7
 	move.w	#0x09ad,d2                      	| [$752b: ldx    #$09ad] [freq=medium, count=50%]
 	move.w	#0x03a2,d3                      	| [$752e: ldy    #$03a2] [freq=medium, count=50%]
-	move.b	#0x01,d1                        	| [$7532: ldb    #$01] [freq=medium, count=50%]
-lb3_7534:
+	moveq	#0x01,d1                        	| [$7532: ldb    #$01] [freq=medium, count=50%]
 	GET_REG_ADDRESS	0,d2                   	| [$7534: lda    ,x] [freq=high, count=100%]
-	move.b	(a0),d0                         	| [...]
+	move.l	a0,a2
+lb3_7534:
+	move.b	(a2),d0                         	| [...]
 	jpl	lb3_753b                           	| [$7536: bpl    $753b] [freq=high, count=100%]
 	jbsr	lb3_7545                          	| [$7538: lbsr   $7545] [freq=low, count=1%]
 lb3_753b:
-	add.w	#0x21,d2                         	| [$753b: leax   $21,x] [freq=high, count=100%]
+	add.w	d7,a2                         	| [$753b: leax   $21,x] [freq=high, count=100%]
+	add.w	d7,d2                         	| [$753b: leax   $21,x] [freq=high, count=100%]
 	add.w	#0x5e,d3                         	| [$753e: leay   $5e,y] [freq=high, count=100%]
-	subq.b	#1,d1                           	| [$7541: decb] [freq=high, count=100%]
-	jpl	lb3_7534                           	| [$7542: bpl    $7534] [freq=high, count=100%]
+	                           	| [$7541: decb] [freq=high, count=100%]
+	dbf		d1,lb3_7534                           	| [$7542: bpl    $7534] [freq=high, count=100%]
 	rts                                    	| [$7544: rts] [freq=medium, count=50%]
 lb3_7545:
 	movem.l	D0/D1/d2/d3/d4,-(sp)           	| [$7545: pshs   u,y,x,dp,d] [freq=low, count=1%]

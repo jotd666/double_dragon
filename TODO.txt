@@ -6,6 +6,9 @@ DD copy amiga merge context for 32 color full per-level
   low freq medium freq high freq, then dispatch those freqs in commented source
   => done, now optimize jbsr=>rts, bank switching functions
 
+issue: not systematic 41c2 bank 1 trying to read from bank at the end of level 1
+when the black guy throws the knife: memwatch on MAME (snapshot before end of level 1 as not systematic)
+
 - ECS version: merge used cluts 2 and 3 (not done) then overwrite 3 and 2 (done)
 - ECS version: scrolling not OK
 - in the end: perform fade out on tiles

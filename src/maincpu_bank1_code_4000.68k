@@ -386,9 +386,9 @@ lb1_41bf:
 	GET_REG_ADDRESS	0x2d,d2                	| [$41bf: ldx    $2d,x]
 	MOVE_W_TO_REG	a0,d2                         	| [...]
 lb1_41c2:
-	GET_REG_ADDRESS	0x1,d2                 	| [$41c2: lda    $1,x]
+	GET_REG_ADDRESS	0x1,d2                 	| [$41c2: lda    $1,x] 
 	move.b	(a0),d0                         	| [...]
-	tst.b	d0                               	| [$41c4: cmpa   #$00]
+	                               	| [$41c4: cmpa   #$00]
 	jeq	lb1_41ce                           	| [$41c6: beq    $41ce]
 	GET_REG_ADDRESS	0,d4                   	| [$41c8: lda    ,u]
 	move.b	(a0),d0                         	| [...]
@@ -4007,16 +4007,9 @@ lb1_5703:
 	and.b	#0xc0,d0                         	| [$5705: anda   #$c0] [freq=high, count=100%]
 	cmp.b	#0xc0,d0                         	| [$5707: cmpa   #$c0] [freq=high, count=100%]
 	jne	lb1_5716                           	| [$5709: bne    $5716] [freq=high, count=100%]
-	.ifndef	RELEASE
-	
+
 	.ifndef	RELEASE
 	move.w	#0x5724,d3
-	.endif
-	lea	0x5724,a3             	| [$570b: ldy    #0x5724] [freq=low, count=11%]
-	.endif
-	
-	.ifndef	RELEASE
-	lea	0x5724,a3
 	.endif
 	lea	jump_table_5724,a3             	| [$570b: ldy    #jump_table_5724] [freq=low, count=11%]
 	OP_R_ON_DP_ADDRESS	move,0x29,d0         | [$570f: lda    $29] [freq=low, count=11%]
@@ -4081,7 +4074,6 @@ lb1_5755:
 	move.b	#0xff,d0                        	| [$576f: ldd    #$fff0]
 	move.w	#0xfff0,d1                      	| [$576f: ldd    #$fff0]
 lb1_5772:
-	MAKE_D                                 	| [...]
 	GET_REG_ADDRESS	0x4,d3                 	| [$5772: addd   $4,y]
 	ADD_W_TO_REG	a0,d1                          	| [...]
 	MAKE_A                                 	| [...]
@@ -4203,16 +4195,9 @@ lb1_57f6:
 	OP_R_ON_DP_ADDRESS	move,0x29,d0         | [$580d: lda    $29] [freq=low, count=0%]
 	and.b	#0x03,d0                         	| [$580f: anda   #$03] [freq=low, count=0%]
 	asl.b	#1,d0                            	| [$5811: asla] [freq=low, count=0%]
-	.ifndef	RELEASE
 	
 	.ifndef	RELEASE
 	move.w	#0x581a,d3
-	.endif
-	lea	0x581a,a3             	| [$5812: ldy    #0x581a] [freq=low, count=0%]
-	.endif
-	
-	.ifndef	RELEASE
-	lea	0x581a,a3
 	.endif
 	lea	jump_table_581a,a3             	| [$5812: ldy    #jump_table_581a] [freq=low, count=0%]
 	JSR_A_INDEXED	a3,4  | [$5816: jsr    [a,y]] [indirect_jump] [nb_entries=4] [freq=low, count=0%]
@@ -6265,7 +6250,6 @@ lb1_6486:
 	LOAD_D                                 	| [$6486: ldd    $3c] [freq=low, count=13%]
 	cmp.w	#0x0f00,d1                       	| [$6488: cmpd   #$0f00] [freq=low, count=13%]
 	jcs	lb1_64a9                           	| [$648c: bcs    $64a9] [freq=low, count=13%]
-	MAKE_D
 	cmp.w	#0x1000,d1                       	| [$648e: cmpd   #$1000]
 	jcc	lb1_64a9                           	| [$6492: bcc    $64a9]
 	GET_DP_ADDRESS	0x3f                    	| [$6494: ldd    $3f]
@@ -6324,14 +6308,12 @@ lb1_64cd:
 	GET_REG_ADDRESS	0x8,d2                 	| [$64e7: addd   $8,x]
 	ADD_W_TO_REG	a0,d1                          	| [...]
 	MAKE_A                                 	| [...]
-	MAKE_D                                 	| [...]
 	GET_REG_ADDRESS	0,d5                   	| [$64e9: std    ,s] [local]
 	MOVE_W_FROM_REG	d1,a0                         	| [...]
 	GET_DP_ADDRESS	0x3f                    	| [$64eb: ldd    $3f]
 	LOAD_D                                 	| [$64eb: ldd    $3f]
 	add.w	#0x0004,d1                       	| [$64ed: addd   #$0004]
 	MAKE_A                                 	| [...]
-	MAKE_D
 	GET_REG_ADDRESS	0,d5                   	| [$64f0: cmpd   ,s] [local]
 	CMP_W_TO_REG	a0,d1                          	| [...]
 	jcs	lb1_64fe                           	| [$64f3: bcs    $64fe]
