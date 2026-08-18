@@ -157,11 +157,12 @@ sub_c0b4:
 	jcc	sub_c105                           	| [$c0bb: bcc  $c105]
 	move.w	#shared_memory_8000,d2          	| [$c0bd: ldx  #shared_memory_8000]
 	OP_R_ON_DP_ADDRESS	move,0x4e,d1         | [$c0c0: ldb  $4e]
-	ABX                                    	| [$c0c2: abx]
 	* hand-optimized, this is coordinate conversion/swap, called a lot
 	* the original code isn't very good. It reads and writes on $40
 	* constantly. Replaced by updating scratch register d6
 	* then storing to $40 in the end
+	and.w	#0xFF,d1
+	add.w	d1,d2                                    	| [$c0c2: abx]
 	GET_REG_ADDRESS	0x0,d2
 	move.l 	a0,a2
 	move.w	(0x04,a2),d1                	| [$c0c3: ldd  $04,x]
@@ -229,17 +230,18 @@ sub_c115:
 	OP_W_ON_DP_ADDRESS	move,0x54,d0         | [$c12d: sta  $54]
 	OP_R_ON_DP_ADDRESS	move,0x40,d1         | [$c12f: ldb  $40]
 	OP_W_ON_DP_ADDRESS	move,0x5e,d1         | [$c131: stb  $5e]
-	and.b	#0x7f,d1                         	| [$c133: andb #$7f]
+	and.w	#0x7f,d1                         	| [$c133: andb #$7f] word mask
 	OP_W_ON_DP_ADDRESS	move,0x5f,d1         | [$c135: stb  $5f]
 	asl.b	#1,d1                            	| [$c137: aslb]
 	move.w	#0xc2ef,d2                      	| [$c138: ldx  #$c2ef]
-	ABX                                    	| [$c13b: abx]
+	add.w	d1,d2                                    	| [$c13b: abx] abx direct from d1.w
 	GET_ROM_REG_ADDRESS	0x00,d2                	| [$c13c: ldx  $00,x] [rom]
 	MOVE_W_TO_REG	a0,d2                         	| [...]
 	OP_R_ON_DP_ADDRESS	move,0x41,d1         | [$c13e: ldb  $41]
+	* here D1 MSB is 0
 	and.b	#0x7f,d1                         	| [$c140: andb #$7f]
-	ABX                                    	| [$c142: abx]
-	ABX                                    	| [$c143: abx]
+	add.w	d1,d2		| [$c142: abx]   abx direct from d1.w
+	add.w	d1,d2      | [$c143: abx]     abx direct from d1.w
 	GET_ROM_REG_ADDRESS	0x00,d2                	| [$c144: ldx  $00,x] [rom]
 	MOVE_W_TO_REG	a0,d2                         	| [...]
 	move.w	d2,(0x48,a6)                         | [$c146: stx  $48]
@@ -306,12 +308,12 @@ sub_c194:
 	ABX                                    	| [$c1a1: abx]
 	move.w	(sp),d1                        	| [$c1a2: pulb]
 											| [$c1a3: pshb]
-	and.b	#0x30,d1                      | [$c1a4: andb #$30]
+	and.w	#0x30,d1                      | [$c1a4: andb #$30] word mask
                                          | [$c1a6: lsrb]
                                          | [$c1a7: lsrb]
                                          | [$c1a8: lsrb]
 	lsr.b	#4,d1                            	| [$c1a9: lsrb]
-	ABX                                    	| [$c1aa: abx]
+	add.w	d1,d2                                	| [$c1aa: abx] direct abx
 	GET_ROM_REG_ADDRESS	0x00,d2                	| [$c1ab: ora  $00,x] [rom]
 	or.b	(a0),d0                           	| [...]
 	OP_W_ON_DP_ADDRESS	move,0x62,d0         | [$c1ad: sta  $62]
@@ -405,7 +407,6 @@ sub_c227:
 	BIT	#0x10,d1                           	| [$c230: bitb #$10]
 	jeq	sub_c23b                           	| [$c232: beq  $c23b]
 	OP_R_ON_DP_ADDRESS	move,0x60,d1         | [$c234: ldb  $60]
-	MAKE_D                                 	| [...]
 	subq	#0x0008,d1                       	| [$c236: subd #$0008]
 	MAKE_A                                 	| [...] needed!
 	OP_W_ON_DP_ADDRESS	move,0x60,d1         | [$c239: stb  $60]
@@ -442,9 +443,10 @@ sub_c24d:
 	ABX                                    	| [$c267: abx]
 	move.w	d2,(0x4A,a6)                    	| [$c268: stx  $4a]
 	move.w	(0x48,a6),d2                    	| [$c26a: ldx  $48]
-	addq.b	#1,(0x1FD,a5)                     	| [$c26c: inc  $81fd]
-                                         | [$c26f: lda  $81fd]
 	move.b	(0x1FD,a5),d0                         	| [...]
+	addq	#1,d0
+	move.b	d0,(0x1FD,a5)                     	| [$c26c: inc  $81fd]
+                                         | [$c26f: lda  $81fd]
 	cmp.b	#0x4b,d0                         	| [$c272: cmpa #$4b]
 	jcc	sub_c27e                           	| [$c274: bcc  $c27e]
 	OP_W_ON_DP_ADDRESS	subq,0x0053,#1       | [$c276: dec  $0053]
