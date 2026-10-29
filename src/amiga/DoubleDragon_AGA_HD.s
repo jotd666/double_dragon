@@ -9,10 +9,10 @@
 CHIPSIZE = $200000
 	IFD	DEV_MODE
 EXPMEM = $800000
-SAVEGAME_SIZE = $0
+SAVEGAME_SIZE = $2800    ; size needed for savegame code, not save game data itself
 	ELSE
 EXPMEM = $200000
-SAVEGAME_SIZE = $2800    ; size needed for savegame code, not save game data itself
+SAVEGAME_SIZE = $0
 	ENDC
 	
 BASE_CHIP = $400
@@ -63,7 +63,7 @@ _config
 	ENDC
 
 DECL_VERSION:MACRO
-	dc.b	"1.2"
+	dc.b	"1.3"
 	IFD BARFLY
 		dc.b	" "
 		INCBIN	"T:date"
@@ -98,6 +98,11 @@ start:
 	MOVE.L	A0,(A1)
 	move.l	a0,a2
     
+	move.l	#WCPUF_Base_NC|WCPUF_Exp_CB|WCPUF_Slave_CB|WCPUF_IC|WCPUF_DC|WCPUF_BC|WCPUF_SS|WCPUF_SB,d0
+	move.l	#WCPUF_All,d1
+	move.l	(_resload,pc),a2
+	jsr		(resload_SetCPU,a2)
+	
     IFEQ EXPMEM
     lea  _expmem(pc),a0
     move.l  #$2000,(a0)
