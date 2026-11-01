@@ -18,6 +18,10 @@ load_context:
 	movem.l	d0-a6,-(a7)
 	move.l	d0,d1
 	jbsr	osd_disable_interrupts
+	* graphics are going to be replaced: no frame built anymore (level 1 off),
+	* wait for the running blit chain to complete
+	lea		_custom,a5
+	REALLY_WAIT_BLIT
 	
 	
 	.ifne	OPT_ENABLE_LOGGING

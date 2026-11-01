@@ -1,0 +1,179 @@
+	.if		OPT_BLIT_CHAIN_MODE==1
+
+* build the blit queue for the back buffer (level 1, frame_state == FS_FREE)
+* the blitter starts on the first entries while the CPU computes the next
+render_frame:
+	* scroll & new tile columns: the CPU writes in the buffers, no blit
+	* is running (back buffer is free, front buffer isn't blitted)
+	jbsr	set_scroll_values
+	* note down the scroll values matching what we're drawing
+	* they'll be applied when this buffer is shown
+	move.w	host_scroll_x,back_scroll_x
+	move.w	game_scroll_y,back_scroll_y
+
+	BLITQ_BEGIN_FRAME
+	tst.l	sprite_table_buffer_ptr
+	jeq		0f
+	jbsr	really_update_sprites
+0:
+	BLITQ_END_FRAME
+	rts
+
+* what: restores background where a bob was (all planes but the last
+* one, which is cleared)
+* < A0: pristine background
+* < A1: dest buffer
+* < D0: X (rounded to smaller 16-multiple)
+* < D1: Y
+* < D2: width in bytes
+* < D4: height
+* trashes: D0-D1
+
+blit_background:
+	movem.l	d2-d4/a0-a2,-(a7)
+	* adjust offset X: X//8
+	lsr.w	#3,d0
+	lea		mulBG_NB_BYTES_PER_ROW_table(pc),a2
+	.ifndef	MC68020
+	add.w	d1,d1
+	add.w	(a2,d1.w),d0
+	.else
+	add.w	(a2,d1.w*2),d0
+	.endif
+	* same offset for source and destination
+	add.w	d0,a1
+	add.w	d0,a0
+
+	move.w	d2,d0
+	or.w	#BQK_RESTORE,d0
+	move.w	#BG_NB_BYTES_PER_ROW,d1
+	jbsr	blitq_setup
+
+    lsl.w   #6,d4
+	lsr.w	#1,d2
+    add.w   d2,d4       | bltsize
+
+	move.l	blitq_wr,a2
+	* first plane: also restores bltcon0 (last plane of previous bob was a clear)
+	move.l	#r_copy_con,(a2)+
+	move.l	#0x09F00000,(a2)+
+	move.l	a0,(a2)+
+	move.l	a1,(a2)+
+	move.w	d4,(a2)+
+	PUBLISH	a2
+
+	* all bitplanes but the last one
+	moveq	#NB_PLAYFIELD_PLANES-3,d3
+0:
+	add.l	#BG_SCREEN_PLANE_SIZE,a0
+	add.l	#BG_SCREEN_PLANE_SIZE,a1
+	move.l	#r_copy,(a2)+
+	move.l	a0,(a2)+
+	move.l	a1,(a2)+
+	move.w	d4,(a2)+
+	PUBLISH	a2
+	dbf		d3,0b
+
+	* last bitplane (sprite colors): just clear
+	add.l	#BG_SCREEN_PLANE_SIZE,a1
+	move.l	#r_clear_con,(a2)+
+	move.l	#0x01000000,(a2)+
+	move.l	a1,(a2)+
+	move.w	d4,(a2)+
+	PUBLISH	a2
+
+	movem.l	(a7)+,d2-d4/a0-a2
+	rts
+
+* what: blits a bob on all planes, cookie cut
+* < D0.W,D1.W: x,y
+* < A0: source (pointer on array of planes)
+* < A1: destination fg plane, also background to mix with cookie cut fg plane
+* < A3: source mask for cookie cut
+* < D2: width in bytes (inc. 2 extra for shifting)
+* < D3: number of planes
+* < D4: height. If negative, source is copied with negative modulo (flip)
+* < D5: y offset for source planes
+* trashes: a1
+
+blit_planes_any_internal_cookie_cut:
+    movem.l d0-d7/a0/a2-a4,-(a7)
+	move.w	d2,d0
+	or.w	#BQK_COOKIE,d0
+	tst.w	d4
+	jpl		1f
+	* flipped: start from the bottom line
+	move.w	d2,d0
+	or.w	#BQK_COOKIE_FLIP,d0
+	sub.w	d4,d1	| pre-add height to d1
+	subq.w	#1,d1	| minus one
+	neg.w	d4		| make d4 positive again
+1:
+	move.w	d1,d6
+	move.w	#BG_NB_BYTES_PER_ROW,d1
+	jbsr	blitq_setup
+
+    lea		mulBG_NB_BYTES_PER_ROW_table(pc),a4
+	.ifndef	MC68020
+	add.w	d6,d6
+    move.w  (a4,d6.w),d1	| y times row size
+	.else
+    move.w  (a4,d6.w*2),d1	| y times row size
+	.endif
+	move.w	(2,a7),d0			| X (saved D0.W)
+	move.w	d0,d6
+    lsr.w   #3,d0			| X displacement in bytes
+    add.w   d0,d1
+    add.w   d1,a1       | plane position
+
+	* bltcon0/1 for that shift: full cookie cut, and mask only (empty plane)
+    and.w   #0xF,d6
+	lea		cookie_cut_blit_table(pc),a4
+	.ifndef	MC68020
+	add.w	d6,d6
+	add.w	d6,d6
+	move.l	(a4,d6.w),d7
+	lea		cookie_cut_mask_blit_table(pc),a4
+	move.l	(a4,d6.w),d6
+	.else
+	move.l	(a4,d6.w*4),d7
+	lea		cookie_cut_mask_blit_table(pc),a4
+	move.l	(a4,d6.w*4),d6
+	.endif
+
+    lsl.w   #6,d4
+    lsr.w   #1,d2
+    add.w   d2,d4       | bltsize
+	add.w	d5,a3		| apply y offset to mask too
+
+	move.l	blitq_wr,a2
+	subq.w	#1,d3
+0:
+	move.l	(a0)+,d0
+	jeq		2f
+	move.l	d0,a4
+	add.w	d5,a4		| add Y offset
+	move.l	#r_cookie,(a2)+
+	move.l	d7,(a2)+
+	move.l	a1,(a2)+	| C
+	move.l	a4,(a2)+	| B
+	move.l	a3,(a2)+	| A
+	move.l	a1,(a2)+	| D
+	move.w	d4,(a2)+
+	jra		3f
+2:
+	* source is 0: just apply mask (less bandwidth lost), B fixed
+	move.l	#r_cookie_nob,(a2)+
+	move.l	d6,(a2)+
+	move.l	a3,(a2)+	| A
+	move.l	a1,(a2)+	| C = D
+	move.w	d4,(a2)+
+3:
+	PUBLISH	a2
+	add.l	#BG_SCREEN_PLANE_SIZE,a1
+	dbf		d3,0b
+
+    movem.l (a7)+,d0-d7/a0/a2-a4
+    rts
+
+	.endif

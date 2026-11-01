@@ -1,61 +1,46 @@
 	.include "hardware/custom.i"
 
-* how to use in double buffering mode with a "drawn" and a "displayed" buffer
+* blitter helpers, synchronous or asynchronous (blitter interrupt chain)
 *
-* - set OPT_BLIT_CHAIN_MODE to 0 or 1: 0 classic blit+waitblit, 1 blit in interrupts
-* - replace all blit writes by WRITE_BLITTER_REG_xxx macros. When writing bltsize
-*   use WRITE_BLITTER_REG_SIZE instead of WRITE_BLITTER_REG_WORD
+* OPT_BLIT_CHAIN_MODE = 0: classic mode, blit + wait blit
+* OPT_BLIT_CHAIN_MODE = 1: blitter interrupt chain
 *
-* mode 0: classic mode. WAIT_BLIT is active, all operations are synchronous so
-* in vblank (top of frame) or copper interrupt (set at bottom of frame):
-* - blit in "drawn" buffer 
-* - switch buffer pointers
-* - show "displayed" buffer in copperlist
+* WRITE_BLITTER_REG_xxx / WAIT_BLIT always act on the hardware directly
+* (synchronous blits). In chain mode they must only be used in a "sync
+* section" (BLIT_SYNC_BEGIN/BLIT_SYNC_END): rare, full screen operations.
 *
-* mode 1: with blitter interrupt chain.
-* - use DECL_BLITLISTS with an arbitrary size. Error will trigger if too small
-* - setup level 1 interrupt at end of copperlist (instead of copper interrupt)
-*   so it can be interrupted by blitter
-* - setup level 3 interrupt with vblank and blitter (copper isn't useful)
-* - on level 1 interrupt:
-*   - call NEW_BLITLIST
-*   - set bitplanes
-*   - switch screen pointers (note the reversed order vs synchronous mode!)
-*   - call PROCESS_BLITS to process the previous blits
-*   - call the routine to perform the "blits" (fake blits now, fills filled_blitter_list instead)
-*   - call COMMIT_BLITLIST to end the list (by setting -2 in it)
+* chain mode, how it works (see Galaga/Commando):
+* - the CPU builds a queue of fixed-format entries in the frame's back
+*   buffer, publishing them one by one: the blitter starts on the first
+*   entry while the CPU computes the next ones
+* - each entry = routine pointer + data. The level 3 blitter interrupt
+*   runs the next entry; entries that don't start a blit (setup, CPU
+*   calls like in-place mirroring) are chained immediately. Registers
+*   that don't change (modulos, masks) are written only by setup entries,
+*   and only when they change
+* - when the queue is drained and the producer has finished, the frame is
+*   READY: it's shown at the next frame boundary, then the back buffer is
+*   FREE again for the next frame
 *
-*   that's it. PROCESS_BLITS started the chain reaction, and there are not blitwaits
-*   anymore in the code
-*
-*   In most games, for memory considerations, we use in-place mirroring, so no problem with
-*   option 0. But option 1 needs more work. So we introduce a new virtual blitter command if OPT_VBLIT_MIRROR_MODE=1
-*   in the WRITE_VIRTUAL_MIRROR_COMMAND, mirror_function expects the bitplane data in A2 and the height minus 1 in D1
-*
-*   Game that scroll and that can't use dual playfield for sprites also need a command to store the current scroll value
-*   else if the screen moves a lot, the scroll offset added to the bobs doesn't match the current scroll offset
-*
-*   it's however ideal on games that need a lot of blitting and exclusively use
-*   static source data. Interleaved mode would trigger less interrupts too.
-*
-*   most macros do nothing in mode 0, so it allows to lay them out and compare speed
-*   with mode 0 or 1 without changing the code
-*   only the screen switch order and location changes (in double buffered mode, if
-*   you race the beam, there's nothing to do)
-*
-*
-* the 4 variables to configure, here or in your main code
-* values 0/1
+* build a frame (level 1 interrupt, frame_state == FS_FREE):
+*   BLITQ_BEGIN_FRAME
+*   ... blitq_setup_xxx / emit entries / PUBLISH ...
+*   BLITQ_END_FRAME
+* level 3 interrupt: BLITQ_INTERRUPT (blitter part, A5=custom, saves D0/A0/A1)
+* show the frame at frame boundary: if frame_state == FS_READY => swap,
+*   frame_state = FS_FREE
 *
 *OPT_BLIT_CHAIN_MODE = 0
-*OPT_VBLIT_SCROLL_MODE = 0
 *OPT_VBLIT_MIRROR_MODE = 0
-*OPT_BLIT_WAIT_DEBUG = 0
-******************
-* blitter macros *
-******************
 
-*DEBUG_BLIT_WAIT = 1
+FS_FREE = 0			| back buffer can be drawn
+FS_BUSY = 1			| blit chain building/running into the back buffer
+FS_READY = 2		| back buffer complete, waiting for the frame boundary
+
+* setup keys: type<<8 + blit width in bytes
+BQK_RESTORE = 1<<8
+BQK_COOKIE = 2<<8
+BQK_COOKIE_FLIP = 3<<8
 
 	.macro	CHECK_A5_IS_CUSTOM
 	.ifndef	RELEASE
@@ -63,48 +48,24 @@
 	jeq		s0\@
 	BREAKPOINT	"custom should be set in A5"
 s0\@:
-	.endif		
+	.endif
 	.endm
 
-
-
-********************
-* classic handling *
-********************
-
-	.if		OPT_BLIT_CHAIN_MODE==0
-	
 	.macro	HW_BLITTER_ACTIVE_TEST	label
 	BTST	#6,(dmaconr,a5)
 	BNE.S	\label
 	.endm
-	.macro	REALLY_WAIT_BLIT
+
+* wait for the blitter (hardware)
+	.macro	WAIT_BLIT
 	CHECK_A5_IS_CUSTOM
+	tst.b	(dmaconr,a5)			| dummy read (early Agnus BBUSY quirk)
 	move.w	#0x8400,(dmacon,a5)		| blitter high priority
 wait\@:
 	HW_BLITTER_ACTIVE_TEST	wait\@
 	move.w	#0x0400,(dmacon,a5)		| blitter normal priority
 	.endm
-	
-	.macro	WAIT_BLIT
-	REALLY_WAIT_BLIT
-	.endm
-	
-	.macro	NEW_BLITLIST
-	.endm
-	
-	.macro	PROCESS_ONE_BLIT
-	.endm
-	
-	.macro	PROCESS_BLITS
-	.endm
-	
-	.macro	FORCE_PROCESS_BLITS
-	.endm
-	
-	.macro	COMMIT_BLITLIST
-	.endm
-	
+
 	.macro	WRITE_BLITTER_REG_LONG	value,offset
 	CHECK_A5_IS_CUSTOM
 	move.l	\value,\offset(a5)
@@ -116,7 +77,20 @@ wait\@:
 	.macro	WRITE_BLITTER_REG_SIZE	value
 	WRITE_BLITTER_REG_WORD	\value,bltsize
 	.endm
-	
+
+	.if		OPT_BLIT_CHAIN_MODE==0
+
+* classic mode
+
+	.macro	REALLY_WAIT_BLIT
+	WAIT_BLIT
+	.endm
+
+	.macro	BLIT_SYNC_BEGIN
+	.endm
+	.macro	BLIT_SYNC_END
+	.endm
+
 	.if		OPT_VBLIT_MIRROR_MODE==1
 	.macro	WRITE_BLITTER_VIRTUAL_MIRROR	height,mirror_function,bitplane
 	move.w	\height,d1		| height
@@ -124,344 +98,276 @@ wait\@:
 	jsr		(\mirror_function)	  | in: A2 bitplane (parameter is ignored it is already a2), D1: height-1
 	.endm
 	.endif
-	
-	.if		OPT_VBLIT_SCROLL_MODE==1
-	.macro	WRITE_BLITTER_SCROLL_VALUES	scroll_x,scroll_y
-	* the blits are synchronous, the scrolling is updated at the same time
-	move.l	\scroll_x,blitter_scroll_x
-	move.w	\scroll_y,blitter_scroll_y
-	.endm
-	.endif
-	
-	* no blitlists, empty
-	.macro	DECL_BLITLISTS	size
-	.endm
-	.macro	SW_BLITTER_ACTIVE_TEST	label
-	.endm
-	.macro	SW_BLITTER_INACTIVE_SET
-	.endm
-	
-	.endif
-	
-******************
-* queue handling *
-******************
 
-	.if		OPT_BLIT_CHAIN_MODE==1
-	.macro	WAIT_BLIT
-	* do nothing!
+	.macro	DECL_BLITTER_QUEUE	size
 	.endm
-	.macro	SW_BLITTER_ACTIVE_TEST	label
-	tst.b	blitter_chain_running
-	jne		\label
-	.endm
-	.macro	SW_BLITTER_INACTIVE_SET
-	clr.b	blitter_chain_running
-	.endm
-	
+
+	.else
+
+* chain mode
+
+* wait until no blit chain runs, then for the blitter
+* (not from level 3, and not while building a frame!)
 	.macro	REALLY_WAIT_BLIT
-	.if	OPT_BLIT_WAIT_DEBUG
 sw\@:
-	* if blitter isn't finished, then we wait
-	* this is called from level 1 interrupt so
-	* blitter interrupts can interrupt
-	tst.b	blitter_chain_running
-	jeq		snw\@
-	COLOR0_FLASH	0xF00
-	jra		sw\@
-snw\@:
-	.else
-sw\@:
-	* if blitter isn't finished, then we wait
-	* this is called from level 1 interrupt so
-	* blitter interrupts can interrupt
-	SW_BLITTER_ACTIVE_TEST	sw\@
-	.endif
+	cmp.b	#FS_BUSY,frame_state
+	jeq		sw\@
+	WAIT_BLIT
 	.endm
-	
-	.macro	NEW_BLITLIST
-	lea		blitter_list_1,a0
-	lea		blitter_list_2,a1
+
+* synchronous blits / CPU access to the back buffer from the game:
+* forbid frame building (level 1), wait for the chain to complete
+* < A5: custom
+	.macro	BLIT_SYNC_BEGIN
+	move.w	(intenar,a5),-(a7)
+	move.w	#0x0004,(intena,a5)		| no level 1: no new frame built
+	tst.w	(intenar,a5)			| make sure the write has landed (040/060)
 	REALLY_WAIT_BLIT
-	
-	* blitter chain has completed: we can switch lists
-	eor.b	#1,blitter_list_toggle
-	jne		s0\@
-	move.l	a1,drawn_blitter_list_ptr
-	move.l	a0,filled_blitter_list_ptr
-	jra		s1\@
-s0\@:
-	move.l	a0,drawn_blitter_list_ptr
-	move.l	a1,filled_blitter_list_ptr
-s1\@:
 	.endm
-	
-	.macro	PROCESS_BLITS
+	.macro	BLIT_SYNC_END
+	btst	#2,(1,a7)
+	jeq		nosoft\@
+	move.w	#0xC004,(intena,a5)		| level 1 was enabled: enable it again
+nosoft\@:
+	addq.w	#2,a7
+	.endm
+
+* make the entries written up to \reg visible to the blitter interrupt
+* and start the chain if the blitter is idle
+	.macro	PUBLISH	reg
 	.ifndef	RELEASE
-	tst.b	blitter_chain_running
-	jeq		nob\@
-	BREAKPOINT	"PROCESS_BLITS called while blitter chain is running"
-nob\@:
+	cmp.l	#blitter_queue_end,\reg
+	jcs		ok\@
+	BREAKPOINT	"blitter queue overflow"
+ok\@:
 	.endif
-	tst.b	size_command_issued
-	jeq		s\@		| empty list or no bltsize command in the current command list: skip
-	* signal that the blitter chain is now running
-	st.b	blitter_chain_running
-	* start first blit from outside the blitter interrupt to
-	* start the chain reaction reading from drawn_blitter_list_ptr
-	* clear size command issued for next blitlist creation
-	clr.b	size_command_issued
-	.ifndef	RELEASE
-	* cheap sanity check
-	move.l	drawn_blitter_list_ptr,a0
-	tst.w	(a0)
-	jne		okay\@
-	BREAKPOINT	"zero in drawn blitter list when starting blits" 
-okay\@:
-	.endif
-	* turn off blitter interrupts to make sure that the first
-	* blit is atomic and not interrupted by the blitter interrupt!
-	move.w	#0x0040,(intena,a5)
-	PROCESS_ONE_BLIT
-	* turn on blitter interrupts again
-	move.w	#0x8040,(intena,a5)
-s\@:
+	move.l	\reg,blitq_wr
+	tst.b	blit_idle
+	jeq		nokick\@
+	jbsr	blitq_kick
+nokick\@:
 	.endm
 
-	.macro	FORCE_PROCESS_BLITS
-	* signal that the blitter chain is now running
-	st.b	blitter_chain_running
-	* start first blit from outside the blitter interrupt to
-	* start the chain reaction reading from drawn_blitter_list_ptr
-	* turn off blitter interrupts to make sure that the first
-	* blit is atomic and not interrupted by the blitter interrupt!
-	move.w	#0x0040,(intena,a5)
-	PROCESS_ONE_BLIT
-	* turn on blitter interrupts again
-	move.w	#0x8040,(intena,a5)
-	* clear size command issued for next blitlist creation
-	clr.b	size_command_issued
-	.endm
-
-	.macro	DECL_BLITLISTS	size
-blitter_scroll_x:
-	.long	0
-blitter_scroll_y:
-	.word	0
-drawn_blitter_list_ptr:
-	.long	0
-filled_blitter_list_ptr:
-	.long	0
-blitter_list_1:
-	.word	-2
-	.skip	\size
-	.long	0xdeaddead
-	.long	0xdeaddead
-	.long	0xdeaddead
-blitter_list_2:
-	.word	-2
-	.skip	\size
-	.long	0xdeaddead
-	.long	0xdeaddead
-	.long	0xdeaddead
-blitter_chain_running:
-	.byte	0
-size_command_issued:
-	.byte	0
-blitter_list_toggle:	
-	.byte	0
-	.align	2
-	.endm
-	
-	.macro	CHECK_BLITTER_IDLE
-	.ifndef RELEASE
-	BTST	#6,(dmaconr,a5)
-	jeq		idle\@
-	BREAKPOINT	"PROCESS_ONE_BLIT called while blitter is busy!"
-idle\@:
-	.endif
-	.endm
-	.macro	COMMIT_BLITLIST
-	* complete filled list
-	move.l	filled_blitter_list_ptr,a0
-	move.w	#0xFFFE,(a0)
-	.endm
-
-	.macro	PROCESS_ONE_BLIT
-	* process blit command, first one (outside blitter int)
-	* or others (inside blitter int)
-	CHECK_A5_IS_CUSTOM
-	move.l	drawn_blitter_list_ptr,a0
-
-	moveq	#-1,d2
-b0\@:
-	move.w	(a0)+,d0		| blitter register
-	jmi		b1\@			| end of command or end of list
-
-	bclr	#14,d0
-	jne		b2\@
-	* word or virtual mirror command
-	.if	OPT_VBLIT_MIRROR_MODE==1
-	cmp.w	#deniseid,d0
-	jne		nv0\@
-	* mirror command
-	movem.l	d0-d2/a0-a2,-(a7)
-	lea		mirror_table,a1
-	move.w	(a0)+,d1
-	subq	#1,d1			| height minus one
-	.ifndef	RELEASE
-	jpl		pos\@
-	BREAKPOINT	"zero height for mirror"
-pos\@:
-	.endif
-	move.l	(a0)+,a2
-	.ifndef	MC68020
-	move.l	(a0),a0
-	jsr		(a0)
-	.else
-	jsr		([a0])
-	.endif
-	movem.l	(a7)+,d0-d2/a0-a2
-	add.w	#10,a0		| advance to next command
-	jra		b0\@		| not size: continue parsing list
-nv0\@:
-	.endif
-	.if		OPT_VBLIT_SCROLL_MODE==1
-	cmp.w	#dsksync,d0
-	jne		nv1\@
-	* store scrolling command
-	move.l	(a0)+,blitter_scroll_x
-	move.w	(a0)+,blitter_scroll_y
-	jra		b0\@		| not size: continue parsing list
-nv1\@:
-	.endif
-	* word command, check bounds
-	.ifndef	RELEASE
-	cmp.w	#bltcon0,d0		| sanity check for commands!
-	jcc		f1\@
-f0\@:
-	lea		(-2,a0),a1
-	BREAKPOINT	"word command: not a blitter register (in A1)"
-	illegal
-f1\@:
-	cmp.w	#deniseid,d0
-	jcc		f0\@
-	.endif
-	
-	* bit not set: word command
-	move.w	(a0)+,d1		| word value
-	CHECK_BLITTER_IDLE
-	move.w	d1,(a5,d0.w)	| word blitter command
-	jra		b0\@		| not size: continue parsing list
-	* long write command
-b2\@:
-	.ifndef	RELEASE
-	cmp.w	#bltcon0,d0		| sanity check for commands!
-	jcc		g1\@
-g0\@:
-	BREAKPOINT	"long command: not a blitter register !!"
-	illegal
-g1\@:
-	cmp.w	#deniseid,d0
-	jcc		g0\@
-	.endif
-
-
-	* bit 14 set: long command
-	move.l	(a0)+,d1		| long value
-
-	CHECK_BLITTER_IDLE
-	move.l	d1,(a5,d0.w)	| long blitter command
-	jra		b0\@		| not size: continue parsing list
-b1\@:
-	* negative: can be -1 or -2
-	cmp.w	d2,d0
-	jeq		b3\@		| -1: end of command
-	* -2: end of list: nothing to do, we're done for that frame
-	clr.b	blitter_chain_running
-	jra		b4\@		| no need to update pointer, the list is done
-b3\@:
-	move.l	a0,drawn_blitter_list_ptr
-b4\@:
-	.endm
-	
-	.macro	LOAD_FILLED_LIST
-	move.l	filled_blitter_list_ptr,a5
-	.ifndef	RELEASE
-	cmp.w	#0xdead,(a5)
-	jne		c0\@
-	BREAKPOINT	"Blitter list overflow"
-c0\@:
-	cmp.l	#0,a5
-	jne		c1\@
-	BREAKPOINT	"null pointer on blitter list"
-c1\@:
-	.endif
-	.endm
-	
-	.macro	STORE_FILLED_LIST
-	move.l	a5,filled_blitter_list_ptr
-	.endm
-	
 	.if		OPT_VBLIT_MIRROR_MODE==1
+* in-place mirroring must happen in queue order: CPU entry
+* mirror_function: in A2 bitplane, A1 mirror table, D1 height-1
 	.macro	WRITE_BLITTER_VIRTUAL_MIRROR	height,mirror_function,bitplane
-	move.l	a5,-(a7)
-	LOAD_FILLED_LIST
-	move.w	#deniseid,(a5)+		| fake custom reg,(a5)+
-	move.w	\height,(a5)+
-	move.l	\bitplane,(a5)+
-	move.l	\mirror_function,(a5)+
-	STORE_FILLED_LIST
-	move.l	(a7)+,a5
+	move.l	a1,-(a7)
+	move.l	blitq_wr,a1
+	move.l	#r_call,(a1)+
+	move.l	\mirror_function,(a1)+
+	move.l	#mirror_table,(a1)+
+	move.l	\bitplane,(a1)+
+	move.w	\height,(a1)
+	subq.w	#1,(a1)+
+	PUBLISH	a1
+	move.l	(a7)+,a1
 	.endm
 	.endif
 
-	.if		OPT_VBLIT_SCROLL_MODE==1
-	.macro	WRITE_BLITTER_SCROLL_VALUES	scroll_x,scroll_y
-	move.l	a5,-(a7)
-	LOAD_FILLED_LIST
-	move.w	#dsksync,(a5)+		| fake custom reg,(a5)+
-	move.l	\scroll_x,(a5)+		| here we adapted to long for convenience (HI/LO)
-	move.w	\scroll_y,(a5)+
-	STORE_FILLED_LIST
-	move.l	(a7)+,a5
+* start building a frame (level 1, frame_state == FS_FREE)
+	.macro	BLITQ_BEGIN_FRAME
+	move.b	#FS_BUSY,frame_state
+	clr.b	producer_done
+	move.l	#blitter_queue,blitq_rd
+	move.l	#blitter_queue,blitq_wr
+	st.b	blit_idle
+	move.w	#-1,blitq_setup_key		| no setup yet
 	.endm
-	.endif
 
-	.macro	WRITE_BLITTER_REG_LONG	value,offset
-	move.l	a5,-(a7)
-	move.w	d6,-(a7)
-	LOAD_FILLED_LIST
-	move.w	#\offset,d6
-	bset	#14,d6		| bit set to tell it's a long command
-	move.w 	d6,(a5)+
-	move.w	(a7)+,d6
-	move.l	\value,(a5)+
-	STORE_FILLED_LIST
-	move.l	(a7)+,a5
+* end of frame building: if the chain has already drained (or was empty)
+* we have to declare completion ourselves
+	.macro	BLITQ_END_FRAME
+	move.w	sr,-(a7)
+	or.w	#0x0700,sr
+	st.b	producer_done
+	tst.b	blit_idle
+	jeq		nr\@
+	movem.l	d0/a0-a1/a5,-(a7)
+	lea		_custom,a5
+	jbsr	blitq_run				| queue empty: declares the frame ready
+	movem.l	(a7)+,d0/a0-a1/a5
+nr\@:
+	move.w	(a7)+,sr
 	.endm
-	
-	.macro	WRITE_BLITTER_REG_WORD	value,offset
-	move.l	a5,-(a7)
-	LOAD_FILLED_LIST
-	.if	\offset==bltsize
-	.error  "WRITE_BLITTER_REG_WORD doesn't accept bltsize arg, use WRITE_BLITTER_REG_SIZE"
+
+* level 3 interrupt, blitter part
+* < A5: custom, D0/A0/A1 free
+	.macro	BLITQ_INTERRUPT
+	move.w	#0x0040,(intreq,a5)
+	move.w	#0x0040,(intreq,a5)
+	tst.b	blit_idle
+	jne		bi\@					| no chain running: ignore
+	tst.b	(dmaconr,a5)			| dummy read (early Agnus BBUSY quirk)
+	btst	#6,(dmaconr,a5)
+	jne		bi\@					| blitter still busy: spurious, ignore
+	jbsr	blitq_run
+bi\@:
+	.endm
+
+* queue code & data
+	.macro	DECL_BLITTER_QUEUE	size
+
+* < A5: custom
+* trashes D0,A0,A1
+blitq_run:
+	move.l	blitq_rd(pc),a0
+blitq_next:
+	cmp.l	blitq_wr(pc),a0
+	jeq		blitq_empty
+	move.l	(a0)+,a1
+	jmp		(a1)
+blitq_empty:
+	move.l	a0,blitq_rd
+	st.b	blit_idle
+	tst.b	producer_done
+	jeq		0f
+	move.b	#FS_READY,frame_state	| back buffer complete
+0:
+	rts
+
+* .l bltcon0/1 .l afwm/alwm .l cmod/bmod .l amod/dmod
+r_setup:
+	move.l	(a0)+,(bltcon0,a5)
+	move.l	(a0)+,(bltafwm,a5)
+	move.l	(a0)+,(bltcmod,a5)
+	move.l	(a0)+,(bltamod,a5)
+	jra		blitq_next
+
+* .l function .l A1 .l A2 .w D1 : CPU call (blitter is idle)
+r_call:
+	movem.l	d1-d2/a2,-(a7)
+	move.l	(a0)+,d0
+	move.l	(a0)+,a1
+	move.l	(a0)+,a2
+	move.w	(a0)+,d1
+	move.l	a0,-(a7)
+	move.l	d0,a0
+	jsr		(a0)
+	move.l	(a7)+,a0
+	movem.l	(a7)+,d1-d2/a2
+	jra		blitq_next
+
+* A->D copy, with bltcon: .l bltcon0/1 .l A .l D .w bltsize
+r_copy_con:
+	move.l	(a0)+,(bltcon0,a5)
+* A->D copy: .l A .l D .w bltsize
+r_copy:
+	move.l	(a0)+,(bltapt,a5)
+	move.l	(a0)+,(bltdpt,a5)
+	move.w	(a0)+,(bltsize,a5)
+	move.l	a0,blitq_rd
+	rts
+
+* clear (D only): .l bltcon0/1 .l D .w bltsize
+r_clear_con:
+	move.l	(a0)+,(bltcon0,a5)
+	move.l	(a0)+,(bltdpt,a5)
+	move.w	(a0)+,(bltsize,a5)
+	move.l	a0,blitq_rd
+	rts
+
+* cookie cut: .l bltcon0/1 .l C .l B .l A .l D .w bltsize
+r_cookie:
+	move.l	(a0)+,(bltcon0,a5)
+	lea		(bltcpt,a5),a1
+	move.l	(a0)+,(a1)+			| C
+	move.l	(a0)+,(a1)+			| B
+	move.l	(a0)+,(a1)+			| A
+	move.l	(a0)+,(a1)+			| D
+	move.w	(a0)+,(a1)			| bltsize: go!
+	move.l	a0,blitq_rd
+	rts
+
+* cookie cut with zero B data (empty plane): .l bltcon0/1 .l A .l C=D .w bltsize
+r_cookie_nob:
+	move.l	(a0)+,(bltcon0,a5)
+	clr.w	(bltbdat,a5)		| B is fixed (B DMA overwrites it, so each time)
+	move.l	(a0)+,(bltapt,a5)
+	move.l	(a0),(bltcpt,a5)
+	move.l	(a0)+,(bltdpt,a5)
+	move.w	(a0)+,(bltsize,a5)
+	move.l	a0,blitq_rd
+	rts
+
+* producer side: start the chain if the blitter is idle
+* (level 1: supervisor mode)
+blitq_kick:
+	move.w	sr,-(a7)
+	or.w	#0x0700,sr
+	tst.b	blit_idle
+	jeq		0f
+	movem.l	d0/a0-a1/a5,-(a7)
+	lea		_custom,a5
+	clr.b	blit_idle
+	jbsr	blitq_run
+	movem.l	(a7)+,d0/a0-a1/a5
+0:
+	move.w	(a7)+,sr
+	rts
+
+* emit a setup entry if the setup key changed
+* < D0.W: key (BQK_xxx + width in bytes)
+* < D1.W: screen row size in bytes (modulos)
+* preserves all registers
+blitq_setup:
+	cmp.w	blitq_setup_key(pc),d0
+	jne		0f
+	rts
+0:
+	movem.l	d0-d2/a1,-(a7)
+	move.w	d0,blitq_setup_key
+	move.l	blitq_wr(pc),a1
+	move.l	#r_setup,(a1)+
+	moveq	#0,d2
+	move.b	d0,d2				| width in bytes
+	lsr.w	#8,d0
+	cmp.w	#BQK_RESTORE>>8,d0
+	jne		1f
+	* A->D copy (and D clear): both with screen modulo
+	move.l	#0x09F00000,(a1)+
+	move.l	#-1,(a1)+
+	clr.l	(a1)+
+	sub.w	d2,d1
+	move.w	d1,(a1)+			| A
+	move.w	d1,(a1)+			| D
+	jra		9f
+1:
+	* cookie cut, source is 1 word narrower than the blit (alwm=0)
+	clr.l	(a1)+				| bltcon0/1 set by each entry
+	move.l	#0xFFFF0000,(a1)+
+	cmp.w	#BQK_COOKIE_FLIP>>8,d0
+	jne		2f
+	neg.w	d1					| flipped: destination goes up
+2:
+	sub.w	d2,d1
+	move.w	d1,(a1)+			| C
+	move.w	#-2,(a1)+			| B
+	move.w	#-2,(a1)+			| A
+	move.w	d1,(a1)+			| D
+9:
+	move.l	a1,blitq_wr			| published with the next blit
+	movem.l	(a7)+,d0-d2/a1
+	rts
+
+	.align	2
+blitq_rd:
+	.long	0
+blitq_wr:
+	.long	0
+blitq_setup_key:
+	.word	-1
+blit_idle:
+	.byte	-1			| no blit chain running
+producer_done:
+	.byte	0
+frame_state:
+	.byte	FS_FREE
+	.align	2
+blitter_queue:
+	.skip	\size
+blitter_queue_end:
+	.long	0
+	.endm
+
 	.endif
-	move.w	#\offset,(a5)+
-	move.w	\value,(a5)+
-	STORE_FILLED_LIST
-	move.l	(a7)+,a5
-	.endm
-	
-	.macro	WRITE_BLITTER_REG_SIZE	value
-	move.l	a5,-(a7)
-	LOAD_FILLED_LIST
-	move.w	#bltsize,(a5)+
-	move.w	\value,(a5)+
-	st.b	size_command_issued
-	move.w	#-1,(a5)+		| end of command
-	STORE_FILLED_LIST
-	move.l	(a7)+,a5
-	.endm
-	.endif
-	
