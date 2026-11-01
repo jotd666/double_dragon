@@ -11,7 +11,7 @@ sound_dir = this_dir / ".." / "sounds"
 # default channel = 3, default priority = 40
 # put below some exceptions
 
-important_sounds = [
+very_important_sounds = [
 0x99, # girl punched
 0x98, # giant
 0x96, # machine gun
@@ -20,9 +20,18 @@ important_sounds = [
 0x91, # hooker dies
 0x8c, # fall into water
 ]
+important_sounds = [
+0x99, # girl punched
+0x98, # giant
+0x88, # death yell
+0x90, # knife bounces
+]
 sound_settings_dict = {
-k : {"channel":2} for k in important_sounds
+k : {"channel":2} for k in very_important_sounds
 }
+sound_settings_dict.update({
+k : {"priority":100} for k in important_sounds
+})
 
 def convert():
     if not shutil.which("sox"):
@@ -84,7 +93,7 @@ def convert():
     "LEVEL1_TUNE_SND"      :{"index":0x9,"pattern":0,"volume":music_volume,"module_index":1},
     "LEVEL2_TUNE_SND"      :{"index":0x7,"pattern":0,"volume":music_volume,"module_index":2},
     "LEVEL3_TUNE_SND"      :{"index":0xA,"pattern":0,"volume":music_volume,"module_index":3},
-    "LEVEL4_TUNE_SND"      :{"index":0xD,"pattern":0,"volume":music_volume,"module_index":4},  # temp music
+    "LEVEL4_TUNE_SND"      :{"index":0xD,"pattern":0,"volume":music_volume,"module_index":4},
     "BOSS_TUNE_SND"        :{"index":0x3,"pattern":0,"volume":music_volume,"module_index":13},
     "INTERMISSION_TUNE_SND":{"index":0xE,"pattern":0,"volume":music_volume,"module_index":15},
     "LEVEL_END_TUNE_SND"   :{"index":0xc,"pattern":0,"volume":music_volume,"module_index":14},

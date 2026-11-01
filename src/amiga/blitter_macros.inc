@@ -27,6 +27,7 @@
 *   ... blitq_setup_xxx / emit entries / PUBLISH ...
 *   BLITQ_END_FRAME
 * level 3 interrupt: BLITQ_INTERRUPT (blitter part, A5=custom, saves D0/A0/A1)
+* VBL (level 1 or 3, not inside BLITQ_INTERRUPT): BLITQ_CHECK_STALL
 * show the frame at frame boundary: if frame_state == FS_READY => swap,
 *   frame_state = FS_FREE
 *
@@ -106,12 +107,27 @@ wait\@:
 
 * chain mode
 
+* Apollo Vampire V4: blit-done interrupts can get lost (or arrive while the
+* blitter still reports busy, and BLITQ_INTERRUPT then ignores them): the
+* chain never completes, frame_state stays FS_BUSY, REALLY_WAIT_BLIT and
+* frame building lock up. blitq_recover restarts a stalled chain.
+* define BLITQ_SHOW_RECOVERY to flash color 0 green when it happens
+
+* call at each VBL (level 1 or 3, but not from the blitter interrupt)
+* < A5: custom
+	.macro	BLITQ_CHECK_STALL
+	jbsr	blitq_recover
+	.endm
+
 * wait until no blit chain runs, then for the blitter
 * (not from level 3, and not while building a frame!)
 	.macro	REALLY_WAIT_BLIT
 sw\@:
 	cmp.b	#FS_BUSY,frame_state
-	jeq		sw\@
+	jne		swd\@
+	jbsr	blitq_recover			| a lost blitter interrupt would block us here
+	jra		sw\@
+swd\@:
 	WAIT_BLIT
 	.endm
 
@@ -290,6 +306,61 @@ r_cookie_nob:
 	move.l	a0,blitq_rd
 	rts
 
+* restarts the chain if a blit-done interrupt got lost: chain running
+* (blit_idle clear) but blitter idle and no blitter request pending, still
+* true a few lines later with the blitter & level 1 interrupts masked
+* (works in user mode: no SR access)
+* < A5: custom
+* preserves all registers. Not from level 3
+blitq_recover:
+	tst.b	blit_idle
+	jeq		0f
+	rts								| no chain running: nothing to check
+0:
+	movem.l	d0-d1/a0-a1,-(a7)
+	* quick checks: blitting or request pending is the normal case
+	tst.b	(dmaconr,a5)			| dummy read (early Agnus BBUSY quirk)
+	btst	#6,(dmaconr,a5)
+	jne		99f
+	move.w	(intreqr,a5),d0
+	btst	#6,d0
+	jne		99f
+	* suspicious: give a just-finished blit time to raise its request
+	moveq	#2,d1
+1:
+	move.b	(vhposr,a5),d0
+2:
+	cmp.b	(vhposr,a5),d0
+	jeq		2b
+	dbf		d1,1b
+	move.w	(intenar,a5),d1
+	move.w	#0x0044,(intena,a5)		| no blitter & level 1 interrupts while we look
+	tst.w	(intenar,a5)			| make sure the write has landed (040/060/080)
+	tst.b	blit_idle
+	jne		98f						| the interrupt came after all
+	tst.b	(dmaconr,a5)
+	btst	#6,(dmaconr,a5)
+	jne		98f
+	move.w	(intreqr,a5),d0
+	btst	#6,d0
+	jne		98f
+	* lost: do what the interrupt would have done
+	.ifndef	RELEASE
+	addq.w	#1,blitq_recoveries
+	.endif
+	.ifdef	BLITQ_SHOW_RECOVERY
+	move.w	#0x0F0,(color,a5)
+	.endif
+	jbsr	blitq_run
+98:
+	and.w	#0x0044,d1				| re-enable what was enabled
+	jeq		99f
+	or.w	#0x8000,d1
+	move.w	d1,(intena,a5)
+99:
+	movem.l	(a7)+,d0-d1/a0-a1
+	rts
+
 * producer side: start the chain if the blitter is idle
 * (level 1: supervisor mode)
 blitq_kick:
@@ -364,6 +435,10 @@ producer_done:
 frame_state:
 	.byte	FS_FREE
 	.align	2
+	.ifndef	RELEASE
+blitq_recoveries:
+	.word	0			| number of lost blitter interrupts recovered
+	.endif
 blitter_queue:
 	.skip	\size
 blitter_queue_end:

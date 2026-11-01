@@ -5,12 +5,12 @@ Requires a 3-button joystick, CD32 pad, or the keyboard
 
 Features:
 
-- 25 FPS for AGA amigas, 128 colors
+- 25/50 FPS for AGA amigas, 128 colors
 
 Note:
 
-AGA version runs on A1200 with 4MB fastmem: full sfx & music, arcade approaching colors. It still needs some optimizations
-so expect it to run faster in newer releases. Also expect an ECS version
+AGA version runs on A1200 with 4MB fastmem: full sfx & music, arcade approaching colors.
+Also expect an ECS version
 
 Credits:
 
@@ -29,3 +29,5 @@ blue/D: kick
 green/W: jump
 
 (ADW becomes QDZ on french keyboards)
+
+A.I disclaimer: the project now has parts of code that was modified by A.I. I insist to say that A.I. didn't write the code from scratch but rather applied a transformation I asked it to speed up graphical operations.

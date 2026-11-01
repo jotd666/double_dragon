@@ -1749,6 +1749,8 @@ level1_interrupt:
 	addq.b	#1,osd_entry_count
     movem.l d0-d7/a0-a6,-(a7)
 	lea		_custom,a5
+	BLITQ_CHECK_STALL
+	
 	move.w	(intreqr,a5),d0		| leave this, we need it for later on
 	* we're going to ack copper & software level 1 interrupt now
 	* do it twice (040/pistorm bug)
