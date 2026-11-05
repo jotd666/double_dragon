@@ -33,10 +33,6 @@ when the black guy throws the knife: memwatch on MAME (snapshot before end of le
   diversity. Then EHB can also be used for tiles.
 - try simple HD loader, with a shell to select version & unpack exe+loadseg
 
-- enable blitter chaining to speed things up: intro showing (double buffering inversion
-  apparently) then lock up when game starts WTF??
-
-
 - save option trashes the sprites!!!
 - check values of max_scroll_x, min_scroll_x when loading level 2 and when reaching level 2 from start, check differences
 - duplicate copperlist so color changes between levels are completely seamless: full screen redraw
