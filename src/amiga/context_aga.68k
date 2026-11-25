@@ -194,8 +194,10 @@ load_context:
 
 
 
+	* before force_all_screen_redraw: it enables interrupts when done,
+	* so a new frame (blit chain) can start right after it
+	BLITQ_RESET_AFTER_OS
 	jbsr force_all_screen_redraw
-
 
 
 	jbsr	osd_enable_interrupts

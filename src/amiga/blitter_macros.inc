@@ -1,5 +1,4 @@
 	.include "hardware/custom.i"
-
 * blitter helpers, synchronous or asynchronous (blitter interrupt chain)
 *
 * OPT_BLIT_CHAIN_MODE = 0: classic mode, blit + wait blit
@@ -103,10 +102,36 @@ wait\@:
 	.macro	DECL_BLITTER_QUEUE	size
 	.endm
 
+	.macro	BLITQ_RESET_AFTER_OS
+	.endm
 	.else
 
 * chain mode
-
+* after a resload call that may have switched to the OS: the chain was idle
+* (REALLY_WAIT_BLIT), but the OS may have used the blitter, eaten or left a
+* blitter interrupt request, changed blitter registers: back to a clean idle
+* state. Use it while frame building is still off (level 1 disabled), before
+* anything can start a new chain
+	.macro	BLITQ_RESET_AFTER_OS
+	movem.l	a5,-(a7)
+	lea		_custom,a5
+	move.w	(intenar,a5),-(a7)
+	move.w	#0x4000,(intena,a5)		| master off
+	tst.w	(intenar,a5)			| make sure the write has landed (040/060)
+	WAIT_BLIT						| OS blit still running?
+	move.w	#0x0040,(intreq,a5)		| forget any blitter request
+	move.w	#0x0040,(intreq,a5)
+	st.b	blit_idle
+	move.l	#blitter_queue,blitq_rd
+	move.l	#blitter_queue,blitq_wr
+	move.w	#-1,blitq_setup_key		| registers must be rewritten
+	btst	#6,(a7)					| master was on? (bit 14)
+	jeq		ro\@
+	move.w	#0xC000,(intena,a5)
+ro\@:
+	addq.w	#2,a7
+	movem.l	(a7)+,a5
+	.endm
 * Apollo Vampire V4: blit-done interrupts can get lost (or arrive while the
 * blitter still reports busy, and BLITQ_INTERRUPT then ignores them): the
 * chain never completes, frame_state stays FS_BUSY, REALLY_WAIT_BLIT and

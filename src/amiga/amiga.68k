@@ -2477,13 +2477,10 @@ update_one_bob:
 	jmi		2f			| too high => skip
 	neg		d1			| make it positive again
 	* now multiply d1 by number of bytes per bob source row
-	* we only have 2 cases here: 4 and 6 (technically big boss 
-	* could qualify but it doesn't happen)
+	* number is always 4
 	add.w	d1,d1		| times 2
-	cmp.w	#6,d5
-	jne		7f
 	add.w	d1,d1		| times 4 (double width)
-7:
+
 	move.w	d5,d2			| width in bytes, 4 for 16 pixels+shift
 	move.w	d1,d5		| set Y offset
 	moveq	#0,d1		| and coord = 0
@@ -5555,6 +5552,7 @@ load_music_if_needed:
 	lea		module_buffer,a1
 	move.l	#BIGGEST_MUSIC_SIZE,d0
 	jbsr	load_file
+	BLITQ_RESET_AFTER_OS
 75:
 	movem.l	(a7)+,d0/a0/a1
 	rts
